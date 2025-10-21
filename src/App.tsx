@@ -64,11 +64,13 @@ function App() {
         )}
 
         <Routes>
+          {/* Autenticación */}
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/recuperar-clave" element={<RecuperarClave />} />
           <Route path="/nueva-clave" element={<NuevaClave />} />
 
+          {/* Usuario */}
           {tipoUsuario === "usuario" && (
             <Route
               path="/usuario"
@@ -92,6 +94,7 @@ function App() {
             />
           )}
 
+          {/* Colaborador */}
           {tipoUsuario === "colaborador" && (
             <Route
               path="/colaborador"
@@ -108,6 +111,7 @@ function App() {
             />
           )}
 
+          {/* Institucional */}
           {tipoUsuario === "institucional" && (
             <Route
               path="/institucional"
