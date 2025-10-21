@@ -6,27 +6,43 @@ type Props = {
   participantes: Participante[];
   metaGrupal: number;
   pais: string;
+  setPais: (pais: string) => void;
 };
 
-function VistaInstitucional({ participantes, metaGrupal, pais }: Props) {
+const regiones = ["Chile", "Perú", "México", "Colombia", "Argentina"];
+
+function VistaInstitucional({ participantes, metaGrupal, pais, setPais }: Props) {
+  const totalAhorro = participantes.reduce((total, p) => total + (p.ingresos - p.egresos), 0);
+  const promedioAhorro = participantes.length > 0 ? totalAhorro / participantes.length : 0;
+
   return (
-    <div style={{ padding: "2rem", backgroundColor: "#f9f9f9" }}>
-      <header style={{ marginBottom: "2rem", textAlign: "center" }}>
+    <div style={{ padding: "2rem", backgroundColor: "#f0f4f8" }}>
+      <header style={{ textAlign: "center", marginBottom: "2rem" }}>
         <img src="/logo-finedu.png" alt="Logo Finedu" style={{ height: "60px" }} />
-        <h1>Impacto Financiero Colaborativo</h1>
-        <p>
-          Esta vista institucional muestra el progreso colectivo de usuarios en{" "}
-          <strong>{pais}</strong>, promoviendo autonomía, educación y oportunidades reales.
-        </p>
+        <h1>🌎 Vista Institucional Finedu LATAM</h1>
+        <p>Comparativa regional de impacto financiero colaborativo</p>
+
+        <label>
+          Selecciona país:
+          <select value={pais} onChange={(e) => setPais(e.target.value)}>
+            {regiones.map((r) => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
+        </label>
       </header>
 
       <section>
-        <PanelImpacto
-          participantes={participantes}
-          metaGrupal={metaGrupal}
-          pais={pais}
-          institucion="Finedu LATAM"
-        />
+        <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Finedu LATAM" />
+      </section>
+
+      <section style={{ marginTop: "2rem" }}>
+        <h2>📊 Métricas regionales</h2>
+        <ul>
+          <li>Participantes activos: {participantes.length}</li>
+          <li>Ahorro total acumulado: {totalAhorro.toLocaleString()}</li>
+          <li>Ahorro promedio por persona: {promedioAhorro.toLocaleString()}</li>
+        </ul>
       </section>
 
       <section style={{ marginTop: "2rem" }}>
