@@ -3,6 +3,7 @@ import VistaGrupal from "./components/VistaGrupal";
 import VistaParticipante from "./components/VistaParticipante";
 import Resumen from "./components/Resumen";
 import VistaMetaIndividual from "./components/VistaMetaIndividual";
+import VistaEtapa from "./components/VistaEtapa";
 
 type Participante = {
   nombre: string;
@@ -21,7 +22,7 @@ function App() {
     ingresos: number;
     egresos: number;
   }) => {
-    const metaIndividual = 200000; // Puedes ajustar este valor según lógica
+    const metaIndividual = 200000; // Valor fijo por ahora, puede ser editable en el futuro
     const participanteConMeta: Participante = {
       ...nuevo,
       metaIndividual,
@@ -34,6 +35,8 @@ function App() {
       <h1>{nombreGrupoMeta}</h1>
 
       <Resumen metaGrupal={metaGrupal} participantes={participantes} />
+
+      <VistaEtapa participantes={participantes} />
 
       <VistaGrupal
         nombreGrupoMeta={nombreGrupoMeta}
