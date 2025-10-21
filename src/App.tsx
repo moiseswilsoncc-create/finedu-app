@@ -15,6 +15,7 @@ import IngresoColaborador from "./components/IngresoColaborador";
 import PanelImpacto from "./components/PanelImpacto";
 import ForoFinanciero from "./components/ForoFinanciero";
 import VistaInstitucional from "./components/VistaInstitucional";
+import MetricasColaboradores from "./components/MetricasColaboradores";
 import { Participante } from "./types";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
     nombre: string;
     ingresos: number;
     egresos: number;
+    fechaNacimiento: string;
   }) => {
     const metaIndividual = 200000;
     const participanteConMeta: Participante = {
@@ -72,6 +74,7 @@ function App() {
           <IngresoColaborador setPais={setPais} />
           <PanelColaboradores pais={pais} />
           <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+          <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
           <ForoFinanciero />
         </>
       )}
