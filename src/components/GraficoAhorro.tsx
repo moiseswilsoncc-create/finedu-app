@@ -1,47 +1,28 @@
 import React from "react";
-import { Bar, Doughnut } from "react-chartjs-2";
-import { Chart, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from "chart.js";
-
-Chart.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+import { Participante } from "../types";
+import { formatearMoneda } from "../utils/formatearMoneda";
 
 type Props = {
-  participantes: { nombre: string; ingresos: number; egresos: number; metaIndividual: number }[];
+  participantes: Participante[];
   metaGrupal: number;
+  pais: string;
 };
 
-function GraficoAhorro({ participantes, metaGrupal }: Props) {
-  const ahorros = participantes.map((p) => p.ingresos - p.egresos);
-  const nombres = participantes.map((p) => p.nombre);
-  const ahorroTotal = ahorros.reduce((acc, val) => acc + val, 0);
-  const cumplimiento = (ahorroTotal / metaGrupal) * 100;
+function GraficoAhorro({ participantes, metaGrupal, pais }: Props) {
+  const totalAportado = participantes.reduce(
+    (total, p) => total + (p.ingresos - p.egresos),
+    0
+  );
 
-  const dataBarras = {
-    labels: nombres,
-    datasets: [
-      {
-        label: "Ahorro individual",
-        data: ahorros,
-        backgroundColor: "#4CAF50",
-      },
-    ],
-  };
-
-  const dataCircular = {
-    labels: ["Cumplido", "Faltante"],
-    datasets: [
-      {
-        data: [ahorroTotal, Math.max(metaGrupal - ahorroTotal, 0)],
-        backgroundColor: ["#2196F3", "#E0E0E0"],
-      },
-    ],
-  };
+  const porcentaje = Math.min((totalAportado / metaGrupal) * 100, 100);
 
   return (
     <div>
-      <h3>Visualización de ahorro</h3>
-      <Bar data={dataBarras} />
-      <Doughnut data={dataCircular} />
-      <p>Cumplimiento grupal: {cumplimiento.toFixed(1)}%</p>
+      <h3>Progreso de ahorro grupal</h3>
+      <p>Meta grupal: {formatearMoneda(metaGrupal, pais)}</p>
+      <p>Aportado: {formatearMoneda(totalAportado, pais)}</p>
+      <p>Progreso: {porcentaje.toFixed(1)}%</p>
+      <progress value={porcentaje} max={100}></progress>
     </div>
   );
 }
