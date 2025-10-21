@@ -1,19 +1,24 @@
 import React, { useState } from "react";
+import { getTasa } from "../utils/getTasa";
+import { formatearMoneda } from "../utils/formatearMoneda";
 
-function SimuladorCredito() {
+type Props = {
+  pais: string;
+};
+
+function SimuladorCredito({ pais }: Props) {
+  const tasaBase = getTasa(pais, "consumo");
   const [monto, setMonto] = useState(1000000);
-  const [cuotas, setCuotas] = useState(12);
-  const [cuotaConsumo, setCuotaConsumo] = useState(95000);
-  const [cuotaComercial, setCuotaComercial] = useState(85000);
+  const [plazoMeses, setPlazoMeses] = useState(12);
 
-  const totalConsumo = cuotaConsumo * cuotas;
-  const totalComercial = cuotaComercial * cuotas;
-  const ahorro = totalConsumo - totalComercial;
-  const ahorroPorcentaje = (ahorro / totalConsumo) * 100;
+  const tasaMensual = tasaBase / 12 / 100;
+  const cuota = (monto * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -plazoMeses));
+  const totalPagado = cuota * plazoMeses;
+  const sobrecosto = totalPagado - monto;
 
   return (
     <div>
-      <h3>Simulador de crédito</h3>
+      <h3>Simulador de crédito de consumo ({pais})</h3>
 
       <label>
         Monto solicitado:
@@ -25,42 +30,19 @@ function SimuladorCredito() {
       </label>
 
       <label>
-        Número de cuotas:
+        Plazo en meses:
         <input
           type="number"
-          value={cuotas}
-          onChange={(e) => setCuotas(Number(e.target.value))}
-        />
-      </label>
-
-      <label>
-        Cuota mensual (crédito de consumo):
-        <input
-          type="number"
-          value={cuotaConsumo}
-          onChange={(e) => setCuotaConsumo(Number(e.target.value))}
-        />
-      </label>
-
-      <label>
-        Cuota mensual (crédito comercial):
-        <input
-          type="number"
-          value={cuotaComercial}
-          onChange={(e) => setCuotaComercial(Number(e.target.value))}
+          value={plazoMeses}
+          onChange={(e) => setPlazoMeses(Number(e.target.value))}
         />
       </label>
 
       <ul>
-        <li>
-          Crédito de consumo: total pagado ${totalConsumo.toLocaleString("es-CL")}
-        </li>
-        <li>
-          Crédito comercial: total pagado ${totalComercial.toLocaleString("es-CL")}
-        </li>
-        <li>
-          Ahorro estimado: ${ahorro.toLocaleString("es-CL")} ({ahorroPorcentaje.toFixed(1)}%)
-        </li>
+        <li>Tasa base anual: {tasaBase}%</li>
+        <li>Cuota mensual estimada: {formatearMoneda(cuota, pais)}</li>
+        <li>Total pagado: {formatearMoneda(totalPagado, pais)}</li>
+        <li>Sobreprecio por intereses: {formatearMoneda(sobrecosto, pais)}</li>
       </ul>
     </div>
   );
