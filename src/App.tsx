@@ -7,6 +7,7 @@ import Resumen from "./components/Resumen";
 import SimuladorCredito from "./components/SimuladorCredito";
 import SimuladorCreditoAuto from "./components/SimuladorCreditoAuto";
 import SimuladorCreditoVivienda from "./components/SimuladorCreditoVivienda";
+import GraficoAhorro from "./components/GraficoAhorro";
 
 type Participante = {
   nombre: string;
@@ -54,6 +55,8 @@ function App() {
       <SimuladorCredito />
       <SimuladorCreditoAuto />
       <SimuladorCreditoVivienda />
+
+      <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} />
     </div>
   );
 }
