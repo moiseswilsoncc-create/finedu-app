@@ -13,6 +13,7 @@ import PanelColaboradores from "./components/PanelColaboradores";
 import IngresoUsuario from "./components/IngresoUsuario";
 import IngresoColaborador from "./components/IngresoColaborador";
 import PanelImpacto from "./components/PanelImpacto";
+import ForoFinanciero from "./components/ForoFinanciero";
 import { Participante } from "./types";
 
 function App() {
@@ -64,11 +65,8 @@ function App() {
           <SimuladorCreditoVivienda pais={pais} />
           <SimuladorInversion pais={pais} />
           <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
-          <PanelImpacto
-            participantes={participantes}
-            metaGrupal={metaGrupal}
-            pais={pais}
-          />
+          <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
+          <ForoFinanciero />
         </>
       )}
 
@@ -82,6 +80,7 @@ function App() {
             pais={pais}
             institucion="Nombre de institución"
           />
+          <ForoFinanciero />
         </>
       )}
     </div>
