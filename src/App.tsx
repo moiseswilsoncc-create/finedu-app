@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import VistaGrupal from "./components/VistaGrupal";
 import VistaParticipante from "./components/VistaParticipante";
+import Resumen from "./components/Resumen";
 
 function App() {
   const [nombreGrupoMeta, setNombreGrupoMeta] = useState("Meta familiar 2025");
@@ -19,11 +20,16 @@ function App() {
 
   return (
     <div>
+      <h1>{nombreGrupoMeta}</h1>
+
+      <Resumen metaGrupal={metaGrupal} participantes={participantes} />
+
       <VistaGrupal
         nombreGrupoMeta={nombreGrupoMeta}
         metaGrupal={metaGrupal}
         participantes={participantes}
       />
+
       <VistaParticipante onAgregar={agregarParticipante} />
     </div>
   );
