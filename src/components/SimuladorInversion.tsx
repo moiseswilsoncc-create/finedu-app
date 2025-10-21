@@ -1,33 +1,30 @@
 import React, { useState } from "react";
+import { getTasa } from "../utils/getTasa";
+import { formatearMoneda } from "../utils/formatearMoneda";
 
-function SimuladorInversion() {
-  const [montoInicial, setMontoInicial] = useState(1000000);
-  const [tasaAnual, setTasaAnual] = useState(8); // % anual
+type Props = {
+  pais: string;
+};
+
+function SimuladorInversion({ pais }: Props) {
+  const tasaAnual = getTasa(pais, "inversion");
+  const [monto, setMonto] = useState(1000000);
   const [plazoMeses, setPlazoMeses] = useState(12);
 
   const tasaMensual = tasaAnual / 12 / 100;
-  const montoFinal = montoInicial * Math.pow(1 + tasaMensual, plazoMeses);
-  const ganancia = montoFinal - montoInicial;
+  const montoFinal = monto * Math.pow(1 + tasaMensual, plazoMeses);
+  const ganancia = montoFinal - monto;
 
   return (
     <div>
-      <h3>Simulador de inversión</h3>
+      <h3>Simulador de inversión ({pais})</h3>
 
       <label>
-        Monto inicial:
+        Monto a invertir:
         <input
           type="number"
-          value={montoInicial}
-          onChange={(e) => setMontoInicial(Number(e.target.value))}
-        />
-      </label>
-
-      <label>
-        Tasa anual (%):
-        <input
-          type="number"
-          value={tasaAnual}
-          onChange={(e) => setTasaAnual(Number(e.target.value))}
+          value={monto}
+          onChange={(e) => setMonto(Number(e.target.value))}
         />
       </label>
 
@@ -41,8 +38,9 @@ function SimuladorInversion() {
       </label>
 
       <ul>
-        <li>Monto final estimado: ${montoFinal.toLocaleString("es-CL")}</li>
-        <li>Ganancia proyectada: ${ganancia.toLocaleString("es-CL")}</li>
+        <li>Tasa anual estimada: {tasaAnual}%</li>
+        <li>Ganancia estimada: {formatearMoneda(ganancia, pais)}</li>
+        <li>Monto final proyectado: {formatearMoneda(montoFinal, pais)}</li>
       </ul>
     </div>
   );
