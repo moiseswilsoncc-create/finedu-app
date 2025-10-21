@@ -1,57 +1,46 @@
 import React, { useState } from "react";
+import { DatosUsuario } from "../types";
 
-type DatosUsuario = {
-  nombre: string;
-  apellido: string;
-  fechaNacimiento: string;
-  pais: string;
-  ciudad: string;
-  comuna: string;
-  correo: string;
+type Props = {
+  setPais: (pais: string) => void;
 };
 
-function IngresoUsuario() {
+function IngresoUsuario({ setPais }: Props) {
   const [datos, setDatos] = useState<DatosUsuario>({
     nombre: "",
-    apellido: "",
-    fechaNacimiento: "",
+    edad: 0,
     pais: "",
     ciudad: "",
-    comuna: "",
     correo: "",
   });
 
   const [registrado, setRegistrado] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDatos({ ...datos, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setDatos({ ...datos, [name]: name === "edad" ? Number(value) : value });
+    if (name === "pais") setPais(value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setRegistrado(true);
-    // Aquí podrías enviar los datos a una API o base de datos
   };
 
   return (
     <div>
-      <h3>Registro de usuario</h3>
+      <h3>Registro de usuario solicitante</h3>
 
       {!registrado ? (
         <form onSubmit={handleSubmit}>
           <label>
-            Nombre:
+            Nombre completo:
             <input type="text" name="nombre" value={datos.nombre} onChange={handleChange} />
           </label>
 
           <label>
-            Apellido:
-            <input type="text" name="apellido" value={datos.apellido} onChange={handleChange} />
-          </label>
-
-          <label>
-            Fecha de nacimiento:
-            <input type="date" name="fechaNacimiento" value={datos.fechaNacimiento} onChange={handleChange} />
+            Edad:
+            <input type="number" name="edad" value={datos.edad} onChange={handleChange} />
           </label>
 
           <label>
@@ -65,11 +54,6 @@ function IngresoUsuario() {
           </label>
 
           <label>
-            Comuna:
-            <input type="text" name="comuna" value={datos.comuna} onChange={handleChange} />
-          </label>
-
-          <label>
             Correo electrónico:
             <input type="email" name="correo" value={datos.correo} onChange={handleChange} />
           </label>
@@ -77,7 +61,10 @@ function IngresoUsuario() {
           <button type="submit">Registrarse</button>
         </form>
       ) : (
-        <p>¡Gracias por registrarte, {datos.nombre}! Tu acceso a Finedu ha sido activado.</p>
+        <p>
+          ¡Gracias por registrarte, {datos.nombre}! Tu perfil ha sido creado para operar desde{" "}
+          <strong>{datos.pais}</strong>.
+        </p>
       )}
     </div>
   );
