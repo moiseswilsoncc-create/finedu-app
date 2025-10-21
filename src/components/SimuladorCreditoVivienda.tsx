@@ -1,49 +1,40 @@
 import React, { useState } from "react";
+import { getTasa } from "../utils/getTasa";
+import { formatearMoneda } from "../utils/formatearMoneda";
 
-function SimuladorCreditoVivienda() {
-  const [valorPropiedad, setValorPropiedad] = useState(120000000);
-  const [cuotas, setCuotas] = useState(240); // 20 años
-  const [cuotaMensual, setCuotaMensual] = useState(850000);
+type Props = {
+  pais: string;
+};
 
-  const totalPagado = cuotaMensual * cuotas;
-  const diferencia = totalPagado - valorPropiedad;
-  const sobrecostoPorcentaje = (diferencia / valorPropiedad) * 100;
+function SimuladorCreditoVivienda({ pais }: Props) {
+  const tasaBase = getTasa(pais, "vivienda");
+  const [monto, setMonto] = useState(120000000);
+  const [plazoMeses, setPlazoMeses] = useState(240);
+
+  const tasaMensual = tasaBase / 12 / 100;
+  const cuota = (monto * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -plazoMeses));
+  const totalPagado = cuota * plazoMeses;
+  const sobrecosto = totalPagado - monto;
 
   return (
     <div>
-      <h3>Simulador crédito vivienda</h3>
+      <h3>Simulador de crédito hipotecario ({pais})</h3>
 
       <label>
         Valor de la propiedad:
-        <input
-          type="number"
-          value={valorPropiedad}
-          onChange={(e) => setValorPropiedad(Number(e.target.value))}
-        />
+        <input type="number" value={monto} onChange={(e) => setMonto(Number(e.target.value))} />
       </label>
 
       <label>
-        Número de cuotas:
-        <input
-          type="number"
-          value={cuotas}
-          onChange={(e) => setCuotas(Number(e.target.value))}
-        />
-      </label>
-
-      <label>
-        Cuota mensual ofrecida:
-        <input
-          type="number"
-          value={cuotaMensual}
-          onChange={(e) => setCuotaMensual(Number(e.target.value))}
-        />
+        Plazo en meses:
+        <input type="number" value={plazoMeses} onChange={(e) => setPlazoMeses(Number(e.target.value))} />
       </label>
 
       <ul>
-        <li>Total pagado: ${totalPagado.toLocaleString("es-CL")}</li>
-        <li>Sobreprecio: ${diferencia.toLocaleString("es-CL")}</li>
-        <li>Porcentaje sobre el valor de la propiedad: {sobrecostoPorcentaje.toFixed(1)}%</li>
+        <li>Tasa anual: {tasaBase}%</li>
+        <li>Cuota mensual: {formatearMoneda(cuota, pais)}</li>
+        <li>Total pagado: {formatearMoneda(totalPagado, pais)}</li>
+        <li>Sobreprecio: {formatearMoneda(sobrecosto, pais)}</li>
       </ul>
     </div>
   );
