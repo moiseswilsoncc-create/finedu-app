@@ -25,6 +25,7 @@ function App() {
   const [metaGrupal, setMetaGrupal] = useState(1000000);
   const [participantes, setParticipantes] = useState<Participante[]>([]);
   const [tipoUsuario, setTipoUsuario] = useState<"usuario" | "colaborador" | null>(null);
+  const [pais, setPais] = useState<string>("Chile"); // país por defecto
 
   const agregarParticipante = (nuevo: {
     nombre: string;
@@ -52,7 +53,7 @@ function App() {
 
       {tipoUsuario === "usuario" && (
         <>
-          <IngresoUsuario />
+          <IngresoUsuario setPais={setPais} />
 
           <Resumen metaGrupal={metaGrupal} participantes={participantes} />
           <VistaEtapa participantes={participantes} />
@@ -63,18 +64,18 @@ function App() {
           />
           <VistaMetaIndividual participantes={participantes} />
           <VistaParticipante onAgregar={agregarParticipante} />
-          <SimuladorCredito />
-          <SimuladorCreditoAuto />
-          <SimuladorCreditoVivienda />
+          <SimuladorCredito pais={pais} />
+          <SimuladorCreditoAuto pais={pais} />
+          <SimuladorCreditoVivienda pais={pais} />
           <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} />
-          <SimuladorInversion />
+          <SimuladorInversion pais={pais} />
         </>
       )}
 
       {tipoUsuario === "colaborador" && (
         <>
-          <IngresoColaborador />
-          <PanelColaboradores />
+          <IngresoColaborador setPais={setPais} />
+          <PanelColaboradores pais={pais} />
         </>
       )}
     </div>
