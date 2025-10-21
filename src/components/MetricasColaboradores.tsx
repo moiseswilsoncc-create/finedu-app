@@ -1,17 +1,6 @@
 import React from "react";
 import { Participante } from "../types";
-
-// Utilidad para calcular edad desde fecha de nacimiento
-function calcularEdad(fechaNacimiento: string): number {
-  const hoy = new Date();
-  const nacimiento = new Date(fechaNacimiento);
-  let edad = hoy.getFullYear() - nacimiento.getFullYear();
-  const mes = hoy.getMonth() - nacimiento.getMonth();
-  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
-    edad--;
-  }
-  return edad;
-}
+import { calcularEdad } from "../utils/calcularEdad";
 
 type Props = {
   participantes: Participante[];
@@ -57,10 +46,10 @@ function MetricasColaboradores({ participantes, metaGrupal }: Props) {
     const edad = calcularEdad(p.fechaNacimiento);
     const ahorro = p.ingresos - p.egresos;
 
-    if (edad <= 20) gruposEdad["10–20"] += 1, (ahorroPorEdad["10–20"] += ahorro);
-    else if (edad <= 35) gruposEdad["21–35"] += 1, (ahorroPorEdad["21–35"] += ahorro);
-    else if (edad <= 60) gruposEdad["36–60"] += 1, (ahorroPorEdad["36–60"] += ahorro);
-    else gruposEdad["60+"] += 1, (ahorroPorEdad["60+"] += ahorro);
+    if (edad <= 20) gruposEdad["10–20"]++, (ahorroPorEdad["10–20"] += ahorro);
+    else if (edad <= 35) gruposEdad["21–35"]++, (ahorroPorEdad["21–35"] += ahorro);
+    else if (edad <= 60) gruposEdad["36–60"]++, (ahorroPorEdad["36–60"] += ahorro);
+    else gruposEdad["60+"]++, (ahorroPorEdad["60+"] += ahorro);
 
     if (p.ciudad) {
       ciudades[p.ciudad] = (ciudades[p.ciudad] || 0) + 1;
@@ -75,21 +64,36 @@ function MetricasColaboradores({ participantes, metaGrupal }: Props) {
 
   return (
     <div style={{ padding: "1rem", border: "2px solid #ccc", borderRadius: "8px" }}>
-      <h2>📊 Métricas para colaboradores</h2>
+      <h2>📊 Métricas colaborativas</h2>
 
+      <h3>💰 Comportamiento financiero</h3>
       <ul>
         <li>Participantes activos: {participantes.length}</li>
-        <li>Ahorro total acumulado: {totalAhorro.toLocaleString()}</li>
-        <li>Promedio de ahorro por persona: {promedioAhorro.toLocaleString()}</li>
-        <li>Total de metas individuales (crédito): {totalCredito.toLocaleString()}</li>
-        <li>Meta grupal declarada: {metaGrupal.toLocaleString()}</li>
+        <li>Ahorro total acumulado: ${totalAhorro.toLocaleString()}</li>
+        <li>Promedio de ahorro por persona: ${promedioAhorro.toLocaleString()}</li>
+        <li>Total de metas individuales (crédito): ${totalCredito.toLocaleString()}</li>
+        <li>Meta grupal declarada: ${metaGrupal.toLocaleString()}</li>
+      </ul>
+
+      <h3>🧠 Educación financiera</h3>
+      <ul>
+        <li>Simuladores utilizados (pendiente de integración)</li>
+        <li>Promedio de simulaciones por usuario (pendiente)</li>
+        <li>Usuarios que usaron más de un simulador (pendiente)</li>
+      </ul>
+
+      <h3>🤝 Colaboración grupal</h3>
+      <ul>
+        <li>Metas grupales creadas (pendiente)</li>
+        <li>Participantes por meta grupal (pendiente)</li>
+        <li>Porcentaje de cumplimiento grupal (pendiente)</li>
       </ul>
 
       <h3>🔍 Segmentación por edad</h3>
       <ul>
         {Object.keys(gruposEdad).map((rango) => (
           <li key={rango}>
-            Edad {rango}: {gruposEdad[rango]} participantes — Ahorro total: {ahorroPorEdad[rango].toLocaleString()}
+            Edad {rango}: {gruposEdad[rango]} participantes — Ahorro total: ${ahorroPorEdad[rango].toLocaleString()}
           </li>
         ))}
       </ul>
@@ -98,7 +102,7 @@ function MetricasColaboradores({ participantes, metaGrupal }: Props) {
       <ul>
         {Object.keys(ciudades).map((ciudad) => (
           <li key={ciudad}>
-            {ciudad}: {ciudades[ciudad]} participantes — Ahorro total: {ahorroPorCiudad[ciudad].toLocaleString()}
+            {ciudad}: {ciudades[ciudad]} participantes — Ahorro total: ${ahorroPorCiudad[ciudad].toLocaleString()}
           </li>
         ))}
       </ul>
@@ -107,19 +111,19 @@ function MetricasColaboradores({ participantes, metaGrupal }: Props) {
       <ul>
         {Object.keys(comunas).map((comuna) => (
           <li key={comuna}>
-            {comuna}: {comunas[comuna]} participantes — Ahorro total: {ahorroPorComuna[comuna].toLocaleString()}
+            {comuna}: {comunas[comuna]} participantes — Ahorro total: ${ahorroPorComuna[comuna].toLocaleString()}
           </li>
         ))}
       </ul>
 
-      <h3>💬 Actividad comunitaria</h3>
+      <h3>💬 Comunidad y foro</h3>
       <ul>
-        <li>Comentarios en el foro que mencionan instituciones: (pendiente de integración)</li>
-        <li>Tasa de participación por ciudad y comuna: (pendiente de integración)</li>
+        <li>Comentarios que mencionan instituciones (pendiente)</li>
+        <li>Tasa de participación por ciudad y comuna (pendiente)</li>
       </ul>
 
-      <h3>📍 Impacto comparativo entre ciudades y comunas</h3>
-      <p>Estas métricas permiten visualizar dónde se concentra el ahorro, el crédito y la colaboración activa.</p>
+      <h3>📍 Impacto comparativo</h3>
+      <p>Visualización del ahorro y participación por ciudad y comuna para orientar futuras campañas.</p>
 
       <p style={{ fontStyle: "italic", marginTop: "1rem" }}>
         Estas métricas se actualizan cada 30 días y pueden ser exportadas como PDF institucional.
