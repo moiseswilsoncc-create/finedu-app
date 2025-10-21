@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -8,18 +9,27 @@ function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (correo === "" || contraseña === "") {
-      setError("Por favor completa todos los campos.");
-      return;
-    }
+    try {
+      const response = await axios.post("https://api.finedu.cl/login", {
+        correo,
+        contraseña,
+      });
 
-    // Simulación de validación exitosa
-    setLogueado(true);
-    setError("");
-    console.log("Usuario autenticado:", correo);
+      if (response.data.success) {
+        setLogueado(true);
+        setError("");
+        console.log("Usuario autenticado:", response.data.usuario);
+        // Aquí puedes guardar token en localStorage o contexto
+      } else {
+        setError("Credenciales incorrectas.");
+      }
+    } catch (err) {
+      setError("Error de conexión con el servidor.");
+      console.error(err);
+    }
   };
 
   const handleRecuperarClave = () => {
