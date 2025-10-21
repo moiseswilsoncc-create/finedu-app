@@ -1,11 +1,14 @@
 import React, { useState } from "react";
+import axios from "../axiosConfig";
+import { useNavigate } from "react-router-dom";
 
 function RecuperarClave() {
   const [correo, setCorreo] = useState("");
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!correo.includes("@")) {
@@ -13,10 +16,25 @@ function RecuperarClave() {
       return;
     }
 
-    // Simulación de envío de enlace de recuperación
-    setEnviado(true);
-    setError("");
-    console.log("Enlace de recuperación enviado a:", correo);
+    try {
+      const response = await axios.post("/recuperar-clave", { correo });
+
+      if (response.data.success) {
+        setEnviado(true);
+        setError("");
+        console.log("Enlace de recuperación enviado a:", correo);
+
+        // Simulación: redirige con token ficticio
+        setTimeout(() => {
+          navigate(`/nueva-clave?token=${response.data.token}&correo=${correo}`);
+        }, 2000);
+      } else {
+        setError("❌ El correo no está registrado.");
+      }
+    } catch (err) {
+      console.error("Error de conexión:", err);
+      setError("No se pudo conectar con el servidor.");
+    }
   };
 
   return (
