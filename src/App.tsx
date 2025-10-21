@@ -9,6 +9,9 @@ import SimuladorCreditoAuto from "./components/SimuladorCreditoAuto";
 import SimuladorCreditoVivienda from "./components/SimuladorCreditoVivienda";
 import GraficoAhorro from "./components/GraficoAhorro";
 import SimuladorInversion from "./components/SimuladorInversion";
+import PanelColaboradores from "./components/PanelColaboradores";
+import IngresoUsuario from "./components/IngresoUsuario";
+import IngresoColaborador from "./components/IngresoColaborador";
 
 type Participante = {
   nombre: string;
@@ -21,6 +24,7 @@ function App() {
   const [nombreGrupoMeta, setNombreGrupoMeta] = useState("Meta familiar 2025");
   const [metaGrupal, setMetaGrupal] = useState(1000000);
   const [participantes, setParticipantes] = useState<Participante[]>([]);
+  const [tipoUsuario, setTipoUsuario] = useState<"usuario" | "colaborador" | null>(null);
 
   const agregarParticipante = (nuevo: {
     nombre: string;
@@ -37,23 +41,42 @@ function App() {
 
   return (
     <div>
-      <h1>{nombreGrupoMeta}</h1>
+      <h1>Bienvenido a Finedu</h1>
 
-      <Resumen metaGrupal={metaGrupal} participantes={participantes} />
-      <VistaEtapa participantes={participantes} />
-      <VistaGrupal
-        nombreGrupoMeta={nombreGrupoMeta}
-        metaGrupal={metaGrupal}
-        participantes={participantes}
-      />
-      <VistaMetaIndividual participantes={participantes} />
-      <VistaParticipante onAgregar={agregarParticipante} />
+      {!tipoUsuario && (
+        <div>
+          <button onClick={() => setTipoUsuario("usuario")}>Ingresar como usuario</button>
+          <button onClick={() => setTipoUsuario("colaborador")}>Ingresar como colaborador</button>
+        </div>
+      )}
 
-      <SimuladorCredito />
-      <SimuladorCreditoAuto />
-      <SimuladorCreditoVivienda />
-      <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} />
-      <SimuladorInversion />
+      {tipoUsuario === "usuario" && (
+        <>
+          <IngresoUsuario />
+
+          <Resumen metaGrupal={metaGrupal} participantes={participantes} />
+          <VistaEtapa participantes={participantes} />
+          <VistaGrupal
+            nombreGrupoMeta={nombreGrupoMeta}
+            metaGrupal={metaGrupal}
+            participantes={participantes}
+          />
+          <VistaMetaIndividual participantes={participantes} />
+          <VistaParticipante onAgregar={agregarParticipante} />
+          <SimuladorCredito />
+          <SimuladorCreditoAuto />
+          <SimuladorCreditoVivienda />
+          <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} />
+          <SimuladorInversion />
+        </>
+      )}
+
+      {tipoUsuario === "colaborador" && (
+        <>
+          <IngresoColaborador />
+          <PanelColaboradores />
+        </>
+      )}
     </div>
   );
 }
