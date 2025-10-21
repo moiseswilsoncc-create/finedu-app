@@ -22,7 +22,7 @@ function App() {
     ingresos: number;
     egresos: number;
   }) => {
-    const metaIndividual = 200000; // Valor fijo por ahora, puede ser editable en el futuro
+    const metaIndividual = 200000;
     const participanteConMeta: Participante = {
       ...nuevo,
       metaIndividual,
