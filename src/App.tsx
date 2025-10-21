@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import VistaGrupal from "./components/VistaGrupal";
 import VistaParticipante from "./components/VistaParticipante";
@@ -24,6 +24,13 @@ import RecuperarClave from "./components/RecuperarClave";
 import NuevaClave from "./components/NuevaClave";
 
 import { Participante } from "./types";
+
+function RutaProtegida({ children }: { children: JSX.Element }) {
+  const location = useLocation();
+  const logueado = localStorage.getItem("logueado") === "true";
+
+  return logueado ? children : <Navigate to="/login" state={{ from: location }} replace />;
+}
 
 function App() {
   const [nombreGrupoMeta, setNombreGrupoMeta] = useState("Meta familiar 2025");
@@ -50,6 +57,13 @@ function App() {
     setParticipantes([...participantes, participanteConMeta]);
   };
 
+  useEffect(() => {
+    const tipo = localStorage.getItem("tipoUsuario");
+    if (tipo === "usuario" || tipo === "colaborador" || tipo === "institucional") {
+      setTipoUsuario(tipo as typeof tipoUsuario);
+    }
+  }, []);
+
   return (
     <Router>
       <div>
@@ -57,9 +71,20 @@ function App() {
 
         {!tipoUsuario && (
           <div>
-            <button onClick={() => setTipoUsuario("usuario")}>Ingresar como usuario</button>
-            <button onClick={() => setTipoUsuario("colaborador")}>Ingresar como colaborador</button>
-            <button onClick={() => setTipoUsuario("institucional")}>Vista institucional</button>
+            <button onClick={() => {
+              setTipoUsuario("usuario");
+              localStorage.setItem("tipoUsuario", "usuario");
+            }}>Ingresar como usuario</button>
+
+            <button onClick={() => {
+              setTipoUsuario("colaborador");
+              localStorage.setItem("tipoUsuario", "colaborador");
+            }}>Ingresar como colaborador</button>
+
+            <button onClick={() => {
+              setTipoUsuario("institucional");
+              localStorage.setItem("tipoUsuario", "institucional");
+            }}>Vista institucional</button>
           </div>
         )}
 
@@ -70,11 +95,11 @@ function App() {
           <Route path="/recuperar-clave" element={<RecuperarClave />} />
           <Route path="/nueva-clave" element={<NuevaClave />} />
 
-          {/* Usuario */}
-          {tipoUsuario === "usuario" && (
-            <Route
-              path="/usuario"
-              element={
+          {/* Usuario protegido */}
+          <Route
+            path="/usuario"
+            element={
+              <RutaProtegida>
                 <>
                   <IngresoUsuario setPais={setPais} />
                   <Resumen metaGrupal={metaGrupal} participantes={participantes} />
@@ -90,9 +115,9 @@ function App() {
                   <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
                   <ForoFinanciero />
                 </>
-              }
-            />
-          )}
+              </RutaProtegida>
+            }
+          />
 
           {/* Colaborador */}
           {tipoUsuario === "colaborador" && (
