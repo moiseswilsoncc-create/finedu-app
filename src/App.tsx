@@ -21,6 +21,7 @@ import MetricasColaboradores from "./components/MetricasColaboradores";
 import GeneradorPDF from "./components/GeneradorPDF";
 import Login from "./components/Login";
 import RecuperarClave from "./components/RecuperarClave";
+import NuevaClave from "./components/NuevaClave";
 
 import { Participante } from "./types";
 
@@ -59,7 +60,6 @@ function App() {
             <button onClick={() => setTipoUsuario("usuario")}>Ingresar como usuario</button>
             <button onClick={() => setTipoUsuario("colaborador")}>Ingresar como colaborador</button>
             <button onClick={() => setTipoUsuario("institucional")}>Vista institucional</button>
-            <button onClick={() => setTipoUsuario(null)}>Login</button>
           </div>
         )}
 
@@ -67,6 +67,7 @@ function App() {
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/recuperar-clave" element={<RecuperarClave />} />
+          <Route path="/nueva-clave" element={<NuevaClave />} />
 
           {tipoUsuario === "usuario" && (
             <Route
