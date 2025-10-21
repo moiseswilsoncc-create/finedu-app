@@ -1,30 +1,29 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [correo, setCorreo] = useState("");
   const [contraseña, setContraseña] = useState("");
   const [logueado, setLogueado] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validación básica (simulada)
     if (correo === "" || contraseña === "") {
       setError("Por favor completa todos los campos.");
       return;
     }
 
-    // Aquí iría la validación contra base de datos o API
-    // Simulación de éxito
+    // Simulación de validación exitosa
     setLogueado(true);
     setError("");
     console.log("Usuario autenticado:", correo);
   };
 
   const handleRecuperarClave = () => {
-    // Aquí puedes redirigir a una vista de recuperación
-    alert("Redirigiendo a recuperación de contraseña...");
+    navigate("/recuperar-clave");
   };
 
   return (
@@ -48,7 +47,11 @@ function Login() {
           <button type="submit">Ingresar</button>
 
           <p style={{ marginTop: "0.5rem" }}>
-            <button type="button" onClick={handleRecuperarClave} style={{ background: "none", border: "none", color: "blue", cursor: "pointer" }}>
+            <button
+              type="button"
+              onClick={handleRecuperarClave}
+              style={{ background: "none", border: "none", color: "blue", cursor: "pointer" }}
+            >
               ¿Olvidaste tu contraseña?
             </button>
           </p>
