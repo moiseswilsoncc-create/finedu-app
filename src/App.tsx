@@ -28,7 +28,6 @@ import { Participante } from "./types";
 function RutaProtegida({ children }: { children: JSX.Element }) {
   const location = useLocation();
   const logueado = localStorage.getItem("logueado") === "true";
-
   return logueado ? children : <Navigate to="/login" state={{ from: location }} replace />;
 }
 
@@ -64,6 +63,12 @@ function App() {
     }
   }, []);
 
+  const cerrarSesion = () => {
+    localStorage.clear();
+    setTipoUsuario(null);
+    window.location.href = "/login";
+  };
+
   return (
     <Router>
       <div>
@@ -86,6 +91,15 @@ function App() {
               localStorage.setItem("tipoUsuario", "institucional");
             }}>Vista institucional</button>
           </div>
+        )}
+
+        {tipoUsuario && (
+          <button
+            onClick={cerrarSesion}
+            style={{ marginTop: "1rem", background: "#eee", border: "1px solid #ccc", padding: "0.5rem", cursor: "pointer" }}
+          >
+            Cerrar sesión
+          </button>
         )}
 
         <Routes>
