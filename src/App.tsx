@@ -10,7 +10,7 @@ import SimuladorCreditoVivienda from "./components/SimuladorCreditoVivienda";
 import GraficoAhorro from "./components/GraficoAhorros";
 import SimuladorInversion from "./components/SimuladorInversion";
 import PanelColaboradores from "./components/PanelColaboradores";
-import IngresoSolicitante from "./components/IngresoSolicitante";
+import IngresoUsuario from "./components/IngresoUsuario";
 import IngresoColaborador from "./components/IngresoColaborador";
 import { Participante } from "./types";
 
