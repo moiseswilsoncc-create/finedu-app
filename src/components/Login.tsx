@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "../axiosConfig"; // ← usa la instancia configurada
 
 function Login() {
   const [correo, setCorreo] = useState("");
@@ -13,7 +13,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("https://api.finedu.cl/login", {
+      const response = await axios.post("/login", {
         correo,
         contraseña,
       });
@@ -23,6 +23,7 @@ function Login() {
         setError("");
         console.log("Usuario autenticado:", response.data.usuario);
         // Aquí puedes guardar token en localStorage o contexto
+        navigate("/usuario");
       } else {
         setError("Credenciales incorrectas.");
       }
