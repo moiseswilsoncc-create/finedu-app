@@ -1,24 +1,23 @@
 import React, { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import axios from "../axiosConfig";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function NuevaClave() {
   const [nuevaClave, setNuevaClave] = useState("");
   const [confirmacion, setConfirmacion] = useState("");
-  const [actualizado, setActualizado] = useState(false);
   const [error, setError] = useState("");
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get("token"); // Simulación de token temporal
+  const [mensaje, setMensaje] = useState("");
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const token = params.get("token");
+  const correo = params.get("correo");
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!token) {
-      setError("Enlace inválido o expirado.");
-      return;
-    }
-
-    if (nuevaClave.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres.");
+    if (nuevaClave.length < 6) {
+      setError("La nueva contraseña debe tener al menos 6 caracteres.");
       return;
     }
 
@@ -27,35 +26,49 @@ function NuevaClave() {
       return;
     }
 
-    // Simulación de actualización exitosa
-    setActualizado(true);
-    setError("");
-    console.log("Contraseña actualizada con token:", token);
+    try {
+      const response = await axios.post("/nueva-clave", {
+        token,
+        correo,
+        nuevaClave,
+      });
+
+      if (response.data.success) {
+        setMensaje("✅ Contraseña actualizada correctamente.");
+        setError("");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        setError("❌ No se pudo actualizar la contraseña.");
+        setMensaje("");
+      }
+    } catch (err) {
+      console.error("Error de conexión:", err);
+      setError("No se pudo conectar con el servidor.");
+      setMensaje("");
+    }
   };
 
   return (
     <div style={{ padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
       <h3>🔒 Crear nueva contraseña</h3>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Nueva contraseña:
+          <input type="password" value={nuevaClave} onChange={(e) => setNuevaClave(e.target.value)} required />
+        </label>
 
-      {!actualizado ? (
-        <form onSubmit={handleSubmit}>
-          <label>
-            Nueva contraseña:
-            <input type="password" value={nuevaClave} onChange={(e) => setNuevaClave(e.target.value)} required />
-          </label>
+        <label>
+          Confirmar contraseña:
+          <input type="password" value={confirmacion} onChange={(e) => setConfirmacion(e.target.value)} required />
+        </label>
 
-          <label>
-            Confirmar contraseña:
-            <input type="password" value={confirmacion} onChange={(e) => setConfirmacion(e.target.value)} required />
-          </label>
+        {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
 
-          {error && <p style={{ color: "red" }}>{error}</p>}
-
-          <button type="submit">Actualizar contraseña</button>
-        </form>
-      ) : (
-        <p>✅ Tu contraseña ha sido actualizada correctamente. Ya puedes iniciar sesión con tu nueva clave.</p>
-      )}
+        <button type="submit">Actualizar contraseña</button>
+      </form>
     </div>
   );
 }
