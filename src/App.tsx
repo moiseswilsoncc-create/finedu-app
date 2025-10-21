@@ -14,13 +14,14 @@ import IngresoUsuario from "./components/IngresoUsuario";
 import IngresoColaborador from "./components/IngresoColaborador";
 import PanelImpacto from "./components/PanelImpacto";
 import ForoFinanciero from "./components/ForoFinanciero";
+import VistaInstitucional from "./components/VistaInstitucional";
 import { Participante } from "./types";
 
 function App() {
   const [nombreGrupoMeta, setNombreGrupoMeta] = useState("Meta familiar 2025");
   const [metaGrupal, setMetaGrupal] = useState(1000000);
   const [participantes, setParticipantes] = useState<Participante[]>([]);
-  const [tipoUsuario, setTipoUsuario] = useState<"usuario" | "colaborador" | null>(null);
+  const [tipoUsuario, setTipoUsuario] = useState<"usuario" | "colaborador" | "institucional" | null>(null);
   const [pais, setPais] = useState<string>("Chile");
 
   const agregarParticipante = (nuevo: {
@@ -44,20 +45,16 @@ function App() {
         <div>
           <button onClick={() => setTipoUsuario("usuario")}>Ingresar como usuario</button>
           <button onClick={() => setTipoUsuario("colaborador")}>Ingresar como colaborador</button>
+          <button onClick={() => setTipoUsuario("institucional")}>Vista institucional</button>
         </div>
       )}
 
       {tipoUsuario === "usuario" && (
         <>
           <IngresoUsuario setPais={setPais} />
-
           <Resumen metaGrupal={metaGrupal} participantes={participantes} />
           <VistaEtapa participantes={participantes} />
-          <VistaGrupal
-            nombreGrupoMeta={nombreGrupoMeta}
-            metaGrupal={metaGrupal}
-            participantes={participantes}
-          />
+          <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} />
           <VistaMetaIndividual participantes={participantes} />
           <VistaParticipante onAgregar={agregarParticipante} />
           <SimuladorCredito pais={pais} />
@@ -74,14 +71,13 @@ function App() {
         <>
           <IngresoColaborador setPais={setPais} />
           <PanelColaboradores pais={pais} />
-          <PanelImpacto
-            participantes={participantes}
-            metaGrupal={metaGrupal}
-            pais={pais}
-            institucion="Nombre de institución"
-          />
+          <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
           <ForoFinanciero />
         </>
+      )}
+
+      {tipoUsuario === "institucional" && (
+        <VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />
       )}
     </div>
   );
