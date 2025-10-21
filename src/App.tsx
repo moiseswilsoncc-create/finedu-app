@@ -5,6 +5,7 @@ import VistaMetaIndividual from "./components/VistaMetaIndividual";
 import VistaEtapa from "./components/VistaEtapa";
 import Resumen from "./components/Resumen";
 import SimuladorCredito from "./components/SimuladorCredito";
+import SimuladorCreditoAuto from "./components/SimuladorCreditoAuto";
 
 type Participante = {
   nombre: string;
@@ -50,6 +51,8 @@ function App() {
       <VistaParticipante onAgregar={agregarParticipante} />
 
       <SimuladorCredito />
+
+      <SimuladorCreditoAuto />
     </div>
   );
 }
