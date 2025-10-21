@@ -8,6 +8,7 @@ import SimuladorCredito from "./components/SimuladorCredito";
 import SimuladorCreditoAuto from "./components/SimuladorCreditoAuto";
 import SimuladorCreditoVivienda from "./components/SimuladorCreditoVivienda";
 import GraficoAhorro from "./components/GraficoAhorro";
+import SimuladorInversion from "./components/SimuladorInversion";
 
 type Participante = {
   nombre: string;
@@ -39,24 +40,20 @@ function App() {
       <h1>{nombreGrupoMeta}</h1>
 
       <Resumen metaGrupal={metaGrupal} participantes={participantes} />
-
       <VistaEtapa participantes={participantes} />
-
       <VistaGrupal
         nombreGrupoMeta={nombreGrupoMeta}
         metaGrupal={metaGrupal}
         participantes={participantes}
       />
-
       <VistaMetaIndividual participantes={participantes} />
-
       <VistaParticipante onAgregar={agregarParticipante} />
 
       <SimuladorCredito />
       <SimuladorCreditoAuto />
       <SimuladorCreditoVivienda />
-
       <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} />
+      <SimuladorInversion />
     </div>
   );
 }
