@@ -1,14 +1,11 @@
 import React, { useState } from "react";
+import { DatosColaborador } from "../types";
 
-type DatosColaborador = {
-  nombreResponsable: string;
-  institucion: string;
-  pais: string;
-  ciudad: string;
-  correo: string;
+type Props = {
+  setPais: (pais: string) => void;
 };
 
-function IngresoColaborador() {
+function IngresoColaborador({ setPais }: Props) {
   const [datos, setDatos] = useState<DatosColaborador>({
     nombreResponsable: "",
     institucion: "",
@@ -20,13 +17,14 @@ function IngresoColaborador() {
   const [registrado, setRegistrado] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDatos({ ...datos, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setDatos({ ...datos, [name]: value });
+    if (name === "pais") setPais(value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setRegistrado(true);
-    // Aquí podrías enviar los datos a una API o base de datos
   };
 
   return (
@@ -46,7 +44,7 @@ function IngresoColaborador() {
           </label>
 
           <label>
-            Nombre de la institución:
+            Institución:
             <input
               type="text"
               name="institucion"
@@ -57,32 +55,17 @@ function IngresoColaborador() {
 
           <label>
             País:
-            <input
-              type="text"
-              name="pais"
-              value={datos.pais}
-              onChange={handleChange}
-            />
+            <input type="text" name="pais" value={datos.pais} onChange={handleChange} />
           </label>
 
           <label>
             Ciudad:
-            <input
-              type="text"
-              name="ciudad"
-              value={datos.ciudad}
-              onChange={handleChange}
-            />
+            <input type="text" name="ciudad" value={datos.ciudad} onChange={handleChange} />
           </label>
 
           <label>
             Correo institucional:
-            <input
-              type="email"
-              name="correo"
-              value={datos.correo}
-              onChange={handleChange}
-            />
+            <input type="email" name="correo" value={datos.correo} onChange={handleChange} />
           </label>
 
           <button type="submit">Registrarse</button>
@@ -90,8 +73,7 @@ function IngresoColaborador() {
       ) : (
         <p>
           ¡Gracias por registrarte, {datos.nombreResponsable}! Tu institución{" "}
-          <strong>{datos.institucion}</strong> ahora tiene acceso al panel de
-          colaboradores.
+          <strong>{datos.institucion}</strong> ha sido registrada en <strong>{datos.pais}</strong>.
         </p>
       )}
     </div>
