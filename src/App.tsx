@@ -47,7 +47,7 @@ function App() {
 
       {tipoUsuario === "usuario" && (
         <>
-          <IngresoSolicitante setPais={setPais} />
+          <IngresoUsuario setPais={setPais} />
 
           <Resumen metaGrupal={metaGrupal} participantes={participantes} />
           <VistaEtapa participantes={participantes} />
