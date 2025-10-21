@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import VistaGrupal from "./components/VistaGrupal";
 import VistaParticipante from "./components/VistaParticipante";
-import Resumen from "./components/Resumen";
 import VistaMetaIndividual from "./components/VistaMetaIndividual";
 import VistaEtapa from "./components/VistaEtapa";
+import Resumen from "./components/Resumen";
+import SimuladorCredito from "./components/SimuladorCredito";
 
 type Participante = {
   nombre: string;
@@ -47,6 +48,8 @@ function App() {
       <VistaMetaIndividual participantes={participantes} />
 
       <VistaParticipante onAgregar={agregarParticipante} />
+
+      <SimuladorCredito />
     </div>
   );
 }
