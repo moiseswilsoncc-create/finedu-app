@@ -1,0 +1,12 @@
+[
+  {
+    "nombre": "Wilson",
+    "apellido": "González",
+    "correo": "wilson@finedu.cl",
+    "contraseña": "clave123",
+    "fechaNacimiento": "1985-06-12",
+    "ciudad": "San Bernardo",
+    "comuna": "San Bernardo",
+    "pais": "Chile"
+  }
+]
