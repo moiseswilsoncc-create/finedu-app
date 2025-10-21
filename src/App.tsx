@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
 import VistaGrupal from "./components/VistaGrupal";
 import VistaParticipante from "./components/VistaParticipante";
 import VistaMetaIndividual from "./components/VistaMetaIndividual";
@@ -16,6 +18,10 @@ import PanelImpacto from "./components/PanelImpacto";
 import ForoFinanciero from "./components/ForoFinanciero";
 import VistaInstitucional from "./components/VistaInstitucional";
 import MetricasColaboradores from "./components/MetricasColaboradores";
+import GeneradorPDF from "./components/GeneradorPDF";
+import Login from "./components/Login";
+import RecuperarClave from "./components/RecuperarClave";
+
 import { Participante } from "./types";
 
 function App() {
@@ -27,9 +33,13 @@ function App() {
 
   const agregarParticipante = (nuevo: {
     nombre: string;
+    apellido?: string;
+    fechaNacimiento: string;
+    ciudad: string;
+    comuna: string;
     ingresos: number;
     egresos: number;
-    fechaNacimiento: string;
+    correo?: string;
   }) => {
     const metaIndividual = 200000;
     const participanteConMeta: Participante = {
@@ -40,49 +50,74 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>Bienvenido a Finedu</h1>
+    <Router>
+      <div>
+        <h1>Bienvenido a Finedu</h1>
 
-      {!tipoUsuario && (
-        <div>
-          <button onClick={() => setTipoUsuario("usuario")}>Ingresar como usuario</button>
-          <button onClick={() => setTipoUsuario("colaborador")}>Ingresar como colaborador</button>
-          <button onClick={() => setTipoUsuario("institucional")}>Vista institucional</button>
-        </div>
-      )}
+        {!tipoUsuario && (
+          <div>
+            <button onClick={() => setTipoUsuario("usuario")}>Ingresar como usuario</button>
+            <button onClick={() => setTipoUsuario("colaborador")}>Ingresar como colaborador</button>
+            <button onClick={() => setTipoUsuario("institucional")}>Vista institucional</button>
+            <button onClick={() => setTipoUsuario(null)}>Login</button>
+          </div>
+        )}
 
-      {tipoUsuario === "usuario" && (
-        <>
-          <IngresoUsuario setPais={setPais} />
-          <Resumen metaGrupal={metaGrupal} participantes={participantes} />
-          <VistaEtapa participantes={participantes} />
-          <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} />
-          <VistaMetaIndividual participantes={participantes} />
-          <VistaParticipante onAgregar={agregarParticipante} />
-          <SimuladorCredito pais={pais} />
-          <SimuladorCreditoAuto pais={pais} />
-          <SimuladorCreditoVivienda pais={pais} />
-          <SimuladorInversion pais={pais} />
-          <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
-          <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
-          <ForoFinanciero />
-        </>
-      )}
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/recuperar-clave" element={<RecuperarClave />} />
 
-      {tipoUsuario === "colaborador" && (
-        <>
-          <IngresoColaborador setPais={setPais} />
-          <PanelColaboradores pais={pais} />
-          <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
-          <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-          <ForoFinanciero />
-        </>
-      )}
+          {tipoUsuario === "usuario" && (
+            <Route
+              path="/usuario"
+              element={
+                <>
+                  <IngresoUsuario setPais={setPais} />
+                  <Resumen metaGrupal={metaGrupal} participantes={participantes} />
+                  <VistaEtapa participantes={participantes} />
+                  <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} />
+                  <VistaMetaIndividual participantes={participantes} />
+                  <VistaParticipante onAgregar={agregarParticipante} />
+                  <SimuladorCredito pais={pais} />
+                  <SimuladorCreditoAuto pais={pais} />
+                  <SimuladorCreditoVivienda pais={pais} />
+                  <SimuladorInversion pais={pais} />
+                  <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
+                  <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
+                  <ForoFinanciero />
+                </>
+              }
+            />
+          )}
 
-      {tipoUsuario === "institucional" && (
-        <VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />
-      )}
-    </div>
+          {tipoUsuario === "colaborador" && (
+            <Route
+              path="/colaborador"
+              element={
+                <>
+                  <IngresoColaborador setPais={setPais} />
+                  <PanelColaboradores pais={pais} />
+                  <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                  <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
+                  <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                  <ForoFinanciero />
+                </>
+              }
+            />
+          )}
+
+          {tipoUsuario === "institucional" && (
+            <Route
+              path="/institucional"
+              element={
+                <VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />
+              }
+            />
+          )}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
