@@ -7,18 +7,12 @@ import Resumen from "./components/Resumen";
 import SimuladorCredito from "./components/SimuladorCredito";
 import SimuladorCreditoAuto from "./components/SimuladorCreditoAuto";
 import SimuladorCreditoVivienda from "./components/SimuladorCreditoVivienda";
-import GraficoAhorro from "./components/GraficoAhorro";
+import GraficoAhorro from "./components/GraficoAhorros";
 import SimuladorInversion from "./components/SimuladorInversion";
 import PanelColaboradores from "./components/PanelColaboradores";
-import IngresoUsuario from "./components/IngresoUsuario";
+import IngresoSolicitante from "./components/IngresoSolicitante";
 import IngresoColaborador from "./components/IngresoColaborador";
-
-type Participante = {
-  nombre: string;
-  ingresos: number;
-  egresos: number;
-  metaIndividual: number;
-};
+import { Participante } from "./types";
 
 function App() {
   const [nombreGrupoMeta, setNombreGrupoMeta] = useState("Meta familiar 2025");
@@ -53,7 +47,7 @@ function App() {
 
       {tipoUsuario === "usuario" && (
         <>
-          <IngresoUsuario setPais={setPais} />
+          <IngresoSolicitante setPais={setPais} />
 
           <Resumen metaGrupal={metaGrupal} participantes={participantes} />
           <VistaEtapa participantes={participantes} />
