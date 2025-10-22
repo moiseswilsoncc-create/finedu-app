@@ -4,7 +4,6 @@
 
 ---
 
-
 ## 🚀 Características principales
 
 - Simuladores de crédito, inversión y ahorro
@@ -92,3 +91,6 @@ Enfoque: autonomía, colaboración, transparencia y educación financiera
 ## 📬 Contacto
 
 Para alianzas institucionales, soporte técnico o contribuciones, contáctanos a través de tu correo institucional o canal de contacto.
+
+<!-- Despliegue forzado para Vercel -->
+
