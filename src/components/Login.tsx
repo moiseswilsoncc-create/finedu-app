@@ -19,10 +19,13 @@ function Login() {
       });
 
       if (response.data.success) {
+        // ✅ Persistencia en localStorage
+        localStorage.setItem("logueado", "true");
+        localStorage.setItem("tipoUsuario", "usuario"); // ← ajusta según el tipo real
+
         setLogueado(true);
         setError("");
         console.log("Usuario autenticado:", response.data.usuario);
-        // Aquí puedes guardar token en localStorage o contexto
         navigate("/usuario");
       } else {
         setError("Credenciales incorrectas.");
