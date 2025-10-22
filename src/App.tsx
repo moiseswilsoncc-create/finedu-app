@@ -143,6 +143,27 @@ function App() {
 
         {!tipoUsuario && <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />}
         {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
+        {tipoUsuario && (
+  <button
+    onClick={() => {
+      localStorage.clear();
+      setTipoUsuario(null);
+      window.location.href = "/";
+    }}
+    style={{
+      marginTop: "1rem",
+      padding: "0.5rem 1rem",
+      backgroundColor: "#e74c3c",
+      color: "white",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer"
+    }}
+  >
+    Reiniciar sesión
+  </button>
+)}
+
       </div>
     </Router>
   );
