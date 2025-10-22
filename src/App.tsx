@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 
 import VistaGrupal from "./components/VistaGrupal";
 import VistaParticipante from "./components/VistaParticipante";
@@ -75,16 +75,23 @@ function App() {
   return (
     <Router>
       <div>
-        <Routes>
-          {/* Pantalla institucional de bienvenida */}
-          <Route path="/" element={<Bienvenida />} />
+        {/* Navegación visible para elegir tipo de usuario */}
+        {!tipoUsuario && (
+          <nav style={{ marginBottom: "1rem" }}>
+            <Link to="/">Inicio</Link> |{" "}
+            <Link to="/login">Login</Link> |{" "}
+            <Link to="/usuario">Usuario</Link> |{" "}
+            <Link to="/colaborador">Colaborador</Link> |{" "}
+            <Link to="/institucional">Institucional</Link>
+          </nav>
+        )}
 
-          {/* Autenticación */}
+        <Routes>
+          <Route path="/" element={<Bienvenida />} />
           <Route path="/login" element={<Login />} />
           <Route path="/recuperar-clave" element={<RecuperarClave />} />
           <Route path="/nueva-clave" element={<NuevaClave />} />
 
-          {/* Usuario protegido */}
           <Route
             path="/usuario"
             element={
@@ -108,7 +115,6 @@ function App() {
             }
           />
 
-          {/* Colaborador */}
           {tipoUsuario === "colaborador" && (
             <Route
               path="/colaborador"
@@ -125,7 +131,6 @@ function App() {
             />
           )}
 
-          {/* Institucional */}
           {tipoUsuario === "institucional" && (
             <Route
               path="/institucional"
@@ -136,10 +141,7 @@ function App() {
           )}
         </Routes>
 
-        {/* Botones de tipo de usuario */}
         {!tipoUsuario && <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />}
-
-        {/* Botón de cierre de sesión */}
         {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
       </div>
     </Router>
