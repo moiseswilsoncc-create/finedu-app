@@ -1,17 +1,27 @@
-import React from "react";
-import "./Bienvenida.css"; // Opcional si quieres estilos específicos
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const Bienvenida = () => {
+const Bienvenida: React.FC = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const tipo = localStorage.getItem("tipoUsuario");
+    if (tipo === "usuario") navigate("/usuario");
+    else if (tipo === "colaborador") navigate("/colaborador");
+    else if (tipo === "institucional") navigate("/institucional");
+  }, [navigate]);
+
   return (
-    <div className="container" style={{ textAlign: "center", paddingTop: "40px" }}>
-      <img src="/logo.png" alt="Finedu Logo" className="logo" />
-      <h1 style={{ color: "var(--color-primario)", fontSize: "2.5rem", marginBottom: "10px" }}>
-        Bienvenido a Finedu
-      </h1>
-      <p style={{ color: "var(--color-texto)", fontSize: "1.2rem" }}>
-        Tu guía hacia la libertad financiera en LATAM
+    <div style={{ textAlign: "center", marginTop: "5rem" }}>
+      <img src="/logo.png" alt="Logo Finedu" style={{ width: "150px", marginBottom: "1rem" }} />
+      <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Bienvenido a Finedu</h1>
+      <p style={{ fontSize: "1.2rem", marginBottom: "2rem" }}>
+        Tu plataforma de autonomía financiera y colaboración educativa
       </p>
-      <button className="btn-primario" style={{ marginTop: "30px" }}>
+      <button
+        onClick={() => navigate("/login")}
+        style={{ padding: "0.75rem 1.5rem", fontSize: "1rem", cursor: "pointer" }}
+      >
         Comenzar
       </button>
     </div>
