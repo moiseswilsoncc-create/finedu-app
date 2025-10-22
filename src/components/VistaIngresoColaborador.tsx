@@ -1,17 +1,19 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function VistaIngresoColaborador() {
+  const navigate = useNavigate();
+
   return (
     <div style={{ padding: "2rem", textAlign: "center" }}>
       <h2>Bienvenido al portal de colaboradores</h2>
       <p>¿Qué deseas hacer?</p>
       <div style={{ marginTop: "1rem" }}>
-        <Link to="/login">
-          <button style={{ marginRight: "1rem" }}>🔐 Iniciar sesión</button>
-        </Link>
-        <Link to="/registro-colaborador">
-          <button>🆕 Crear nuevo colaborador</button>
-        </Link>
+        <button onClick={() => navigate("/login")} style={{ marginRight: "1rem" }}>
+          🔐 Iniciar sesión
+        </button>
+        <button onClick={() => navigate("/registro-colaborador")}>
+          🆕 Crear nuevo colaborador
+        </button>
       </div>
     </div>
   );
