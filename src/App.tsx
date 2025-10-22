@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import VistaGrupal from "./components/VistaGrupal";
 import VistaParticipante from "./components/VistaParticipante";
@@ -79,16 +79,6 @@ function App() {
   return (
     <Router>
       <div>
-        {!tipoUsuario && (
-          <nav style={{ marginBottom: "1rem" }}>
-            <Link to="/">Inicio</Link> |{" "}
-            <Link to="/login">Login</Link> |{" "}
-            <Link to="/ingreso-usuario">Usuario</Link> |{" "}
-            <Link to="/ingreso-colaborador">Colaborador</Link> |{" "}
-            <Link to="/institucional">Institucional</Link>
-          </nav>
-        )}
-
         <Routes>
           <Route path="/" element={<Bienvenida />} />
           <Route path="/login" element={<Login />} />
