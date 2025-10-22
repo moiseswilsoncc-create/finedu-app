@@ -47,13 +47,15 @@ function App() {
 
   const agregarParticipante = (nuevo: {
     nombre: string;
-    apellido?: string;
+    apellido: string;
     fechaNacimiento: string;
+    pais: string;
     ciudad: string;
     comuna: string;
+    sexo: string;
     ingresos: number;
     egresos: number;
-    correo?: string;
+    correo: string;
   }) => {
     const metaIndividual = 200000;
     const participanteConMeta: Participante = {
@@ -79,6 +81,17 @@ function App() {
   return (
     <Router>
       <div>
+        {/* Mostrar navegación solo en la página de bienvenida */}
+        {!tipoUsuario && window.location.pathname === "/" && (
+          <nav style={{ marginBottom: "1rem" }}>
+            <a href="/">Inicio</a> |{" "}
+            <a href="/login">Login</a> |{" "}
+            <a href="/ingreso-usuario">Usuario</a> |{" "}
+            <a href="/ingreso-colaborador">Colaborador</a> |{" "}
+            <a href="/institucional">Institucional</a>
+          </nav>
+        )}
+
         <Routes>
           <Route path="/" element={<Bienvenida />} />
           <Route path="/login" element={<Login />} />
