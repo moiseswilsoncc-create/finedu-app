@@ -25,6 +25,10 @@ import NuevaClave from "./components/NuevaClave";
 import Bienvenida from "./components/Bienvenida";
 import SelectorTipoUsuario from "./components/SelectorTipoUsuario";
 import BotonCerrarSesion from "./components/BotonCerrarSesion";
+import VistaIngresoUsuario from "./components/VistaIngresoUsuario";
+import RegistroUsuario from "./components/RegistroUsuario";
+import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
+import RegistroColaborador from "./components/RegistroColaborador";
 
 import { Participante } from "./types";
 
@@ -75,13 +79,12 @@ function App() {
   return (
     <Router>
       <div>
-        {/* Navegación visible para elegir tipo de usuario */}
         {!tipoUsuario && (
           <nav style={{ marginBottom: "1rem" }}>
             <Link to="/">Inicio</Link> |{" "}
             <Link to="/login">Login</Link> |{" "}
-            <Link to="/usuario">Usuario</Link> |{" "}
-            <Link to="/colaborador">Colaborador</Link> |{" "}
+            <Link to="/ingreso-usuario">Usuario</Link> |{" "}
+            <Link to="/ingreso-colaborador">Colaborador</Link> |{" "}
             <Link to="/institucional">Institucional</Link>
           </nav>
         )}
@@ -91,6 +94,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/recuperar-clave" element={<RecuperarClave />} />
           <Route path="/nueva-clave" element={<NuevaClave />} />
+          <Route path="/ingreso-usuario" element={<VistaIngresoUsuario />} />
+          <Route path="/registro-usuario" element={<RegistroUsuario />} />
+          <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
+          <Route path="/registro-colaborador" element={<RegistroColaborador />} />
 
           <Route
             path="/usuario"
@@ -144,26 +151,25 @@ function App() {
         {!tipoUsuario && <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />}
         {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
         {tipoUsuario && (
-  <button
-    onClick={() => {
-      localStorage.clear();
-      setTipoUsuario(null);
-      window.location.href = "/";
-    }}
-    style={{
-      marginTop: "1rem",
-      padding: "0.5rem 1rem",
-      backgroundColor: "#e74c3c",
-      color: "white",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer"
-    }}
-  >
-    Reiniciar sesión
-  </button>
-)}
-
+          <button
+            onClick={() => {
+              localStorage.clear();
+              setTipoUsuario(null);
+              window.location.href = "/";
+            }}
+            style={{
+              marginTop: "1rem",
+              padding: "0.5rem 1rem",
+              backgroundColor: "#e74c3c",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            Reiniciar sesión
+          </button>
+        )}
       </div>
     </Router>
   );
