@@ -6,11 +6,15 @@ export default defineConfig({
   plugins: [react()],
   root: '.', // Asegura que la raíz sea la carpeta actual
   build: {
-    rollupOptions: {
-      input: resolve(__dirname, 'public/index.html')
-    }
+    // ⚠️ Eliminamos input personalizado que causaba error
+    outDir: 'dist', // Puedes especificar el directorio de salida si lo deseas
   },
   server: {
     port: 3000
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src') // Alias útil para importar desde src
+    }
   }
 })
