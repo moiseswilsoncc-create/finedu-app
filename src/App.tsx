@@ -23,6 +23,8 @@ import Login from "./components/Login";
 import RecuperarClave from "./components/RecuperarClave";
 import NuevaClave from "./components/NuevaClave";
 import Bienvenida from "./components/Bienvenida";
+import SelectorTipoUsuario from "./components/SelectorTipoUsuario";
+import BotonCerrarSesion from "./components/BotonCerrarSesion";
 
 import { Participante } from "./types";
 
@@ -135,36 +137,10 @@ function App() {
         </Routes>
 
         {/* Botones de tipo de usuario */}
-        {!tipoUsuario && (
-          <div style={{ textAlign: "center", marginTop: "2rem" }}>
-            <button onClick={() => {
-              setTipoUsuario("usuario");
-              localStorage.setItem("tipoUsuario", "usuario");
-            }}>Ingresar como usuario</button>
-
-            <button onClick={() => {
-              setTipoUsuario("colaborador");
-              localStorage.setItem("tipoUsuario", "colaborador");
-            }}>Ingresar como colaborador</button>
-
-            <button onClick={() => {
-              setTipoUsuario("institucional");
-              localStorage.setItem("tipoUsuario", "institucional");
-            }}>Vista institucional</button>
-          </div>
-        )}
+        {!tipoUsuario && <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />}
 
         {/* Botón de cierre de sesión */}
-        {tipoUsuario && (
-          <div style={{ textAlign: "center", marginTop: "1rem" }}>
-            <button
-              onClick={cerrarSesion}
-              style={{ background: "#eee", border: "1px solid #ccc", padding: "0.5rem", cursor: "pointer" }}
-            >
-              Cerrar sesión
-            </button>
-          </div>
-        )}
+        {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
       </div>
     </Router>
   );
