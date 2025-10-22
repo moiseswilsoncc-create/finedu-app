@@ -1,18 +1,25 @@
-import { datosPorPais } from "../configFinanciera";
+import { configFinanciera } from "../configFinanciera"
 
-export function getTasa(pais: string, tipo: "consumo" | "auto" | "vivienda" | "inversion"): number {
-  const datos = datosPorPais[pais] || datosPorPais["Chile"];
+export function getTasa(
+  pais: string,
+  tipo: "consumo" | "auto" | "vivienda" | "inversion"
+): number {
+  const datos = configFinanciera[pais]
+
+  if (!datos) {
+    throw new Error(`No se encontró información financiera para el país: ${pais}`)
+  }
 
   switch (tipo) {
     case "consumo":
-      return datos.tasaCreditoConsumo;
+      return datos.tasaCreditoConsumo
     case "auto":
-      return datos.tasaCreditoAuto;
+      return datos.tasaCreditoAuto
     case "vivienda":
-      return datos.tasaCreditoVivienda;
+      return datos.tasaCreditoVivienda
     case "inversion":
-      return datos.tasaInversion;
+      return datos.tasaInversion
     default:
-      return datos.tasaCreditoConsumo;
+      throw new Error(`Tipo de crédito inválido: ${tipo}`)
   }
 }
