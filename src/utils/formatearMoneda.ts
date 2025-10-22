@@ -1,13 +1,19 @@
-import { datosPorPais } from "../configFinanciera";
+import { configFinanciera } from "../configFinanciera"
 
 export function formatearMoneda(valor: number, pais: string): string {
-  const datos = datosPorPais[pais] || datosPorPais["Chile"];
-  const simbolo = datos.simbolo;
-  const codigoISO = datos.codigoISO;
+  const datos = configFinanciera[pais]
 
-  return new Intl.NumberFormat("es-CL", {
+  if (!datos) {
+    throw new Error(`No se encontró configuración financiera para el país: ${pais}`)
+  }
+
+  const formato = new Intl.NumberFormat("es-CL", {
     style: "currency",
-    currency: codigoISO,
+    currency: datos.moneda,
     minimumFractionDigits: 0,
-  }).format(valor).replace(codigoISO, simbolo);
+    maximumFractionDigits: 0,
+  })
+
+  return formato.format(valor).replace(datos.moneda, datos.simbolo)
 }
+
