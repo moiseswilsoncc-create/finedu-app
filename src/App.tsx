@@ -22,6 +22,7 @@ import GeneradorPDF from "./components/GeneradorPDF";
 import Login from "./components/Login";
 import RecuperarClave from "./components/RecuperarClave";
 import NuevaClave from "./components/NuevaClave";
+import Bienvenida from "./components/Bienvenida";
 
 import { Participante } from "./types";
 
@@ -72,39 +73,11 @@ function App() {
   return (
     <Router>
       <div>
-        <h1>Bienvenido a Finedu</h1>
-
-        {!tipoUsuario && (
-          <div>
-            <button onClick={() => {
-              setTipoUsuario("usuario");
-              localStorage.setItem("tipoUsuario", "usuario");
-            }}>Ingresar como usuario</button>
-
-            <button onClick={() => {
-              setTipoUsuario("colaborador");
-              localStorage.setItem("tipoUsuario", "colaborador");
-            }}>Ingresar como colaborador</button>
-
-            <button onClick={() => {
-              setTipoUsuario("institucional");
-              localStorage.setItem("tipoUsuario", "institucional");
-            }}>Vista institucional</button>
-          </div>
-        )}
-
-        {tipoUsuario && (
-          <button
-            onClick={cerrarSesion}
-            style={{ marginTop: "1rem", background: "#eee", border: "1px solid #ccc", padding: "0.5rem", cursor: "pointer" }}
-          >
-            Cerrar sesión
-          </button>
-        )}
-
         <Routes>
+          {/* Pantalla institucional de bienvenida */}
+          <Route path="/" element={<Bienvenida />} />
+
           {/* Autenticación */}
-          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/recuperar-clave" element={<RecuperarClave />} />
           <Route path="/nueva-clave" element={<NuevaClave />} />
@@ -160,6 +133,38 @@ function App() {
             />
           )}
         </Routes>
+
+        {/* Botones de tipo de usuario */}
+        {!tipoUsuario && (
+          <div style={{ textAlign: "center", marginTop: "2rem" }}>
+            <button onClick={() => {
+              setTipoUsuario("usuario");
+              localStorage.setItem("tipoUsuario", "usuario");
+            }}>Ingresar como usuario</button>
+
+            <button onClick={() => {
+              setTipoUsuario("colaborador");
+              localStorage.setItem("tipoUsuario", "colaborador");
+            }}>Ingresar como colaborador</button>
+
+            <button onClick={() => {
+              setTipoUsuario("institucional");
+              localStorage.setItem("tipoUsuario", "institucional");
+            }}>Vista institucional</button>
+          </div>
+        )}
+
+        {/* Botón de cierre de sesión */}
+        {tipoUsuario && (
+          <div style={{ textAlign: "center", marginTop: "1rem" }}>
+            <button
+              onClick={cerrarSesion}
+              style={{ background: "#eee", border: "1px solid #ccc", padding: "0.5rem", cursor: "pointer" }}
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        )}
       </div>
     </Router>
   );
