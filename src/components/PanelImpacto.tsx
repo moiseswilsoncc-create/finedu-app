@@ -1,7 +1,7 @@
 import React from "react";
 import { Participante } from "../types";
 import ResumenFinanciero from "./ResumenFinanciero";
-import GraficoAhorro from "./GraficoAhorros";
+import GraficoAhorro from "./GraficoAhorro";
 import { formatearMoneda } from "../utils/formatearMoneda";
 
 type Props = {
