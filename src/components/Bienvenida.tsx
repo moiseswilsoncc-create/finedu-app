@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Bienvenida: React.FC = () => {
   const navigate = useNavigate();
@@ -18,12 +18,24 @@ const Bienvenida: React.FC = () => {
       <p style={{ fontSize: "1.2rem", marginBottom: "2rem" }}>
         Tu plataforma de autonomía financiera y colaboración educativa
       </p>
-      <button
-        onClick={() => navigate("/login")}
-        style={{ padding: "0.75rem 1.5rem", fontSize: "1rem", cursor: "pointer" }}
-      >
-        Comenzar
-      </button>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center" }}>
+        <Link to="/ingreso-usuario">
+          <button style={{ padding: "0.75rem 1.5rem", fontSize: "1rem", cursor: "pointer" }}>
+            👤 Ingresar como usuario
+          </button>
+        </Link>
+        <Link to="/ingreso-colaborador">
+          <button style={{ padding: "0.75rem 1.5rem", fontSize: "1rem", cursor: "pointer" }}>
+            🤝 Ingresar como colaborador
+          </button>
+        </Link>
+        <Link to="/institucional">
+          <button style={{ padding: "0.75rem 1.5rem", fontSize: "1rem", cursor: "pointer" }}>
+            🏛️ Vista institucional
+          </button>
+        </Link>
+      </div>
     </div>
   );
 };
