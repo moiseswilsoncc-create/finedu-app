@@ -10,7 +10,7 @@ import SimuladorCredito from "./components/SimuladorCredito";
 import SimuladorCreditoAuto from "./components/SimuladorCreditoAuto";
 import SimuladorCreditoVivienda from "./components/SimuladorCreditoVivienda";
 import SimuladorInversion from "./components/SimuladorInversion";
-import GraficoAhorro from "./components/GraficoAhorros";
+import GraficoAhorro from "./components/GraficoAhorro";
 import PanelColaboradores from "./components/PanelColaboradores";
 import IngresoUsuario from "./components/IngresoUsuario";
 import IngresoColaborador from "./components/IngresoColaborador";
