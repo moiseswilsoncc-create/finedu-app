@@ -39,6 +39,7 @@ import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
 import RegistroColaborador from "./components/RegistroColaborador";
 import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
 import PanelUsuario from "./components/PanelUsuario";
+import RegistroAhorro from "./components/RegistroAhorro";
 
 import { Participante } from "./types";
 
@@ -115,6 +116,7 @@ function App() {
           { nombre: "Viaje familiar", objetivo: 1500000, acumulado: 450000 }
         ]} /></RutaProtegida>} />
         <Route path="/test-financiero" element={<RutaProtegida><TestUsuario /></RutaProtegida>} />
+        <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
 
         <Route path="/usuario" element={
           <RutaProtegida>
