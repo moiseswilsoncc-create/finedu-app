@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const RegistroUsuario: React.FC = () => {
@@ -8,9 +8,13 @@ const RegistroUsuario: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log("✅ Componente RegistroUsuario montado");
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Enviando datos...");
+    console.log("🚀 Enviando datos...");
 
     try {
       const response = await fetch("https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios", {
@@ -30,8 +34,8 @@ const RegistroUsuario: React.FC = () => {
       });
 
       const data = await response.json();
-      console.log("Status:", response.status);
-      console.log("Respuesta Supabase:", data);
+      console.log("📦 Status:", response.status);
+      console.log("📨 Respuesta Supabase:", data);
 
       if (response.ok) {
         navigate("/vista-ingreso-usuario");
@@ -39,14 +43,14 @@ const RegistroUsuario: React.FC = () => {
         setError("No se pudo registrar el usuario.");
       }
     } catch (err) {
-      console.error("Error al guardar usuario:", err);
+      console.error("❌ Error al guardar usuario:", err);
       setError("Error de conexión con Supabase.");
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "0 auto", padding: "1rem" }}>
-      <h2>Registro de Usuario</h2>
+    <div style={{ maxWidth: "400px", margin: "2rem auto", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
+      <h2 style={{ textAlign: "center" }}>Registro de Usuario</h2>
       <form onSubmit={handleSubmit}>
         <label>Correo:</label>
         <input
@@ -54,6 +58,7 @@ const RegistroUsuario: React.FC = () => {
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
           required
+          style={{ width: "100%", marginBottom: "1rem" }}
         />
 
         <label>Contraseña:</label>
@@ -62,6 +67,7 @@ const RegistroUsuario: React.FC = () => {
           value={contraseña}
           onChange={(e) => setContraseña(e.target.value)}
           required
+          style={{ width: "100%", marginBottom: "1rem" }}
         />
 
         <label>Nombre:</label>
@@ -70,14 +76,15 @@ const RegistroUsuario: React.FC = () => {
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           required
+          style={{ width: "100%", marginBottom: "1rem" }}
         />
 
-        <button type="submit" style={{ marginTop: "1rem" }}>
+        <button type="submit" style={{ width: "100%", padding: "0.5rem", backgroundColor: "#2ecc71", color: "white", border: "none", borderRadius: "4px" }}>
           Registrar
         </button>
       </form>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
     </div>
   );
 };
