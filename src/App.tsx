@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 
 import VistaGrupal from "./components/VistaGrupal";
 import VistaParticipante from "./components/VistaParticipante";
@@ -48,15 +48,13 @@ function App() {
 
   const agregarParticipante = (nuevo: {
     nombre: string;
-    apellido: string;
+    apellido?: string;
     fechaNacimiento: string;
-    pais: string;
     ciudad: string;
     comuna: string;
-    sexo: string;
     ingresos: number;
     egresos: number;
-    correo: string;
+    correo?: string;
   }) => {
     const metaIndividual = 200000;
     const participanteConMeta: Participante = {
@@ -85,11 +83,11 @@ function App() {
         {/* Mostrar navegación solo en la página de bienvenida */}
         {!tipoUsuario && location.pathname === "/" && (
           <nav style={{ marginBottom: "1rem" }}>
-            <a href="/">Inicio</a> |{" "}
-            <a href="/login">Login</a> |{" "}
-            <a href="/ingreso-usuario">Usuario</a> |{" "}
-            <a href="/ingreso-colaborador">Colaborador</a> |{" "}
-            <a href="/institucional">Institucional</a>
+            <Link to="/">Inicio</Link> |{" "}
+            <Link to="/login">Login</Link> |{" "}
+            <Link to="/ingreso-usuario">Usuario</Link> |{" "}
+            <Link to="/ingreso-colaborador">Colaborador</Link> |{" "}
+            <Link to="/institucional">Institucional</Link>
           </nav>
         )}
 
