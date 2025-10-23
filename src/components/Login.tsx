@@ -61,7 +61,11 @@ function Login() {
           />
           {error && <p style={{ color: "red" }}>{error}</p>}
           <button type="submit">Ingresar</button>
-          <button type="button" onClick={handleRecuperarClave} style={{ background: "none", border: "none", color: "blue", cursor: "pointer" }}>
+          <button
+            type="button"
+            onClick={handleRecuperarClave}
+            style={{ background: "none", border: "none", color: "blue", cursor: "pointer" }}
+          >
             ¿Olvidaste tu contraseña?
           </button>
         </form>
@@ -73,4 +77,3 @@ function Login() {
 }
 
 export default Login;
-
