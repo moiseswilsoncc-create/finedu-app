@@ -50,7 +50,7 @@ import InformeInstitucional from "./modules/InformeInstitucional";
 import DashboardInstitucional from "./modules/DashboardInstitucional";
 import Navbar from "./components/Navbar";
 import EvaluadorCreditoInteligente from "./modules/EvaluadorCreditoInteligente";
-import MenuModulos from "../components/MenuModulos";
+import MenuModulos from "./components/MenuModulos";
 
 // ✅ NUEVO componente de felicitación post-registro
 import FelicitacionRegistro from "./components/FelicitacionRegistro";
@@ -122,7 +122,7 @@ function App() {
           <Route path="/nueva-clave" element={<NuevaClave />} />
           <Route path="/ingreso-usuario" element={<VistaIngresoUsuario />} />
           <Route path="/registro-usuario" element={<RegistroUsuario />} />
-          <Route path="/felicitacion" element={<FelicitacionRegistro />} /> {/* ✅ NUEVA RUTA */}
+          <Route path="/felicitacion" element={<FelicitacionRegistro />} />
           <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
           <Route path="/registro-colaborador" element={<RegistroColaborador />} />
           <Route path="/editar-perfil" element={<RutaProtegida><EditarPerfilUsuario /></RutaProtegida>} />
@@ -174,14 +174,13 @@ function App() {
               <PanelColaboradores pais={pais} />
               <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
               <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-              <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+              <GeneradorPDF participantes={participantes
+                              <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
               <ForoFinanciero />
             </>
           } />
 
           <Route path="/institucional" element={
-            <VistaInstitucional participantes={participantes} metaGrupal={metaGr
-                        <Route path="/institucional" element={
             <VistaInstitucional
               participantes={participantes}
               metaGrupal={metaGrupal}
