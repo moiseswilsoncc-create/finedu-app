@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 type Comentario = {
+  id: string;
   autor: string;
   contenido: string;
   tema: string;
@@ -8,7 +9,7 @@ type Comentario = {
   expiracion: string;
 };
 
-function ForoFinanciero() {
+const ForoFinanciero: React.FC = () => {
   const [comentarios, setComentarios] = useState<Comentario[]>([]);
   const [nuevoComentario, setNuevoComentario] = useState({
     autor: "",
@@ -16,7 +17,6 @@ function ForoFinanciero() {
     tema: "",
   });
 
-  // Filtrar automáticamente los comentarios vigentes
   useEffect(() => {
     const ahora = new Date();
     const vigentes = comentarios.filter(
@@ -33,13 +33,17 @@ function ForoFinanciero() {
   };
 
   const publicarComentario = () => {
+    const { autor, contenido, tema } = nuevoComentario;
+    if (!autor.trim() || !contenido.trim() || !tema.trim()) return;
+
     const ahora = new Date();
     const expiracion = new Date(ahora.getTime() + 15 * 24 * 60 * 60 * 1000); // 15 días
 
     const comentario: Comentario = {
-      autor: nuevoComentario.autor,
-      contenido: nuevoComentario.contenido,
-      tema: nuevoComentario.tema,
+      id: Date.now().toString(),
+      autor,
+      contenido,
+      tema,
       fecha: ahora.toLocaleString(),
       expiracion: expiracion.toISOString(),
     };
@@ -53,16 +57,17 @@ function ForoFinanciero() {
   );
 
   return (
-    <div>
-      <h3>🗣️ Foro Financiero Comunitario</h3>
+    <div style={{ maxWidth: "600px", margin: "2rem auto", padding: "1rem" }}>
+      <h2>🗣️ Foro Financiero Comunitario</h2>
 
-      <div style={{ marginBottom: "1rem" }}>
+      <div style={{ marginBottom: "1.5rem", background: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
         <input
           type="text"
           name="autor"
           placeholder="Tu nombre"
           value={nuevoComentario.autor}
           onChange={handleChange}
+          style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
         />
         <input
           type="text"
@@ -70,23 +75,28 @@ function ForoFinanciero() {
           placeholder="Tema (ej. mejor banco, crédito en promoción)"
           value={nuevoComentario.tema}
           onChange={handleChange}
+          style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
         />
         <textarea
           name="contenido"
           placeholder="Escribe tu comentario..."
           value={nuevoComentario.contenido}
           onChange={handleChange}
+          rows={3}
+          style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
         />
-        <button onClick={publicarComentario}>Publicar</button>
+        <button onClick={publicarComentario} style={{ padding: "0.5rem 1rem" }}>
+          Publicar
+        </button>
       </div>
 
       {comentariosVigentes.length === 0 ? (
         <p>No hay comentarios vigentes. Sé el primero en compartir una oportunidad.</p>
       ) : (
-        <ul>
-          {comentariosVigentes.map((c, index) => (
-            <li key={index} style={{ marginBottom: "1rem", borderBottom: "1px solid #ccc" }}>
-              <strong>{c.autor}</strong> comentó sobre <em>{c.tema}</em> el {c.fecha}:
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {comentariosVigentes.map((c) => (
+            <li key={c.id} style={{ marginBottom: "1.5rem", borderBottom: "1px solid #ccc", paddingBottom: "1rem" }}>
+              <p><strong>{c.autor}</strong> comentó sobre <em>{c.tema}</em> el {c.fecha}:</p>
               <p>{c.contenido}</p>
             </li>
           ))}
@@ -94,6 +104,6 @@ function ForoFinanciero() {
       )}
     </div>
   );
-}
+};
 
 export default ForoFinanciero;
