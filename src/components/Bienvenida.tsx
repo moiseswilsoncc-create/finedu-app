@@ -1,15 +1,12 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Bienvenida: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
-    const tipo = localStorage.getItem("tipoUsuario");
-    if (tipo === "usuario") navigate("/usuario");
-    else if (tipo === "colaborador") navigate("/colaborador");
-    else if (tipo === "institucional") navigate("/institucional");
-  }, [navigate]);
+  // Si no estamos en "/", no mostrar nada
+  if (location.pathname !== "/") return null;
 
   return (
     <div style={{ textAlign: "center", marginTop: "5rem" }}>
