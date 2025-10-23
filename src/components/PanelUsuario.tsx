@@ -1,48 +1,44 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import AsistenteFinanciero from "./AsistenteFinanciero";
 
-const PanelUsuario: React.FC = () => {
-  const nombre = localStorage.getItem("nombreUsuario") || "Usuario";
-  const correo = localStorage.getItem("correoUsuario") || "";
+const PanelUsuario = () => {
+  const nombreUsuario = localStorage.getItem("nombreUsuario") || "Usuario";
 
   return (
-    <div style={{ maxWidth: "800px", margin: "2rem auto", padding: "1rem" }}>
-      <h2 style={{ color: "#2ecc71", textAlign: "center" }}>👋 Bienvenido, {nombre}</h2>
-      <p style={{ textAlign: "center", marginBottom: "0.5rem", fontStyle: "italic" }}>
-        Sesión activa como <strong>{correo}</strong>
-      </p>
-      <p style={{ textAlign: "center", marginBottom: "2rem" }}>
-        Este es tu espacio en <strong>Finedu</strong>. Desde aquí puedes acceder a todas tus herramientas.
-      </p>
+    <div style={{ padding: "2rem" }}>
+      <h1>👋 Bienvenido, {nombreUsuario}</h1>
+      <p>Este es tu espacio personalizado dentro de Finedu. Aquí puedes revisar tu progreso, acceder a tus herramientas y recibir recomendaciones inteligentes.</p>
 
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem" }}>
-        <Link to="/usuario">
-          <button style={estiloBoton}>🎯 Simuladores</button>
+      <section style={{ marginTop: "2rem" }}>
+        <h2>🔍 Accesos rápidos</h2>
+        <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+          <li><Link to="/registro-ahorro">💰 Registrar ahorro</Link></li>
+          <li><Link to="/resumen-financiero">📊 Ver resumen financiero</Link></li>
+          <li><Link to="/simulador-inversion">📈 Simular inversión</Link></li>
+          <li><Link to="/test-financiero">🧠 Test financiero</Link></li>
+          <li><Link to="/vista-grupal">👥 Ver metas grupales</Link></li>
+        </ul>
+      </section>
+
+      <section style={{ marginTop: "2rem" }}>
+        <AsistenteFinanciero />
+      </section>
+
+      <section style={{ marginTop: "2rem" }}>
+        <Link to="/modulos" style={{
+          display: "inline-block",
+          padding: "0.75rem 1.5rem",
+          backgroundColor: "#2ecc71",
+          color: "white",
+          borderRadius: "6px",
+          textDecoration: "none"
+        }}>
+          📂 Ver todos los módulos
         </Link>
-        <Link to="/editar-perfil">
-          <button style={estiloBoton}>📝 Editar perfil</button>
-        </Link>
-        <Link to="/foro">
-          <button style={estiloBoton}>💬 Comunidad</button>
-        </Link>
-        <Link to="/usuario#metas">
-          <button style={estiloBoton}>📈 Mis metas</button>
-        </Link>
-      </div>
+      </section>
     </div>
   );
-};
-
-const estiloBoton: React.CSSProperties = {
-  padding: "1rem 2rem",
-  fontSize: "1rem",
-  backgroundColor: "#3498db",
-  color: "white",
-  border: "none",
-  borderRadius: "6px",
-  cursor: "pointer",
-  minWidth: "180px",
-  textAlign: "center"
 };
 
 export default PanelUsuario;
