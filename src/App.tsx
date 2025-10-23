@@ -45,8 +45,9 @@ import PanelUsuario from "./components/PanelUsuario";
 import RegistroAhorro from "./components/RegistroAhorro";
 import AdminGrupo from "./components/AdminGrupo";
 
-// Nuevo módulo institucional
+// Módulos institucionales
 import InformeInstitucional from "./modules/InformeInstitucional";
+import DashboardInstitucional from "./modules/DashboardInstitucional";
 import Navbar from "./components/Navbar";
 
 import { Participante } from "./types";
@@ -100,6 +101,7 @@ function App() {
     <FineduProvider>
       <div>
         {tipoUsuario && <Navbar tipoUsuario={tipoUsuario} onCerrarSesion={cerrarSesion} />}
+
         {!tipoUsuario && location.pathname === "/" && (
           <nav style={{ marginBottom: "1rem", textAlign: "center" }}>
             <Link to="/ingreso-usuario">👤 Ingresar como usuario</Link> |{" "}
@@ -180,6 +182,14 @@ function App() {
               <Navigate to="/" />
             )
           } />
+
+          <Route path="/dashboard-institucional" element={
+            tipoUsuario === "institucional" ?
+          <RutaProtegida><DashboardInstitucional /></RutaProtegida>
+            ) : (
+              <Navigate to="/" />
+            )
+          } />
         </Routes>
 
         {!tipoUsuario && location.pathname === "/" && (
@@ -196,9 +206,6 @@ function App() {
               window.location.href = "/";
             }}
             style={{
-              marginTop: "1rem",
-              padding: "0.5rem 1
-                            style={{
               marginTop: "1rem",
               padding: "0.5rem 1rem",
               backgroundColor: "#e74c3c",
