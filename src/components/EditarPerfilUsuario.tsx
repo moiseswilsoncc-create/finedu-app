@@ -8,9 +8,9 @@ const EditarPerfilUsuario: React.FC = () => {
   const [exito, setExito] = useState("");
 
   useEffect(() => {
-    const obtenerDatos = async () => {
-      if (!correoGuardado) return;
+    if (!correoGuardado) return;
 
+    const obtenerDatos = async () => {
       try {
         const response = await fetch(`https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios?correo=eq.${correoGuardado}`, {
           method: "GET",
@@ -63,6 +63,15 @@ const EditarPerfilUsuario: React.FC = () => {
       setExito("");
     }
   };
+
+  if (!correoGuardado) {
+    return (
+      <div style={{ maxWidth: "500px", margin: "2rem auto", padding: "1rem", textAlign: "center" }}>
+        <h2>Acceso denegado</h2>
+        <p>No se encontró un correo registrado. Por favor inicia sesión o regístrate antes de editar tu perfil.</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: "500px", margin: "2rem auto", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
