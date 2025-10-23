@@ -59,7 +59,10 @@ const RegistroUsuario: React.FC = () => {
 
       if (response.ok) {
         localStorage.setItem("nombreUsuario", nombre);
-        navigate("/vista-ingreso-usuario");
+        localStorage.setItem("logueado", "true");
+        localStorage.setItem("tipoUsuario", "usuario");
+
+        navigate("/felicitacion"); // ✅ Redirección mejorada
       } else {
         setError("No se pudo registrar el usuario.");
       }
@@ -70,8 +73,15 @@ const RegistroUsuario: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "2rem auto", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
-      <h2 style={{ textAlign: "center" }}>Registro de Usuario</h2>
+    <div style={{
+      maxWidth: "400px",
+      margin: "2rem auto",
+      padding: "1rem",
+      border: "1px solid #ccc",
+      borderRadius: "8px",
+      backgroundColor: "#f9f9f9"
+    }}>
+      <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Registro de Usuario</h2>
       <form onSubmit={handleSubmit}>
         <label>Correo:</label>
         <input
@@ -100,12 +110,19 @@ const RegistroUsuario: React.FC = () => {
           style={{ width: "100%", marginBottom: "1rem" }}
         />
 
-        <button type="submit" style={{ width: "100%", padding: "0.5rem", backgroundColor: "#2ecc71", color: "white", border: "none", borderRadius: "4px" }}>
+        <button type="submit" style={{
+          width: "100%",
+          padding: "0.5rem",
+          backgroundColor: "#2ecc71",
+          color: "white",
+          border: "none",
+          borderRadius: "4px"
+        }}>
           Registrar
         </button>
       </form>
 
-      {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
+      {error && <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>{error}</p>}
     </div>
   );
 };
