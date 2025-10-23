@@ -3,10 +3,14 @@ import { Link } from "react-router-dom";
 
 const PanelUsuario: React.FC = () => {
   const nombre = localStorage.getItem("nombreUsuario") || "Usuario";
+  const correo = localStorage.getItem("correoUsuario") || "";
 
   return (
     <div style={{ maxWidth: "800px", margin: "2rem auto", padding: "1rem" }}>
       <h2 style={{ color: "#2ecc71", textAlign: "center" }}>👋 Bienvenido, {nombre}</h2>
+      <p style={{ textAlign: "center", marginBottom: "0.5rem", fontStyle: "italic" }}>
+        Sesión activa como <strong>{correo}</strong>
+      </p>
       <p style={{ textAlign: "center", marginBottom: "2rem" }}>
         Este es tu espacio en <strong>Finedu</strong>. Desde aquí puedes acceder a todas tus herramientas.
       </p>
