@@ -171,7 +171,6 @@ function App() {
             <VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />
           } />
 
-          {/* Nueva ruta protegida para el informe institucional */}
           <Route path="/informe-institucional" element={
             tipoUsuario === "institucional" ? (
               <RutaProtegida><InformeInstitucional /></RutaProtegida>
@@ -181,7 +180,7 @@ function App() {
           } />
         </Routes>
 
-                {!tipoUsuario && location.pathname === "/" && (
+        {!tipoUsuario && location.pathname === "/" && (
           <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
         )}
 
@@ -195,6 +194,9 @@ function App() {
               window.location.href = "/";
             }}
             style={{
+              marginTop: "1rem",
+              padding: "0.5rem 1
+                            style={{
               marginTop: "1rem",
               padding: "0.5rem 1rem",
               backgroundColor: "#e74c3c",
@@ -213,4 +215,3 @@ function App() {
 }
 
 export default App;
-
