@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { DatosUsuario } from "../types";
+import { Link } from "react-router-dom";
 
 type Props = {
   setPais: (pais: string) => void;
@@ -27,7 +28,7 @@ function IngresoUsuario({ setPais }: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setRegistrado(true);
-    // Aquí puedes enviar los datos al backend o almacenarlos en contexto
+    localStorage.setItem("correoUsuario", datos.correo); // Guardamos el correo para futuras consultas
     console.log("Usuario registrado:", datos);
   };
 
@@ -80,10 +81,28 @@ function IngresoUsuario({ setPais }: Props) {
           <button type="submit">Registrarse</button>
         </form>
       ) : (
-        <p>
-          ¡Gracias por registrarte, {datos.nombre} {datos.apellido}! Tu perfil ha sido creado para operar desde{" "}
-          <strong>{datos.ciudad}, {datos.comuna}</strong>.
-        </p>
+        <div>
+          <p>
+            ¡Gracias por registrarte, {datos.nombre} {datos.apellido}! Tu perfil ha sido creado para operar desde{" "}
+            <strong>{datos.ciudad}, {datos.comuna}</strong>.
+          </p>
+
+          <Link to="/editar-perfil">
+            <button
+              style={{
+                marginTop: "1rem",
+                padding: "0.5rem 1rem",
+                backgroundColor: "#2980b9",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer"
+              }}
+            >
+              Editar perfil
+            </button>
+          </Link>
+        </div>
       )}
     </div>
   );
