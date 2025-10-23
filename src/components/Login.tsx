@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../axiosConfig"; // ← usa la instancia configurada
+import axios from "../axiosConfig";
 
 function Login() {
   const [correo, setCorreo] = useState("");
@@ -19,9 +19,8 @@ function Login() {
       });
 
       if (response.data.success) {
-        // ✅ Persistencia en localStorage
         localStorage.setItem("logueado", "true");
-        localStorage.setItem("tipoUsuario", "usuario"); // ← ajusta según el tipo real
+        localStorage.setItem("tipoUsuario", "usuario");
 
         setLogueado(true);
         setError("");
@@ -41,34 +40,30 @@ function Login() {
   };
 
   return (
-    <div style={{ padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
+    <div style={{ padding: "2rem", maxWidth: "400px", margin: "auto", textAlign: "center" }}>
       <h3>🔐 Inicio de sesión</h3>
 
       {!logueado ? (
-        <form onSubmit={handleSubmit}>
-          <label>
-            Correo electrónico:
-            <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
-          </label>
-
-          <label>
-            Contraseña:
-            <input type="password" value={contraseña} onChange={(e) => setContraseña(e.target.value)} required />
-          </label>
-
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <input
+            type="email"
+            placeholder="Correo electrónico"
+            value={correo}
+            onChange={(e) => setCorreo(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={contraseña}
+            onChange={(e) => setContraseña(e.target.value)}
+            required
+          />
           {error && <p style={{ color: "red" }}>{error}</p>}
-
           <button type="submit">Ingresar</button>
-
-          <p style={{ marginTop: "0.5rem" }}>
-            <button
-              type="button"
-              onClick={handleRecuperarClave}
-              style={{ background: "none", border: "none", color: "blue", cursor: "pointer" }}
-            >
-              ¿Olvidaste tu contraseña?
-            </button>
-          </p>
+          <button type="button" onClick={handleRecuperarClave} style={{ background: "none", border: "none", color: "blue", cursor: "pointer" }}>
+            ¿Olvidaste tu contraseña?
+          </button>
         </form>
       ) : (
         <p>¡Bienvenido de nuevo, {correo}!</p>
