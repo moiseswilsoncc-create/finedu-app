@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 
-type Participante = {
+export type Participante = {
   nombre: string;
   ingresos: number;
   egresos: number;
