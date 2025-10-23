@@ -57,10 +57,11 @@ const ForoFinanciero: React.FC = () => {
   );
 
   return (
-    <div style={{ maxWidth: "600px", margin: "2rem auto", padding: "1rem" }}>
+    <div style={{ maxWidth: "700px", margin: "2rem auto", padding: "1rem" }}>
       <h2>🗣️ Foro Financiero Comunitario</h2>
+      <p>Comparte oportunidades, consejos y experiencias que puedan ayudar a otros usuarios de Finedu.</p>
 
-      <div style={{ marginBottom: "1.5rem", background: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
+      <div style={{ marginBottom: "2rem", background: "#f0f8ff", padding: "1rem", borderRadius: "8px" }}>
         <input
           type="text"
           name="autor"
@@ -85,13 +86,20 @@ const ForoFinanciero: React.FC = () => {
           rows={3}
           style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
         />
-        <button onClick={publicarComentario} style={{ padding: "0.5rem 1rem" }}>
+        <button onClick={publicarComentario} style={{
+          padding: "0.5rem 1rem",
+          backgroundColor: "#2ecc71",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer"
+        }}>
           Publicar
         </button>
       </div>
 
       {comentariosVigentes.length === 0 ? (
-        <p>No hay comentarios vigentes. Sé el primero en compartir una oportunidad.</p>
+        <p>No hay comentarios vigentes. Sé el primero en compartir una oportunidad o consejo.</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
           {comentariosVigentes.map((c) => (
