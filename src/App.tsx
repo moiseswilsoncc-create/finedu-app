@@ -50,6 +50,7 @@ import InformeInstitucional from "./modules/InformeInstitucional";
 import DashboardInstitucional from "./modules/DashboardInstitucional";
 import Navbar from "./components/Navbar";
 import EvaluadorCreditoInteligente from "./modules/EvaluadorCreditoInteligente";
+import MenuModulos from "../components/MenuModulos";
 
 // ✅ NUEVO componente de felicitación post-registro
 import FelicitacionRegistro from "./components/FelicitacionRegistro";
@@ -145,6 +146,7 @@ function App() {
           } />
           <Route path="/admin-grupo" element={<RutaProtegida><AdminGrupo /></RutaProtegida>} />
           <Route path="/evaluador-credito" element={<RutaProtegida><EvaluadorCreditoInteligente /></RutaProtegida>} />
+          <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
 
           <Route path="/usuario" element={
             <RutaProtegida>
