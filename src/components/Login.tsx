@@ -13,19 +13,20 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("/login", {
-        correo,
-        contraseña,
-      });
+      const response = await axios.post("/login", { correo, contraseña });
 
-      if (response.data.success) {
+      if (response.data.success && response.data.usuario) {
+        const { nombre, correo: correoUsuario } = response.data.usuario;
+
         localStorage.setItem("logueado", "true");
         localStorage.setItem("tipoUsuario", "usuario");
+        localStorage.setItem("nombreUsuario", nombre);
+        localStorage.setItem("correoUsuario", correoUsuario);
 
         setLogueado(true);
         setError("");
         console.log("Usuario autenticado:", response.data.usuario);
-        navigate("/usuario");
+        navigate("/panel-usuario");
       } else {
         setError("Credenciales incorrectas.");
       }
@@ -75,6 +76,5 @@ function Login() {
     </div>
   );
 }
-
 
 export default Login;
