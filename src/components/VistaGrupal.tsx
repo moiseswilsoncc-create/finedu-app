@@ -1,10 +1,5 @@
 import React from "react";
-
-type Participante = {
-  nombre: string;
-  ingresos: number;
-  egresos: number;
-};
+import { Participante } from "../context/GrupoContext"; // usa esto si ya centralizaste el tipo
 
 type Props = {
   nombreGrupoMeta: string;
@@ -46,9 +41,21 @@ const VistaGrupal: React.FC<Props> = ({ nombreGrupoMeta, metaGrupal, participant
       <ul style={{ listStyle: "none", padding: 0 }}>
         {participantesOrdenados.map((p, i) => {
           const neto = p.ingresos - p.egresos;
+          const progresoIndividual = Math.min((neto / metaGrupal) * 100, 100);
+
           return (
-            <li key={i} style={{ marginBottom: "1rem", borderBottom: "1px solid #ccc", paddingBottom: "0.5rem" }}>
-              <strong>{i + 1}. {p.nombre}</strong>: ${neto.toLocaleString("es-CL")}
+            <li key={i} style={{ marginBottom: "1.5rem", borderBottom: "1px solid #ccc", paddingBottom: "0.5rem" }}>
+              <p><strong>{i + 1}. {p.nombre}</strong>: ${neto.toLocaleString("es-CL")} ({progresoIndividual.toFixed(2)}%)</p>
+              <div style={{ background: "#ddd", borderRadius: "8px", overflow: "hidden" }}>
+                <div
+                  style={{
+                    width: `${progresoIndividual}%`,
+                    background: "#2196f3",
+                    height: "16px",
+                    transition: "width 0.5s ease"
+                  }}
+                />
+              </div>
             </li>
           );
         })}
