@@ -10,6 +10,7 @@ const RegistroUsuario: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Enviando datos...");
 
     try {
       const response = await fetch("https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios", {
@@ -29,28 +30,51 @@ const RegistroUsuario: React.FC = () => {
       });
 
       const data = await response.json();
-      console.log("Usuario guardado:", data);
-      navigate("/vista-ingreso-usuario");
+      console.log("Status:", response.status);
+      console.log("Respuesta Supabase:", data);
+
+      if (response.ok) {
+        navigate("/vista-ingreso-usuario");
+      } else {
+        setError("No se pudo registrar el usuario.");
+      }
     } catch (err) {
       console.error("Error al guardar usuario:", err);
-      setError("No se pudo registrar el usuario.");
+      setError("Error de conexión con Supabase.");
     }
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: "400px", margin: "0 auto", padding: "1rem" }}>
       <h2>Registro de Usuario</h2>
       <form onSubmit={handleSubmit}>
         <label>Correo:</label>
-        <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
+        <input
+          type="email"
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
+          required
+        />
 
         <label>Contraseña:</label>
-        <input type="password" value={contraseña} onChange={(e) => setContraseña(e.target.value)} required />
+        <input
+          type="password"
+          value={contraseña}
+          onChange={(e) => setContraseña(e.target.value)}
+          required
+        />
 
         <label>Nombre:</label>
-        <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+        <input
+          type="text"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          required
+        />
 
-        <button type="submit">Registrar</button>
+        <button type="submit" style={{ marginTop: "1rem" }}>
+          Registrar
+        </button>
       </form>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
