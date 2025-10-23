@@ -19,9 +19,30 @@ const Bienvenida: React.FC = () => {
         Tu plataforma de autonomía financiera y colaboración educativa
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center" }}>
-        <button onClick={() => navigate("/ingreso-usuario")}>👤 Ingresar como usuario</button>
-        <button onClick={() => navigate("/ingreso-colaborador")}>🤝 Ingresar como colaborador</button>
-        <button onClick={() => navigate("/institucional")}>🏛️ Vista institucional</button>
+        <button
+          onClick={() => {
+            localStorage.setItem("tipoUsuario", "usuario");
+            navigate("/usuario");
+          }}
+        >
+          👤 Ingresar como usuario
+        </button>
+        <button
+          onClick={() => {
+            localStorage.setItem("tipoUsuario", "colaborador");
+            navigate("/colaborador");
+          }}
+        >
+          🤝 Ingresar como colaborador
+        </button>
+        <button
+          onClick={() => {
+            localStorage.setItem("tipoUsuario", "institucional");
+            navigate("/institucional");
+          }}
+        >
+          🏛️ Vista institucional
+        </button>
       </div>
     </div>
   );
