@@ -50,6 +50,9 @@ import InformeInstitucional from "./modules/InformeInstitucional";
 import DashboardInstitucional from "./modules/DashboardInstitucional";
 import Navbar from "./components/Navbar";
 
+// ✅ NUEVO componente de felicitación post-registro
+import FelicitacionRegistro from "./components/FelicitacionRegistro";
+
 import { Participante } from "./types";
 
 function RutaProtegida({ children }: { children: JSX.Element }) {
@@ -117,6 +120,7 @@ function App() {
           <Route path="/nueva-clave" element={<NuevaClave />} />
           <Route path="/ingreso-usuario" element={<VistaIngresoUsuario />} />
           <Route path="/registro-usuario" element={<RegistroUsuario />} />
+          <Route path="/felicitacion" element={<FelicitacionRegistro />} /> {/* ✅ NUEVA RUTA */}
           <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
           <Route path="/registro-colaborador" element={<RegistroColaborador />} />
           <Route path="/editar-perfil" element={<RutaProtegida><EditarPerfilUsuario /></RutaProtegida>} />
@@ -172,7 +176,14 @@ function App() {
           } />
 
           <Route path="/institucional" element={
-            <VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />
+            <VistaInstitucional participantes={participantes} metaGrupal={metaGr
+                        <Route path="/institucional" element={
+            <VistaInstitucional
+              participantes={participantes}
+              metaGrupal={metaGrupal}
+              pais={pais}
+              setPais={setPais}
+            />
           } />
 
           <Route path="/informe-institucional" element={
@@ -184,8 +195,8 @@ function App() {
           } />
 
           <Route path="/dashboard-institucional" element={
-            tipoUsuario === "institucional" ?
-          <RutaProtegida><DashboardInstitucional /></RutaProtegida>
+            tipoUsuario === "institucional" ? (
+              <RutaProtegida><DashboardInstitucional /></RutaProtegida>
             ) : (
               <Navigate to="/" />
             )
