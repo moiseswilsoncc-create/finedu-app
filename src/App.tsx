@@ -17,6 +17,7 @@ import SimuladorCredito from "./components/SimuladorCredito";
 import SimuladorCreditoAuto from "./components/SimuladorCreditoAuto";
 import SimuladorCreditoVivienda from "./components/SimuladorCreditoVivienda";
 import SimuladorInversion from "./components/SimuladorInversion";
+import TestUsuario from "./components/TestUsuario";
 import GraficoAhorro from "./components/GraficoAhorro";
 import PanelColaboradores from "./components/PanelColaboradores";
 import IngresoUsuario from "./components/IngresoUsuario";
@@ -105,63 +106,50 @@ function App() {
         <Route path="/registro-usuario" element={<RegistroUsuario />} />
         <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
         <Route path="/registro-colaborador" element={<RegistroColaborador />} />
-        <Route
-          path="/editar-perfil"
-          element={
-            <RutaProtegida>
-              <EditarPerfilUsuario />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/panel-usuario"
-          element={
-            <RutaProtegida>
-              <PanelUsuario />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/usuario"
-          element={
-            <RutaProtegida>
-              <>
-                <IngresoUsuario setPais={setPais} />
-                <Resumen metaGrupal={metaGrupal} participantes={participantes} />
-                <VistaEtapa participantes={participantes} />
-                <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} />
-                <VistaMetaIndividual participantes={participantes} />
-                <VistaParticipante onAgregar={agregarParticipante} />
-                <SimuladorCredito pais={pais} />
-                <SimuladorCreditoAuto pais={pais} />
-                <SimuladorCreditoVivienda pais={pais} />
-                <SimuladorInversion pais={pais} />
-                <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
-                <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
-                <ForoFinanciero />
-              </>
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/colaborador"
-          element={
+        <Route path="/editar-perfil" element={<RutaProtegida><EditarPerfilUsuario /></RutaProtegida>} />
+        <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
+        <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
+        <Route path="/resumen-financiero" element={<RutaProtegida><Resumen activos={500000} pasivos={200000} /></RutaProtegida>} />
+        <Route path="/mis-metas" element={<RutaProtegida><VistaMetaIndividual metas={[
+          { nombre: "Fondo de emergencia", objetivo: 300000, acumulado: 120000 },
+          { nombre: "Viaje familiar", objetivo: 1500000, acumulado: 450000 }
+        ]} /></RutaProtegida>} />
+        <Route path="/test-financiero" element={<RutaProtegida><TestUsuario /></RutaProtegida>} />
+
+        <Route path="/usuario" element={
+          <RutaProtegida>
             <>
-              <IngresoColaborador setPais={setPais} />
-              <PanelColaboradores pais={pais} />
-              <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
-              <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-              <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+              <IngresoUsuario setPais={setPais} />
+              <Resumen metaGrupal={metaGrupal} participantes={participantes} />
+              <VistaEtapa participantes={participantes} />
+              <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} />
+              <VistaMetaIndividual participantes={participantes} />
+              <VistaParticipante onAgregar={agregarParticipante} />
+              <SimuladorCredito pais={pais} />
+              <SimuladorCreditoAuto pais={pais} />
+              <SimuladorCreditoVivienda pais={pais} />
+              <SimuladorInversion pais={pais} />
+              <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
+              <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
               <ForoFinanciero />
             </>
-          }
-        />
-        <Route
-          path="/institucional"
-          element={
-            <VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />
-          }
-        />
+          </RutaProtegida>
+        } />
+
+        <Route path="/colaborador" element={
+          <>
+            <IngresoColaborador setPais={setPais} />
+            <PanelColaboradores pais={pais} />
+            <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+            <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
+            <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+            <ForoFinanciero />
+          </>
+        } />
+
+        <Route path="/institucional" element={
+          <VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />
+        } />
       </Routes>
 
       {!tipoUsuario && location.pathname === "/" && (
