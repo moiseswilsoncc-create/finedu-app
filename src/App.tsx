@@ -39,6 +39,7 @@ function RutaProtegida({ children }: { children: JSX.Element }) {
 }
 
 function App() {
+  const location = useLocation();
   const [nombreGrupoMeta, setNombreGrupoMeta] = useState("Meta familiar 2025");
   const [metaGrupal, setMetaGrupal] = useState(1000000);
   const [participantes, setParticipantes] = useState<Participante[]>([]);
@@ -82,7 +83,7 @@ function App() {
     <Router>
       <div>
         {/* Mostrar navegación solo en la página de bienvenida */}
-        {!tipoUsuario && window.location.pathname === "/" && (
+        {!tipoUsuario && location.pathname === "/" && (
           <nav style={{ marginBottom: "1rem" }}>
             <a href="/">Inicio</a> |{" "}
             <a href="/login">Login</a> |{" "}
