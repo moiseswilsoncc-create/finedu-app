@@ -8,14 +8,20 @@ interface Colaborador {
 const colaboradores: Colaborador[] = [
   { nombre: "Institución A", email: "contacto@institucionA.cl" },
   { nombre: "Institución B", email: "info@institucionB.cl" },
+  // Puedes agregar más instituciones aquí
 ];
 
-export function enviarInformeMensual() {
-  const informe = "InformeInstitucional_Finedu.pdf";
+export function enviarInformeMensual(): void {
+  const nombreInforme = "InformeInstitucional_Finedu.pdf";
+
+  console.log("🗓️ Simulación de envío mensual iniciada...\n");
 
   colaboradores.forEach((colaborador) => {
-    console.log(`📤 Enviando informe a ${colaborador.nombre} (${colaborador.email})...`);
-    // Simulación: aquí iría la integración con SendGrid, Resend, etc.
-    console.log(`✅ Informe "${informe}" enviado correctamente.`);
+    console.log(`📤 Enviando informe a: ${colaborador.nombre}`);
+    console.log(`✉️ Correo: ${colaborador.email}`);
+    console.log(`📎 Informe adjunto: ${nombreInforme}`);
+    console.log(`✅ Estado: Enviado correctamente\n`);
   });
+
+  console.log("🎯 Todos los envíos simulados han sido completados.");
 }
