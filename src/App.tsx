@@ -47,6 +47,7 @@ import AdminGrupo from "./components/AdminGrupo";
 
 // Nuevo módulo institucional
 import InformeInstitucional from "./modules/InformeInstitucional";
+import Navbar from "./components/Navbar";
 
 import { Participante } from "./types";
 
@@ -98,6 +99,7 @@ function App() {
   return (
     <FineduProvider>
       <div>
+        {tipoUsuario && <Navbar tipoUsuario={tipoUsuario} onCerrarSesion={cerrarSesion} />}
         {!tipoUsuario && location.pathname === "/" && (
           <nav style={{ marginBottom: "1rem", textAlign: "center" }}>
             <Link to="/ingreso-usuario">👤 Ingresar como usuario</Link> |{" "}
