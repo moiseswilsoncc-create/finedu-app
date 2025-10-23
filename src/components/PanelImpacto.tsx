@@ -1,72 +1,48 @@
 import React from "react";
-
-type Participante = {
-  nombre: string;
-  ingresos: number;
-  egresos: number;
-};
+import { Participante } from "../context/GrupoContext"; // si ya centralizaste el tipo
 
 type Props = {
-  nombreGrupoMeta: string;
   metaGrupal: number;
   participantes: Participante[];
+  nombreGrupoMeta?: string;
 };
 
-const VistaGrupal: React.FC<Props> = ({ nombreGrupoMeta, metaGrupal, participantes }) => {
+const PanelImpacto: React.FC<Props> = ({ metaGrupal, participantes, nombreGrupoMeta }) => {
   const totalAhorro = participantes.reduce(
     (acc, p) => acc + (p.ingresos - p.egresos),
     0
   );
 
-  const progreso = Math.min((totalAhorro / metaGrupal) * 100, 100);
-
-  const participantesOrdenados = [...participantes].sort(
-    (a, b) => (b.ingresos - b.egresos) - (a.ingresos - a.egresos)
-  );
-
   return (
     <div style={{ maxWidth: "600px", margin: "2rem auto", padding: "1rem" }}>
-      <h2>📊 Vista Grupal: {nombreGrupoMeta}</h2>
+      <h2>📈 Panel de Impacto Financiero</h2>
+      {nombreGrupoMeta && <p><strong>Grupo:</strong> {nombreGrupoMeta}</p>}
       <p><strong>Meta grupal:</strong> ${metaGrupal.toLocaleString("es-CL")}</p>
       <p><strong>Ahorro total:</strong> ${totalAhorro.toLocaleString("es-CL")}</p>
-      <p><strong>Progreso:</strong> {progreso.toFixed(2)}%</p>
 
-      <div style={{ background: "#eee", borderRadius: "8px", overflow: "hidden", margin: "1rem 0" }}>
-        <div
-          style={{
-            width: `${progreso}%`,
-            background: "#4caf50",
-            height: "20px",
-            transition: "width 0.5s ease"
-          }}
-        />
-      </div>
+      <h3 style={{ marginTop: "2rem" }}>🔍 Progreso por integrante</h3>
+      {participantes.map((p, i) => {
+        const neto = p.ingresos - p.egresos;
+        const progreso = Math.min((neto / metaGrupal) * 100, 100);
 
-      <h3>🏅 Ranking por integrante</h3>
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {participantesOrdenados.map((p, i) => {
-          const neto = p.ingresos - p.egresos;
-          const progresoIndividual = Math.min((neto / metaGrupal) * 100, 100);
-
-          return (
-            <li key={i} style={{ marginBottom: "1.5rem", borderBottom: "1px solid #ccc", paddingBottom: "0.5rem" }}>
-              <p><strong>{i + 1}. {p.nombre}</strong>: ${neto.toLocaleString("es-CL")} ({progresoIndividual.toFixed(2)}%)</p>
-              <div style={{ background: "#ddd", borderRadius: "8px", overflow: "hidden" }}>
-                <div
-                  style={{
-                    width: `${progresoIndividual}%`,
-                    background: "#2196f3",
-                    height: "16px",
-                    transition: "width 0.5s ease"
-                  }}
-                />
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+        return (
+          <div key={i} style={{ marginBottom: "1.5rem" }}>
+            <p><strong>{p.nombre}</strong>: ${neto.toLocaleString("es-CL")} ({progreso.toFixed(2)}%)</p>
+            <div style={{ background: "#eee", borderRadius: "8px", overflow: "hidden" }}>
+              <div
+                style={{
+                  width: `${progreso}%`,
+                  background: "#2196f3",
+                  height: "16px",
+                  transition: "width 0.5s ease"
+                }}
+              />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
 
-export default VistaGrupal;
+export default PanelImpacto;
