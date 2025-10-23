@@ -36,6 +36,7 @@ import VistaIngresoUsuario from "./components/VistaIngresoUsuario";
 import RegistroUsuario from "./components/RegistroUsuario";
 import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
 import RegistroColaborador from "./components/RegistroColaborador";
+import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
 
 import { Participante } from "./types";
 
@@ -86,7 +87,6 @@ function App() {
 
   return (
     <div>
-      {/* Mostrar navegación solo en la página de bienvenida */}
       {!tipoUsuario && location.pathname === "/" && (
         <nav style={{ marginBottom: "1rem", textAlign: "center" }}>
           <Link to="/ingreso-usuario">👤 Ingresar como usuario</Link> |{" "}
@@ -104,7 +104,14 @@ function App() {
         <Route path="/registro-usuario" element={<RegistroUsuario />} />
         <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
         <Route path="/registro-colaborador" element={<RegistroColaborador />} />
-
+        <Route
+          path="/editar-perfil"
+          element={
+            <RutaProtegida>
+              <EditarPerfilUsuario />
+            </RutaProtegida>
+          }
+        />
         <Route
           path="/usuario"
           element={
@@ -127,7 +134,6 @@ function App() {
             </RutaProtegida>
           }
         />
-
         <Route
           path="/colaborador"
           element={
@@ -141,7 +147,6 @@ function App() {
             </>
           }
         />
-
         <Route
           path="/institucional"
           element={
