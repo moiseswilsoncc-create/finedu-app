@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const VistaIngresoUsuario: React.FC = () => {
+  const nombreUsuario = localStorage.getItem("nombreUsuario");
+
   return (
     <div style={{
       maxWidth: "600px",
@@ -12,7 +14,7 @@ const VistaIngresoUsuario: React.FC = () => {
       textAlign: "center",
       backgroundColor: "#f9f9f9"
     }}>
-      <h2 style={{ color: "#2ecc71" }}>🎉 ¡Registro exitoso!</h2>
+      <h2 style={{ color: "#2ecc71" }}>🎉 ¡Registro exitoso, {nombreUsuario}!</h2>
       <p style={{ fontSize: "1.2rem", marginTop: "1rem" }}>
         Bienvenido a <strong>Finedu</strong>, tu espacio de autonomía financiera.
       </p>
