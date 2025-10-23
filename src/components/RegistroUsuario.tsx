@@ -38,6 +38,7 @@ const RegistroUsuario: React.FC = () => {
       console.log("📨 Respuesta Supabase:", data);
 
       if (response.ok) {
+        localStorage.setItem("nombreUsuario", nombre);
         navigate("/vista-ingreso-usuario");
       } else {
         setError("No se pudo registrar el usuario.");
