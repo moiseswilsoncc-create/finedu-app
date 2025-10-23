@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -40,7 +39,6 @@ import RegistroColaborador from "./components/RegistroColaborador";
 import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
 import PanelUsuario from "./components/PanelUsuario";
 import RegistroAhorro from "./components/RegistroAhorro";
-import VistaGrupal from "./components/VistaGrupal";
 
 import { Participante } from "./types";
 
@@ -118,8 +116,16 @@ function App() {
         ]} /></RutaProtegida>} />
         <Route path="/test-financiero" element={<RutaProtegida><TestUsuario /></RutaProtegida>} />
         <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
-        <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal /></RutaProtegida>} />
-        
+        <Route path="/vista-grupal" element={
+          <RutaProtegida>
+            <VistaGrupal
+              nombreGrupoMeta={nombreGrupoMeta}
+              metaGrupal={metaGrupal}
+              participantes={participantes}
+            />
+          </RutaProtegida>
+        } />
+
         <Route path="/usuario" element={
           <RutaProtegida>
             <>
