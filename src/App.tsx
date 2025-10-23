@@ -37,6 +37,7 @@ import RegistroUsuario from "./components/RegistroUsuario";
 import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
 import RegistroColaborador from "./components/RegistroColaborador";
 import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
+import PanelUsuario from "./components/PanelUsuario";
 
 import { Participante } from "./types";
 
@@ -109,6 +110,14 @@ function App() {
           element={
             <RutaProtegida>
               <EditarPerfilUsuario />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/panel-usuario"
+          element={
+            <RutaProtegida>
+              <PanelUsuario />
             </RutaProtegida>
           }
         />
