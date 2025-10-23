@@ -51,6 +51,7 @@ import DashboardInstitucional from "./modules/DashboardInstitucional";
 import Navbar from "./components/Navbar";
 import EvaluadorCreditoInteligente from "./modules/EvaluadorCreditoInteligente";
 import MenuModulos from "./components/MenuModulos";
+import AsistenteFinanciero from "./components/AsistenteFinanciero";
 
 // ✅ NUEVO componente de felicitación post-registro
 import FelicitacionRegistro from "./components/FelicitacionRegistro";
@@ -129,6 +130,7 @@ function App() {
           <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
           <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
           <Route path="/resumen-financiero" element={<RutaProtegida><Resumen activos={500000} pasivos={200000} /></RutaProtegida>} />
+          <Route path="/asistente-financiero" element={<RutaProtegida><AsistenteFinanciero /></RutaProtegida>} />
           <Route path="/mis-metas" element={<RutaProtegida><VistaMetaIndividual metas={[
             { nombre: "Fondo de emergencia", objetivo: 300000, acumulado: 120000 },
             { nombre: "Viaje familiar", objetivo: 1500000, acumulado: 450000 }
