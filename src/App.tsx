@@ -125,30 +125,26 @@ function App() {
             }
           />
 
-          {tipoUsuario === "colaborador" && (
-            <Route
-              path="/colaborador"
-              element={
-                <>
-                  <IngresoColaborador setPais={setPais} />
-                  <PanelColaboradores pais={pais} />
-                  <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
-                  <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-                  <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
-                  <ForoFinanciero />
-                </>
-              }
-            />
-          )}
+          <Route
+            path="/colaborador"
+            element={
+              <>
+                <IngresoColaborador setPais={setPais} />
+                <PanelColaboradores pais={pais} />
+                <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
+                <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                <ForoFinanciero />
+              </>
+            }
+          />
 
-          {tipoUsuario === "institucional" && (
-            <Route
-              path="/institucional"
-              element={
-                <VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />
-              }
-            />
-          )}
+          <Route
+            path="/institucional"
+            element={
+              <VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />
+            }
+          />
         </Routes>
 
         {!tipoUsuario && <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />}
