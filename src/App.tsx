@@ -39,6 +39,7 @@ import RegistroColaborador from "./components/RegistroColaborador";
 import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
 import PanelUsuario from "./components/PanelUsuario";
 import RegistroAhorro from "./components/RegistroAhorro";
+import AdminGrupo from "./components/AdminGrupo";
 
 import { Participante } from "./types";
 
@@ -117,6 +118,7 @@ function App() {
         <Route path="/test-financiero" element={<RutaProtegida><TestUsuario /></RutaProtegida>} />
         <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
         <Route path="/vista-grupal" element={
+        <Route path="/admin-grupo" element={<RutaProtegida><AdminGrupo /></RutaProtegida>} />
           <RutaProtegida>
             <VistaGrupal
               nombreGrupoMeta={nombreGrupoMeta}
