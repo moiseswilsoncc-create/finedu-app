@@ -12,7 +12,7 @@ function VistaIngresoColaborador() {
           🔐 Iniciar sesión
         </button>
         <button onClick={() => navigate("/registro-colaborador")}>
-          🆕 Crear nuevo colaborador
+          🆕 Solicitar acceso como colaborador
         </button>
       </div>
     </div>
