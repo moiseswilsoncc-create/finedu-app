@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { DatosUsuario } from "../types";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 type Props = {
   setPais: (pais: string) => void;
@@ -18,6 +18,7 @@ function IngresoUsuario({ setPais }: Props) {
   });
 
   const [registrado, setRegistrado] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -28,8 +29,11 @@ function IngresoUsuario({ setPais }: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setRegistrado(true);
-    localStorage.setItem("correoUsuario", datos.correo); // Guardamos el correo para futuras consultas
-    console.log("Usuario registrado:", datos);
+    localStorage.setItem("correoUsuario", datos.correo);
+    localStorage.setItem("logueado", "true");
+    localStorage.setItem("tipoUsuario", "usuario");
+    localStorage.setItem("nombreUsuario", datos.nombre);
+    navigate("/panel-usuario");
   };
 
   return (
