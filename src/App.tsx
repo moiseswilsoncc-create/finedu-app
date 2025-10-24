@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate, useLocation, Link, useNavigate } from "react-router-dom";
-
-// Contexto institucional
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FineduProvider } from "./context/FineduContext";
 
-// Componentes existentes
+// Componentes
 import VistaGrupal from "./components/VistaGrupal";
 import VistaParticipante from "./components/VistaParticipante";
 import VistaMetaIndividual from "./components/VistaMetaIndividual";
@@ -127,11 +125,27 @@ function App() {
           <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
 
           {/* Usuario completo */}
-          <Route path="/usuario" element={<RutaProtegida><><IngresoUsuario setPais={setPais} /> <Resumen metaGrupal={metaGrupal} participantes={participantes} /> <VistaEtapa participantes={participantes} /> <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} /> <VistaMetaIndividual participantes={participantes} /> <VistaParticipante onAgregar={agregarParticipante} /> <SimuladorCredito pais={pais} /> <SimuladorCreditoAuto pais={pais} /> <SimuladorCreditoVivienda pais={pais} /> <SimuladorInversion pais={pais} /> <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} /> <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} /> <ForoFinanciero /></></RutaProtegida>} />
+          <Route path="/usuario" element={
+            <RutaProtegida>
+              <>
+                <IngresoUsuario setPais={setPais} />
+                <Resumen metaGrupal={metaGrupal} participantes={participantes} />
+                <VistaEtapa participantes={participantes} />
+                <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} />
+                <VistaMetaIndividual participantes={participantes} />
+                <VistaParticipante onAgregar={agregarParticipante} />
+                <SimuladorCredito pais={pais} />
+                <SimuladorCreditoAuto pais={pais} />
+                <SimuladorCreditoVivienda pais={pais} />
+                <SimuladorInversion pais={pais} />
+                <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
+                <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
+                <ForoFinanciero />
+              </>
+            </RutaProtegida>
+          } />
 
           {/* Colaborador completo */}
-          <Route path="/colaborador" element={<RutaProtegida><><IngresoColaborador setPais={setPais} /> <PanelColaboradores pais={pais} /> <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" /> <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} /> <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} /> <ForoFinanciero /></></RutaProtegida>}
-                      {/* Colaborador completo */}
           <Route path="/colaborador" element={
             <RutaProtegida>
               <>
@@ -144,7 +158,6 @@ function App() {
               </>
             </RutaProtegida>
           } />
-
           {/* Institucional */}
           <Route path="/institucional" element={
             <VistaInstitucional
@@ -207,3 +220,4 @@ function App() {
 }
 
 export default App;
+
