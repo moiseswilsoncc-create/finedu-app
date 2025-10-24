@@ -181,8 +181,8 @@ function App() {
 
           <Route path="/dashboard-institucional" element={
             <RutaProtegida>
-              {tipoUsuario === "instit
-                                ? <DashboardInstitucional />
+              {tipoUsuario === "institucional"
+                ? <DashboardInstitucional />
                 : <Navigate to="/" />}
             </RutaProtegida>
           } />
