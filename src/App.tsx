@@ -126,7 +126,7 @@ function App() {
           <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
           <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
           <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
-          <Route path="/resumen-financiero" element={<RutaProtegida><Resumen activos={500000} pasivos={200000} /></RutaProtegida>} />
+          <Route path="/resumen-financiero" element={<RutaProtegida><Resumen metaGrupal={metaGrupal} participantes={participantes} /></RutaProtegida>} />
           <Route path="/asistente-financiero" element={<RutaProtegida><AsistenteFinanciero /></RutaProtegida>} />
           <Route path="/mis-metas" element={<RutaProtegida><VistaMetaIndividual metas={[{ nombre: "Fondo de emergencia", objetivo: 300000, acumulado: 120000 }, { nombre: "Viaje familiar", objetivo: 1500000, acumulado: 450000 }]} /></RutaProtegida>} />
           <Route path="/test-financiero" element={<RutaProtegida><TestUsuario /></RutaProtegida>} />
@@ -162,64 +162,4 @@ function App() {
                 <PanelColaboradores pais={pais} />
                 <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                 <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-                <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
-                <ForoFinanciero />
-              </>
-            </RutaProtegida>
-          } />
-
-          <Route path="/cambio-clave-colaborador" element={<RutaProtegida><CambioClaveColaborador /></RutaProtegida>} />
-          
-          {/* Institucional */}
-          <Route path="/informe-institucional" element={
-            <RutaProtegida>
-              {tipoUsuario === "institucional"
-                ? <InformeInstitucional />
-                : <Navigate to="/" />}
-            </RutaProtegida>
-          } />
-
-          <Route path="/dashboard-institucional" element={
-            <RutaProtegida>
-              {tipoUsuario === "institucional"
-                ? <DashboardInstitucional />
-                : <Navigate to="/" />}
-            </RutaProtegida>
-          } />
-        </Routes>
-
-        {/* Selector de tipo de usuario solo en la raíz */}
-        {!tipoUsuario && location.pathname === "/" && (
-          <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
-        )}
-
-        {/* Botón de cierre de sesión */}
-        {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
-
-        {/* Botón de reinicio de sesión */}
-        {tipoUsuario && (
-          <button
-            onClick={() => {
-              localStorage.clear();
-              setTipoUsuario(null);
-              navigate("/", { replace: true });
-            }}
-            style={{
-              marginTop: "1rem",
-              padding: "0.5rem 1rem",
-              backgroundColor: "#e74c3c",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer"
-            }}
-          >
-            Reiniciar sesión
-          </button>
-        )}
-      </div>
-    </FineduProvider>
-  );
-}
-
-export default App;
+                <Generador
