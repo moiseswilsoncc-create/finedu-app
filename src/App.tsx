@@ -100,15 +100,8 @@ function App() {
       <div>
         {tipoUsuario && <Navbar tipoUsuario={tipoUsuario} onCerrarSesion={cerrarSesion} />}
 
-        {!tipoUsuario && location.pathname === "/" && (
-          <nav style={{ marginBottom: "1rem", textAlign: "center" }}>
-            <Link to="/ingreso-usuario">👤 Ingresar como usuario</Link> |{" "}
-            <Link to="/ingreso-colaborador">👥 Ingresar como colaborador</Link> |{" "}
-            <Link to="/institucional">🏛️ Vista institucional</Link>
-          </nav>
-        )}
-
         <Routes>
+          {/* Vista pública */}
           <Route path="/" element={<Bienvenida />} />
           <Route path="/login" element={<Login />} />
           <Route path="/recuperar-clave" element={<RecuperarClave />} />
@@ -119,6 +112,7 @@ function App() {
           <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
           <Route path="/registro-colaborador" element={<RegistroColaborador />} />
 
+          {/* Rutas protegidas */}
           <Route path="/editar-perfil" element={<RutaProtegida><EditarPerfilUsuario /></RutaProtegida>} />
           <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
           <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
@@ -127,26 +121,66 @@ function App() {
           <Route path="/mis-metas" element={<RutaProtegida><VistaMetaIndividual metas={[{ nombre: "Fondo de emergencia", objetivo: 300000, acumulado: 120000 }, { nombre: "Viaje familiar", objetivo: 1500000, acumulado: 450000 }]} /></RutaProtegida>} />
           <Route path="/test-financiero" element={<RutaProtegida><TestUsuario /></RutaProtegida>} />
           <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
-
           <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} /></RutaProtegida>} />
           <Route path="/admin-grupo" element={<RutaProtegida><AdminGrupo /></RutaProtegida>} />
           <Route path="/evaluador-credito" element={<RutaProtegida><EvaluadorCreditoInteligente /></RutaProtegida>} />
           <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
 
+          {/* Usuario completo */}
           <Route path="/usuario" element={<RutaProtegida><><IngresoUsuario setPais={setPais} /> <Resumen metaGrupal={metaGrupal} participantes={participantes} /> <VistaEtapa participantes={participantes} /> <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} /> <VistaMetaIndividual participantes={participantes} /> <VistaParticipante onAgregar={agregarParticipante} /> <SimuladorCredito pais={pais} /> <SimuladorCreditoAuto pais={pais} /> <SimuladorCreditoVivienda pais={pais} /> <SimuladorInversion pais={pais} /> <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} /> <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} /> <ForoFinanciero /></></RutaProtegida>} />
 
-          <Route path="/colaborador" element={<RutaProtegida><><IngresoColaborador setPais={setPais} /> <PanelColaboradores pais={pais} /> <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" /> <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} /> <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} /> <ForoFinanciero /></></RutaProtegida>} />
+          {/* Colaborador completo */}
+          <Route path="/colaborador" element={<RutaProtegida><><IngresoColaborador setPais={setPais} /> <PanelColaboradores pais={pais} /> <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" /> <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} /> <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} /> <ForoFinanciero /></></RutaProtegida>}
+                      {/* Colaborador completo */}
+          <Route path="/colaborador" element={
+            <RutaProtegida>
+              <>
+                <IngresoColaborador setPais={setPais} />
+                <PanelColaboradores pais={pais} />
+                <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
+                <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                <ForoFinanciero />
+              </>
+            </RutaProtegida>
+          } />
 
-          <Route path="/institucional" element={<VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />} />
+          {/* Institucional */}
+          <Route path="/institucional" element={
+            <VistaInstitucional
+              participantes={participantes}
+              metaGrupal={metaGrupal}
+              pais={pais}
+              setPais={setPais}
+            />
+          } />
 
-          <Route path="/informe-institucional" element={<RutaProtegida>{tipoUsuario === "institucional" ? <InformeInstitucional /> : <Navigate to="/" />}</RutaProtegida>} />
-          <Route path="/dashboard-institucional" element={<RutaProtegida>{tipoUsuario === "institucional" ? <DashboardInstitucional /> : <Navigate to="/" />}</RutaProtegida>} />
+          <Route path="/informe-institucional" element={
+            <RutaProtegida>
+              {tipoUsuario === "institucional"
+                ? <InformeInstitucional />
+                : <Navigate to="/" />}
+            </RutaProtegida>
+          } />
+
+          <Route path="/dashboard-institucional" element={
+            <RutaProtegida>
+              {tipoUsuario === "institucional"
+                ? <DashboardInstitucional />
+                : <Navigate to="/" />}
+            </RutaProtegida>
+          } />
         </Routes>
 
-        {!tipoUsuario && location.pathname === "/" && <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />}
+        {/* Selector de tipo de usuario solo en la raíz */}
+        {!tipoUsuario && location.pathname === "/" && (
+          <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
+        )}
 
+        {/* Botón de cierre de sesión */}
         {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
 
+        {/* Botón de reinicio de sesión */}
         {tipoUsuario && (
           <button
             onClick={() => {
@@ -154,7 +188,15 @@ function App() {
               setTipoUsuario(null);
               navigate("/", { replace: true });
             }}
-            style={{ marginTop: "1rem", padding: "0.5rem 1rem", backgroundColor: "#e74c3c", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+            style={{
+              marginTop: "1rem",
+              padding: "0.5rem 1rem",
+              backgroundColor: "#e74c3c",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
           >
             Reiniciar sesión
           </button>
