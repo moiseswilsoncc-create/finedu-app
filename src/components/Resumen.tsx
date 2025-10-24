@@ -18,7 +18,7 @@ const Resumen: React.FC<Props> = ({ metaGrupal, participantes }) => {
   );
 
   const promedio = participantes.length > 0 ? totalAhorro / participantes.length : 0;
-  const cumplimiento = Math.min((totalAhorro / metaGrupal) * 100, 100);
+  const cumplimiento = metaGrupal > 0 ? Math.min((totalAhorro / metaGrupal) * 100, 100) : 0;
 
   return (
     <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
