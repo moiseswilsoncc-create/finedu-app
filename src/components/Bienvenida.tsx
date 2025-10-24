@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-
 const Bienvenida = () => {
   return (
     <div className="bienvenida-container">
@@ -31,12 +30,14 @@ const Bienvenida = () => {
         </p>
       </div>
 
+      <h3>🔓 Elige cómo quieres ingresar</h3>
       <div className="botones-ingreso">
-        <Link to="/ingreso-usuario" className="btn-principal">👤 Ingresar como usuario</Link>
+        <Link to="/ingreso-usuario" className="btn-principal">👤 Ingresar sin registrarse</Link>
         <Link to="/ingreso-colaborador" className="btn-principal">👥 Ingresar como colaborador</Link>
         <Link to="/institucional" className="btn-principal">🏛️ Vista institucional</Link>
       </div>
 
+      <h3>📝 ¿Prefieres registrarte?</h3>
       <div className="boton-registro">
         <Link to="/registro" className="btn-principal">🚀 ¡No pierdas esta oportunidad! Registrarte Ahora</Link>
       </div>
