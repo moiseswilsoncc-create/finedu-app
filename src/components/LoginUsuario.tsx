@@ -11,6 +11,9 @@ const LoginUsuario = () => {
 
     // Simulación de validación básica
     if (correo === 'usuario@finedu.cl' && clave === 'clave123') {
+      localStorage.setItem("logueado", "true");
+      localStorage.setItem("tipoUsuario", "usuario");
+      localStorage.setItem("nombreUsuario", "Usuario Finedu");
       navigate('/panel-usuario');
     } else {
       alert('Correo o clave incorrectos');
