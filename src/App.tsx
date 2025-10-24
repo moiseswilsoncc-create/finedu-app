@@ -163,3 +163,64 @@ function App() {
                 <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                 <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
                 <Generador
+                <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                <ForoFinanciero />
+              </>
+            </RutaProtegida>
+          } />
+
+          <Route path="/cambio-clave-colaborador" element={<RutaProtegida><CambioClaveColaborador /></RutaProtegida>} />
+
+          {/* Institucional */}
+          <Route path="/informe-institucional" element={
+            <RutaProtegida>
+              {tipoUsuario === "institucional"
+                ? <InformeInstitucional />
+                : <Navigate to="/" />}
+            </RutaProtegida>
+          } />
+
+          <Route path="/dashboard-institucional" element={
+            <RutaProtegida>
+              {tipoUsuario === "institucional"
+                ? <DashboardInstitucional />
+                : <Navigate to="/" />}
+            </RutaProtegida>
+          } />
+        </Routes>
+
+        {/* Selector de tipo de usuario solo en la raíz */}
+        {!tipoUsuario && location.pathname === "/" && (
+          <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
+        )}
+
+        {/* Botón de cierre de sesión */}
+        {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
+
+        {/* Botón de reinicio de sesión */}
+        {tipoUsuario && (
+          <button
+            onClick={() => {
+              localStorage.clear();
+              setTipoUsuario(null);
+              navigate("/", { replace: true });
+            }}
+            style={{
+              marginTop: "1rem",
+              padding: "0.5rem 1rem",
+              backgroundColor: "#e74c3c",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            Reiniciar sesión
+          </button>
+        )}
+      </div>
+    </FineduProvider>
+  );
+}
+
+export default App;
