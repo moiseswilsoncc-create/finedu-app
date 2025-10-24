@@ -31,6 +31,12 @@ const Bienvenida = () => {
         </p>
       </div>
 
+      <div className="botones-ingreso">
+        <Link to="/ingreso-usuario" className="btn-principal">👤 Ingresar como usuario</Link>
+        <Link to="/ingreso-colaborador" className="btn-principal">👥 Ingresar como colaborador</Link>
+        <Link to="/institucional" className="btn-principal">🏛️ Vista institucional</Link>
+      </div>
+
       <div className="boton-registro">
         <Link to="/registro" className="btn-principal">🚀 ¡No pierdas esta oportunidad! Registrarte Ahora</Link>
       </div>
