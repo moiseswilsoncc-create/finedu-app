@@ -8,8 +8,6 @@ const RegistroUsuario: React.FC = () => {
   const [ciudad, setCiudad] = useState("");
   const [comuna, setComuna] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
-  const [ingresos, setIngresos] = useState("");
-  const [egresos, setEgresos] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -55,8 +53,6 @@ const RegistroUsuario: React.FC = () => {
           ciudad,
           comuna,
           fechaNacimiento,
-          ingresos: parseInt(ingresos),
-          egresos: parseInt(egresos),
           created_at: new Date().toISOString()
         })
       });
@@ -120,17 +116,6 @@ const RegistroUsuario: React.FC = () => {
         <div>
           <label>📅 Fecha de nacimiento</label>
           <input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} />
-        </div>
-
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <div style={{ flex: 1 }}>
-            <label>💰 Ingresos mensuales</label>
-            <input type="number" value={ingresos} onChange={(e) => setIngresos(e.target.value)} required style={inputStyle} />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label>💸 Egresos mensuales</label>
-            <input type="number" value={egresos} onChange={(e) => setEgresos(e.target.value)} required style={inputStyle} />
-          </div>
         </div>
 
         <button type="submit" style={{
