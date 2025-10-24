@@ -28,7 +28,7 @@ const VistaIngresoColaborador: React.FC = () => {
 
       <div style={{ marginTop: "2rem" }}>
         <button
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/login-colaborador")}
           style={{
             padding: "0.6rem 1.2rem",
             backgroundColor: "#2ecc71",
