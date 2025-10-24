@@ -48,7 +48,7 @@ src/
 │   ├── SimuladorCreditoAuto.tsx
 │   ├── SimuladorCreditoVivienda.tsx
 │   ├── SimuladorInversion.tsx
-│   ├── GraficoAhorros.tsx
+│   ├── GraficoAhorro.tsx
 │   ├── PanelColaboradores.tsx
 │   ├── IngresoUsuario.tsx
 │   ├── IngresoColaborador.tsx
