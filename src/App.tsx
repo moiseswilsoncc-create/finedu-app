@@ -44,19 +44,21 @@ import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
 import PanelUsuario from "./components/PanelUsuario";
 import RegistroAhorro from "./components/RegistroAhorro";
 import AdminGrupo from "./components/AdminGrupo";
-
-// Módulos institucionales
 import InformeInstitucional from "./modules/InformeInstitucional";
 import DashboardInstitucional from "./modules/DashboardInstitucional";
 import Navbar from "./components/Navbar";
 import EvaluadorCreditoInteligente from "./modules/EvaluadorCreditoInteligente";
 import MenuModulos from "./components/MenuModulos";
-
-// ✅ NUEVO componente de felicitación post-registro
+import AsistenteFinanciero from "./components/AsistenteFinanciero";
 import FelicitacionRegistro from "./components/FelicitacionRegistro";
 
 import { Participante } from "./types";
-import RutaProtegida from "./components/RutaProtegida";
+
+function RutaProtegida({ children }: { children: JSX.Element }) {
+  const location = useLocation();
+  const logueado = localStorage.getItem("logueado") === "true";
+  return logueado ? children : <Navigate to="/login" state={{ from: location }} replace />;
+}
 
 function App() {
   const location = useLocation();
@@ -124,6 +126,7 @@ function App() {
           <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
           <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
           <Route path="/resumen-financiero" element={<RutaProtegida><Resumen activos={500000} pasivos={200000} /></RutaProtegida>} />
+          <Route path="/asistente-financiero" element={<RutaProtegida><AsistenteFinanciero /></RutaProtegida>} />
           <Route path="/mis-metas" element={<RutaProtegida><VistaMetaIndividual metas={[
             { nombre: "Fondo de emergencia", objetivo: 300000, acumulado: 120000 },
             { nombre: "Viaje familiar", objetivo: 1500000, acumulado: 450000 }
@@ -168,10 +171,10 @@ function App() {
               <>
                 <IngresoColaborador setPais={setPais} />
                 <PanelColaboradores pais={pais} />
-                <PanelImpacto participantes
-                                  <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                 <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-                <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal}
+                                  <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                 <ForoFinanciero />
               </>
             </RutaProtegida>
@@ -208,6 +211,27 @@ function App() {
         )}
 
         {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
+
+        {tipoUsuario && (
+          <button
+            onClick={() => {
+              localStorage.clear();
+              setTipoUsuario(null);
+              window.location.href = "/";
+            }}
+            style={{
+              marginTop: "1rem",
+              padding: "0.5rem 1rem",
+              backgroundColor: "#e74c3c",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            Reiniciar sesión
+          </button>
+        )}
       </div>
     </FineduProvider>
   );
