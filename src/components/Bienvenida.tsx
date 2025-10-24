@@ -32,8 +32,9 @@ const Bienvenida = () => {
 
       <h3>🔓 Elige cómo quieres ingresar</h3>
       <div className="botones-ingreso">
-        <Link to="/ingreso-usuario" className="btn-principal">👤 Ingresar sin registrarse</Link>
-        <Link to="/ingreso-colaborador" className="btn-principal">👥 Ingresar como colaborador</Link>
+        <Link to="/login-usuario" className="btn-principal">👤 Ingresar como usuario registrado</Link>
+        <Link to="/panel-usuario" className="btn-principal">🟢 Usar Finedu sin registrarse</Link>
+        <Link to="/ingreso-colaborador" className="btn-principal">👥 Ingreso colaborador</Link>
         <Link to="/institucional" className="btn-principal">🏛️ Vista institucional</Link>
       </div>
 
