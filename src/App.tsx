@@ -173,8 +173,7 @@ function App() {
                 <PanelColaboradores pais={pais} />
                 <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                 <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-                <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal}
-                                  <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                 <ForoFinanciero />
               </>
             </RutaProtegida>
