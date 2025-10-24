@@ -33,8 +33,6 @@ const RegistroUsuario: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("🚀 Enviando datos...");
-
     try {
       const yaExiste = await existeCorreo(correo);
       if (yaExiste) {
@@ -64,14 +62,10 @@ const RegistroUsuario: React.FC = () => {
       });
 
       const data = await response.json();
-      console.log("📦 Status:", response.status);
-      console.log("📨 Respuesta Supabase:", data);
-
       if (response.ok) {
         localStorage.setItem("nombreUsuario", nombre);
         localStorage.setItem("logueado", "true");
         localStorage.setItem("tipoUsuario", "usuario");
-
         navigate("/felicitacion");
       } else {
         setError("No se pudo registrar el usuario.");
@@ -84,55 +78,85 @@ const RegistroUsuario: React.FC = () => {
 
   return (
     <div style={{
-      maxWidth: "500px",
-      margin: "2rem auto",
-      padding: "1.5rem",
-      border: "1px solid #ccc",
-      borderRadius: "8px",
-      backgroundColor: "#f9f9f9"
+      maxWidth: "600px",
+      margin: "3rem auto",
+      padding: "2rem",
+      borderRadius: "12px",
+      backgroundColor: "#ffffff",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
     }}>
-      <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>📝 Ficha de ingreso</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Correo:</label>
-        <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
+      <h2 style={{ textAlign: "center", color: "#3498db", marginBottom: "1rem" }}>📝 Ficha de ingreso</h2>
+      <p style={{ textAlign: "center", marginBottom: "2rem", fontSize: "1.05rem", color: "#555" }}>
+        Regístrate gratis y comienza a construir tu autonomía financiera con Finedu.
+      </p>
 
-        <label>Contraseña:</label>
-        <input type="password" value={contraseña} onChange={(e) => setContraseña(e.target.value)} required />
+      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
+        <div>
+          <label>📧 Correo electrónico</label>
+          <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} />
+        </div>
 
-        <label>Nombre completo:</label>
-        <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+        <div>
+          <label>🔒 Clave personal</label>
+          <input type="password" value={contraseña} onChange={(e) => setContraseña(e.target.value)} required style={inputStyle} />
+        </div>
 
-        <label>Ciudad:</label>
-        <input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required />
+        <div>
+          <label>👤 Nombre completo</label>
+          <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required style={inputStyle} />
+        </div>
 
-        <label>Comuna:</label>
-        <input type="text" value={comuna} onChange={(e) => setComuna(e.target.value)} required />
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <div style={{ flex: 1 }}>
+            <label>🏙️ Ciudad</label>
+            <input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required style={inputStyle} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label>🏘️ Comuna</label>
+            <input type="text" value={comuna} onChange={(e) => setComuna(e.target.value)} required style={inputStyle} />
+          </div>
+        </div>
 
-        <label>Fecha de nacimiento:</label>
-        <input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required />
+        <div>
+          <label>📅 Fecha de nacimiento</label>
+          <input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} />
+        </div>
 
-        <label>Ingresos mensuales:</label>
-        <input type="number" value={ingresos} onChange={(e) => setIngresos(e.target.value)} required />
-
-        <label>Egresos mensuales:</label>
-        <input type="number" value={egresos} onChange={(e) => setEgresos(e.target.value)} required />
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <div style={{ flex: 1 }}>
+            <label>💰 Ingresos mensuales</label>
+            <input type="number" value={ingresos} onChange={(e) => setIngresos(e.target.value)} required style={inputStyle} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label>💸 Egresos mensuales</label>
+            <input type="number" value={egresos} onChange={(e) => setEgresos(e.target.value)} required style={inputStyle} />
+          </div>
+        </div>
 
         <button type="submit" style={{
-          marginTop: "1rem",
-          width: "100%",
-          padding: "0.6rem",
+          padding: "0.8rem",
           backgroundColor: "#2ecc71",
           color: "white",
           border: "none",
-          borderRadius: "4px"
+          borderRadius: "8px",
+          fontSize: "1rem",
+          cursor: "pointer"
         }}>
-          Registrar
+          ✅ Registrarme ahora
         </button>
       </form>
 
       {error && <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>{error}</p>}
     </div>
   );
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "0.6rem",
+  borderRadius: "6px",
+  border: "1px solid #ccc",
+  marginTop: "0.3rem"
 };
 
 export default RegistroUsuario;
