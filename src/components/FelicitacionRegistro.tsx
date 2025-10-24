@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./FelicitacionRegistro.css"; // Opcional: personaliza estilos si lo deseas
 
 const FelicitacionRegistro = () => {
   return (
