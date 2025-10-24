@@ -43,6 +43,7 @@ import Login from "./components/Login";
 import RecuperarClave from "./components/RecuperarClave";
 import NuevaClave from "./components/NuevaClave";
 import LoginColaborador from "./components/LoginColaborador";
+import CambioClaveColaborador from "./components/CambioClaveColaborador";
 
 import { Participante } from "./types";
 
@@ -167,6 +168,8 @@ function App() {
             </RutaProtegida>
           } />
 
+          <Route path="/cambio-clave-colaborador" element={<RutaProtegida><CambioClaveColaborador /></RutaProtegida>} />
+          
           {/* Institucional */}
           <Route path="/informe-institucional" element={
             <RutaProtegida>
