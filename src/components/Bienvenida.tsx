@@ -15,11 +15,39 @@ const Bienvenida: React.FC = () => {
       boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
     }}>
       <h1 style={{ color: "#2c3e50", marginBottom: "1rem" }}>👋 Bienvenido a Finedu</h1>
-      <p style={{ fontSize: "1.1rem", marginBottom: "2rem" }}>
-        Este portal te permite acceder a herramientas financieras, simuladores, reportes y acompañamiento institucional.
+      <p style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>
+        Este portal fue creado para acompañarte en tu camino financiero. Aquí podrás acceder a herramientas educativas, simuladores, reportes y seguimiento institucional.
+      </p>
+      <p style={{ fontSize: "1.05rem", marginBottom: "2rem", color: "#555" }}>
+        Finedu promueve el ahorro grupal, la autonomía financiera y el acceso gratuito a inteligencia económica. Cada usuario puede avanzar a su ritmo, acompañado por colaboradores e instituciones que fortalecen su progreso.
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center" }}>
+      {/* Botones centrados y ordenados */}
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "1rem"
+      }}>
+        {/* 🚀 Registro nuevo usuario */}
+        <button
+          onClick={() => navigate("/registro-usuario")}
+          style={{
+            padding: "0.8rem 1.5rem",
+            backgroundColor: "#e74c3c",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            cursor: "pointer",
+            width: "100%",
+            maxWidth: "300px"
+          }}
+        >
+          🚀 ¡No pierdas esta oportunidad! Registrarte Ahora
+        </button>
+
+        {/* 👤 Ingreso usuario registrado */}
         <button
           onClick={() => navigate("/ingreso-usuario")}
           style={{
@@ -37,6 +65,7 @@ const Bienvenida: React.FC = () => {
           👤 Ingresar como usuario registrado
         </button>
 
+        {/* 👥 Ingreso colaborador */}
         <button
           onClick={() => navigate("/ingreso-colaborador")}
           style={{
@@ -52,25 +81,6 @@ const Bienvenida: React.FC = () => {
           }}
         >
           👥 Ingreso colaboradores
-        </button>
-
-        {/* ✅ Botón corregido para registro de nuevos usuarios */}
-        <button
-          onClick={() => navigate("/registro-usuario")}
-          style={{
-            marginTop: "2rem",
-            padding: "0.8rem 1.5rem",
-            backgroundColor: "#e74c3c",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontSize: "1rem",
-            cursor: "pointer",
-            width: "100%",
-            maxWidth: "300px"
-          }}
-        >
-          🚀 ¡No pierdas esta oportunidad! Registrarte Ahora
         </button>
       </div>
     </div>
