@@ -1,46 +1,77 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const Bienvenida = () => {
+const Bienvenida: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="bienvenida-container">
-      <h1>✨ Bienvenido a Finedu</h1>
-      <p className="subtitulo">
-        Tu plataforma independiente para tomar el control de tu economía personal.<br />
-        Un espacio libre, transparente y confiable donde puedes entender tu dinero, mejorar tu ahorro y proyectar tu futuro.
+    <div style={{
+      maxWidth: "700px",
+      margin: "3rem auto",
+      padding: "2rem",
+      textAlign: "center",
+      backgroundColor: "#fefefe",
+      borderRadius: "12px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+    }}>
+      <h1 style={{ color: "#2c3e50", marginBottom: "1rem" }}>👋 Bienvenido a Finedu</h1>
+      <p style={{ fontSize: "1.1rem", marginBottom: "2rem" }}>
+        Este portal te permite acceder a herramientas financieras, simuladores, reportes y acompañamiento institucional.
       </p>
 
-      <h2>🎁 ¿Qué puedes hacer aquí?</h2>
-      <ul className="lista-beneficios">
-        <li>💼 <strong>Organizar tu plata con claridad:</strong> registra tus ingresos, clasifica tus gastos y conoce tu capacidad real de gasto.</li>
-        <li>📊 <strong>Medir tu propio costo de vida:</strong> descubre tu IPC personal y cómo cambian tus precios mes a mes.</li>
-        <li>🧠 <strong>Recibir orientación financiera en lenguaje claro:</strong> tu agente inteligente te habla en pesos, no en porcentajes.</li>
-        <li>👨‍👩‍👧‍👦 <strong>Crear grupos familiares o comunitarios:</strong> junta ingresos, registra gastos compartidos y recibe recomendaciones como hogar.</li>
-        <li>📈 <strong>Simular decisiones antes de tomarlas:</strong> evalúa créditos, inversiones y cambios de presupuesto con tus datos reales.</li>
-        <li>🧾 <strong>Recibir un informe mensual personalizado:</strong> con recomendaciones prácticas y visuales que entiendes.</li>
-        <li>🗣️ <strong>Participar en redes internas:</strong> foro comunitario, muro de anuncios, mensajes grupales y comparación anónima con otros usuarios similares.</li>
-      </ul>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center" }}>
+        <button
+          onClick={() => navigate("/ingreso-usuario")}
+          style={{
+            padding: "0.8rem 1.5rem",
+            backgroundColor: "#3498db",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            cursor: "pointer",
+            width: "100%",
+            maxWidth: "300px"
+          }}
+        >
+          👤 Ingresar como usuario registrado
+        </button>
 
-      <h2>✅ Acceso total, sin letra chica</h2>
-      <div className="mensaje-final">
-        <p className="destacado">
-          🟢 <strong>Finedu es una plataforma independiente, hecha para ti.</strong><br />
-          <strong>Todos los módulos están habilitados para ti, sin costos ni restricciones, porque es ¡Gratis!!!</strong><br />
-          <strong>Porque tu plata merece respeto, y tú mereces herramientas que trabajen para ti.</strong>
-        </p>
-      </div>
+        <button
+          onClick={() => navigate("/ingreso-colaborador")}
+          style={{
+            padding: "0.8rem 1.5rem",
+            backgroundColor: "#2ecc71",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            cursor: "pointer",
+            width: "100%",
+            maxWidth: "300px"
+          }}
+        >
+          👥 Ingreso colaboradores
+        </button>
 
-      <h3>🔓 Elige cómo quieres ingresar</h3>
-      <div className="botones-ingreso">
-        <Link to="/login-usuario" className="btn-principal">👤 Ingresar como usuario registrado</Link>
-        <Link to="/panel-usuario" className="btn-principal">🟢 Usar Finedu sin registrarse</Link>
-        <Link to="/ingreso-colaborador" className="btn-principal">👥 Ingreso colaborador</Link>
-        <Link to="/institucional" className="btn-principal">🏛️ Vista institucional</Link>
-      </div>
-
-      <h3>📝 ¿Prefieres registrarte?</h3>
-      <div className="boton-registro">
-        <Link to="/registro" className="btn-principal">🚀 ¡No pierdas esta oportunidad! Registrarte Ahora</Link>
+        {/* ✅ Botón corregido para registro de nuevos usuarios */}
+        <button
+          onClick={() => navigate("/registro-usuario")}
+          style={{
+            marginTop: "2rem",
+            padding: "0.8rem 1.5rem",
+            backgroundColor: "#e74c3c",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            cursor: "pointer",
+            width: "100%",
+            maxWidth: "300px"
+          }}
+        >
+          🚀 ¡No pierdas esta oportunidad! Registrarte Ahora
+        </button>
       </div>
     </div>
   );
