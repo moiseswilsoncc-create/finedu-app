@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Bienvenida.css'; // Personaliza estilos si lo deseas
+
 
 const Bienvenida = () => {
   return (
