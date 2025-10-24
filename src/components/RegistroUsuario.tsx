@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const RegistroUsuario: React.FC = () => {
-  const [correo, setCorreo] = useState("");
-  const [contraseña, setContraseña] = useState("");
   const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [sexo, setSexo] = useState("");
+  const [pais, setPais] = useState("Chile");
   const [ciudad, setCiudad] = useState("");
   const [comuna, setComuna] = useState("");
-  const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [contraseña, setContraseña] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -47,12 +50,15 @@ const RegistroUsuario: React.FC = () => {
           "Prefer": "return=representation"
         },
         body: JSON.stringify({
-          correo,
-          contraseña,
           nombre,
+          apellido,
+          fechaNacimiento,
+          sexo,
+          pais,
           ciudad,
           comuna,
-          fechaNacimiento,
+          correo,
+          contraseña,
           created_at: new Date().toISOString()
         })
       });
@@ -88,18 +94,34 @@ const RegistroUsuario: React.FC = () => {
 
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
         <div>
-          <label>📧 Correo electrónico</label>
-          <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} />
-        </div>
-
-        <div>
-          <label>🔒 Clave personal</label>
-          <input type="password" value={contraseña} onChange={(e) => setContraseña(e.target.value)} required style={inputStyle} />
-        </div>
-
-        <div>
-          <label>👤 Nombre completo</label>
+          <label>👤 Nombre</label>
           <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required style={inputStyle} />
+        </div>
+
+        <div>
+          <label>👤 Apellido</label>
+          <input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required style={inputStyle} />
+        </div>
+
+        <div>
+          <label>📅 Fecha de nacimiento</label>
+          <input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} />
+        </div>
+
+        <div>
+          <label>⚧️ Sexo</label>
+          <select value={sexo} onChange={(e) => setSexo(e.target.value)} required style={inputStyle}>
+            <option value="">Selecciona</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Otro">Otro</option>
+            <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+          </select>
+        </div>
+
+        <div>
+          <label>🌎 País</label>
+          <input type="text" value={pais} onChange={(e) => setPais(e.target.value)} required style={inputStyle} />
         </div>
 
         <div style={{ display: "flex", gap: "1rem" }}>
@@ -114,8 +136,13 @@ const RegistroUsuario: React.FC = () => {
         </div>
 
         <div>
-          <label>📅 Fecha de nacimiento</label>
-          <input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} />
+          <label>📧 Correo electrónico</label>
+          <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} />
+        </div>
+
+        <div>
+          <label>🔒 Clave personal</label>
+          <input type="password" value={contraseña} onChange={(e) => setContraseña(e.target.value)} required style={inputStyle} />
         </div>
 
         <button type="submit" style={{
