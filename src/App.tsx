@@ -42,6 +42,7 @@ import SelectorTipoUsuario from "./components/SelectorTipoUsuario";
 import Login from "./components/Login";
 import RecuperarClave from "./components/RecuperarClave";
 import NuevaClave from "./components/NuevaClave";
+import LoginColaborador from "./components/LoginColaborador";
 
 import { Participante } from "./types";
 
@@ -102,6 +103,7 @@ function App() {
           <Route path="/" element={<Bienvenida />} />
           <Route path="/login" element={<Login />} />
           <Route path="/login-usuario" element={<LoginUsuario />} />
+          <Route path="/login-colaborador" element={<LoginColaborador />} />
           <Route path="/recuperar-clave" element={<RecuperarClave />} />
           <Route path="/nueva-clave" element={<NuevaClave />} />
           <Route path="/ingreso-usuario" element={<VistaIngresoUsuario />} />
