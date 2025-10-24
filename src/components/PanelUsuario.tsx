@@ -17,12 +17,38 @@ const PanelUsuario: React.FC = () => {
     { nombre: "🗣️ Foro Financiero", ruta: "/foro-financiero", color: "#2c3e50" }
   ];
 
+  const evaluarSaludFinanciera = () => {
+    const ahorro = parseInt(localStorage.getItem("ahorro") || "0");
+    const cumplimiento = parseFloat(localStorage.getItem("cumplimiento") || "0");
+
+    if (ahorro === 0 && cumplimiento === 0) {
+      return {
+        mensaje: "Aún no has ingresado tus datos financieros. ¡Estás a tiempo de comenzar tu camino hacia la autonomía! 🚀",
+        emoji: "🕊️"
+      };
+    }
+
+    if (cumplimiento >= 90) return { mensaje: "Tu salud financiera es excelente", emoji: "😊" };
+    if (cumplimiento >= 70) return { mensaje: "Tu salud financiera es buena", emoji: "🙂" };
+    if (cumplimiento >= 50) return { mensaje: "Tu salud financiera es regular", emoji: "😐" };
+    return { mensaje: "Tu salud financiera necesita atención", emoji: "😕" };
+  };
+
+  const estadoFinanciero = evaluarSaludFinanciera();
+
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       <h1 style={{ color: "#3498db", marginBottom: "1rem" }}>👋 Bienvenido, {nombreUsuario}</h1>
       <p style={{ fontSize: "1.05rem", color: "#555", marginBottom: "2rem" }}>
         Este es tu espacio personalizado dentro de Finedu. Aquí puedes revisar tu progreso, acceder a tus herramientas y recibir recomendaciones inteligentes.
       </p>
+
+      <section style={{ marginBottom: "2rem", textAlign: "center" }}>
+        <h3>📊 Estado financiero actual</h3>
+        <p style={{ fontSize: "1.1rem", color: "#555" }}>
+          {estadoFinanciero.emoji} {estadoFinanciero.mensaje}
+        </p>
+      </section>
 
       <section style={{ marginBottom: "3rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>📂 Módulos disponibles</h2>
