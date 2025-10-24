@@ -3,53 +3,53 @@ import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-
 import { FineduProvider } from "./context/FineduContext";
 
 // Componentes
-import VistaGrupal from "./components/VistaGrupal";
-import VistaParticipante from "./components/VistaParticipante";
-import VistaMetaIndividual from "./components/VistaMetaIndividual";
-import VistaEtapa from "./components/VistaEtapa";
+import Bienvenida from "./components/Bienvenida";
+import LoginUsuario from "./components/LoginUsuario";
+import VistaIngresoUsuario from "./components/VistaIngresoUsuario";
+import RegistroUsuario from "./components/RegistroUsuario";
+import FelicitacionRegistro from "./components/FelicitacionRegistro";
+import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
+import RegistroColaborador from "./components/RegistroColaborador";
+import VistaInstitucional from "./components/VistaInstitucional";
+import PanelUsuario from "./components/PanelUsuario";
+import MenuModulos from "./components/MenuModulos";
+import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
+import RegistroAhorro from "./components/RegistroAhorro";
+import SimuladorInversion from "./components/SimuladorInversion";
 import Resumen from "./components/Resumen";
+import AsistenteFinanciero from "./components/AsistenteFinanciero";
+import VistaMetaIndividual from "./components/VistaMetaIndividual";
+import TestUsuario from "./components/TestUsuario";
+import VistaGrupal from "./components/VistaGrupal";
+import AdminGrupo from "./components/AdminGrupo";
+import EvaluadorCreditoInteligente from "./modules/EvaluadorCreditoInteligente";
+import IngresoUsuario from "./components/IngresoUsuario";
+import VistaEtapa from "./components/VistaEtapa";
+import VistaParticipante from "./components/VistaParticipante";
 import SimuladorCredito from "./components/SimuladorCredito";
 import SimuladorCreditoAuto from "./components/SimuladorCreditoAuto";
 import SimuladorCreditoVivienda from "./components/SimuladorCreditoVivienda";
-import SimuladorInversion from "./components/SimuladorInversion";
-import TestUsuario from "./components/TestUsuario";
 import GraficoAhorro from "./components/GraficoAhorro";
-import PanelColaboradores from "./components/PanelColaboradores";
-import IngresoUsuario from "./components/IngresoUsuario";
-import IngresoColaborador from "./components/IngresoColaborador";
 import PanelImpacto from "./components/PanelImpacto";
 import ForoFinanciero from "./components/ForoFinanciero";
-import VistaInstitucional from "./components/VistaInstitucional";
+import PanelColaboradores from "./components/PanelColaboradores";
 import MetricasColaboradores from "./components/MetricasColaboradores";
 import GeneradorPDF from "./components/GeneradorPDF";
-import Login from "./components/Login";
-import RecuperarClave from "./components/RecuperarClave";
-import NuevaClave from "./components/NuevaClave";
-import Bienvenida from "./components/Bienvenida";
-import SelectorTipoUsuario from "./components/SelectorTipoUsuario";
-import BotonCerrarSesion from "./components/BotonCerrarSesion";
-import VistaIngresoUsuario from "./components/VistaIngresoUsuario";
-import RegistroUsuario from "./components/RegistroUsuario";
-import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
-import RegistroColaborador from "./components/RegistroColaborador";
-import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
-import PanelUsuario from "./components/PanelUsuario";
-import RegistroAhorro from "./components/RegistroAhorro";
-import AdminGrupo from "./components/AdminGrupo";
 import InformeInstitucional from "./modules/InformeInstitucional";
 import DashboardInstitucional from "./modules/DashboardInstitucional";
 import Navbar from "./components/Navbar";
-import EvaluadorCreditoInteligente from "./modules/EvaluadorCreditoInteligente";
-import MenuModulos from "./components/MenuModulos";
-import AsistenteFinanciero from "./components/AsistenteFinanciero";
-import FelicitacionRegistro from "./components/FelicitacionRegistro";
+import BotonCerrarSesion from "./components/BotonCerrarSesion";
+import SelectorTipoUsuario from "./components/SelectorTipoUsuario";
+import Login from "./components/Login";
+import RecuperarClave from "./components/RecuperarClave";
+import NuevaClave from "./components/NuevaClave";
 
 import { Participante } from "./types";
 
 function RutaProtegida({ children }: { children: JSX.Element }) {
   const location = useLocation();
   const logueado = localStorage.getItem("logueado") === "true";
-  return logueado ? children : <Navigate to="/login" state={{ from: location }} replace />;
+  return logueado ? children : <Navigate to="/login-usuario" state={{ from: location }} replace />;
 }
 
 function App() {
@@ -90,7 +90,7 @@ function App() {
   const cerrarSesion = () => {
     localStorage.clear();
     setTipoUsuario(null);
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   };
 
   return (
@@ -102,6 +102,7 @@ function App() {
           {/* Vista pública */}
           <Route path="/" element={<Bienvenida />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/login-usuario" element={<LoginUsuario />} />
           <Route path="/recuperar-clave" element={<RecuperarClave />} />
           <Route path="/nueva-clave" element={<NuevaClave />} />
           <Route path="/ingreso-usuario" element={<VistaIngresoUsuario />} />
@@ -109,20 +110,28 @@ function App() {
           <Route path="/felicitacion" element={<FelicitacionRegistro />} />
           <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
           <Route path="/registro-colaborador" element={<RegistroColaborador />} />
+          <Route path="/institucional" element={
+            <VistaInstitucional
+              participantes={participantes}
+              metaGrupal={metaGrupal}
+              pais={pais}
+              setPais={setPais}
+            />
+          } />
 
           {/* Rutas protegidas */}
           <Route path="/editar-perfil" element={<RutaProtegida><EditarPerfilUsuario /></RutaProtegida>} />
           <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
+          <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
+          <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
           <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
           <Route path="/resumen-financiero" element={<RutaProtegida><Resumen activos={500000} pasivos={200000} /></RutaProtegida>} />
           <Route path="/asistente-financiero" element={<RutaProtegida><AsistenteFinanciero /></RutaProtegida>} />
           <Route path="/mis-metas" element={<RutaProtegida><VistaMetaIndividual metas={[{ nombre: "Fondo de emergencia", objetivo: 300000, acumulado: 120000 }, { nombre: "Viaje familiar", objetivo: 1500000, acumulado: 450000 }]} /></RutaProtegida>} />
           <Route path="/test-financiero" element={<RutaProtegida><TestUsuario /></RutaProtegida>} />
-          <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
           <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} /></RutaProtegida>} />
           <Route path="/admin-grupo" element={<RutaProtegida><AdminGrupo /></RutaProtegida>} />
           <Route path="/evaluador-credito" element={<RutaProtegida><EvaluadorCreditoInteligente /></RutaProtegida>} />
-          <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
 
           {/* Usuario completo */}
           <Route path="/usuario" element={
@@ -151,23 +160,16 @@ function App() {
               <>
                 <IngresoColaborador setPais={setPais} />
                 <PanelColaboradores pais={pais} />
-                <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                <PanelImpacto participantes={participantes} metaGrupal
+                                  <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                 <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
                 <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                 <ForoFinanciero />
               </>
             </RutaProtegida>
           } />
-          {/* Institucional */}
-          <Route path="/institucional" element={
-            <VistaInstitucional
-              participantes={participantes}
-              metaGrupal={metaGrupal}
-              pais={pais}
-              setPais={setPais}
-            />
-          } />
 
+          {/* Institucional */}
           <Route path="/informe-institucional" element={
             <RutaProtegida>
               {tipoUsuario === "institucional"
@@ -220,4 +222,3 @@ function App() {
 }
 
 export default App;
-
