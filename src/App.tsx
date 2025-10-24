@@ -56,12 +56,7 @@ import MenuModulos from "./components/MenuModulos";
 import FelicitacionRegistro from "./components/FelicitacionRegistro";
 
 import { Participante } from "./types";
-
-function RutaProtegida({ children }: { children: JSX.Element }) {
-  const location = useLocation();
-  const logueado = localStorage.getItem("logueado") === "true";
-  return logueado ? children : <Navigate to="/login" state={{ from: location }} replace />;
-}
+import RutaProtegida from "./components/RutaProtegida";
 
 function App() {
   const location = useLocation();
@@ -169,15 +164,17 @@ function App() {
           } />
 
           <Route path="/colaborador" element={
-            <>
-              <IngresoColaborador setPais={setPais} />
-              <PanelColaboradores pais={pais} />
-              <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
-              <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-              <GeneradorPDF participantes={participantes
-                              <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
-              <ForoFinanciero />
-            </>
+            <RutaProtegida>
+              <>
+                <IngresoColaborador setPais={setPais} />
+                <PanelColaboradores pais={pais} />
+                <PanelImpacto participantes
+                                  <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
+                <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                <ForoFinanciero />
+              </>
+            </RutaProtegida>
           } />
 
           <Route path="/institucional" element={
@@ -211,27 +208,6 @@ function App() {
         )}
 
         {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
-
-        {tipoUsuario && (
-          <button
-            onClick={() => {
-              localStorage.clear();
-              setTipoUsuario(null);
-              window.location.href = "/";
-            }}
-            style={{
-              marginTop: "1rem",
-              padding: "0.5rem 1rem",
-              backgroundColor: "#e74c3c",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer"
-            }}
-          >
-            Reiniciar sesión
-          </button>
-        )}
       </div>
     </FineduProvider>
   );
