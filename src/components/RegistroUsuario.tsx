@@ -5,6 +5,11 @@ const RegistroUsuario: React.FC = () => {
   const [correo, setCorreo] = useState("");
   const [contraseña, setContraseña] = useState("");
   const [nombre, setNombre] = useState("");
+  const [ciudad, setCiudad] = useState("");
+  const [comuna, setComuna] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [ingresos, setIngresos] = useState("");
+  const [egresos, setEgresos] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -17,8 +22,8 @@ const RegistroUsuario: React.FC = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2Jub3J1ZHRjeXJydXVidXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNzEyNjksImV4cCI6MjA3Njc0NzI2OX0.XUeq9bsP_tQ5G0QRcYKAlRIsWG1I4tjZBVfTZanfGKk",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2Jub3J1ZHRjeXJydXVidXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNzEyNjksImV4cCI6MjA3Njc0NzI2OX0.XUeq9bsP_tQ5G0QRcYKAlRIsWG1I4tjZBVfTZanfGKk"
+        "apikey": "TU_API_KEY",
+        "Authorization": "Bearer TU_BEARER_TOKEN"
       }
     });
 
@@ -41,14 +46,19 @@ const RegistroUsuario: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2Jub3J1ZHRjeXJydXVidXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNzEyNjksImV4cCI6MjA3Njc0NzI2OX0.XUeq9bsP_tQ5G0QRcYKAlRIsWG1I4tjZBVfTZanfGKk",
-          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2Jub3J1ZHRjeXJydXVidXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNzEyNjksImV4cCI6MjA3Njc0NzI2OX0.XUeq9bsP_tQ5G0QRcYKAlRIsWG1I4tjZBVfTZanfGKk",
+          "apikey": "TU_API_KEY",
+          "Authorization": "Bearer TU_BEARER_TOKEN",
           "Prefer": "return=representation"
         },
         body: JSON.stringify({
           correo,
           contraseña,
           nombre,
+          ciudad,
+          comuna,
+          fechaNacimiento,
+          ingresos: parseInt(ingresos),
+          egresos: parseInt(egresos),
           created_at: new Date().toISOString()
         })
       });
@@ -62,7 +72,7 @@ const RegistroUsuario: React.FC = () => {
         localStorage.setItem("logueado", "true");
         localStorage.setItem("tipoUsuario", "usuario");
 
-        navigate("/felicitacion"); // ✅ Redirección mejorada
+        navigate("/felicitacion");
       } else {
         setError("No se pudo registrar el usuario.");
       }
@@ -74,45 +84,43 @@ const RegistroUsuario: React.FC = () => {
 
   return (
     <div style={{
-      maxWidth: "400px",
+      maxWidth: "500px",
       margin: "2rem auto",
-      padding: "1rem",
+      padding: "1.5rem",
       border: "1px solid #ccc",
       borderRadius: "8px",
       backgroundColor: "#f9f9f9"
     }}>
-      <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Registro de Usuario</h2>
+      <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>📝 Ficha de ingreso</h2>
       <form onSubmit={handleSubmit}>
         <label>Correo:</label>
-        <input
-          type="email"
-          value={correo}
-          onChange={(e) => setCorreo(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "1rem" }}
-        />
+        <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
 
         <label>Contraseña:</label>
-        <input
-          type="password"
-          value={contraseña}
-          onChange={(e) => setContraseña(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "1rem" }}
-        />
+        <input type="password" value={contraseña} onChange={(e) => setContraseña(e.target.value)} required />
 
-        <label>Nombre:</label>
-        <input
-          type="text"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "1rem" }}
-        />
+        <label>Nombre completo:</label>
+        <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+
+        <label>Ciudad:</label>
+        <input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required />
+
+        <label>Comuna:</label>
+        <input type="text" value={comuna} onChange={(e) => setComuna(e.target.value)} required />
+
+        <label>Fecha de nacimiento:</label>
+        <input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required />
+
+        <label>Ingresos mensuales:</label>
+        <input type="number" value={ingresos} onChange={(e) => setIngresos(e.target.value)} required />
+
+        <label>Egresos mensuales:</label>
+        <input type="number" value={egresos} onChange={(e) => setEgresos(e.target.value)} required />
 
         <button type="submit" style={{
+          marginTop: "1rem",
           width: "100%",
-          padding: "0.5rem",
+          padding: "0.6rem",
           backgroundColor: "#2ecc71",
           color: "white",
           border: "none",
