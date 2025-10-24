@@ -1,8 +1,18 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const VistaIngresoUsuario: React.FC = () => {
+  const navigate = useNavigate();
   const nombreUsuario = localStorage.getItem("nombreUsuario");
+
+  useEffect(() => {
+    // Activar sesión y tipo de usuario
+    localStorage.setItem("tipoUsuario", "usuario");
+    localStorage.setItem("logueado", "true");
+
+    // Redirigir automáticamente al panel de usuario
+    navigate("/usuario", { replace: true });
+  }, [navigate]);
 
   return (
     <div style={{
@@ -24,21 +34,6 @@ const VistaIngresoUsuario: React.FC = () => {
       <p style={{ marginTop: "1rem", fontStyle: "italic" }}>
         Explora, simula, aprende y avanza. Estamos contigo en cada paso.
       </p>
-
-      <Link to="/usuario">
-        <button style={{
-          marginTop: "2rem",
-          padding: "0.75rem 1.5rem",
-          backgroundColor: "#3498db",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          fontSize: "1rem",
-          cursor: "pointer"
-        }}>
-          Ir al panel de usuario
-        </button>
-      </Link>
     </div>
   );
 };
