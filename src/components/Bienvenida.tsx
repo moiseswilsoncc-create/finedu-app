@@ -4,6 +4,20 @@ import { useNavigate } from "react-router-dom";
 const Bienvenida: React.FC = () => {
   const navigate = useNavigate();
 
+  const ingresarUsuario = () => {
+    localStorage.setItem("logueado", "true");
+    localStorage.setItem("tipoUsuario", "usuario");
+    localStorage.setItem("nombreUsuario", "Usuario Finedu");
+    navigate("/panel-usuario");
+  };
+
+  const ingresarColaborador = () => {
+    localStorage.setItem("logueado", "true");
+    localStorage.setItem("tipoUsuario", "colaborador");
+    localStorage.setItem("nombreUsuario", "Colaborador Finedu");
+    navigate("/dashboard-institucional");
+  };
+
   return (
     <div style={{
       maxWidth: "700px",
@@ -22,7 +36,6 @@ const Bienvenida: React.FC = () => {
         Finedu promueve el ahorro grupal, la autonomía financiera y el acceso gratuito a inteligencia económica. Cada usuario puede avanzar a su ritmo, acompañado por colaboradores e instituciones que fortalecen su progreso.
       </p>
 
-      {/* Botones centrados y ordenados */}
       <div style={{
         display: "flex",
         flexDirection: "column",
@@ -49,7 +62,7 @@ const Bienvenida: React.FC = () => {
 
         {/* 👤 Ingreso usuario registrado */}
         <button
-          onClick={() => navigate("/ingreso-usuario")}
+          onClick={ingresarUsuario}
           style={{
             padding: "0.8rem 1.5rem",
             backgroundColor: "#3498db",
@@ -67,7 +80,7 @@ const Bienvenida: React.FC = () => {
 
         {/* 👥 Ingreso colaborador */}
         <button
-          onClick={() => navigate("/ingreso-colaborador")}
+          onClick={ingresarColaborador}
           style={{
             padding: "0.8rem 1.5rem",
             backgroundColor: "#2ecc71",
