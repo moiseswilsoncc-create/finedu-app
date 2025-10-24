@@ -1,31 +1,62 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import AsistenteFinanciero from "./AsistenteFinanciero";
 
-const PanelUsuario = () => {
+const PanelUsuario: React.FC = () => {
+  const navigate = useNavigate();
   const nombreUsuario = localStorage.getItem("nombreUsuario") || "Usuario";
 
-  return (
-    <div style={{ padding: "2rem" }}>
-      <h1>👋 Bienvenido, {nombreUsuario}</h1>
-      <p>Este es tu espacio personalizado dentro de Finedu. Aquí puedes revisar tu progreso, acceder a tus herramientas y recibir recomendaciones inteligentes.</p>
+  const modulos = [
+    { nombre: "💸 Ingresos y Egresos", ruta: "/resumen-financiero", color: "#f39c12" },
+    { nombre: "💰 Registro de Ahorro", ruta: "/registro-ahorro", color: "#27ae60" },
+    { nombre: "👥 Mi Grupo", ruta: "/vista-grupal", color: "#2980b9" },
+    { nombre: "📈 Simulador de Inversión", ruta: "/simulador-inversion", color: "#8e44ad" },
+    { nombre: "🏦 Simulador de Crédito", ruta: "/simulador-credito", color: "#c0392b" },
+    { nombre: "🧠 Test Financiero", ruta: "/test-financiero", color: "#16a085" },
+    { nombre: "📊 Mi Progreso", ruta: "/vista-etapa", color: "#34495e" },
+    { nombre: "🗣️ Foro Financiero", ruta: "/foro-financiero", color: "#2c3e50" }
+  ];
 
-      <section style={{ marginTop: "2rem" }}>
-        <h2>🔍 Accesos rápidos</h2>
-        <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-          <li><Link to="/registro-ahorro">💰 Registrar ahorro</Link></li>
-          <li><Link to="/resumen-financiero">📊 Ver resumen financiero</Link></li>
-          <li><Link to="/simulador-inversion">📈 Simular inversión</Link></li>
-          <li><Link to="/test-financiero">🧠 Test financiero</Link></li>
-          <li><Link to="/vista-grupal">👥 Ver metas grupales</Link></li>
-        </ul>
+  return (
+    <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+      <h1 style={{ color: "#3498db", marginBottom: "1rem" }}>👋 Bienvenido, {nombreUsuario}</h1>
+      <p style={{ fontSize: "1.05rem", color: "#555", marginBottom: "2rem" }}>
+        Este es tu espacio personalizado dentro de Finedu. Aquí puedes revisar tu progreso, acceder a tus herramientas y recibir recomendaciones inteligentes.
+      </p>
+
+      <section style={{ marginBottom: "3rem" }}>
+        <h2 style={{ marginBottom: "1rem" }}>📂 Módulos disponibles</h2>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: "1rem"
+        }}>
+          {modulos.map((modulo, index) => (
+            <button
+              key={index}
+              onClick={() => navigate(modulo.ruta)}
+              style={{
+                padding: "1rem",
+                backgroundColor: modulo.color,
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                cursor: "pointer"
+              }}
+            >
+              {modulo.nombre}
+            </button>
+          ))}
+        </div>
       </section>
 
-      <section style={{ marginTop: "2rem" }}>
+      <section style={{ marginBottom: "3rem" }}>
+        <h2>🤖 Asistente Financiero</h2>
         <AsistenteFinanciero />
       </section>
 
-      <section style={{ marginTop: "2rem" }}>
+      <section>
         <Link to="/modulos" style={{
           display: "inline-block",
           padding: "0.75rem 1.5rem",
@@ -34,7 +65,7 @@ const PanelUsuario = () => {
           borderRadius: "6px",
           textDecoration: "none"
         }}>
-          📂 Ver todos los módulos
+          📁 Ver todos los módulos
         </Link>
       </section>
     </div>
