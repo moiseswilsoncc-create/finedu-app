@@ -9,7 +9,6 @@ import VistaIngresoUsuario from "./components/VistaIngresoUsuario";
 import RegistroUsuario from "./components/RegistroUsuario";
 import FelicitacionRegistro from "./components/FelicitacionRegistro";
 import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
-import RegistroColaborador from "./components/RegistroColaborador";
 import VistaInstitucional from "./components/VistaInstitucional";
 import PanelUsuario from "./components/PanelUsuario";
 import MenuModulos from "./components/MenuModulos";
@@ -109,7 +108,6 @@ function App() {
           <Route path="/registro-usuario" element={<RegistroUsuario />} />
           <Route path="/felicitacion" element={<FelicitacionRegistro />} />
           <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
-          <Route path="/registro-colaborador" element={<RegistroColaborador />} />
           <Route path="/institucional" element={
             <VistaInstitucional
               participantes={participantes}
@@ -158,10 +156,8 @@ function App() {
           <Route path="/colaborador" element={
             <RutaProtegida>
               <>
-                <IngresoColaborador setPais={setPais} />
                 <PanelColaboradores pais={pais} />
-                <PanelImpacto participantes={participantes} metaGrupal
-                                  <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                 <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
                 <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                 <ForoFinanciero />
@@ -180,8 +176,8 @@ function App() {
 
           <Route path="/dashboard-institucional" element={
             <RutaProtegida>
-              {tipoUsuario === "institucional"
-                ? <DashboardInstitucional />
+              {tipoUsuario === "instit
+                                ? <DashboardInstitucional />
                 : <Navigate to="/" />}
             </RutaProtegida>
           } />
