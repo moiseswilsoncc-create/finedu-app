@@ -25,15 +25,31 @@ function ResumenFinanciero() {
   const metaGrupal = 1000000;
   const pais = "Chile";
 
+  if (!correoUsuario) {
+    return (
+      <div style={{ padding: "2rem" }}>
+        <h3 style={{ color: "#e67e22" }}>⚠️ No se encontró el correo en localStorage</h3>
+        <p>Por favor inicia sesión para que podamos identificarte.</p>
+      </div>
+    );
+  }
+
   const usuario = participantes.find(
-    p => p.correo.trim().toLowerCase() === (correoUsuario || "").trim().toLowerCase()
+    p => p.correo.trim().toLowerCase() === correoUsuario.trim().toLowerCase()
   );
 
   if (!usuario) {
     return (
       <div style={{ padding: "2rem" }}>
         <h3 style={{ color: "#c0392b" }}>⚠️ Usuario no encontrado</h3>
-        <p>Por favor asegúrate de haber iniciado sesión correctamente y registrado tus datos.</p>
+        <p>Correo en sesión: <strong>{correoUsuario}</strong></p>
+        <p>Correos disponibles:</p>
+        <ul>
+          {participantes.map((p, i) => (
+            <li key={i}>{p.correo}</li>
+          ))}
+        </ul>
+        <p>Por favor asegúrate de que el correo coincida exactamente.</p>
       </div>
     );
   }
