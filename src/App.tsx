@@ -160,7 +160,6 @@ function App() {
                    <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
                    <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                     <ForoFinanciero />
-
                   </>
                 )
                 : <Navigate to="/" />}
