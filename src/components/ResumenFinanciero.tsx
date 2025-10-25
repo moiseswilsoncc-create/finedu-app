@@ -25,7 +25,9 @@ function ResumenFinanciero() {
   const metaGrupal = 1000000;
   const pais = "Chile";
 
-  const usuario = participantes.find(p => p.correo === correoUsuario);
+  const usuario = participantes.find(
+    p => p.correo.trim().toLowerCase() === (correoUsuario || "").trim().toLowerCase()
+  );
 
   if (!usuario) {
     return (
