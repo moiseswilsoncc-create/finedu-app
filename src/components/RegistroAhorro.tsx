@@ -40,21 +40,27 @@ const RegistroAhorro: React.FC = () => {
 
   const obtenerNombreDesdeCorreo = async (correo: string) => {
     try {
-      const response = await fetch(`https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios?correo=eq.${correo}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": "TU_API_KEY",
-          "Authorization": "Bearer TU_BEARER_TOKEN"
+      const response = await fetch(
+        `https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios?correo=eq.${correo}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: "TU_API_KEY",
+            Authorization: "Bearer TU_API_KEY",
+          },
         }
-      });
+      );
 
       const data = await response.json();
-      if (data.length > 0) {
+      if (data.length > 0 && data[0].nombre) {
         setNombreUsuario(data[0].nombre);
+      } else {
+        setNombreUsuario("Usuario");
       }
     } catch (err) {
       console.error("Error al obtener nombre:", err);
+      setNombreUsuario("Usuario");
     }
   };
 
@@ -78,7 +84,7 @@ const RegistroAhorro: React.FC = () => {
       fecha: new Date().toISOString(),
     });
 
-    alert(`✅ ${nombreUsuario || "Usuario"}, tu aporte de ahorro fue registrado correctamente.`);
+    alert(`✅ ${nombreUsuario}, tu aporte de ahorro fue registrado correctamente.`);
     setRegistro({ correo: correoUsuario, monto: 0, tipo: "ahorro" });
   };
 
@@ -95,7 +101,7 @@ const RegistroAhorro: React.FC = () => {
     <div style={{ maxWidth: "500px", margin: "2rem auto", padding: "1rem" }}>
       <h2>💰 Registro de Ahorro</h2>
       <p style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>
-        👤 <strong>{nombreUsuario || "Usuario"}</strong>, registra tus aportes de ahorro personal o grupal.
+        👤 <strong>{nombreUsuario}</strong>, registra tus aportes de ahorro personal o grupal.
       </p>
 
       <label style={{ display: "block", marginBottom: "0.5rem" }}>
