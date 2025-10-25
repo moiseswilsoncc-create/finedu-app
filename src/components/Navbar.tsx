@@ -11,6 +11,8 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
 
   if (!tipoUsuario) return null;
 
+  const nombreUsuario = localStorage.getItem("nombreUsuario") || "Finedu";
+
   return (
     <nav style={{
       display: "flex",
@@ -29,7 +31,7 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
         )}
         {tipoUsuario === "colaborador" && (
           <>
-            <Link to="/colaborador" style={{ color: "white", marginRight: "1rem" }}>🤝 Colaborador</Link>
+            <Link to="/panel-colaborador" style={{ color: "white", marginRight: "1rem" }}>🤝 Colaborador</Link>
           </>
         )}
         {tipoUsuario === "institucional" && (
@@ -40,19 +42,24 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
         )}
       </div>
 
-      <button
-        onClick={onCerrarSesion}
-        style={{
-          backgroundColor: "#e74c3c",
-          color: "white",
-          border: "none",
-          padding: "0.5rem 1rem",
-          borderRadius: "4px",
-          cursor: "pointer"
-        }}
-      >
-        Cerrar sesión
-      </button>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <span style={{ fontSize: "0.95rem", color: "#ecf0f1" }}>
+          Bienvenido, <strong>{nombreUsuario}</strong>
+        </span>
+        <button
+          onClick={onCerrarSesion}
+          style={{
+            backgroundColor: "#e74c3c",
+            color: "white",
+            border: "none",
+            padding: "0.5rem 1rem",
+            borderRadius: "4px",
+            cursor: "pointer"
+          }}
+        >
+          Cerrar sesión
+        </button>
+      </div>
     </nav>
   );
 };
