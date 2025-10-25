@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../utils/supabaseClient';
 
 const LoginUsuario = () => {
   const [correo, setCorreo] = useState('');
@@ -8,45 +9,25 @@ const LoginUsuario = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const listaAutorizada = [
-    "usuario@finedu.cl",
-    "persona@finedu.cl",
-    "familia@finedu.cl"
-  ];
-
-  const validarCredenciales = (correo: string, clave: string) => {
-    return listaAutorizada.includes(correo) && clave === "1234";
-  };
-
   const enviarCorreoRecuperacion = (correo: string) => {
     console.log(`📩 Enviando correo de recuperación a ${correo}`);
     // Aquí iría la lógica real de envío
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!listaAutorizada.includes(correo)) {
-      setError("Este correo no está autorizado por Finedu.");
-      return;
-    }
 
     if (clave.length !== 4) {
       setError("La clave debe tener exactamente 4 dígitos.");
       return;
     }
 
-    if (validarCredenciales(correo, clave)) {
-      localStorage.setItem("logueado", "true");
-      localStorage.setItem("tipoUsuario", "usuario");
-      localStorage.setItem("correoUsuario", correo);
+    const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
+      email: correo,
+      password: clave
+    });
 
-      // ✅ Extraemos nombre desde el correo (antes del @)
-      const nombreExtraido = correo.split("@")[0];
-      localStorage.setItem("nombreUsuario", nombreExtraido);
-
-      navigate('/panel-usuario');
-    } else {
+    if (supabaseError) {
       const nuevosIntentos = intentosFallidos + 1;
       setIntentosFallidos(nuevosIntentos);
 
@@ -56,7 +37,18 @@ const LoginUsuario = () => {
       } else {
         setError("Correo o clave incorrectos. Intenta nuevamente.");
       }
+
+      return;
     }
+
+    localStorage.setItem("logueado", "true");
+    localStorage.setItem("tipoUsuario", "usuario");
+    localStorage.setItem("correoUsuario", correo);
+
+    const nombreExtraido = correo.split("@")[0];
+    localStorage.setItem("nombreUsuario", nombreExtraido);
+
+    navigate('/panel-usuario');
   };
 
   return (
