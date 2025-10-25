@@ -3,14 +3,14 @@ import React, { useState, useEffect } from "react";
 type Registro = {
   correo: string;
   monto: number;
-  tipo: "ingreso" | "egreso";
+  tipo: string; // mantenemos tipo para compatibilidad, pero lo fijamos como "ahorro"
 };
 
 const RegistroAhorro: React.FC = () => {
   const [registro, setRegistro] = useState<Registro>({
     correo: "",
     monto: 0,
-    tipo: "ingreso",
+    tipo: "ahorro",
   });
 
   const [sesionValida, setSesionValida] = useState(false);
@@ -29,17 +29,14 @@ const RegistroAhorro: React.FC = () => {
     setCorreoUsuario(correo);
     setGrupoId(grupo);
 
-    // ✅ Aseguramos que el correo se cargue correctamente
     setRegistro({
       correo: correo,
       monto: 0,
-      tipo: "ingreso",
+      tipo: "ahorro",
     });
   }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setRegistro((prev) => ({
       ...prev,
@@ -59,24 +56,24 @@ const RegistroAhorro: React.FC = () => {
       fecha: new Date().toISOString(),
     });
 
-    alert(`✅ ${nombreUsuario}, tu movimiento fue registrado correctamente.`);
-    setRegistro({ correo: correoUsuario, monto: 0, tipo: "ingreso" });
+    alert(`✅ ${nombreUsuario}, tu aporte de ahorro fue registrado correctamente.`);
+    setRegistro({ correo: correoUsuario, monto: 0, tipo: "ahorro" });
   };
 
   if (!sesionValida) {
     return (
       <div style={{ textAlign: "center", marginTop: "3rem" }}>
         <h3>⚠️ Usuario no encontrado</h3>
-        <p>No se encontraron datos financieros asociados a tu sesión. Por favor inicia sesión para registrar tus ingresos y egresos.</p>
+        <p>No se encontraron datos financieros asociados a tu sesión. Por favor inicia sesión para registrar tus ahorros.</p>
       </div>
     );
   }
 
   return (
     <div style={{ maxWidth: "500px", margin: "2rem auto", padding: "1rem" }}>
-      <h2>💰 Registro de Ingresos y Egresos</h2>
+      <h2>💰 Registro de Ahorro</h2>
       <p style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>
-        👤 <strong>{nombreUsuario}</strong>, registra tus movimientos financieros personales.
+        👤 <strong>{nombreUsuario}</strong>, registra tus aportes de ahorro personal o grupal.
       </p>
 
       <label style={{ display: "block", marginBottom: "0.5rem" }}>
@@ -91,31 +88,19 @@ const RegistroAhorro: React.FC = () => {
         />
       </label>
 
-      <label style={{ display: "block", marginBottom: "1rem" }}>
-        Tipo de registro:
-        <select
-          name="tipo"
-          value={registro.tipo}
-          onChange={handleChange}
-          style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-        >
-          <option value="ingreso">Ingreso</option>
-          <option value="egreso">Egreso</option>
-        </select>
-      </label>
-
       <button
         onClick={registrar}
         style={{
           padding: "0.5rem 1rem",
-          backgroundColor: "#4caf50",
+          backgroundColor: "#27ae60",
           color: "white",
           border: "none",
           borderRadius: "4px",
           cursor: "pointer",
+          marginTop: "1rem",
         }}
       >
-        Registrar
+        Registrar ahorro
       </button>
     </div>
   );
