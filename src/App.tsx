@@ -99,7 +99,7 @@ function App() {
       <div>
         {tipoUsuario && <Navbar tipoUsuario={tipoUsuario} onCerrarSesion={cerrarSesion} />}
         <Routes>
-          {/* Vista pública */}
+          {/* Rutas públicas */}
           <Route path="/" element={<Bienvenida />} />
           <Route path="/login" element={<Login />} />
           <Route path="/login-usuario" element={<LoginUsuario />} />
@@ -155,15 +155,19 @@ function App() {
           } />
 
           {/* Colaborador completo */}
-          <Route path="/colaborador" element={
+          <Route path="/panel-colaborador" element={
             <RutaProtegida>
-              <>
-                <PanelColaboradores pais={pais} />
-                <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
-                <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-                <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
-                <ForoFinanciero />
-              </>
+              {tipoUsuario === "colaborador"
+                ? (
+                  <>
+                    <PanelColaboradores pais={pais} />
+                    <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                    <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
+                    <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                    <ForoFinanciero />
+                  </>
+                )
+                : <Navigate to="/" />}
             </RutaProtegida>
           } />
 
@@ -184,22 +188,19 @@ function App() {
 
           <Route path="/dashboard-institucional" element={
             <RutaProtegida>
-              {(tipoUsuario === "institucional" || tipoUsuario === "colaborador")
+              {tipoUsuario === "institucional"
                 ? <DashboardInstitucional />
                 : <Navigate to="/" />}
             </RutaProtegida>
           } />
         </Routes>
 
-        {/* Selector de tipo de usuario solo en la raíz */}
         {!tipoUsuario && location.pathname === "/" && (
           <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
         )}
 
-        {/* Botón de cierre de sesión */}
         {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
 
-        {/* Botón de reinicio de sesión */}
         {tipoUsuario && (
           <button
             onClick={() => {
