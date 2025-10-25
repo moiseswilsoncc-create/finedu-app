@@ -10,8 +10,27 @@ type Props = {
 };
 
 function ResumenFinanciero({ participantes, metaGrupal, pais }: Props) {
+  // Validación de seguridad
+  if (!participantes || !Array.isArray(participantes)) {
+    return (
+      <div style={{ padding: "2rem" }}>
+        <h3 style={{ color: "#c0392b" }}>⚠️ Datos no disponibles</h3>
+        <p>No se pudo cargar la información de los participantes. Verifica que el módulo esté recibiendo los datos correctamente.</p>
+      </div>
+    );
+  }
+
   const correoUsuario = localStorage.getItem("correo");
   const usuario = participantes.find(p => p.correo === correoUsuario);
+
+  if (!usuario) {
+    return (
+      <div style={{ padding: "2rem" }}>
+        <h3 style={{ color: "#c0392b" }}>⚠️ Usuario no encontrado</h3>
+        <p>Por favor asegúrate de haber iniciado sesión correctamente y registrado tus datos.</p>
+      </div>
+    );
+  }
 
   const tasaCredito = getTasa(pais, "consumo");
   const tasaInversion = getTasa(pais, "inversion");
@@ -28,15 +47,6 @@ function ResumenFinanciero({ participantes, metaGrupal, pais }: Props) {
   const montoInversion = totalAhorroGrupal;
   const montoFinalInversion = montoInversion * Math.pow(1 + tasaInversion / 12 / 100, 12);
   const gananciaInversion = montoFinalInversion - montoInversion;
-
-  if (!usuario) {
-    return (
-      <div style={{ padding: "2rem" }}>
-        <h3 style={{ color: "#c0392b" }}>⚠️ Usuario no encontrado</h3>
-        <p>Por favor asegúrate de haber iniciado sesión correctamente y registrado tus datos.</p>
-      </div>
-    );
-  }
 
   const ahorroPersonal = usuario.ingresos - usuario.egresos;
 
