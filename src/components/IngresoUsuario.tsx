@@ -15,11 +15,13 @@ function IngresoUsuario({ setPais }: Props) {
     ciudad: "",
     comuna: "",
     correo: "",
+    clave: ""
   });
 
   const [registrado, setRegistrado] = useState(false);
   const [correoValido, setCorreoValido] = useState(true);
   const [camposCompletos, setCamposCompletos] = useState(false);
+  const [claveValida, setClaveValida] = useState(true);
   const navigate = useNavigate();
 
   const listaAutorizada = [
@@ -33,6 +35,7 @@ function IngresoUsuario({ setPais }: Props) {
     const todosCompletos = Object.values(datos).every(valor => valor.trim() !== "");
     setCamposCompletos(todosCompletos);
     setCorreoValido(listaAutorizada.includes(datos.correo));
+    setClaveValida(datos.clave.length === 4);
   }, [datos]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -43,7 +46,7 @@ function IngresoUsuario({ setPais }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (camposCompletos && correoValido) {
+    if (camposCompletos && correoValido && claveValida) {
       setRegistrado(true);
       localStorage.setItem("correoUsuario", datos.correo);
       localStorage.setItem("logueado", "true");
@@ -79,10 +82,17 @@ function IngresoUsuario({ setPais }: Props) {
           <input type="text" name="ciudad" placeholder="Ciudad" value={datos.ciudad} onChange={handleChange} />
           <input type="text" name="comuna" placeholder="Comuna" value={datos.comuna} onChange={handleChange} />
           <input type="email" name="correo" placeholder="Correo electrónico" value={datos.correo} onChange={handleChange} />
+          <input type="password" name="clave" placeholder="Clave personal (4 dígitos)" value={datos.clave} onChange={handleChange} />
 
           {!correoValido && (
             <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
               Este correo no está autorizado por Finedu. Verifica con tu institución.
+            </p>
+          )}
+
+          {!claveValida && (
+            <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
+              La clave debe tener exactamente 4 dígitos.
             </p>
           )}
 
@@ -92,13 +102,13 @@ function IngresoUsuario({ setPais }: Props) {
             </p>
           )}
 
-          <button type="submit" disabled={!camposCompletos || !correoValido} style={{
+          <button type="submit" disabled={!camposCompletos || !correoValido || !claveValida} style={{
             padding: "0.6rem 1.2rem",
-            backgroundColor: (!camposCompletos || !correoValido) ? "#ccc" : "#2980b9",
+            backgroundColor: (!camposCompletos || !correoValido || !claveValida) ? "#ccc" : "#2980b9",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: (!camposCompletos || !correoValido) ? "not-allowed" : "pointer"
+            cursor: (!camposCompletos || !correoValido || !claveValida) ? "not-allowed" : "pointer"
           }}>
             Registrarse
           </button>
