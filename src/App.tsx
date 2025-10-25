@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FineduProvider } from "./context/FineduContext";
+import RutaProtegida from "./components/RutaProtegida";
 
 // Componentes
 import Bienvenida from "./components/Bienvenida";
@@ -46,13 +47,6 @@ import LoginColaborador from "./components/LoginColaborador";
 import CambioClaveColaborador from "./components/CambioClaveColaborador";
 
 import { Participante } from "./types";
-
-// ✅ Componente de protección de rutas
-function RutaProtegida({ children }: { children: JSX.Element }) {
-  const location = useLocation();
-  const logueado = localStorage.getItem("logueado") === "true";
-  return logueado ? children : <Navigate to="/login-usuario" state={{ from: location }} replace />;
-}
 
 function App() {
   const location = useLocation();
@@ -162,11 +156,11 @@ function App() {
                 ? (
                   <>
                     <PanelColaboradores pais={pais} />
-                    <PanelImpacto participantes={participantes}
-                                          <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                    <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                     <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
                     <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                     <ForoFinanciero />
+                  </>
                   </>
                 )
                 : <Navigate to="/" />}
