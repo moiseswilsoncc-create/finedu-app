@@ -14,17 +14,22 @@ const RegistroAhorro: React.FC = () => {
   });
 
   const [logueado, setLogueado] = useState(false);
+  const [nombreUsuario, setNombreUsuario] = useState("");
+  const [correoUsuario, setCorreoUsuario] = useState("");
   const [grupoId, setGrupoId] = useState("");
-  const [rolUsuario, setRolUsuario] = useState("");
 
   useEffect(() => {
     const log = localStorage.getItem("logueado") === "true";
+    const nombre = localStorage.getItem("nombreUsuario") || "";
+    const correo = localStorage.getItem("correoUsuario") || "";
     const grupo = localStorage.getItem("grupoId") || "";
-    const rol = localStorage.getItem("rolUsuario") || "";
 
     setLogueado(log);
+    setNombreUsuario(nombre);
+    setCorreoUsuario(correo);
+
+    setRegistro((prev) => ({ ...prev, correo }));
     setGrupoId(grupo);
-    setRolUsuario(rol);
   }, []);
 
   const handleChange = (
@@ -38,10 +43,6 @@ const RegistroAhorro: React.FC = () => {
   };
 
   const registrar = () => {
-    if (!grupoId) {
-      alert("⚠️ No se ha definido el grupo. Puedes continuar en modo prueba.");
-    }
-
     if (!registro.correo.trim() || registro.monto <= 0) {
       alert("Completa todos los campos correctamente.");
       return;
@@ -49,39 +50,30 @@ const RegistroAhorro: React.FC = () => {
 
     // Simulación de envío
     console.log("Registrando ahorro:", {
-      grupo_id: grupoId || "modo-prueba",
+      grupo_id: grupoId || "modo-individual",
       ...registro,
       fecha: new Date().toISOString(),
     });
 
-    alert("✅ Ahorro registrado correctamente.");
-    setRegistro({ correo: "", monto: 0, tipo: "ingreso" });
+    alert("✅ Movimiento registrado correctamente.");
+    setRegistro({ correo: correoUsuario, monto: 0, tipo: "ingreso" });
   };
 
   if (!logueado) {
     return (
       <div style={{ textAlign: "center", marginTop: "3rem" }}>
         <h3>⚠️ Usuario no encontrado</h3>
-        <p>No se encontraron datos financieros asociados a tu sesión. Por favor inicia sesión para registrar tus ingresos y egresos.</p>
+        <p>Por favor inicia sesión para registrar tus ingresos y egresos.</p>
       </div>
     );
   }
 
   return (
     <div style={{ maxWidth: "500px", margin: "2rem auto", padding: "1rem" }}>
-      <h2>💰 Registro de Ahorro</h2>
-
-      <label style={{ display: "block", marginBottom: "0.5rem" }}>
-        Correo del integrante:
-        <input
-          type="text"
-          name="correo"
-          value={registro.correo}
-          onChange={handleChange}
-          placeholder="ejemplo@correo.cl"
-          style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-        />
-      </label>
+      <h2>💰 Registro de Ingresos y Egresos</h2>
+      <p style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>
+        👤 <strong>{nombreUsuario}</strong>, registra tus movimientos financieros personales.
+      </p>
 
       <label style={{ display: "block", marginBottom: "0.5rem" }}>
         Monto en pesos chilenos:
