@@ -11,7 +11,13 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
 
   if (!tipoUsuario) return null;
 
-  const nombreUsuario = localStorage.getItem("nombreUsuario") || "Finedu";
+  const nombreUsuario = localStorage.getItem("nombreUsuario") || "";
+
+  const capitalizarNombre = (nombre: string) =>
+    nombre
+      .split(" ")
+      .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+      .join(" ");
 
   return (
     <nav style={{
@@ -43,9 +49,11 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <span style={{ fontSize: "0.95rem", color: "#ecf0f1" }}>
-          Bienvenido, <strong>{nombreUsuario}</strong>
-        </span>
+        {nombreUsuario && (
+          <span style={{ fontSize: "0.95rem", color: "#ecf0f1" }}>
+            Bienvenido, <strong>{capitalizarNombre(nombreUsuario)}</strong>
+          </span>
+        )}
         <button
           onClick={onCerrarSesion}
           style={{
