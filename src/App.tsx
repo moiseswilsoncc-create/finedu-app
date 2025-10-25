@@ -12,6 +12,7 @@ import FelicitacionRegistro from "./components/FelicitacionRegistro";
 import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
 import VistaInstitucional from "./components/VistaInstitucional";
 import PanelUsuario from "./components/PanelUsuario";
+import CrearGrupo from "./components/CrearGrupo";
 import MenuModulos from "./components/MenuModulos";
 import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
 import RegistroAhorro from "./components/RegistroAhorro";
@@ -117,6 +118,7 @@ function App() {
           {/* Rutas protegidas */}
           <Route path="/editar-perfil" element={<RutaProtegida><EditarPerfilUsuario /></RutaProtegida>} />
           <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
+          <Route path="/crear-grupo" element={<RutaProtegida><CrearGrupo usuario={usuario} /></RutaProtegida>} />
           <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
           <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
           <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
