@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 type Registro = {
   correo: string;
@@ -13,8 +13,19 @@ const RegistroAhorro: React.FC = () => {
     tipo: "ingreso",
   });
 
-  const grupoId = localStorage.getItem("grupoId") || "";
-  const rolUsuario = localStorage.getItem("rolUsuario") || "";
+  const [logueado, setLogueado] = useState(false);
+  const [grupoId, setGrupoId] = useState("");
+  const [rolUsuario, setRolUsuario] = useState("");
+
+  useEffect(() => {
+    const log = localStorage.getItem("logueado") === "true";
+    const grupo = localStorage.getItem("grupoId") || "";
+    const rol = localStorage.getItem("rolUsuario") || "";
+
+    setLogueado(log);
+    setGrupoId(grupo);
+    setRolUsuario(rol);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -28,13 +39,7 @@ const RegistroAhorro: React.FC = () => {
 
   const registrar = () => {
     if (!grupoId) {
-      alert("No se ha definido el grupo.");
-      return;
-    }
-
-    if (rolUsuario !== "admin") {
-      alert("Solo el administrador puede registrar ahorros.");
-      return;
+      alert("⚠️ No se ha definido el grupo. Puedes continuar en modo prueba.");
     }
 
     if (!registro.correo.trim() || registro.monto <= 0) {
@@ -44,7 +49,7 @@ const RegistroAhorro: React.FC = () => {
 
     // Simulación de envío
     console.log("Registrando ahorro:", {
-      grupo_id: grupoId,
+      grupo_id: grupoId || "modo-prueba",
       ...registro,
       fecha: new Date().toISOString(),
     });
@@ -52,6 +57,15 @@ const RegistroAhorro: React.FC = () => {
     alert("✅ Ahorro registrado correctamente.");
     setRegistro({ correo: "", monto: 0, tipo: "ingreso" });
   };
+
+  if (!logueado) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "3rem" }}>
+        <h3>⚠️ Usuario no encontrado</h3>
+        <p>No se encontraron datos financieros asociados a tu sesión. Por favor inicia sesión para registrar tus ingresos y egresos.</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: "500px", margin: "2rem auto", padding: "1rem" }}>
