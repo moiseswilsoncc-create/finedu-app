@@ -8,6 +8,18 @@ type Props = {
 };
 
 const VistaGrupal: React.FC<Props> = ({ nombreGrupoMeta, metaGrupal, participantes }) => {
+  // Validación institucional: si no hay grupo asignado, mostrar estado vacío
+  const grupoAsignado = nombreGrupoMeta && nombreGrupoMeta.trim() !== "" && participantes.length > 0;
+
+  if (!grupoAsignado) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "3rem" }}>
+        <h2>👥 Sin grupo asignado</h2>
+        <p>Aún no formas parte de ningún grupo. Espera a que alguien te agregue o crea uno nuevo.</p>
+      </div>
+    );
+  }
+
   const totalAhorro = participantes.reduce(
     (acc, p) => acc + (p.ingresos - p.egresos),
     0
