@@ -10,7 +10,7 @@ type Props = {
 };
 
 function ResumenFinanciero({ participantes, metaGrupal, pais }: Props) {
-  // Validación de seguridad
+  // Validación inmediata antes de cualquier cálculo
   if (!participantes || !Array.isArray(participantes)) {
     return (
       <div style={{ padding: "2rem" }}>
