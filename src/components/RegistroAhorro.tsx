@@ -107,3 +107,7 @@ const RegistroAhorro: React.FC = () => {
 };
 
 export default RegistroAhorro;
+
+// ✅ Actualización institucional: módulo exclusivo para registro de ahorro
+
+
