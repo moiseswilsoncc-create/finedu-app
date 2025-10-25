@@ -4,21 +4,39 @@ import { useNavigate } from "react-router-dom";
 const LoginColaborador: React.FC = () => {
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
+  const [intentosFallidos, setIntentosFallidos] = useState(0);
   const navigate = useNavigate();
+
+  const correoAutorizado = "colaborador@finedu.cl";
+  const claveInicial = "clave-temporal";
+
+  const validarCredenciales = (correo: string, clave: string) => {
+    return correo === correoAutorizado && clave === claveInicial;
+  };
+
+  const enviarCorreoRecuperacion = (correo: string) => {
+    console.log(`📩 Enviando correo de recuperación a ${correo}`);
+    // Aquí iría la lógica real de envío
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Simulación de validación institucional
-    const correoAutorizado = "colaborador@finedu.cl";
-    const claveInicial = "clave-temporal";
-
-    if (correo === correoAutorizado && clave === claveInicial) {
+    if (validarCredenciales(correo, clave)) {
       localStorage.setItem("tipoUsuario", "colaborador");
       localStorage.setItem("logueado", "true");
-      navigate("/colaborador");
+      localStorage.setItem("nombreUsuario", "Colaborador Finedu");
+      navigate("/panel-colaborador");
     } else {
-      alert("Correo o clave incorrectos. Este acceso es solo para colaboradores autorizados.");
+      const nuevosIntentos = intentosFallidos + 1;
+      setIntentosFallidos(nuevosIntentos);
+
+      if (nuevosIntentos >= 3) {
+        enviarCorreoRecuperacion(correo);
+        alert("Hemos enviado un enlace de recuperación a tu correo institucional.");
+      } else {
+        alert("Correo o clave incorrectos. Este acceso es solo para colaboradores autorizados.");
+      }
     }
   };
 
