@@ -59,6 +59,12 @@ function App() {
   const [tipoUsuario, setTipoUsuario] = useState<"usuario" | "colaborador" | "institucional" | null>(null);
   const [pais, setPais] = useState<string>("Chile");
 
+  const usuario = {
+    nombre: localStorage.getItem("nombreUsuario") || "Usuario",
+    correo: localStorage.getItem("correoUsuario") || "",
+    tipo: localStorage.getItem("tipoUsuario") || "usuario"
+  };
+
   const agregarParticipante = (nuevo: {
     nombre: string;
     apellido?: string;
@@ -158,9 +164,10 @@ function App() {
                 ? (
                   <>
                     <PanelColaboradores pais={pais} />
-                   <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
-                   <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-                   <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                    <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                    <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
+                    <GeneradorPDF participantes={
+                                          <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                     <ForoFinanciero />
                   </>
                 )
