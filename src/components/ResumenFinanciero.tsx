@@ -4,22 +4,12 @@ import { getTasa } from "../utils/getTasa";
 import { formatearMoneda } from "../utils/formatearMoneda";
 
 type Props = {
-  participantes: Participante[];
+  participantes?: Participante[]; // ahora es opcional
   metaGrupal: number;
   pais: string;
 };
 
-function ResumenFinanciero({ participantes, metaGrupal, pais }: Props) {
-  // Validación inmediata antes de cualquier cálculo
-  if (!participantes || !Array.isArray(participantes)) {
-    return (
-      <div style={{ padding: "2rem" }}>
-        <h3 style={{ color: "#c0392b" }}>⚠️ Datos no disponibles</h3>
-        <p>No se pudo cargar la información de los participantes. Verifica que el módulo esté recibiendo los datos correctamente.</p>
-      </div>
-    );
-  }
-
+function ResumenFinanciero({ participantes = [], metaGrupal, pais }: Props) {
   const correoUsuario = localStorage.getItem("correo");
   const usuario = participantes.find(p => p.correo === correoUsuario);
 
@@ -35,10 +25,9 @@ function ResumenFinanciero({ participantes, metaGrupal, pais }: Props) {
   const tasaCredito = getTasa(pais, "consumo");
   const tasaInversion = getTasa(pais, "inversion");
 
-  const totalAhorroGrupal = participantes.reduce(
-    (total, p) => total + (p.ingresos - p.egresos),
-    0
-  );
+  const totalAhorroGrupal = participantes.length > 0
+    ? participantes.reduce((total, p) => total + (p.ingresos - p.egresos), 0)
+    : 0;
 
   const cuotaCredito = (metaGrupal * (tasaCredito / 12 / 100)) /
     (1 - Math.pow(1 + tasaCredito / 12 / 100, -12));
