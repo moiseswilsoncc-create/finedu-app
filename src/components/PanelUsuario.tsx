@@ -75,6 +75,24 @@ const PanelUsuario: React.FC = () => {
             </button>
           ))}
         </div>
+
+        {/* ✅ Botón adicional para crear grupo */}
+        <div style={{ marginTop: "2rem", textAlign: "center" }}>
+          <button
+            onClick={() => navigate("/crear-grupo")}
+            style={{
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "#7f8c8d",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              fontSize: "1rem",
+              cursor: "pointer"
+            }}
+          >
+            🛠️ Crear grupo
+          </button>
+        </div>
       </section>
 
       <section style={{ marginBottom: "3rem" }}>
