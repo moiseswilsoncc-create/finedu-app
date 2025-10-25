@@ -161,17 +161,22 @@ function App() {
             <RutaProtegida>
               <>
                 <PanelColaboradores pais={pais} />
-                <PanelImpacto participantes={particip
-                                  <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                 <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
                 <Generador />
                 <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                 <ForoFinanciero />
               </>
+            </
+                            </>
             </RutaProtegida>
           } />
 
-          <Route path="/cambio-clave-colaborador" element={<RutaProtegida><CambioClaveColaborador /></RutaProtegida>} />
+          <Route path="/cambio-clave-colaborador" element={
+            <RutaProtegida>
+              <CambioClaveColaborador />
+            </RutaProtegida>
+          } />
 
           {/* Institucional */}
           <Route path="/informe-institucional" element={
