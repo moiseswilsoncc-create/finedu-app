@@ -47,6 +47,7 @@ import CambioClaveColaborador from "./components/CambioClaveColaborador";
 
 import { Participante } from "./types";
 
+// ✅ Componente de protección de rutas
 function RutaProtegida({ children }: { children: JSX.Element }) {
   const location = useLocation();
   const logueado = localStorage.getItem("logueado") === "true";
@@ -161,7 +162,8 @@ function App() {
                 ? (
                   <>
                     <PanelColaboradores pais={pais} />
-                    <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                    <PanelImpacto participantes={participantes}
+                                          <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                     <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
                     <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                     <ForoFinanciero />
