@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from "../supabaseClient"; // ✅ correcta
+import { supabase } from "../supabaseClient"; // ✅ conexión real
 
 const LoginUsuario = () => {
   const [correo, setCorreo] = useState('');
@@ -28,14 +28,17 @@ const LoginUsuario = () => {
     });
 
     if (supabaseError) {
+      const mensaje = supabaseError.message || "";
       const nuevosIntentos = intentosFallidos + 1;
       setIntentosFallidos(nuevosIntentos);
 
       if (nuevosIntentos >= 3) {
         enviarCorreoRecuperacion(correo);
         setError("Hemos enviado un enlace de recuperación a tu correo registrado.");
-      } else {
+      } else if (mensaje.includes("Invalid login credentials")) {
         setError("Correo o clave incorrectos. Intenta nuevamente.");
+      } else {
+        setError("Error inesperado: " + mensaje);
       }
 
       return;
