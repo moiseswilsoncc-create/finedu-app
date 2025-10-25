@@ -65,11 +65,11 @@ const RegistroUsuario: React.FC = () => {
 
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem("nombreUsuario", nombre);
+        localStorage.setItem("nombreUsuario", `${nombre} ${apellido}`);
         localStorage.setItem("logueado", "true");
         localStorage.setItem("tipoUsuario", "usuario");
         localStorage.setItem("correoUsuario", correo);
-        navigate("/registro-ahorro"); // Redirige directamente al módulo de ingresos/egresos
+        navigate("/registro-ahorro");
       } else {
         setError("No se pudo registrar el usuario.");
       }
