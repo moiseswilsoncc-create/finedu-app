@@ -1,13 +1,17 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 type Props = {
   children: JSX.Element;
 };
 
 const RutaProtegida = ({ children }: Props) => {
+  const location = useLocation();
   const logueado = localStorage.getItem("logueado") === "true";
+  const correo = localStorage.getItem("correoUsuario");
 
-  return logueado ? children : <Navigate to="/acceso-usuarios" />;
+  const sesionValida = logueado && correo;
+
+  return sesionValida ? children : <Navigate to="/login-usuario" state={{ from: location }} replace />;
 };
 
 export default RutaProtegida;
