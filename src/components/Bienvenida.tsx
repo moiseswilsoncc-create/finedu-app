@@ -11,13 +11,6 @@ const Bienvenida: React.FC = () => {
     navigate("/panel-usuario");
   };
 
-  const ingresarColaborador = () => {
-    localStorage.setItem("logueado", "true");
-    localStorage.setItem("tipoUsuario", "colaborador");
-    localStorage.setItem("nombreUsuario", "Colaborador Finedu");
-    navigate("/dashboard-institucional");
-  };
-
   return (
     <div style={{
       maxWidth: "700px",
@@ -42,7 +35,6 @@ const Bienvenida: React.FC = () => {
         alignItems: "center",
         gap: "1rem"
       }}>
-        {/* 🚀 Registro nuevo usuario */}
         <button
           onClick={() => navigate("/registro-usuario")}
           style={{
@@ -60,7 +52,6 @@ const Bienvenida: React.FC = () => {
           🚀 ¡No pierdas esta oportunidad! Registrarte Ahora
         </button>
 
-        {/* 👤 Ingreso usuario registrado */}
         <button
           onClick={ingresarUsuario}
           style={{
@@ -78,9 +69,8 @@ const Bienvenida: React.FC = () => {
           👤 Ingresar como usuario registrado
         </button>
 
-        {/* 👥 Ingreso colaborador */}
         <button
-          onClick={ingresarColaborador}
+          onClick={() => navigate("/ingreso-colaborador")}
           style={{
             padding: "0.8rem 1.5rem",
             backgroundColor: "#2ecc71",
