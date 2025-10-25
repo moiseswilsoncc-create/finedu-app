@@ -1,3 +1,4 @@
+// [INICIO DEL ARCHIVO]
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FineduProvider } from "./context/FineduContext";
@@ -167,7 +168,6 @@ function App() {
                 <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                 <ForoFinanciero />
               </>
-              </>
             </RutaProtegida>
           } />
 
@@ -230,3 +230,4 @@ function App() {
 }
 
 export default App;
+// [FIN DEL ARCHIVO]
