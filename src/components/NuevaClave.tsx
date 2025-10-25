@@ -12,12 +12,19 @@ function NuevaClave() {
 
   const token = params.get("token");
   const correo = params.get("correo");
+  const esColaborador = correo?.includes("colaborador");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (nuevaClave.length < 6) {
-      setError("La nueva contraseña debe tener al menos 6 caracteres.");
+    // Validación por tipo de usuario
+    if (esColaborador && nuevaClave.length < 8) {
+      setError("La clave para colaboradores debe tener al menos 8 caracteres.");
+      return;
+    }
+
+    if (!esColaborador && nuevaClave.length !== 4) {
+      setError("La clave para usuarios debe tener exactamente 4 dígitos.");
       return;
     }
 
@@ -37,11 +44,10 @@ function NuevaClave() {
         setMensaje("✅ Contraseña actualizada correctamente.");
         setError("");
 
-        // Guardar sesión y redirigir según tipo de usuario
         localStorage.setItem("logueado", "true");
         localStorage.setItem("nombreUsuario", "Recuperado Finedu");
 
-        if (correo?.includes("colaborador")) {
+        if (esColaborador) {
           localStorage.setItem("tipoUsuario", "colaborador");
           setTimeout(() => navigate("/panel-colaborador"), 2000);
         } else {
@@ -72,7 +78,7 @@ function NuevaClave() {
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <input
           type="password"
-          placeholder="Nueva contraseña"
+          placeholder={esColaborador ? "Mínimo 8 caracteres" : "Exactamente 4 dígitos"}
           value={nuevaClave}
           onChange={(e) => setNuevaClave(e.target.value)}
           required
