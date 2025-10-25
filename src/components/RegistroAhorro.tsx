@@ -73,7 +73,7 @@ const RegistroAhorro: React.FC = () => {
     <div style={{ maxWidth: "500px", margin: "2rem auto", padding: "1rem" }}>
       <h2>💰 Registro de Ahorro</h2>
       <p style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>
-        👤 <strong>{nombreUsuario}</strong>, registra tus aportes de ahorro personal o grupal.
+        👤 <strong>{nombreUsuario || "Usuario"}</strong>, registra tus aportes de ahorro personal o grupal.
       </p>
 
       <label style={{ display: "block", marginBottom: "0.5rem" }}>
@@ -109,5 +109,3 @@ const RegistroAhorro: React.FC = () => {
 export default RegistroAhorro;
 
 // ✅ Actualización institucional: módulo exclusivo para registro de ahorro
-
-
