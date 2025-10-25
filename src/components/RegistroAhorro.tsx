@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 type Registro = {
   correo: string;
   monto: number;
-  tipo: string; // mantenemos tipo para compatibilidad, pero lo fijamos como "ahorro"
+  tipo: string;
 };
 
 const RegistroAhorro: React.FC = () => {
@@ -20,12 +20,10 @@ const RegistroAhorro: React.FC = () => {
 
   useEffect(() => {
     const logueado = localStorage.getItem("logueado") === "true";
-    const nombre = localStorage.getItem("nombreUsuario") || "";
     const correo = localStorage.getItem("correoUsuario") || "";
     const grupo = localStorage.getItem("grupoId") || "";
 
     setSesionValida(logueado && correo !== "");
-    setNombreUsuario(nombre);
     setCorreoUsuario(correo);
     setGrupoId(grupo);
 
@@ -34,7 +32,31 @@ const RegistroAhorro: React.FC = () => {
       monto: 0,
       tipo: "ahorro",
     });
+
+    if (correo) {
+      obtenerNombreDesdeCorreo(correo);
+    }
   }, []);
+
+  const obtenerNombreDesdeCorreo = async (correo: string) => {
+    try {
+      const response = await fetch(`https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios?correo=eq.${correo}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": "TU_API_KEY",
+          "Authorization": "Bearer TU_BEARER_TOKEN"
+        }
+      });
+
+      const data = await response.json();
+      if (data.length > 0) {
+        setNombreUsuario(data[0].nombre);
+      }
+    } catch (err) {
+      console.error("Error al obtener nombre:", err);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -56,7 +78,7 @@ const RegistroAhorro: React.FC = () => {
       fecha: new Date().toISOString(),
     });
 
-    alert(`✅ ${nombreUsuario}, tu aporte de ahorro fue registrado correctamente.`);
+    alert(`✅ ${nombreUsuario || "Usuario"}, tu aporte de ahorro fue registrado correctamente.`);
     setRegistro({ correo: correoUsuario, monto: 0, tipo: "ahorro" });
   };
 
@@ -107,5 +129,3 @@ const RegistroAhorro: React.FC = () => {
 };
 
 export default RegistroAhorro;
-
-// ✅ Actualización institucional: módulo exclusivo para registro de ahorro
