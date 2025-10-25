@@ -4,13 +4,13 @@ import { getTasa } from "../utils/getTasa";
 import { formatearMoneda } from "../utils/formatearMoneda";
 
 type Props = {
-  participantes?: Participante[]; // ahora es opcional
+  participantes?: Participante[];
   metaGrupal: number;
   pais: string;
 };
 
 function ResumenFinanciero({ participantes = [], metaGrupal, pais }: Props) {
-  const correoUsuario = localStorage.getItem("correo");
+  const correoUsuario = localStorage.getItem("correoUsuario"); // ✅ corregido
   const usuario = participantes.find(p => p.correo === correoUsuario);
 
   if (!usuario) {
