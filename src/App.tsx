@@ -167,8 +167,7 @@ function App() {
                 <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                 <ForoFinanciero />
               </>
-            </
-                            </>
+              </>
             </RutaProtegida>
           } />
 
