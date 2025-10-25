@@ -1,16 +1,30 @@
 import React from "react";
-import { Participante } from "../types";
 import { getTasa } from "../utils/getTasa";
 import { formatearMoneda } from "../utils/formatearMoneda";
 
-type Props = {
-  participantes?: Participante[];
-  metaGrupal: number;
-  pais: string;
-};
+function ResumenFinanciero() {
+  const correoUsuario = localStorage.getItem("correoUsuario");
 
-function ResumenFinanciero({ participantes = [], metaGrupal, pais }: Props) {
-  const correoUsuario = localStorage.getItem("correoUsuario"); // ✅ corregido
+  const participantes = [
+    {
+      nombre: "Usuario",
+      apellido: "Ejemplo",
+      correo: "usuario@finedu.cl",
+      ingresos: 500000,
+      egresos: 200000
+    },
+    {
+      nombre: "Otro",
+      apellido: "Miembro",
+      correo: "otro@finedu.cl",
+      ingresos: 400000,
+      egresos: 250000
+    }
+  ];
+
+  const metaGrupal = 1000000;
+  const pais = "Chile";
+
   const usuario = participantes.find(p => p.correo === correoUsuario);
 
   if (!usuario) {
@@ -25,9 +39,7 @@ function ResumenFinanciero({ participantes = [], metaGrupal, pais }: Props) {
   const tasaCredito = getTasa(pais, "consumo");
   const tasaInversion = getTasa(pais, "inversion");
 
-  const totalAhorroGrupal = participantes.length > 0
-    ? participantes.reduce((total, p) => total + (p.ingresos - p.egresos), 0)
-    : 0;
+  const totalAhorroGrupal = participantes.reduce((total, p) => total + (p.ingresos - p.egresos), 0);
 
   const cuotaCredito = (metaGrupal * (tasaCredito / 12 / 100)) /
     (1 - Math.pow(1 + tasaCredito / 12 / 100, -12));
