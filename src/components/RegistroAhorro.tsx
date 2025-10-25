@@ -19,21 +19,22 @@ const RegistroAhorro: React.FC = () => {
   const [grupoId, setGrupoId] = useState("");
 
   useEffect(() => {
-    const logueado = localStorage.getItem("logueado");
-    const nombre = localStorage.getItem("nombreUsuario");
-    const correo = localStorage.getItem("correoUsuario");
+    const logueado = localStorage.getItem("logueado") === "true";
+    const nombre = localStorage.getItem("nombreUsuario") || "";
+    const correo = localStorage.getItem("correoUsuario") || "";
     const grupo = localStorage.getItem("grupoId") || "";
 
-    const sesionActiva = logueado === "true" && nombre && correo;
-
-    setSesionValida(sesionActiva);
-    setNombreUsuario(nombre || "");
-    setCorreoUsuario(correo || "");
+    setSesionValida(logueado && correo !== "");
+    setNombreUsuario(nombre);
+    setCorreoUsuario(correo);
     setGrupoId(grupo);
 
-    if (correo) {
-      setRegistro((prev) => ({ ...prev, correo }));
-    }
+    // ✅ Aseguramos que el correo se cargue correctamente
+    setRegistro({
+      correo: correo,
+      monto: 0,
+      tipo: "ingreso",
+    });
   }, []);
 
   const handleChange = (
@@ -58,7 +59,7 @@ const RegistroAhorro: React.FC = () => {
       fecha: new Date().toISOString(),
     });
 
-    alert("✅ Movimiento registrado correctamente.");
+    alert(`✅ ${nombreUsuario}, tu movimiento fue registrado correctamente.`);
     setRegistro({ correo: correoUsuario, monto: 0, tipo: "ingreso" });
   };
 
