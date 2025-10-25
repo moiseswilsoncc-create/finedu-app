@@ -4,13 +4,6 @@ import { useNavigate } from "react-router-dom";
 const Bienvenida: React.FC = () => {
   const navigate = useNavigate();
 
-  const ingresarUsuario = () => {
-    localStorage.setItem("logueado", "true");
-    localStorage.setItem("tipoUsuario", "usuario");
-    localStorage.setItem("nombreUsuario", "Usuario Finedu");
-    navigate("/panel-usuario");
-  };
-
   return (
     <div style={{
       maxWidth: "700px",
@@ -53,7 +46,7 @@ const Bienvenida: React.FC = () => {
         </button>
 
         <button
-          onClick={ingresarUsuario}
+          onClick={() => navigate("/login-usuario")}
           style={{
             padding: "0.8rem 1.5rem",
             backgroundColor: "#3498db",
@@ -66,7 +59,7 @@ const Bienvenida: React.FC = () => {
             maxWidth: "300px"
           }}
         >
-          👤 Ingresar como usuario registrado
+          👤 Ingreso usuarios registrados
         </button>
 
         <button
