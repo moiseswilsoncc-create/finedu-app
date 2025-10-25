@@ -224,5 +224,3 @@ function App() {
 }
 
 export default App;
-// VERIFICACIÓN: cambio mínimo para forzar redeploy en Vercel
-
