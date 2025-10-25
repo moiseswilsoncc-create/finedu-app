@@ -8,8 +8,8 @@ function ResumenFinanciero() {
   const participantes = [
     {
       nombre: "Usuario",
-      apellido: "Ejemplo",
-      correo: "usuario@finedu.cl",
+      apellido: "Demo",
+      correo: "usuario@demo.com", // ✅ corregido para coincidir con sesión
       ingresos: 500000,
       egresos: 200000
     },
