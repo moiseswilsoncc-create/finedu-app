@@ -39,7 +39,12 @@ const LoginUsuario = () => {
     if (validarCredenciales(correo, clave)) {
       localStorage.setItem("logueado", "true");
       localStorage.setItem("tipoUsuario", "usuario");
-      localStorage.setItem("nombreUsuario", "Usuario Finedu");
+      localStorage.setItem("correoUsuario", correo);
+
+      // ✅ Extraemos nombre desde el correo (antes del @)
+      const nombreExtraido = correo.split("@")[0];
+      localStorage.setItem("nombreUsuario", nombreExtraido);
+
       navigate('/panel-usuario');
     } else {
       const nuevosIntentos = intentosFallidos + 1;
