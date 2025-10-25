@@ -1,4 +1,3 @@
-// [INICIO DEL ARCHIVO]
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FineduProvider } from "./context/FineduContext";
@@ -34,7 +33,6 @@ import PanelImpacto from "./components/PanelImpacto";
 import ForoFinanciero from "./components/ForoFinanciero";
 import PanelColaboradores from "./components/PanelColaboradores";
 import MetricasColaboradores from "./components/MetricasColaboradores";
-import Generador from "./components/Generador";
 import GeneradorPDF from "./components/GeneradorPDF";
 import InformeInstitucional from "./modules/InformeInstitucional";
 import DashboardInstitucional from "./modules/DashboardInstitucional";
@@ -164,14 +162,14 @@ function App() {
                 <PanelColaboradores pais={pais} />
                 <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                 <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-                <Generador />
                 <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
                 <ForoFinanciero />
               </>
             </RutaProtegida>
           } />
 
-          <Route path="/cambio-clave-colaborador" element={
+          <Route path="/cambio-clave-colaborador" element
+                      <Route path="/cambio-clave-colaborador" element={
             <RutaProtegida>
               <CambioClaveColaborador />
             </RutaProtegida>
@@ -230,4 +228,3 @@ function App() {
 }
 
 export default App;
-// [FIN DEL ARCHIVO]
