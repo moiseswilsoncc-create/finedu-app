@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DatosUsuario } from "../types";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -18,7 +18,22 @@ function IngresoUsuario({ setPais }: Props) {
   });
 
   const [registrado, setRegistrado] = useState(false);
+  const [correoValido, setCorreoValido] = useState(true);
+  const [camposCompletos, setCamposCompletos] = useState(false);
   const navigate = useNavigate();
+
+  const listaAutorizada = [
+    "usuario@finedu.cl",
+    "persona@finedu.cl",
+    "familia@finedu.cl"
+    // Puedes ampliar esta lista o conectarla a una API
+  ];
+
+  useEffect(() => {
+    const todosCompletos = Object.values(datos).every(valor => valor.trim() !== "");
+    setCamposCompletos(todosCompletos);
+    setCorreoValido(listaAutorizada.includes(datos.correo));
+  }, [datos]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -28,67 +43,70 @@ function IngresoUsuario({ setPais }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setRegistrado(true);
-    localStorage.setItem("correoUsuario", datos.correo);
-    localStorage.setItem("logueado", "true");
-    localStorage.setItem("tipoUsuario", "usuario");
-    localStorage.setItem("nombreUsuario", datos.nombre);
-    navigate("/panel-usuario");
+    if (camposCompletos && correoValido) {
+      setRegistrado(true);
+      localStorage.setItem("correoUsuario", datos.correo);
+      localStorage.setItem("logueado", "true");
+      localStorage.setItem("tipoUsuario", "usuario");
+      localStorage.setItem("nombreUsuario", datos.nombre);
+      navigate("/panel-usuario");
+    }
   };
 
   return (
-    <div>
-      <h3>Registro de usuario solicitante</h3>
+    <div style={{
+      maxWidth: "600px",
+      margin: "3rem auto",
+      padding: "2rem",
+      backgroundColor: "#fefefe",
+      borderRadius: "12px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+    }}>
+      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>🧍 Registro de usuario solicitante</h3>
 
       {!registrado ? (
-        <form onSubmit={handleSubmit}>
-          <label>
-            Nombre:
-            <input type="text" name="nombre" value={datos.nombre} onChange={handleChange} required />
-          </label>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <input type="text" name="nombre" placeholder="Nombre" value={datos.nombre} onChange={handleChange} />
+          <input type="text" name="apellido" placeholder="Apellido" value={datos.apellido} onChange={handleChange} />
+          <input type="date" name="fechaNacimiento" value={datos.fechaNacimiento} onChange={handleChange} />
+          <select name="pais" value={datos.pais} onChange={handleChange}>
+            <option value="">Selecciona tu país</option>
+            <option value="Chile">Chile</option>
+            <option value="Perú">Perú</option>
+            <option value="México">México</option>
+            <option value="Colombia">Colombia</option>
+          </select>
+          <input type="text" name="ciudad" placeholder="Ciudad" value={datos.ciudad} onChange={handleChange} />
+          <input type="text" name="comuna" placeholder="Comuna" value={datos.comuna} onChange={handleChange} />
+          <input type="email" name="correo" placeholder="Correo electrónico" value={datos.correo} onChange={handleChange} />
 
-          <label>
-            Apellido:
-            <input type="text" name="apellido" value={datos.apellido} onChange={handleChange} required />
-          </label>
+          {!correoValido && (
+            <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
+              Este correo no está autorizado por Finedu. Verifica con tu institución.
+            </p>
+          )}
 
-          <label>
-            Fecha de nacimiento:
-            <input type="date" name="fechaNacimiento" value={datos.fechaNacimiento} onChange={handleChange} required />
-          </label>
+          {!camposCompletos && (
+            <p style={{ color: "#e67e22", fontSize: "0.95rem" }}>
+              Por favor completa todos los campos antes de continuar.
+            </p>
+          )}
 
-          <label>
-            País:
-            <select name="pais" value={datos.pais} onChange={handleChange}>
-              <option value="Chile">Chile</option>
-              <option value="Perú">Perú</option>
-              <option value="México">México</option>
-              <option value="Colombia">Colombia</option>
-            </select>
-          </label>
-
-          <label>
-            Ciudad:
-            <input type="text" name="ciudad" value={datos.ciudad} onChange={handleChange} required />
-          </label>
-
-          <label>
-            Comuna:
-            <input type="text" name="comuna" value={datos.comuna} onChange={handleChange} required />
-          </label>
-
-          <label>
-            Correo electrónico:
-            <input type="email" name="correo" value={datos.correo} onChange={handleChange} required />
-          </label>
-
-          <button type="submit">Registrarse</button>
+          <button type="submit" disabled={!camposCompletos || !correoValido} style={{
+            padding: "0.6rem 1.2rem",
+            backgroundColor: (!camposCompletos || !correoValido) ? "#ccc" : "#2980b9",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: (!camposCompletos || !correoValido) ? "not-allowed" : "pointer"
+          }}>
+            Registrarse
+          </button>
         </form>
       ) : (
         <div>
-          <p>
-            ¡Gracias por registrarte, {datos.nombre} {datos.apellido}! Tu perfil ha sido creado para operar desde{" "}
-            <strong>{datos.ciudad}, {datos.comuna}</strong>.
+          <p style={{ fontSize: "1.1rem", color: "#2ecc71" }}>
+            ¡Gracias por registrarte, {datos.nombre} {datos.apellido}! Tu perfil ha sido creado para operar desde <strong>{datos.ciudad}, {datos.comuna}</strong>.
           </p>
 
           <Link to="/editar-perfil">
