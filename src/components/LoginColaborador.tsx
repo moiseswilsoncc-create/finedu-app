@@ -1,88 +1,97 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from "../supabaseClient"; // ✅ conexión real
 
-const LoginColaborador: React.FC = () => {
-  const [correo, setCorreo] = useState("");
-  const [clave, setClave] = useState("");
+const LoginColaborador = () => {
+  const [correo, setCorreo] = useState('');
+  const [clave, setClave] = useState('');
   const [intentosFallidos, setIntentosFallidos] = useState(0);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  const correoAutorizado = "colaborador@finedu.cl";
-  const claveInicial = "clave-temporal";
-
-  const validarCredenciales = (correo: string, clave: string) => {
-    return correo === correoAutorizado && clave === claveInicial;
-  };
 
   const enviarCorreoRecuperacion = (correo: string) => {
     console.log(`📩 Enviando correo de recuperación a ${correo}`);
     // Aquí iría la lógica real de envío
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (validarCredenciales(correo, clave)) {
-      localStorage.setItem("tipoUsuario", "colaborador");
-      localStorage.setItem("logueado", "true");
-      localStorage.setItem("nombreUsuario", "Colaborador Finedu");
-      navigate("/panel-colaborador");
-    } else {
+    if (clave.length !== 4) {
+      setError("La clave debe tener exactamente 4 dígitos.");
+      return;
+    }
+
+    const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
+      email: correo,
+      password: clave
+    });
+
+    if (supabaseError) {
+      const mensaje = supabaseError.message || "";
       const nuevosIntentos = intentosFallidos + 1;
       setIntentosFallidos(nuevosIntentos);
 
       if (nuevosIntentos >= 3) {
         enviarCorreoRecuperacion(correo);
-        alert("Hemos enviado un enlace de recuperación a tu correo institucional.");
+        setError("Hemos enviado un enlace de recuperación a tu correo registrado.");
+      } else if (mensaje.includes("Invalid login credentials")) {
+        setError("Correo o clave incorrectos. Intenta nuevamente.");
       } else {
-        alert("Correo o clave incorrectos. Este acceso es solo para colaboradores autorizados.");
+        setError("Error inesperado: " + mensaje);
       }
+
+      return;
     }
+
+    localStorage.setItem("logueado", "true");
+    localStorage.setItem("tipoUsuario", "colaborador");
+    localStorage.setItem("correoColaborador", correo);
+
+    const nombreExtraido = correo.split("@")[0];
+    localStorage.setItem("nombreColaborador", nombreExtraido);
+
+    navigate('/panel-colaboradores');
   };
 
   return (
     <div style={{
-      maxWidth: "500px",
+      maxWidth: "400px",
       margin: "3rem auto",
       padding: "2rem",
-      border: "1px solid #ccc",
-      borderRadius: "12px",
       backgroundColor: "#fefefe",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-      textAlign: "center"
+      borderRadius: "12px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
     }}>
-      <h2 style={{ color: "#3498db" }}>🔐 Acceso colaborador</h2>
-      <p style={{ marginBottom: "1rem" }}>
-        Este acceso es exclusivo para colaboradores autorizados por Finedu.
-      </p>
-      <form onSubmit={handleLogin}>
+      <h2 style={{ color: "#2c3e50", marginBottom: "1rem" }}>🔐 Acceso para colaboradores</h2>
+      <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <input
           type="email"
           placeholder="Correo institucional"
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
           required
-          style={{ width: "100%", padding: "0.6rem", marginBottom: "1rem" }}
         />
         <input
           type="password"
-          placeholder="Clave temporal"
+          placeholder="Clave personal (4 dígitos)"
           value={clave}
           onChange={(e) => setClave(e.target.value)}
           required
-          style={{ width: "100%", padding: "0.6rem", marginBottom: "1rem" }}
         />
-        <button
-          type="submit"
-          style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: "#2ecc71",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
-        >
+
+        {error && (
+          <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>
+        )}
+
+        <button type="submit" style={{
+          padding: "0.6rem 1.2rem",
+          backgroundColor: "#27ae60",
+          color: "white",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer"
+        }}>
           Ingresar
         </button>
       </form>
