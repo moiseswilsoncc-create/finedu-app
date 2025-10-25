@@ -10,10 +10,13 @@ type Props = {
 };
 
 function ResumenFinanciero({ participantes, metaGrupal, pais }: Props) {
+  const correoUsuario = localStorage.getItem("correo");
+  const usuario = participantes.find(p => p.correo === correoUsuario);
+
   const tasaCredito = getTasa(pais, "consumo");
   const tasaInversion = getTasa(pais, "inversion");
 
-  const totalAhorro = participantes.reduce(
+  const totalAhorroGrupal = participantes.reduce(
     (total, p) => total + (p.ingresos - p.egresos),
     0
   );
@@ -22,17 +25,43 @@ function ResumenFinanciero({ participantes, metaGrupal, pais }: Props) {
     (1 - Math.pow(1 + tasaCredito / 12 / 100, -12));
   const totalCredito = cuotaCredito * 12;
 
-  const montoInversion = totalAhorro;
+  const montoInversion = totalAhorroGrupal;
   const montoFinalInversion = montoInversion * Math.pow(1 + tasaInversion / 12 / 100, 12);
   const gananciaInversion = montoFinalInversion - montoInversion;
 
-  return (
-    <div>
-      <h3>Resumen financiero comparativo ({pais})</h3>
+  if (!usuario) {
+    return (
+      <div style={{ padding: "2rem" }}>
+        <h3 style={{ color: "#c0392b" }}>⚠️ Usuario no encontrado</h3>
+        <p>Por favor asegúrate de haber iniciado sesión correctamente y registrado tus datos.</p>
+      </div>
+    );
+  }
 
-      <ul>
+  const ahorroPersonal = usuario.ingresos - usuario.egresos;
+
+  return (
+    <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+      <h2 style={{ marginBottom: "1rem", color: "#2c3e50" }}>
+        💸 Resumen de {usuario.nombre} {usuario.apellido}
+      </h2>
+
+      <div style={{
+        backgroundColor: "#ecf0f1",
+        padding: "1.5rem",
+        borderRadius: "12px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+        marginBottom: "2rem"
+      }}>
+        <p><strong>Ingresos:</strong> {formatearMoneda(usuario.ingresos, pais)}</p>
+        <p><strong>Egresos:</strong> {formatearMoneda(usuario.egresos, pais)}</p>
+        <p><strong>Ahorro personal:</strong> {formatearMoneda(ahorroPersonal, pais)}</p>
+      </div>
+
+      <h3 style={{ marginBottom: "1rem" }}>📊 Comparativo grupal ({pais})</h3>
+      <ul style={{ backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
         <li>Meta grupal: {formatearMoneda(metaGrupal, pais)}</li>
-        <li>Ahorro actual del grupo: {formatearMoneda(totalAhorro, pais)}</li>
+        <li>Ahorro actual del grupo: {formatearMoneda(totalAhorroGrupal, pais)}</li>
         <li>
           Crédito de consumo (12 meses a {tasaCredito}% anual):{" "}
           {formatearMoneda(totalCredito, pais)}
