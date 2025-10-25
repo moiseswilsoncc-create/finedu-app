@@ -13,23 +13,27 @@ const RegistroAhorro: React.FC = () => {
     tipo: "ingreso",
   });
 
-  const [logueado, setLogueado] = useState(false);
+  const [sesionValida, setSesionValida] = useState(false);
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [correoUsuario, setCorreoUsuario] = useState("");
   const [grupoId, setGrupoId] = useState("");
 
   useEffect(() => {
-    const log = localStorage.getItem("logueado") === "true";
-    const nombre = localStorage.getItem("nombreUsuario") || "";
-    const correo = localStorage.getItem("correoUsuario") || "";
+    const logueado = localStorage.getItem("logueado");
+    const nombre = localStorage.getItem("nombreUsuario");
+    const correo = localStorage.getItem("correoUsuario");
     const grupo = localStorage.getItem("grupoId") || "";
 
-    setLogueado(log);
-    setNombreUsuario(nombre);
-    setCorreoUsuario(correo);
+    const sesionActiva = logueado === "true" && nombre && correo;
 
-    setRegistro((prev) => ({ ...prev, correo }));
+    setSesionValida(sesionActiva);
+    setNombreUsuario(nombre || "");
+    setCorreoUsuario(correo || "");
     setGrupoId(grupo);
+
+    if (correo) {
+      setRegistro((prev) => ({ ...prev, correo }));
+    }
   }, []);
 
   const handleChange = (
@@ -48,7 +52,6 @@ const RegistroAhorro: React.FC = () => {
       return;
     }
 
-    // Simulación de envío
     console.log("Registrando ahorro:", {
       grupo_id: grupoId || "modo-individual",
       ...registro,
@@ -59,11 +62,11 @@ const RegistroAhorro: React.FC = () => {
     setRegistro({ correo: correoUsuario, monto: 0, tipo: "ingreso" });
   };
 
-  if (!logueado) {
+  if (!sesionValida) {
     return (
       <div style={{ textAlign: "center", marginTop: "3rem" }}>
         <h3>⚠️ Usuario no encontrado</h3>
-        <p>Por favor inicia sesión para registrar tus ingresos y egresos.</p>
+        <p>No se encontraron datos financieros asociados a tu sesión. Por favor inicia sesión para registrar tus ingresos y egresos.</p>
       </div>
     );
   }
