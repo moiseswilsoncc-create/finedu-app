@@ -98,7 +98,6 @@ function App() {
     <FineduProvider>
       <div>
         {tipoUsuario && <Navbar tipoUsuario={tipoUsuario} onCerrarSesion={cerrarSesion} />}
-
         <Routes>
           {/* Vista pública */}
           <Route path="/" element={<Bienvenida />} />
@@ -168,8 +167,7 @@ function App() {
             </RutaProtegida>
           } />
 
-          <Route path="/cambio-clave-colaborador" element
-                      <Route path="/cambio-clave-colaborador" element={
+          <Route path="/cambio-clave-colaborador" element={
             <RutaProtegida>
               <CambioClaveColaborador />
             </RutaProtegida>
