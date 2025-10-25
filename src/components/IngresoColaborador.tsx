@@ -12,11 +12,13 @@ function IngresoColaborador({ setPais }: Props) {
     pais: "",
     ciudad: "",
     correo: "",
+    clave: ""
   });
 
   const [registrado, setRegistrado] = useState(false);
   const [correoValido, setCorreoValido] = useState(true);
   const [camposCompletos, setCamposCompletos] = useState(false);
+  const [claveValida, setClaveValida] = useState(true);
 
   const listaAutorizada = [
     "colaborador@finedu.cl",
@@ -29,6 +31,7 @@ function IngresoColaborador({ setPais }: Props) {
     const todosCompletos = Object.values(datos).every(valor => valor.trim() !== "");
     setCamposCompletos(todosCompletos);
     setCorreoValido(listaAutorizada.includes(datos.correo));
+    setClaveValida(datos.clave.length >= 8);
   }, [datos]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +42,7 @@ function IngresoColaborador({ setPais }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (camposCompletos && correoValido) {
+    if (camposCompletos && correoValido && claveValida) {
       // Aquí podrías agregar lógica para enviar los datos a una API
       setRegistrado(true);
     }
@@ -63,10 +66,17 @@ function IngresoColaborador({ setPais }: Props) {
           <input type="text" name="pais" placeholder="País" value={datos.pais} onChange={handleChange} />
           <input type="text" name="ciudad" placeholder="Ciudad" value={datos.ciudad} onChange={handleChange} />
           <input type="email" name="correo" placeholder="Correo institucional" value={datos.correo} onChange={handleChange} />
+          <input type="password" name="clave" placeholder="Clave temporal (mínimo 8 caracteres)" value={datos.clave} onChange={handleChange} />
 
           {!correoValido && (
             <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
               Este correo no está autorizado por Finedu. Verifica con tu institución.
+            </p>
+          )}
+
+          {!claveValida && (
+            <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
+              La clave debe tener al menos 8 caracteres.
             </p>
           )}
 
@@ -76,13 +86,13 @@ function IngresoColaborador({ setPais }: Props) {
             </p>
           )}
 
-          <button type="submit" disabled={!camposCompletos || !correoValido} style={{
+          <button type="submit" disabled={!camposCompletos || !correoValido || !claveValida} style={{
             padding: "0.6rem 1.2rem",
-            backgroundColor: (!camposCompletos || !correoValido) ? "#ccc" : "#3498db",
+            backgroundColor: (!camposCompletos || !correoValido || !claveValida) ? "#ccc" : "#3498db",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: (!camposCompletos || !correoValido) ? "not-allowed" : "pointer"
+            cursor: (!camposCompletos || !correoValido || !claveValida) ? "not-allowed" : "pointer"
           }}>
             Registrarse
           </button>
