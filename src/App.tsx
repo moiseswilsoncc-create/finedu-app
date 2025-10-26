@@ -1,11 +1,11 @@
-// ✅ Reinsertar BrowserRouter con basename
+// ✅ BrowserRouter sin basename
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TestRender from "./components/TestRender";
 
 function App() {
   return (
-    <Router basename="/finedu-app">
+    <Router>
       <Routes>
         <Route path="/" element={<TestRender />} />
       </Routes>
