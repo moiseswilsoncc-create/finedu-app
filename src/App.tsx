@@ -1,16 +1,20 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { FineduProvider } from "./context/FineduContext";
-import TestRender from "./components/TestRender";
-
 function App() {
+  console.log("✅ App.tsx está devolviendo contenido");
+
   return (
-    <FineduProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<TestRender />} />
-        </Routes>
-      </Router>
-    </FineduProvider>
+    <div
+      style={{
+        padding: "2rem",
+        textAlign: "center",
+        color: "white",
+        backgroundColor: "blue",
+        fontSize: "2rem",
+        borderRadius: "8px",
+        marginTop: "4rem",
+      }}
+    >
+      ✅ App.tsx está funcionando y devolviendo contenido directamente
+    </div>
   );
 }
 
