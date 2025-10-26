@@ -1,3 +1,5 @@
+// 🛠️ Fuerza nuevo build en Vercel
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TestRender from "./components/TestRender";
 
@@ -12,5 +14,3 @@ function App() {
 }
 
 export default App;
-
-// prueba 10 para ver cambios 
