@@ -1,20 +1,24 @@
+import { FineduProvider } from "./context/FineduContext";
+
 function App() {
-  console.log("✅ App.tsx sin Router ni Provider");
+  console.log("✅ App.tsx con FineduProvider sin Router");
 
   return (
-    <div
-      style={{
-        padding: "2rem",
-        textAlign: "center",
-        color: "white",
-        backgroundColor: "black",
-        fontSize: "2rem",
-        borderRadius: "8px",
-        marginTop: "4rem",
-      }}
-    >
-      ✅ App.tsx sin Router ni Provider está funcionando
-    </div>
+    <FineduProvider>
+      <div
+        style={{
+          padding: "2rem",
+          textAlign: "center",
+          color: "white",
+          backgroundColor: "darkred",
+          fontSize: "2rem",
+          borderRadius: "8px",
+          marginTop: "4rem",
+        }}
+      >
+        ✅ FineduProvider está montado sin Router
+      </div>
+    </FineduProvider>
   );
 }
 
