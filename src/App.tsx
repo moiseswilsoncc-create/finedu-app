@@ -6,7 +6,7 @@ import Bienvenida from "./components/Bienvenida";
 import SelectorTipoUsuario from "./components/SelectorTipoUsuario";
 import BotonCerrarSesion from "./components/BotonCerrarSesion";
 import PanelUsuario from "./components/PanelUsuario";
-import PanelColaborador from "./components/PanelColaborador";
+import PanelColaboradores from "./components/PanelColaboradores";
 import PanelInstitucional from "./components/PanelInstitucional";
 import ForoFinanciero from "./components/ForoFinanciero";
 import ModuloEducativo from "./pages/ModuloEducativo";
@@ -68,7 +68,7 @@ function App() {
             } />
             <Route path="/panel-colaborador" element={
               <RutaProtegida tipo="colaborador">
-                <PanelColaborador />
+                <PanelColaboradores />
               </RutaProtegida>
             } />
             <Route path="/institucional" element={
