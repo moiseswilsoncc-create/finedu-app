@@ -1,23 +1,17 @@
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { FineduProvider } from "./context/FineduContext";
+import TestRender from "./components/TestRender";
 
 function App() {
-  console.log("✅ App.tsx con FineduProvider sin Router");
+  console.log("✅ App.tsx con HashRouter");
 
   return (
     <FineduProvider>
-      <div
-        style={{
-          padding: "2rem",
-          textAlign: "center",
-          color: "white",
-          backgroundColor: "darkred",
-          fontSize: "2rem",
-          borderRadius: "8px",
-          marginTop: "4rem",
-        }}
-      >
-        ✅ FineduProvider está montado sin Router
-      </div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<TestRender />} />
+        </Routes>
+      </Router>
     </FineduProvider>
   );
 }
