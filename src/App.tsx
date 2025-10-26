@@ -1,15 +1,13 @@
-// 🛠️ Ruta comodín para capturar cualquier URL
+// ✅ App sin BrowserRouter
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import TestRender from "./components/TestRender";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="*" element={<TestRender />} />
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="/" element={<TestRender />} />
+    </Routes>
   );
 }
 
