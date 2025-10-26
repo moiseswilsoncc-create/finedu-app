@@ -2,8 +2,16 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FineduProvider } from "./context/FineduContext";
 import RutaProtegida from "./components/RutaProtegida";
-
-// [Mantén todos tus imports originales aquí]
+import Bienvenida from "./pages/Bienvenida";
+import SelectorTipoUsuario from "./components/SelectorTipoUsuario";
+import BotonCerrarSesion from "./components/BotonCerrarSesion";
+import PanelUsuario from "./pages/PanelUsuario";
+import PanelColaborador from "./pages/PanelColaborador";
+import PanelInstitucional from "./pages/PanelInstitucional";
+import ForoFinanciero from "./pages/ForoFinanciero";
+import ModuloEducativo from "./pages/ModuloEducativo";
+import InformeInstitucional from "./pages/InformeInstitucional";
+import DashboardInstitucional from "./pages/DashboardInstitucional";
 
 function App() {
   console.log("🧪 App.tsx está montando...");
@@ -49,10 +57,67 @@ function App() {
     return (
       <FineduProvider>
         <div>
-          {/* Aquí van tus rutas y componentes, sin modificar */}
           <Routes>
-            <Route path="/" element={<div>✅ React está funcionando</div>} />
+            <Route path="/" element={<Bienvenida />} />
+            <Route path="/foro" element={<ForoFinanciero />} />
+            <Route path="/modulo" element={<ModuloEducativo />} />
+            <Route path="/panel-usuario" element={
+              <RutaProtegida tipo="usuario">
+                <PanelUsuario />
+              </RutaProtegida>
+            } />
+            <Route path="/panel-colaborador" element={
+              <RutaProtegida tipo="colaborador">
+                <PanelColaborador />
+              </RutaProtegida>
+            } />
+            <Route path="/institucional" element={
+              <RutaProtegida tipo="institucional">
+                <PanelInstitucional />
+              </RutaProtegida>
+            } />
+            <Route path="/informe" element={
+              <RutaProtegida tipo="institucional">
+                <InformeInstitucional />
+              </RutaProtegida>
+            } />
+            <Route path="/dashboard" element={
+              <RutaProtegida tipo="institucional">
+                <DashboardInstitucional />
+              </RutaProtegida>
+            } />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
+
+          {!tipoUsuario && location.pathname === "/" && (
+            <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
+          )}
+
+          {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
+
+          {tipoUsuario && (
+            <button
+              onClick={() => {
+                localStorage.clear();
+                setTipoUsuario(null);
+                navigate("/", { replace: true });
+              }}
+              style={{
+                marginTop: "1rem",
+                padding: "0.5rem 1rem",
+                backgroundColor: "#e74c3c",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer"
+              }}
+            >
+              Reiniciar sesión
+            </button>
+          )}
+
+          {/* ✅ Cambio mínimo para forzar build */}
+          <p style={{ display: "none" }}>Versión 692571c - validación forzada</p>
         </div>
       </FineduProvider>
     );
