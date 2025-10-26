@@ -1,8 +1,19 @@
 const TestRender = () => {
+  console.log("✅ TestRender se está montando");
+
   return (
-    <div style={{ padding: "2rem", textAlign: "center", color: "#2ecc71" }}>
-      <h1>✅ React está funcionando</h1>
-      <p>Si ves esto en producción, el problema está en otro componente.</p>
+    <div
+      style={{
+        padding: "2rem",
+        textAlign: "center",
+        color: "white",
+        backgroundColor: "green",
+        fontSize: "2rem",
+        borderRadius: "8px",
+        marginTop: "4rem",
+      }}
+    >
+      ✅ React está funcionando
     </div>
   );
 };
