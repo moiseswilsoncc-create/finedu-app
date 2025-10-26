@@ -1,8 +1,8 @@
-// src/utils/supabaseClient.ts
+// finedu-app/src/supabaseClient.ts
 import { createClient } from "@supabase/supabase-js";
 
-// Reemplaza estos valores con los reales desde tu panel Supabase
-const supabaseUrl = "https://fineedu-db.supabase.co"; // ✅ URL del proyecto
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." // ✅ anon key completa
+// Usamos variables de entorno públicas para que estén disponibles en el navegador
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
