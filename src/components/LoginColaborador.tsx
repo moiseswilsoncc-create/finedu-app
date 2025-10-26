@@ -1,17 +1,25 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from "../supabaseClient"; // ✅ conexión real
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 const LoginColaborador = () => {
-  const [correo, setCorreo] = useState('');
-  const [clave, setClave] = useState('');
+  const [correo, setCorreo] = useState("");
+  const [clave, setClave] = useState("");
   const [intentosFallidos, setIntentosFallidos] = useState(0);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const enviarCorreoRecuperacion = (correo: string) => {
-    console.log(`📩 Enviando correo de recuperación a ${correo}`);
-    // Aquí iría la lógica real de envío
+  const enviarCorreoRecuperacion = async (correo: string) => {
+    try {
+      await fetch("/api/enviar-recuperacion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo })
+      });
+      console.log(`📩 Enviado correo de recuperación a ${correo}`);
+    } catch (err) {
+      console.error("Error al enviar correo de recuperación:", err);
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -33,7 +41,7 @@ const LoginColaborador = () => {
       setIntentosFallidos(nuevosIntentos);
 
       if (nuevosIntentos >= 3) {
-        enviarCorreoRecuperacion(correo);
+        await enviarCorreoRecuperacion(correo);
         setError("Hemos enviado un enlace de recuperación a tu correo registrado.");
       } else if (mensaje.includes("Invalid login credentials")) {
         setError("Correo o clave incorrectos. Intenta nuevamente.");
@@ -51,7 +59,7 @@ const LoginColaborador = () => {
     const nombreExtraido = correo.split("@")[0];
     localStorage.setItem("nombreColaborador", nombreExtraido);
 
-    navigate('/panel-colaboradores');
+    navigate("/panel-colaboradores");
   };
 
   return (
@@ -79,11 +87,9 @@ const LoginColaborador = () => {
           onChange={(e) => setClave(e.target.value)}
           required
         />
-
         {error && (
           <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>
         )}
-
         <button type="submit" style={{
           padding: "0.6rem 1.2rem",
           backgroundColor: "#27ae60",
