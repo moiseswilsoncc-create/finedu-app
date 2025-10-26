@@ -50,184 +50,193 @@ import CambioClaveColaborador from "./components/CambioClaveColaborador";
 import { Participante } from "./types";
 
 function App() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  try {
+    const location = useLocation();
+    const navigate = useNavigate();
 
-  const [nombreGrupoMeta, setNombreGrupoMeta] = useState("Meta familiar 2025");
-  const [metaGrupal, setMetaGrupal] = useState(1000000);
-  const [participantes, setParticipantes] = useState<Participante[]>([]);
-  const [tipoUsuario, setTipoUsuario] = useState<"usuario" | "colaborador" | "institucional" | null>(null);
-  const [pais, setPais] = useState<string>("Chile");
+    const [nombreGrupoMeta, setNombreGrupoMeta] = useState("Meta familiar 2025");
+    const [metaGrupal, setMetaGrupal] = useState(1000000);
+    const [participantes, setParticipantes] = useState<Participante[]>([]);
+    const [tipoUsuario, setTipoUsuario] = useState<"usuario" | "colaborador" | "institucional" | null>(null);
+    const [pais, setPais] = useState<string>("Chile");
 
-  const usuario = {
-    nombre: localStorage.getItem("nombreUsuario") || "Usuario",
-    correo: localStorage.getItem("correoUsuario") || "",
-    tipo: localStorage.getItem("tipoUsuario") || "usuario"
-  };
-
-  const agregarParticipante = (nuevo: {
-    nombre: string;
-    apellido?: string;
-    fechaNacimiento: string;
-    ciudad: string;
-    comuna: string;
-    ingresos: number;
-    egresos: number;
-    correo?: string;
-  }) => {
-    const metaIndividual = 200000;
-    const participanteConMeta: Participante = {
-      ...nuevo,
-      metaIndividual,
+    const usuario = {
+      nombre: localStorage.getItem("nombreUsuario") || "Usuario",
+      correo: localStorage.getItem("correoUsuario") || "",
+      tipo: localStorage.getItem("tipoUsuario") || "usuario"
     };
-    setParticipantes([...participantes, participanteConMeta]);
-  };
 
-  useEffect(() => {
-    const tipo = localStorage.getItem("tipoUsuario");
-    if (tipo === "usuario" || tipo === "colaborador" || tipo === "institucional") {
-      setTipoUsuario(tipo as typeof tipoUsuario);
-    }
-  }, []);
+    const agregarParticipante = (nuevo: {
+      nombre: string;
+      apellido?: string;
+      fechaNacimiento: string;
+      ciudad: string;
+      comuna: string;
+      ingresos: number;
+      egresos: number;
+      correo?: string;
+    }) => {
+      const metaIndividual = 200000;
+      const participanteConMeta: Participante = {
+        ...nuevo,
+        metaIndividual,
+      };
+      setParticipantes([...participantes, participanteConMeta]);
+    };
 
-  const cerrarSesion = () => {
-    localStorage.clear();
-    setTipoUsuario(null);
-    navigate("/", { replace: true });
-  };
+    useEffect(() => {
+      const tipo = localStorage.getItem("tipoUsuario");
+      if (tipo === "usuario" || tipo === "colaborador" || tipo === "institucional") {
+        setTipoUsuario(tipo as typeof tipoUsuario);
+      }
+    }, []);
 
-  return (
-    <FineduProvider>
-      <div>
-        {tipoUsuario && <Navbar tipoUsuario={tipoUsuario} onCerrarSesion={cerrarSesion} />}
-        <Routes>
-          {/* Rutas públicas */}
-          <Route path="/" element={<Bienvenida />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/login-usuario" element={<LoginUsuario />} />
-          <Route path="/login-colaborador" element={<LoginColaborador />} />
-          <Route path="/recuperar-clave" element={<RecuperarClave />} />
-          <Route path="/nueva-clave" element={<NuevaClave />} />
-          <Route path="/ingreso-usuario" element={<VistaIngresoUsuario />} />
-          <Route path="/registro-usuario" element={<RegistroUsuario />} />
-          <Route path="/felicitacion" element={<FelicitacionRegistro />} />
-          <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
-          <Route path="/institucional" element={
-            <VistaInstitucional
-              participantes={participantes}
-              metaGrupal={metaGrupal}
-              pais={pais}
-              setPais={setPais}
-            />
-          } />
+    const cerrarSesion = () => {
+      localStorage.clear();
+      setTipoUsuario(null);
+      navigate("/", { replace: true });
+    };
 
-          {/* Rutas protegidas */}
-          <Route path="/editar-perfil" element={<RutaProtegida><EditarPerfilUsuario /></RutaProtegida>} />
-          <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
-          <Route path="/crear-grupo" element={<RutaProtegida><CrearGrupo usuario={usuario} /></RutaProtegida>} />
-          <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
-          <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
-          <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
-          <Route path="/resumen-financiero" element={<RutaProtegida><Resumen metaGrupal={metaGrupal} participantes={participantes} /></RutaProtegida>} />
-          <Route path="/asistente-financiero" element={<RutaProtegida><AsistenteFinanciero /></RutaProtegida>} />
-          <Route path="/mis-metas" element={<RutaProtegida><VistaMetaIndividual metas={[{ nombre: "Fondo de emergencia", objetivo: 300000, acumulado: 120000 }, { nombre: "Viaje familiar", objetivo: 1500000, acumulado: 450000 }]} /></RutaProtegida>} />
-          <Route path="/test-financiero" element={<RutaProtegida><TestUsuario /></RutaProtegida>} />
-          <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} /></RutaProtegida>} />
-          <Route path="/admin-grupo" element={<RutaProtegida><AdminGrupo /></RutaProtegida>} />
-          <Route path="/evaluador-credito" element={<RutaProtegida><EvaluadorCreditoInteligente /></RutaProtegida>} />
+    return (
+      <FineduProvider>
+        <div>
+          {tipoUsuario && <Navbar tipoUsuario={tipoUsuario} onCerrarSesion={cerrarSesion} />}
+          <Routes>
+            {/* Rutas públicas */}
+            <Route path="/" element={<Bienvenida />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/login-usuario" element={<LoginUsuario />} />
+            <Route path="/login-colaborador" element={<LoginColaborador />} />
+            <Route path="/recuperar-clave" element={<RecuperarClave />} />
+            <Route path="/nueva-clave" element={<NuevaClave />} />
+            <Route path="/ingreso-usuario" element={<VistaIngresoUsuario />} />
+            <Route path="/registro-usuario" element={<RegistroUsuario />} />
+            <Route path="/felicitacion" element={<FelicitacionRegistro />} />
+            <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
+            <Route path="/institucional" element={
+              <VistaInstitucional
+                participantes={participantes}
+                metaGrupal={metaGrupal}
+                pais={pais}
+                setPais={setPais}
+              />
+            } />
 
-          {/* Usuario completo */}
-          <Route path="/usuario" element={
-            <RutaProtegida>
-              <>
-                <IngresoUsuario setPais={setPais} />
-                <Resumen metaGrupal={metaGrupal} participantes={participantes} />
-                <VistaEtapa participantes={participantes} />
-                <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} />
-                <VistaMetaIndividual participantes={participantes} />
-                <VistaParticipante onAgregar={agregarParticipante} />
-                <SimuladorCredito pais={pais} />
-                <SimuladorCreditoAuto pais={pais} />
-                <SimuladorCreditoVivienda pais={pais} />
-                <SimuladorInversion pais={pais} />
-                <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
-                <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
-                <ForoFinanciero />
-              </>
-            </RutaProtegida>
-          } />
+            {/* Rutas protegidas */}
+            <Route path="/editar-perfil" element={<RutaProtegida><EditarPerfilUsuario /></RutaProtegida>} />
+            <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
+            <Route path="/crear-grupo" element={<RutaProtegida><CrearGrupo usuario={usuario} /></RutaProtegida>} />
+            <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
+            <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
+            <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
+            <Route path="/resumen-financiero" element={<RutaProtegida><Resumen metaGrupal={metaGrupal} participantes={participantes} /></RutaProtegida>} />
+            <Route path="/asistente-financiero" element={<RutaProtegida><AsistenteFinanciero /></RutaProtegida>} />
+            <Route path="/mis-metas" element={<RutaProtegida><VistaMetaIndividual metas={[{ nombre: "Fondo de emergencia", objetivo: 300000, acumulado: 120000 }, { nombre: "Viaje familiar", objetivo: 1500000, acumulado: 450000 }]} /></RutaProtegida>} />
+            <Route path="/test-financiero" element={<RutaProtegida><TestUsuario /></RutaProtegida>} />
+            <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} /></RutaProtegida>} />
+            <Route path="/admin-grupo" element={<RutaProtegida><AdminGrupo /></RutaProtegida>} />
+            <Route path="/evaluador-credito" element={<RutaProtegida><EvaluadorCreditoInteligente /></RutaProtegida>} />
 
-          {/* Colaborador completo */}
-          <Route path="/panel-colaborador" element={
-            <RutaProtegida>
-              {tipoUsuario === "colaborador"
-                ? (
-                  <>
-                    <PanelColaboradores pais={pais} />
-                    <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
-                    <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
-                    <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
-                    <ForoFinanciero />
+            {/* Usuario completo */}
+            <Route path="/usuario" element={
+              <RutaProtegida>
+                <>
+                  <IngresoUsuario setPais={setPais} />
+                  <Resumen metaGrupal={metaGrupal} participantes={participantes} />
+                  <VistaEtapa participantes={participantes} />
+                  <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} />
+                  <VistaMetaIndividual participantes={participantes} />
+                  <VistaParticipante onAgregar={agregarParticipante} />
+                  <SimuladorCredito pais={pais} />
+                  <SimuladorCreditoAuto pais={pais} />
+                  <SimuladorCreditoVivienda pais={pais} />
+                  <SimuladorInversion pais={pais} />
+                  <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
+                  <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
+                  <ForoFinanciero />
+                </>
+              </RutaProtegida>
+            } />
 
-                  </>
-                )
-                : <Navigate to="/" />}
-            </RutaProtegida>
-          } />
+            {/* Colaborador completo */}
+            <Route path="/panel-colaborador" element={
+              <RutaProtegida>
+                {tipoUsuario === "colaborador"
+                  ? (
+                    <>
+                      <PanelColaboradores pais={pais} />
+                      <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
+                      <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
+                      <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                      <ForoFinanciero />
+                    </>
+                  )
+                  : <Navigate to="/" />}
+              </RutaProtegida>
+            } />
 
-          <Route path="/cambio-clave-colaborador" element={
-            <RutaProtegida>
-              <CambioClaveColaborador />
-            </RutaProtegida>
-          } />
+            <Route path="/cambio-clave-colaborador" element={
+              <RutaProtegida>
+                <CambioClaveColaborador />
+              </RutaProtegida>
+            } />
 
-          {/* Institucional */}
-          <Route path="/informe-institucional" element={
-            <RutaProtegida>
-              {tipoUsuario === "institucional"
-                ? <InformeInstitucional />
-                : <Navigate to="/" />}
-            </RutaProtegida>
-          } />
+            {/* Institucional */}
+            <Route path="/informe-institucional" element={
+              <RutaProtegida>
+                {tipoUsuario === "institucional"
+                  ? <InformeInstitucional />
+                  : <Navigate to="/" />}
+              </RutaProtegida>
+            } />
 
-          <Route path="/dashboard-institucional" element={
-            <RutaProtegida>
-              {tipoUsuario === "institucional"
-                ? <DashboardInstitucional />
-                : <Navigate to="/" />}
-            </RutaProtegida>
-          } />
-        </Routes>
+            <Route path="/dashboard-institucional" element={
+              <RutaProtegida>
+                {tipoUsuario === "institucional"
+                  ? <DashboardInstitucional />
+                  : <Navigate to="/" />}
+              </RutaProtegida>
+            } />
+          </Routes>
 
-        {!tipoUsuario && location.pathname === "/" && (
-          <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
-        )}
+          {!tipoUsuario && location.pathname === "/" && (
+            <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
+          )}
 
-        {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
+          {tipoUsuario && <BotonCerrarSesion onCerrar={cerrarSesion} />}
 
-        {tipoUsuario && (
-          <button
-            onClick={() => {
-              localStorage.clear();
-              setTipoUsuario(null);
-              navigate("/", { replace: true });
-            }}
-            style={{
-              marginTop: "1rem",
-              padding: "0.5rem 1rem",
-              backgroundColor: "#e74c3c",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer"
-            }}
-          >
-            Reiniciar sesión
-          </button>
-        )}
+          {tipoUsuario && (
+            <button
+              onClick={() => {
+                localStorage.clear();
+                setTipoUsuario(null);
+                navigate("/", { replace: true });
+              }}
+              style={{
+                marginTop: "1rem",
+                padding: "0.5rem 1rem",
+                backgroundColor: "#e74c3c",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer"
+              }}
+            >
+              Reiniciar sesión
+            </button>
+          )}
+        </div>
+      </FineduProvider>
+    );
+  } catch (error) {
+    console.error("Error en App.tsx:", error);
+    return (
+      <div style={{ padding: "2rem", textAlign: "center", color: "#e74c3c" }}>
+        <h2>Ocurrió un error al cargar la aplicación</h2>
+        <p>Por favor, intenta recargar la página o contacta soporte.</p>
       </div>
-    </FineduProvider>
-  );
+    );
+  }
 }
 
 export default App;
