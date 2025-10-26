@@ -1,21 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Participante } from "../types";
 import { calcularEdad } from "../utils/calcularEdad";
+import { supabase } from "../supabaseClient"; // ✅ conexión declarada
 
 type Props = {
-  participantes: Participante[];
   metaGrupal: number;
 };
 
-function MetricasColaboradores({ participantes, metaGrupal }: Props) {
+function MetricasColaboradores({ metaGrupal }: Props) {
   const navigate = useNavigate();
   const tipoUsuario = localStorage.getItem("tipoUsuario");
 
-  if (tipoUsuario === "colaborador") {
-    navigate("/panel-colaboradores");
-    return null;
-  }
+  const [participantes, setParticipantes] = useState<Participante[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (tipoUsuario === "colaborador") {
+      navigate("/panel-colaboradores");
+      return;
+    }
+
+    const obtenerParticipantes = async () => {
+      const { data, error } = await supabase.from("participantes").select("*");
+      if (error) {
+        console.error("Error al obtener participantes:", error.message);
+      } else {
+        setParticipantes(data || []);
+      }
+      setLoading(false);
+    };
+
+    obtenerParticipantes();
+  }, [navigate, tipoUsuario]);
+
+  if (loading) return <p>Cargando métricas colaborativas…</p>;
 
   const totalAhorro = participantes.reduce(
     (total, p) => total + (p.ingresos - p.egresos),
@@ -37,6 +56,14 @@ function MetricasColaboradores({ participantes, metaGrupal }: Props) {
   const ahorroPorCiudad: Record<string, number> = {};
   const ahorroPorComuna: Record<string, number> = {};
 
+  // Nuevas métricas por categoría de gasto
+  const categoriasGasto = {
+    "Comer afuera": { actual: 0, anterior: 0 },
+    "Ir al cine": { actual: 0, anterior: 0 },
+    "Transporte": { actual: 0, anterior: 0 },
+    "Compras": { actual: 0, anterior: 0 },
+  };
+
   participantes.forEach((p) => {
     const edad = calcularEdad(p.fechaNacimiento);
     const ahorro = p.ingresos - p.egresos;
@@ -55,6 +82,14 @@ function MetricasColaboradores({ participantes, metaGrupal }: Props) {
       comunas[p.comuna] = (comunas[p.comuna] || 0) + 1;
       ahorroPorComuna[p.comuna] = (ahorroPorComuna[p.comuna] || 0) + ahorro;
     }
+
+    // Simulación de datos por categoría (pendiente conexión real)
+    if (p.gastosMensuales) {
+      Object.keys(categoriasGasto).forEach((cat) => {
+        categoriasGasto[cat].actual += p.gastosMensuales[cat]?.actual || 0;
+        categoriasGasto[cat].anterior += p.gastosMensuales[cat]?.anterior || 0;
+      });
+    }
   });
 
   return (
@@ -69,6 +104,23 @@ function MetricasColaboradores({ participantes, metaGrupal }: Props) {
           <li>Promedio de ahorro por persona: ${promedioAhorro.toLocaleString()}</li>
           <li>Total de metas individuales (crédito): ${totalCredito.toLocaleString()}</li>
           <li>Meta grupal declarada: ${metaGrupal.toLocaleString()}</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3>📈 Variación mensual por categoría</h3>
+        <ul>
+          {Object.entries(categoriasGasto).map(([cat, valores]) => {
+            const variacion = valores.anterior > 0
+              ? ((valores.actual - valores.anterior) / valores.anterior) * 100
+              : 0;
+            const signo = variacion > 0 ? "🔺" : variacion < 0 ? "🔻" : "⏸️";
+            return (
+              <li key={cat}>
+                {cat}: {signo} {variacion.toFixed(2)}%
+              </li>
+            );
+          })}
         </ul>
       </section>
 
@@ -108,19 +160,6 @@ function MetricasColaboradores({ participantes, metaGrupal }: Props) {
       <section>
         <h3>📬 Envío programado</h3>
         <p>Estas métricas se enviarán automáticamente por correo a cada colaborador correspondiente cada 30 días.</p>
-      </section>
-
-      <section>
-        <h3>🧠 Métricas futuras (pendientes)</h3>
-        <ul>
-          <li>Simuladores utilizados por usuario</li>
-          <li>Promedio de simulaciones por usuario</li>
-          <li>Usuarios que usaron más de un simulador</li>
-          <li>Metas grupales creadas</li>
-          <li>Porcentaje de cumplimiento grupal</li>
-          <li>Comentarios que mencionan instituciones</li>
-          <li>Tasa de participación por ciudad y comuna</li>
-        </ul>
       </section>
 
       <p style={{ fontStyle: "italic", marginTop: "1rem" }}>
