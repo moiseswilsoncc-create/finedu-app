@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { supabase } from "../supabaseClient";
 
 const EditarPerfilUsuario: React.FC = () => {
   const correoGuardado = localStorage.getItem("correoUsuario");
@@ -12,22 +13,24 @@ const EditarPerfilUsuario: React.FC = () => {
 
     const obtenerDatos = async () => {
       try {
-        const response = await fetch(`https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios?correo=eq.${correoGuardado}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2Jub3J1ZHRjeXJydXVidXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNzEyNjksImV4cCI6MjA3Njc0NzI2OX0.XUeq9bsP_tQ5G0QRcYKAlRIsWG1I4tjZBVfTZanfGKk",
-            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2Jub3J1ZHRjeXJydXVidXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNzEyNjksImV4cCI6MjA3Njc0NzI2OX0.XUeq9bsP_tQ5G0QRcYKAlRIsWG1I4tjZBVfTZanfGKk"
-          }
-        });
+        const { data, error } = await supabase
+          .from("usuarios")
+          .select("nombre, contraseña")
+          .eq("correo", correoGuardado)
+          .single();
 
-        const data = await response.json();
-        if (data.length > 0) {
-          setNombre(data[0].nombre);
-          setContraseña(data[0].contraseña);
+        if (error) {
+          console.error("Error al obtener datos:", error);
+          setError("No se pudo cargar el perfil.");
+          return;
+        }
+
+        if (data) {
+          setNombre(data.nombre);
+          setContraseña(data.contraseña);
         }
       } catch (err) {
-        console.error("Error al obtener datos:", err);
+        console.error("Error inesperado:", err);
         setError("No se pudo cargar el perfil.");
       }
     };
@@ -39,27 +42,25 @@ const EditarPerfilUsuario: React.FC = () => {
     if (!correoGuardado) return;
 
     try {
-      const response = await fetch(`https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios?correo=eq.${correoGuardado}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2Jub3J1ZHRjeXJydXVidXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNzEyNjksImV4cCI6MjA3Njc0NzI2OX0.XUeq9bsP_tQ5G0QRcYKAlRIsWG1I4tjZBVfTZanfGKk",
-          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2Jub3J1ZHRjeXJydXVidXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNzEyNjksImV4cCI6MjA3Njc0NzI2OX0.XUeq9bsP_tQ5G0QRcYKAlRIsWG1I4tjZBVfTZanfGKk",
-          "Prefer": "return=representation"
-        },
-        body: JSON.stringify({
-          nombre,
-          contraseña
-        })
-      });
+      const { data, error } = await supabase
+        .from("usuarios")
+        .update({ nombre, contraseña })
+        .eq("correo", correoGuardado)
+        .select();
 
-      const data = await response.json();
+      if (error) {
+        console.error("Error al guardar cambios:", error);
+        setError("No se pudo guardar el perfil.");
+        setExito("");
+        return;
+      }
+
       console.log("Perfil actualizado:", data);
-      setExito("Cambios guardados correctamente.");
+      setExito("✅ Cambios guardados correctamente.");
       setError("");
     } catch (err) {
-      console.error("Error al guardar cambios:", err);
-      setError("No se pudo guardar el perfil.");
+      console.error("Error inesperado:", err);
+      setError("Hubo un problema al conectar con el servidor.");
       setExito("");
     }
   };
