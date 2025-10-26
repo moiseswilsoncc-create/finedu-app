@@ -16,7 +16,7 @@ const PanelColaboradores: React.FC = () => {
       {/* Botón para publicar contenido institucional */}
       <div style={{ marginBottom: "2rem", textAlign: "center" }}>
         <button
-          onClick={() => navigate("/ofertas-colaborador")}
+          onClick={() => navigate("/datos-ofertas")}
           style={{
             padding: "0.6rem 1.2rem",
             backgroundColor: "#27ae60",
@@ -26,7 +26,7 @@ const PanelColaboradores: React.FC = () => {
             cursor: "pointer"
           }}
         >
-          📢 Publicar oferta o curso
+          📢 Publicar datos y ofertas
         </button>
       </div>
 
