@@ -35,47 +35,67 @@ src/
 ├── App.tsx
 ├── index.tsx
 ├── types.ts
+├── context/
+│   └── FineduContext.tsx
 ├── components/
+│   ├── AdminGrupo.tsx
+│   ├── AsistenteFinanciero.tsx
 │   ├── Bienvenida.tsx
-│   ├── SelectorTipoUsuario.tsx
 │   ├── BotonCerrarSesion.tsx
-│   ├── VistaGrupal.tsx
-│   ├── VistaParticipante.tsx
-│   ├── VistaMetaIndividual.tsx
-│   ├── VistaEtapa.tsx
+│   ├── EditarPerfilUsuario.tsx
+│   ├── FelicitacionRegistro.tsx
+│   ├── ForoFinanciero.tsx
+│   ├── GeneradorPDF.tsx
+│   ├── GraficoAhorro.tsx
+│   ├── IngresoColaborador.tsx
+│   ├── IngresoUsuario.tsx
+│   ├── Login.tsx
+│   ├── MenuModulos.tsx
+│   ├── MetricasColaboradores.tsx
+│   ├── NuevaClave.tsx
+│   ├── Navbar.tsx
+│   ├── PanelColaboradores.tsx
+│   ├── PanelImpacto.tsx
+│   ├── PanelUsuario.tsx
+│   ├── RecuperarClave.tsx
+│   ├── RegistroAhorro.tsx
+│   ├── RegistroColaborador.tsx
+│   ├── RegistroUsuario.tsx
 │   ├── Resumen.tsx
+│   ├── RutaProtegida.tsx
+│   ├── SelectorTipoUsuario.tsx
 │   ├── SimuladorCredito.tsx
 │   ├── SimuladorCreditoAuto.tsx
 │   ├── SimuladorCreditoVivienda.tsx
 │   ├── SimuladorInversion.tsx
-│   ├── GraficoAhorro.tsx
-│   ├── PanelColaboradores.tsx
-│   ├── IngresoUsuario.tsx
-│   ├── IngresoColaborador.tsx
-│   ├── PanelImpacto.tsx
-│   ├── ForoFinanciero.tsx
+│   ├── TestUsuario.tsx
+│   ├── VistaEtapa.tsx
+│   ├── VistaGrupal.tsx
+│   ├── VistaIngresoColaborador.tsx
+│   ├── VistaIngresoUsuario.tsx
 │   ├── VistaInstitucional.tsx
-│   ├── MetricasColaboradores.tsx
-│   ├── GeneradorPDF.tsx
-│   ├── Login.tsx
-│   ├── RecuperarClave.tsx
-│   ├── NuevaClave.tsx
+│   ├── VistaMetaIndividual.tsx
+│   ├── VistaParticipante.tsx
+├── modules/
+│   ├── DashboardInstitucional.tsx
+│   ├── EvaluadorCreditoInteligente.tsx
+│   └── InformeInstitucional.tsx
 
 ---
 
 ## 🛠 Instalación local
 
-npm install
+npm install  
 npm run dev
 
 ---
 
 ## 🌐 Despliegue en Vercel
 
-1. Subir este repositorio a GitHub
-2. Ir a vercel.com y conectar tu cuenta con GitHub
-3. Seleccionar el repositorio `finedu`
-4. Confirmar que el framework es React
+1. Subir este repositorio a GitHub  
+2. Ir a vercel.com y conectar tu cuenta con GitHub  
+3. Seleccionar el repositorio `finedu-app`  
+4. Confirmar que el framework es React + Vite  
 5. Deploy automático
 
 ---
@@ -93,4 +113,3 @@ Enfoque: autonomía, colaboración, transparencia y educación financiera
 Para alianzas institucionales, soporte técnico o contribuciones, contáctanos a través de tu correo institucional o canal de contacto.
 
 <!-- Despliegue forzado para Vercel -->
-
