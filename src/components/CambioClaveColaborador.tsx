@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "../axiosConfig";
 
 const CambioClaveColaborador: React.FC = () => {
   const [claveActual, setClaveActual] = useState("");
@@ -8,8 +9,9 @@ const CambioClaveColaborador: React.FC = () => {
   const navigate = useNavigate();
 
   const claveGuardada = "clave-temporal"; // Simulación: clave recibida por correo
+  const correo = "colaborador@finedu.cl"; // Puedes reemplazar con dato dinámico si lo tienes
 
-  const handleCambio = (e: React.FormEvent) => {
+  const handleCambio = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (claveActual.trim() !== claveGuardada) {
@@ -27,9 +29,23 @@ const CambioClaveColaborador: React.FC = () => {
       return;
     }
 
-    // Aquí puedes integrar lógica real con Supabase o backend Express
-    alert("✅ Clave actualizada correctamente.");
-    navigate("/colaborador");
+    try {
+      const response = await axios.post("/auth/nueva-clave", {
+        token: "abc123", // Token simulado, puedes reemplazar por uno real si lo tienes
+        correo,
+        nuevaClave,
+      });
+
+      if (response.data.success) {
+        alert("✅ Clave actualizada correctamente.");
+        navigate("/colaborador");
+      } else {
+        alert("❌ No se pudo actualizar la clave. Verifica los datos.");
+      }
+    } catch (error) {
+      console.error("Error al cambiar la clave:", error);
+      alert("❌ Error de conexión. Intenta nuevamente.");
+    }
   };
 
   return (
