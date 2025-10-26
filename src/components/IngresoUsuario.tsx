@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DatosUsuario } from "../types";
 import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient"; // Asegúrate de tenerlo configurado
 
 type Props = {
   setPais: (pais: string) => void;
@@ -24,19 +25,26 @@ function IngresoUsuario({ setPais }: Props) {
   const [claveValida, setClaveValida] = useState(true);
   const navigate = useNavigate();
 
-  const listaAutorizada = [
-    "usuario@finedu.cl",
-    "persona@finedu.cl",
-    "familia@finedu.cl"
-    // Puedes ampliar esta lista o conectarla a una API
-  ];
-
   useEffect(() => {
     const todosCompletos = Object.values(datos).every(valor => valor.trim() !== "");
     setCamposCompletos(todosCompletos);
-    setCorreoValido(listaAutorizada.includes(datos.correo));
     setClaveValida(datos.clave.length === 4);
   }, [datos]);
+
+  useEffect(() => {
+    const validarCorreo = async () => {
+      if (!datos.correo) return;
+      const { data, error } = await supabase
+        .from("correos_autorizados")
+        .select("correo")
+        .eq("correo", datos.correo)
+        .single();
+
+      setCorreoValido(!!data && !error);
+    };
+
+    validarCorreo();
+  }, [datos.correo]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -44,15 +52,41 @@ function IngresoUsuario({ setPais }: Props) {
     if (name === "pais") setPais(value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (camposCompletos && correoValido && claveValida) {
+    if (!camposCompletos || !correoValido || !claveValida) return;
+
+    const response = await fetch("/api/hash-clave", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clave: datos.clave })
+    });
+
+    const { claveHasheada } = await response.json();
+
+    const { error } = await supabase.from("usuarios").insert([
+      {
+        nombre: datos.nombre,
+        apellido: datos.apellido,
+        fechaNacimiento: datos.fechaNacimiento,
+        pais: datos.pais,
+        ciudad: datos.ciudad,
+        comuna: datos.comuna,
+        correo: datos.correo,
+        clave: claveHasheada,
+        fechaRegistro: new Date().toISOString()
+      }
+    ]);
+
+    if (!error) {
       setRegistrado(true);
       localStorage.setItem("correoUsuario", datos.correo);
       localStorage.setItem("logueado", "true");
       localStorage.setItem("tipoUsuario", "usuario");
       localStorage.setItem("nombreUsuario", datos.nombre);
       navigate("/panel-usuario");
+    } else {
+      console.error("Error al registrar usuario:", error.message);
     }
   };
 
