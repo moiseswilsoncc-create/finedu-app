@@ -37,7 +37,7 @@ function NuevaClave() {
       const response = await axios.post("/nueva-clave", {
         token,
         correo,
-        nuevaClave,
+        nuevaClave, // 🔐 pendiente: aplicar hashing en backend
       });
 
       if (response.data.success) {
