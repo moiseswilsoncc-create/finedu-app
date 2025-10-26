@@ -3,7 +3,7 @@ import TestRender from "./components/TestRender";
 
 function App() {
   return (
-    <Router basename="/finedu-app">
+    <Router>
       <Routes>
         <Route path="/" element={<TestRender />} />
       </Routes>
