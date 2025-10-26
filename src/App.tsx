@@ -1,9 +1,16 @@
-// 🧪 Prueba directa sin Router
+// 🧪 Prueba mínima con BrowserRouter
 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TestRender from "./components/TestRender";
 
 function App() {
-  return <TestRender />;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<TestRender />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
