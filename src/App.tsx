@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FineduProvider } from "./context/FineduContext";
 import RutaProtegida from "./components/RutaProtegida";
-import Bienvenida from "./pages/Bienvenida";
+import Bienvenida from "./components/Bienvenida";
 import SelectorTipoUsuario from "./components/SelectorTipoUsuario";
 import BotonCerrarSesion from "./components/BotonCerrarSesion";
-import PanelUsuario from "./pages/PanelUsuario";
-import PanelColaborador from "./pages/PanelColaborador";
-import PanelInstitucional from "./pages/PanelInstitucional";
-import ForoFinanciero from "./pages/ForoFinanciero";
+import PanelUsuario from "./components/PanelUsuario";
+import PanelColaborador from "./components/PanelColaborador";
+import PanelInstitucional from "./components/PanelInstitucional";
+import ForoFinanciero from "./components/ForoFinanciero";
 import ModuloEducativo from "./pages/ModuloEducativo";
 import InformeInstitucional from "./pages/InformeInstitucional";
-import DashboardInstitucional from "./pages/DashboardInstitucional";
+import DashboardInstitucional from "./modules/DashboardInstitucional";
 
 function App() {
   console.log("🧪 App.tsx está montando...");
