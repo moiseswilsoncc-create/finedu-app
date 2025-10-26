@@ -1,18 +1,24 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { FineduProvider } from "./context/FineduContext";
-import TestRender from "./components/TestRender";
+import { BrowserRouter as Router } from "react-router-dom";
 
 function App() {
-  console.log("✅ App.tsx con FineduProvider y Router");
+  console.log("✅ App.tsx con Router sin rutas");
 
   return (
-    <FineduProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<TestRender />} />
-        </Routes>
-      </Router>
-    </FineduProvider>
+    <Router>
+      <div
+        style={{
+          padding: "2rem",
+          textAlign: "center",
+          color: "white",
+          backgroundColor: "purple",
+          fontSize: "2rem",
+          borderRadius: "8px",
+          marginTop: "4rem",
+        }}
+      >
+        ✅ Router está montado sin rutas
+      </div>
+    </Router>
   );
 }
 
