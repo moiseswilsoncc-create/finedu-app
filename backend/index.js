@@ -8,6 +8,7 @@ const ofertasRoutes = require("./routes/ofertas");
 const aportesRoutes = require("./routes/aportes");
 const simulacionesRoutes = require("./routes/simulaciones");
 const feedbackRoutes = require("./routes/feedback");
+const actividadRoutes = require("./routes/actividad");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -21,6 +22,7 @@ app.use("/api", ofertasRoutes);
 app.use("/api", aportesRoutes);
 app.use("/api", simulacionesRoutes);
 app.use("/api", feedbackRoutes);
+app.use("/api", actividadRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {
