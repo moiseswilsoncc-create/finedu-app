@@ -1,6 +1,7 @@
 import React from "react";
 import ValidacionPreVercel from "./ValidacionPreVercel";
 import EditorEstadoArchivos from "./EditorEstadoArchivos";
+import MetricaSupabase from "./MetricaSupabase";
 
 const DashboardInstitucional: React.FC = () => {
   return (
@@ -21,8 +22,8 @@ const DashboardInstitucional: React.FC = () => {
       </section>
 
       <section style={sectionStyle}>
-        <h2 style={titleStyle}>📊 Métricas Supabase (pendiente)</h2>
-        <p style={{ color: "#7f8c8d" }}>Este módulo se activará cuando Supabase esté operativo y conectado a trazabilidad institucional.</p>
+        <h2 style={titleStyle}>📊 Métricas Supabase</h2>
+        <MetricaSupabase />
       </section>
     </div>
   );
