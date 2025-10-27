@@ -1,25 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getTasa } from "../utils/getTasa";
 import { formatearMoneda } from "../utils/formatearMoneda";
+import { supabase } from "../supabaseClient";
 
 type Props = {
   pais: string;
-  grupoActivo?: boolean; // Nuevo prop para lógica grupal
+  grupoActivo?: boolean;
 };
 
 function SimuladorCredito({ pais, grupoActivo = false }: Props) {
   const tasaBase = getTasa(pais, "consumo");
   const [monto, setMonto] = useState(1000000);
   const [plazoMeses, setPlazoMeses] = useState(12);
+  const [integrantesGrupo, setIntegrantesGrupo] = useState<number | null>(null);
+
+  useEffect(() => {
+    const obtenerIntegrantes = async () => {
+      if (!grupoActivo) return;
+
+      const usuarioId = localStorage.getItem("usuarioId");
+      if (!usuarioId) return;
+
+      const { data, error } = await supabase
+        .from("grupos_financieros")
+        .select("integrantes")
+        .eq("usuario_id", usuarioId)
+        .single();
+
+      if (error || !data) {
+        console.error("Error al obtener integrantes del grupo:", error?.message);
+        return;
+      }
+
+      setIntegrantesGrupo(data.integrantes);
+    };
+
+    obtenerIntegrantes();
+  }, [grupoActivo]);
 
   const tasaMensual = tasaBase / 12 / 100;
   const cuota = (monto * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -plazoMeses));
   const totalPagado = cuota * plazoMeses;
   const sobrecosto = totalPagado - monto;
-
-  // Simulación de impacto grupal (valor simbólico: 5 integrantes)
-  const integrantesGrupo = 5;
-  const impactoGrupal = grupoActivo ? sobrecosto * integrantesGrupo : 0;
+  const impactoGrupal =
+    grupoActivo && integrantesGrupo ? sobrecosto * integrantesGrupo : 0;
 
   return (
     <div>
@@ -48,7 +72,7 @@ function SimuladorCredito({ pais, grupoActivo = false }: Props) {
         <li>Cuota mensual estimada: {formatearMoneda(cuota, pais)}</li>
         <li>Total pagado: {formatearMoneda(totalPagado, pais)}</li>
         <li>Sobreprecio por intereses: {formatearMoneda(sobrecosto, pais)}</li>
-        {grupoActivo && (
+        {grupoActivo && integrantesGrupo !== null && (
           <li>
             Impacto grupal estimado (x{integrantesGrupo}):{" "}
             {formatearMoneda(impactoGrupal, pais)}
