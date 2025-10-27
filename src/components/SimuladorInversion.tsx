@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { getTasa } from "../utils/getTasa";
 import { formatearMoneda } from "../utils/formatearMoneda";
+// import { supabase } from "../supabaseClient"; // 🔄 Activar en segunda fase
 
 type Props = {
   pais: string;
@@ -8,23 +9,37 @@ type Props = {
 
 function SimuladorInversion({ pais }: Props) {
   const tasaAnual = getTasa(pais, "inversion");
-  const [monto, setMonto] = useState(1000000);
+  const [aporteMensual, setAporteMensual] = useState(1000);
   const [plazoMeses, setPlazoMeses] = useState(12);
 
   const tasaMensual = tasaAnual / 12 / 100;
-  const montoFinal = monto * Math.pow(1 + tasaMensual, plazoMeses);
-  const ganancia = montoFinal - monto;
+
+  // 1. Ahorro sin interés
+  const ahorroSimple = aporteMensual * plazoMeses;
+
+  // 2. Ahorro con interés compuesto sobre saldo acumulado
+  let ahorroConInteres = 0;
+  for (let i = 0; i < plazoMeses; i++) {
+    ahorroConInteres = (ahorroConInteres + aporteMensual) * (1 + tasaMensual);
+  }
+
+  // 3. Ahorro invertido mes a mes (cada aporte se capitaliza por su tiempo restante)
+  let ahorroInvertido = 0;
+  for (let i = 0; i < plazoMeses; i++) {
+    const mesesRestantes = plazoMeses - i;
+    ahorroInvertido += aporteMensual * Math.pow(1 + tasaMensual, mesesRestantes);
+  }
 
   return (
     <div>
-      <h3>Simulador de inversión ({pais})</h3>
+      <h3>Comparador de estrategias de ahorro e inversión ({pais})</h3>
 
       <label>
-        Monto a invertir:
+        Aporte mensual:
         <input
           type="number"
-          value={monto}
-          onChange={(e) => setMonto(Number(e.target.value))}
+          value={aporteMensual}
+          onChange={(e) => setAporteMensual(Number(e.target.value))}
         />
       </label>
 
@@ -38,10 +53,26 @@ function SimuladorInversion({ pais }: Props) {
       </label>
 
       <ul>
-        <li>Tasa anual estimada: {tasaAnual}%</li>
-        <li>Ganancia estimada: {formatearMoneda(ganancia, pais)}</li>
-        <li>Monto final proyectado: {formatearMoneda(montoFinal, pais)}</li>
+        <li>
+          <strong>Ahorro sin interés:</strong>{" "}
+          {formatearMoneda(ahorroSimple, pais)}
+        </li>
+        <li>
+          <strong>Ahorro con interés compuesto:</strong>{" "}
+          {formatearMoneda(ahorroConInteres, pais)}
+        </li>
+        <li>
+          <strong>Ahorro invertido mes a mes:</strong>{" "}
+          {formatearMoneda(ahorroInvertido, pais)}
+        </li>
       </ul>
+
+      {/* 📊 Complementar: agregar gráfico comparativo en segunda fase */}
+      {/* <GraficoComparador
+        ahorroSimple={ahorroSimple}
+        ahorroConInteres={ahorroConInteres}
+        ahorroInvertido={ahorroInvertido}
+      /> */}
     </div>
   );
 }
