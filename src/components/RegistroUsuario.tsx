@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import bcrypt from "bcryptjs";
 
 const RegistroUsuario: React.FC = () => {
   const [nombre, setNombre] = useState("");
@@ -18,6 +19,20 @@ const RegistroUsuario: React.FC = () => {
     console.log("✅ Componente RegistroUsuario montado");
   }, []);
 
+  const validarFormato = () => {
+    const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+    const claveValida = contraseña.length >= 6;
+    if (!correoValido) {
+      setError("El formato del correo no es válido.");
+      return false;
+    }
+    if (!claveValida) {
+      setError("La contraseña debe tener al menos 6 caracteres.");
+      return false;
+    }
+    return true;
+  };
+
   const existeCorreo = async (correo: string) => {
     const response = await fetch(`https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios?correo=eq.${correo}`, {
       method: "GET",
@@ -34,12 +49,19 @@ const RegistroUsuario: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    if (!validarFormato()) return;
+
     try {
       const yaExiste = await existeCorreo(correo);
       if (yaExiste) {
         setError("Este correo ya está registrado.");
         return;
       }
+
+      const hash = await bcrypt.hash(contraseña, 10);
+      const grupoId = localStorage.getItem("grupoId") || null;
 
       const response = await fetch("https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios", {
         method: "POST",
@@ -58,7 +80,8 @@ const RegistroUsuario: React.FC = () => {
           ciudad,
           comuna,
           correo,
-          contraseña,
+          contraseña: hash,
+          grupo_id: grupoId,
           created_at: new Date().toISOString()
         })
       });
@@ -69,6 +92,7 @@ const RegistroUsuario: React.FC = () => {
         localStorage.setItem("logueado", "true");
         localStorage.setItem("tipoUsuario", "usuario");
         localStorage.setItem("correoUsuario", correo);
+        if (grupoId) localStorage.setItem("grupoId", grupoId);
         navigate("/registro-ahorro");
       } else {
         setError("No se pudo registrar el usuario.");
@@ -94,56 +118,26 @@ const RegistroUsuario: React.FC = () => {
       </p>
 
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
-        <div>
-          <label>👤 Nombre</label>
-          <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required style={inputStyle} />
-        </div>
-
-        <div>
-          <label>👤 Apellido</label>
-          <input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required style={inputStyle} />
-        </div>
-
-        <div>
-          <label>📅 Fecha de nacimiento</label>
-          <input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} />
-        </div>
-
+        <div><label>👤 Nombre</label><input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required style={inputStyle} /></div>
+        <div><label>👤 Apellido</label><input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required style={inputStyle} /></div>
+        <div><label>📅 Fecha de nacimiento</label><input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} /></div>
         <div>
           <label>⚧️ Sexo</label>
           <select value={sexo} onChange={(e) => setSexo(e.target.value)} required style={inputStyle}>
             <option value="">Selecciona</option>
             <option value="Femenino">Femenino</option>
             <option value="Masculino">Masculino</option>
+            <option value="Otro">Otro</option>
+            <option value="Prefiero no decirlo">Prefiero no decirlo</option>
           </select>
         </div>
-
-        <div>
-          <label>🌎 País</label>
-          <input type="text" value={pais} onChange={(e) => setPais(e.target.value)} required style={inputStyle} />
-        </div>
-
+        <div><label>🌎 País</label><input type="text" value={pais} onChange={(e) => setPais(e.target.value)} required style={inputStyle} /></div>
         <div style={{ display: "flex", gap: "1rem" }}>
-          <div style={{ flex: 1 }}>
-            <label>🏙️ Ciudad</label>
-            <input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required style={inputStyle} />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label>🏘️ Comuna</label>
-            <input type="text" value={comuna} onChange={(e) => setComuna(e.target.value)} required style={inputStyle} />
-          </div>
+          <div style={{ flex: 1 }}><label>🏙️ Ciudad</label><input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required style={inputStyle} /></div>
+          <div style={{ flex: 1 }}><label>🏘️ Comuna</label><input type="text" value={comuna} onChange={(e) => setComuna(e.target.value)} required style={inputStyle} /></div>
         </div>
-
-        <div>
-          <label>📧 Correo electrónico</label>
-          <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} />
-        </div>
-
-        <div>
-          <label>🔒 Clave personal</label>
-          <input type="password" value={contraseña} onChange={(e) => setContraseña(e.target.value)} required style={inputStyle} />
-        </div>
-
+        <div><label>📧 Correo electrónico</label><input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} /></div>
+        <div><label>🔒 Clave personal</label><input type="password" value={contraseña} onChange={(e) => setContraseña(e.target.value)} required style={inputStyle} /></div>
         <button type="submit" style={{
           padding: "0.8rem",
           backgroundColor: "#2ecc71",
@@ -152,9 +146,7 @@ const RegistroUsuario: React.FC = () => {
           borderRadius: "8px",
           fontSize: "1rem",
           cursor: "pointer"
-        }}>
-          ✅ Registrarme ahora
-        </button>
+        }}>✅ Registrarme ahora</button>
       </form>
 
       {error && <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>{error}</p>}
