@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "../supabaseClient";
+// import { supabase } from "../supabaseClient"; // 🔄 Activar en segunda fase
 
 function DiagnosticoSistema() {
   const [reactOK, setReactOK] = useState(false);
   const [supabaseOK, setSupabaseOK] = useState(false);
-  const [mensaje, setMensaje] = useState("");
+  const [mensajeSupabase, setMensajeSupabase] = useState("");
+  const [rolUsuario, setRolUsuario] = useState<string | null>(null);
+  const [modulosOK, setModulosOK] = useState(false);
 
   useEffect(() => {
     console.log("✅ DiagnosticoSistema se está montando");
@@ -15,12 +17,36 @@ function DiagnosticoSistema() {
     //   const { data, error } = await supabase.from("usuarios").select("id").limit(1);
     //   if (data) {
     //     setSupabaseOK(true);
-    //     setMensaje("✅ Supabase responde correctamente");
+    //     setMensajeSupabase("✅ Supabase responde correctamente");
     //   } else {
-    //     setMensaje("⚠️ Error al conectar con Supabase");
+    //     setMensajeSupabase("⚠️ Error al conectar con Supabase");
     //   }
     // };
+
+    // const validarRol = async () => {
+    //   const usuarioId = localStorage.getItem("usuarioId");
+    //   const { data, error } = await supabase
+    //     .from("usuarios")
+    //     .select("rol")
+    //     .eq("id", usuarioId)
+    //     .single();
+    //   if (data) setRolUsuario(data.rol);
+    // };
+
+    const validarModulos = () => {
+      try {
+        require("./MenuModulos");
+        require("./Resumen");
+        require("./PanelColaboradores");
+        setModulosOK(true);
+      } catch (error) {
+        console.error("❌ Error al cargar módulos clave", error);
+      }
+    };
+
     // validarSupabase();
+    // validarRol();
+    validarModulos();
   }, []);
 
   return (
@@ -45,9 +71,37 @@ function DiagnosticoSistema() {
           color: "white",
           padding: "1rem",
           borderRadius: "8px",
+          marginBottom: "1rem",
         }}
       >
-        {mensaje || "⏳ Supabase pendiente de activación"}
+        {mensajeSupabase || "⏳ Supabase pendiente de activación"}
+      </div>
+
+      <div
+        style={{
+          backgroundColor: modulosOK ? "green" : "gray",
+          color: "white",
+          padding: "1rem",
+          borderRadius: "8px",
+          marginBottom: "1rem",
+        }}
+      >
+        {modulosOK
+          ? "✅ Módulos clave cargados correctamente"
+          : "⏳ Verificando módulos clave..."}
+      </div>
+
+      <div
+        style={{
+          backgroundColor: rolUsuario ? "green" : "gray",
+          color: "white",
+          padding: "1rem",
+          borderRadius: "8px",
+        }}
+      >
+        {rolUsuario
+          ? `✅ Rol detectado: ${rolUsuario}`
+          : "⏳ Rol pendiente de activación"}
       </div>
     </div>
   );
