@@ -10,6 +10,7 @@ const simulacionesRoutes = require("./routes/simulaciones");
 const feedbackRoutes = require("./routes/feedback");
 const actividadRoutes = require("./routes/actividad");
 const ingresoRoutes = require("./routes/ingreso");
+const configuracionRoutes = require("./routes/configuracion");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -25,6 +26,7 @@ app.use("/api", simulacionesRoutes);
 app.use("/api", feedbackRoutes);
 app.use("/api", actividadRoutes);
 app.use("/api", ingresoRoutes);
+app.use("/api", configuracionRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {
