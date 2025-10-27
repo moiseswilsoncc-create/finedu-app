@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
 
@@ -6,12 +6,25 @@ const OfertaColaboradores: React.FC = () => {
   const navigate = useNavigate();
 
   const [tipo, setTipo] = useState("");
+  const [tiposDisponibles, setTiposDisponibles] = useState<string[]>([
+    "crédito", "curso", "beneficio", "tasa"
+  ]);
+  const [nuevoTipo, setNuevoTipo] = useState("");
+
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [pais, setPais] = useState("Chile");
   const [fechaExpiracion, setFechaExpiracion] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
+
+  const handleAgregarTipo = () => {
+    if (nuevoTipo && !tiposDisponibles.includes(nuevoTipo)) {
+      setTiposDisponibles([...tiposDisponibles, nuevoTipo]);
+      setTipo(nuevoTipo);
+      setNuevoTipo("");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,11 +67,34 @@ const OfertaColaboradores: React.FC = () => {
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <select value={tipo} onChange={(e) => setTipo(e.target.value)} required>
           <option value="">Selecciona tipo de publicación</option>
-          <option value="crédito">🏦 Crédito</option>
-          <option value="curso">🎓 Curso</option>
-          <option value="beneficio">🎁 Beneficio</option>
-          <option value="tasa">📉 Tasa preferencial</option>
+          {tiposDisponibles.map((t, index) => (
+            <option key={index} value={t}>{t}</option>
+          ))}
         </select>
+
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <input
+            type="text"
+            placeholder="Agregar nuevo tipo"
+            value={nuevoTipo}
+            onChange={(e) => setNuevoTipo(e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <button
+            type="button"
+            onClick={handleAgregarTipo}
+            style={{
+              padding: "0.5rem 1rem",
+              backgroundColor: "#16a085",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
+          >
+            ➕ Tipo
+          </button>
+        </div>
 
         <input
           type="text"
