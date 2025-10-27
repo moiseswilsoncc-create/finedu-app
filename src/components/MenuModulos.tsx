@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
+import "../styles/MenuModulos.css";
 
 const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
 
