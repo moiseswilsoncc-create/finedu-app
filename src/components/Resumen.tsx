@@ -28,6 +28,7 @@ const Resumen: React.FC = () => {
   const [nombreGrupo, setNombreGrupo] = useState<string>("");
   const [participantes, setParticipantes] = useState<Participante[]>([]);
   const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(true);
 
   const correoUsuario = localStorage.getItem("correo");
 
@@ -35,6 +36,7 @@ const Resumen: React.FC = () => {
     const cargarDatos = async () => {
       if (!correoUsuario) {
         setError("No se encontró el correo del usuario en la sesión.");
+        setCargando(false);
         return;
       }
 
@@ -46,6 +48,7 @@ const Resumen: React.FC = () => {
 
       if (errorUsuario || !usuarios) {
         setError("No se encontraron datos del usuario.");
+        setCargando(false);
         return;
       }
 
@@ -72,6 +75,8 @@ const Resumen: React.FC = () => {
           setParticipantes(miembros);
         }
       }
+
+      setCargando(false);
     };
 
     cargarDatos();
@@ -86,7 +91,7 @@ const Resumen: React.FC = () => {
     );
   }
 
-  if (!usuario) {
+  if (cargando || !usuario) {
     return (
       <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
         <h2 style={{ color: "#2980b9" }}>⏳ Cargando datos...</h2>
