@@ -11,7 +11,7 @@ import {
 import { FineduProvider } from "./context/FineduContext";
 import { Participante } from "./types";
 
-// Componentes
+// Componentes base
 import Navbar from "./components/Navbar";
 import RutaProtegida from "./components/RutaProtegida";
 import SelectorTipoUsuario from "./components/SelectorTipoUsuario";
@@ -26,6 +26,8 @@ import FelicitacionRegistro from "./components/FelicitacionRegistro";
 import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
 import RegistroColaborador from "./components/RegistroColaborador";
 import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
+
+// Componentes usuario
 import PanelUsuario from "./components/PanelUsuario";
 import SimuladorInversion from "./components/SimuladorInversion";
 import Resumen from "./components/Resumen";
@@ -42,16 +44,22 @@ import SimuladorCreditoVivienda from "./components/SimuladorCreditoVivienda";
 import GraficoAhorro from "./components/GraficoAhorro";
 import PanelImpacto from "./components/PanelImpacto";
 import ForoFinanciero from "./components/ForoFinanciero";
-import AdminGrupo from "./components/AdminGrupo";
-import MenuModulos from "./components/MenuModulos";
+
+// Componentes colaborador
 import IngresoUsuario from "./components/IngresoUsuario";
 import IngresoColaborador from "./components/IngresoColaborador";
 import PanelColaboradores from "./components/PanelColaboradores";
 import MetricasColaboradores from "./components/MetricasColaboradores";
 import GeneradorPDF from "./components/GeneradorPDF";
-import VistaInstitucional from "./components/VistaInstitucional";
+import DatosOfertas from "./components/DatosOfertas";
+import OfertasColaborador from "./components/OfertasColaborador";
 
-// Módulos
+// Componentes institucionales
+import VistaInstitucional from "./components/VistaInstitucional";
+import MenuModulos from "./components/MenuModulos";
+import MenuSimuladores from "./components/MenuSimuladores";
+
+// Módulos institucionales
 import InformeInstitucional from "./modules/InformeInstitucional";
 import DashboardInstitucional from "./modules/DashboardInstitucional";
 import EvaluadorCreditoInteligente from "./modules/EvaluadorCreditoInteligente";
@@ -87,6 +95,7 @@ function App() {
       setTipoUsuario(null);
       navigate("/", { replace: true });
     };
+
     return (
       <FineduProvider>
         <div>
@@ -99,8 +108,8 @@ function App() {
               <Link to="/institucional">🏛️ Vista institucional</Link>
             </nav>
           )}
-
           <Routes>
+            {/* 🔐 Rutas públicas */}
             <Route path="/" element={<Bienvenida />} />
             <Route path="/login" element={<Login />} />
             <Route path="/recuperar-clave" element={<RecuperarClave />} />
@@ -110,6 +119,8 @@ function App() {
             <Route path="/felicitacion" element={<FelicitacionRegistro />} />
             <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
             <Route path="/registro-colaborador" element={<RegistroColaborador />} />
+
+            {/* 🔐 Rutas protegidas para usuario */}
             <Route path="/editar-perfil" element={<RutaProtegida><EditarPerfilUsuario /></RutaProtegida>} />
             <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
             <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
@@ -133,27 +144,8 @@ function App() {
             <Route path="/admin-grupo" element={<RutaProtegida><AdminGrupo /></RutaProtegida>} />
             <Route path="/evaluador-credito" element={<RutaProtegida><EvaluadorCreditoInteligente /></RutaProtegida>} />
             <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
-
-            <Route path="/usuario" element={
-              <RutaProtegida>
-                <>
-                  <IngresoUsuario setPais={setPais} />
-                  <Resumen metaGrupal={metaGrupal} participantes={participantes} />
-                  <VistaEtapa participantes={participantes} />
-                  <VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} />
-                  <VistaMetaIndividual participantes={participantes} />
-                  <VistaParticipante onAgregar={agregarParticipante} />
-                  <SimuladorCredito pais={pais} />
-                  <SimuladorCreditoAuto pais={pais} />
-                  <SimuladorCreditoVivienda pais={pais} />
-                  <SimuladorInversion pais={pais} />
-                  <GraficoAhorro participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
-                  <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} />
-                  <ForoFinanciero />
-                </>
-              </RutaProtegida>
-            } />
-
+            <Route path="/simuladores" element={<RutaProtegida><MenuSimuladores /></RutaProtegida>} />
+            {/* 🔐 Rutas protegidas para colaborador */}
             <Route path="/colaborador" element={
               <RutaProtegida>
                 <>
@@ -162,11 +154,14 @@ function App() {
                   <PanelImpacto participantes={participantes} metaGrupal={metaGrupal} pais={pais} institucion="Nombre de institución" />
                   <MetricasColaboradores participantes={participantes} metaGrupal={metaGrupal} />
                   <GeneradorPDF participantes={participantes} metaGrupal={metaGrupal} />
+                  <DatosOfertas />
+                  <OfertasColaborador />
                   <ForoFinanciero />
                 </>
               </RutaProtegida>
             } />
 
+            {/* 🔐 Rutas institucionales */}
             <Route path="/institucional" element={
               <VistaInstitucional
                 participantes={participantes}
