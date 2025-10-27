@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import VistaEtapa from "./VistaEtapa";
 
 const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
-const supabaseKey = "TU_API_KEY";
+const supabaseKey = "TU_API_KEY"; // 🔒 Reemplazar con variable segura en producción
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 type Usuario = {
+  id: string;
   nombre: string;
   correo: string;
   ingresos: number;
@@ -13,9 +15,16 @@ type Usuario = {
   grupo_id: string | null;
 };
 
+type Participante = {
+  nombre: string;
+  ingresos: number;
+  egresos: number;
+};
+
 const Resumen: React.FC = () => {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [metaGrupal, setMetaGrupal] = useState<number>(0);
+  const [participantes, setParticipantes] = useState<Participante[]>([]);
   const [error, setError] = useState("");
 
   const correoUsuario = localStorage.getItem("correo");
@@ -49,6 +58,15 @@ const Resumen: React.FC = () => {
 
         if (!errorGrupo && grupo?.meta_grupal) {
           setMetaGrupal(grupo.meta_grupal);
+        }
+
+        const { data: miembros, error: errorMiembros } = await supabase
+          .from("usuarios")
+          .select("nombre, ingresos, egresos")
+          .eq("grupo_id", usuarios.grupo_id);
+
+        if (miembros) {
+          setParticipantes(miembros);
         }
       }
     };
@@ -98,6 +116,13 @@ const Resumen: React.FC = () => {
         <p><strong>Ahorro:</strong> ${ahorro.toLocaleString("es-CL")}</p>
         <p><strong>Cumplimiento respecto a la meta grupal:</strong> {cumplimiento.toFixed(2)}%</p>
       </div>
+
+      {participantes.length > 0 && (
+        <section style={{ marginBottom: "2rem" }}>
+          <h3>👥 Proyección colaborativa</h3>
+          <VistaEtapa participantes={participantes} />
+        </section>
+      )}
 
       <p style={{ fontSize: "0.95rem", color: "#888" }}>
         Tu correo ha sido usado internamente para identificarte, pero nunca se muestra en pantalla.
