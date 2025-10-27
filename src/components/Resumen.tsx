@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import VistaEtapa from "./VistaEtapa";
+import VistaGrupal from "./VistaGrupal";
 
 const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
-const supabaseKey = "TU_API_KEY"; // 🔒 Reemplazar con variable segura en producción
+const supabaseKey = "TU_API_KEY"; // 🔒 Reemplazar con variable segura
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 type Usuario = {
@@ -24,6 +25,7 @@ type Participante = {
 const Resumen: React.FC = () => {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [metaGrupal, setMetaGrupal] = useState<number>(0);
+  const [nombreGrupo, setNombreGrupo] = useState<string>("");
   const [participantes, setParticipantes] = useState<Participante[]>([]);
   const [error, setError] = useState("");
 
@@ -52,12 +54,13 @@ const Resumen: React.FC = () => {
       if (usuarios.grupo_id) {
         const { data: grupo, error: errorGrupo } = await supabase
           .from("grupos")
-          .select("meta_grupal")
+          .select("meta_grupal, nombre")
           .eq("id", usuarios.grupo_id)
           .single();
 
-        if (!errorGrupo && grupo?.meta_grupal) {
+        if (grupo) {
           setMetaGrupal(grupo.meta_grupal);
+          setNombreGrupo(grupo.nombre);
         }
 
         const { data: miembros, error: errorMiembros } = await supabase
@@ -100,10 +103,6 @@ const Resumen: React.FC = () => {
         💸 Resumen de {usuario.nombre}
       </h2>
 
-      <p style={{ fontSize: "1.1rem", color: "#555", marginBottom: "1rem" }}>
-        Este módulo te muestra tus ingresos, egresos y tu aporte al cumplimiento de la meta grupal.
-      </p>
-
       <div style={{
         backgroundColor: "#ecf0f1",
         padding: "1.5rem",
@@ -118,13 +117,17 @@ const Resumen: React.FC = () => {
       </div>
 
       {participantes.length > 0 && (
-        <section style={{ marginBottom: "2rem" }}>
-          <h3>👥 Proyección colaborativa</h3>
+        <>
           <VistaEtapa participantes={participantes} />
-        </section>
+          <VistaGrupal
+            nombreGrupoMeta={nombreGrupo}
+            metaGrupal={metaGrupal}
+            participantes={participantes}
+          />
+        </>
       )}
 
-      <p style={{ fontSize: "0.95rem", color: "#888" }}>
+      <p style={{ fontSize: "0.95rem", color: "#888", marginTop: "2rem" }}>
         Tu correo ha sido usado internamente para identificarte, pero nunca se muestra en pantalla.
       </p>
     </div>
