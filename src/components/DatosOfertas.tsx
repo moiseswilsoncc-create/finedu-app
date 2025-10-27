@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { OfertaColaborador } from "../types";
+import axios from "../axiosConfig";
 
 const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
 const supabaseKey = "TU_API_KEY";
@@ -19,8 +20,19 @@ const DatosOfertas: React.FC = () => {
 
   const [fechaExpiracion, setFechaExpiracion] = useState("");
   const [mensaje, setMensaje] = useState("");
-
   const correo = localStorage.getItem("correo");
+
+  useEffect(() => {
+    const registrarVisualizacion = async () => {
+      if (correo) {
+        await axios.post("/guardar-visualizacion", {
+          usuario_id: correo,
+          modulo: "DatosOfertas"
+        });
+      }
+    };
+    registrarVisualizacion();
+  }, [correo]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -39,15 +51,15 @@ const DatosOfertas: React.FC = () => {
       return;
     }
 
-    const response = await supabase.from("ofertas_colaborador").insert([
-      {
-        ...oferta,
-        fecha_expiracion: fechaExpiracion,
-        colaborador: correo,
-        fecha_publicacion: new Date().toISOString(),
-        visibilidad: true
-      }
-    ]);
+    const nuevaOferta = {
+      ...oferta,
+      fecha_expiracion: fechaExpiracion,
+      colaborador: correo,
+      fecha_publicacion: new Date().toISOString(),
+      visible: true
+    };
+
+    const response = await supabase.from("ofertas_colaborador").insert([nuevaOferta]);
 
     if (response.error) {
       setMensaje("❌ Error al guardar la oferta.");
