@@ -12,6 +12,7 @@ const actividadRoutes = require("./routes/actividad");
 const ingresoRoutes = require("./routes/ingreso");
 const configuracionRoutes = require("./routes/configuracion");
 const mensajesRoutes = require("./routes/mensajes");
+const resumenRoutes = require("./routes/resumen");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -29,6 +30,7 @@ app.use("/api", actividadRoutes);
 app.use("/api", ingresoRoutes);
 app.use("/api", configuracionRoutes);
 app.use("/api", mensajesRoutes);
+app.use("/api", resumenRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {
