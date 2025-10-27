@@ -127,8 +127,6 @@ const RegistroUsuario: React.FC = () => {
             <option value="">Selecciona</option>
             <option value="Femenino">Femenino</option>
             <option value="Masculino">Masculino</option>
-            <option value="Otro">Otro</option>
-            <option value="Prefiero no decirlo">Prefiero no decirlo</option>
           </select>
         </div>
         <div><label>🌎 País</label><input type="text" value={pais} onChange={(e) => setPais(e.target.value)} required style={inputStyle} /></div>
