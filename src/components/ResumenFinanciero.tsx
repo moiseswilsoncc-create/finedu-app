@@ -101,7 +101,6 @@ function ResumenFinanciero() {
     : null;
 
   const ranking = [...participantes].sort((a, b) => (b.ingresos - b.egresos) - (a.ingresos - a.egresos));
-
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       <h2 style={{ marginBottom: "1rem", color: "#2c3e50" }}>
@@ -190,4 +189,10 @@ function ResumenFinanciero() {
       </ul>
 
       <p style={{ fontSize: "0.85rem", color: "#888", marginTop: "1rem", fontStyle: "italic" }}>
-        Última actualización:
+        Última actualización: {new Date().toLocaleString("es-CL")}
+      </p>
+    </div>
+  );
+}
+
+export default ResumenFinanciero;
