@@ -14,6 +14,7 @@ const configuracionRoutes = require("./routes/configuracion");
 const mensajesRoutes = require("./routes/mensajes");
 const resumenRoutes = require("./routes/resumen");
 const panelRoutes = require("./routes/panel");
+const visualizacionRoutes = require("./routes/visualizacion");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -33,6 +34,7 @@ app.use("/api", configuracionRoutes);
 app.use("/api", mensajesRoutes);
 app.use("/api", resumenRoutes);
 app.use("/api", panelRoutes);
+app.use("/api", visualizacionRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {
