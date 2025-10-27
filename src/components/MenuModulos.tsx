@@ -14,14 +14,20 @@ const modulosUsuario = [
   { ruta: "/vista-grupal", label: "👨‍👩‍👧‍👦 Vista Grupal" },
   { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
   { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
-  { ruta: "/datos-ofertas", label: "📊 Datos y ofertas" } // ← módulo con campana
+  { ruta: "/panel-ofertas", label: "📢 Ofertas activas" }
 ];
 
 const modulosColaborador = [
   { ruta: "/panel-colaboradores", label: "🧑‍💼 Panel del Colaborador" },
-  { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
-  { ruta: "/vista-grupal", label: "👥 Vista Grupal Institucional" },
-  { ruta: "/resumen-financiero", label: "📊 Reportes Financieros" }
+  { ruta: "/datos-ofertas", label: "📢 Publicar oferta" },
+  { ruta: "/registro-colaborador", label: "🧑‍💼 Registro colaborador" }
+];
+
+const modulosInstitucional = [
+  { ruta: "/institucional", label: "🏛️ Dashboard institucional" },
+  { ruta: "/informe-institucional", label: "📄 Informe" },
+  { ruta: "/panel-colaboradores", label: "🧑‍💼 Colaboradores" },
+  { ruta: "/validacion-pre-vercel", label: "✅ Validación final" }
 ];
 
 const MenuModulos = () => {
@@ -59,7 +65,12 @@ const MenuModulos = () => {
     verificarNovedades();
   }, [correo, tipoUsuario]);
 
-  const modulos = tipoUsuario === "colaborador" ? modulosColaborador : modulosUsuario;
+  const modulos =
+    tipoUsuario === "colaborador"
+      ? modulosColaborador
+      : tipoUsuario === "institucional"
+      ? modulosInstitucional
+      : modulosUsuario;
 
   return (
     <div className="menu-modulos-container">
@@ -68,7 +79,7 @@ const MenuModulos = () => {
         {modulos.map((modulo, index) => (
           <Link key={index} to={modulo.ruta} className="btn-modulo">
             {modulo.label}
-            {modulo.ruta === "/datos-ofertas" && nuevasOfertas > 0 && (
+            {modulo.ruta === "/panel-ofertas" && nuevasOfertas > 0 && (
               <span className="badge-campana">{nuevasOfertas}</span>
             )}
           </Link>
