@@ -18,7 +18,6 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
       .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
       .join(" ");
 
-  // Logo institucional
   const logoFinedu = (
     <img
       src="/logo-finedu.png"
@@ -27,18 +26,23 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
     />
   );
 
-  // Enlaces por tipo de usuario
   const enlaces: Record<string, { ruta: string; label: string }[]> = {
     usuario: [
       { ruta: "/usuario", label: "👤 Usuario" },
-      { ruta: "/vista-grupal", label: "👥 Grupo" }
+      { ruta: "/vista-grupal", label: "👥 Grupo" },
+      { ruta: "/panel-ofertas", label: "📢 Ofertas" },
+      { ruta: "/resumen", label: "📊 Resumen" }
     ],
     colaborador: [
-      { ruta: "/panel-colaborador", label: "🤝 Colaborador" }
+      { ruta: "/panel-colaborador", label: "🤝 Panel colaborador" },
+      { ruta: "/datos-ofertas", label: "📢 Publicar oferta" },
+      { ruta: "/registro-colaborador", label: "🧑‍💼 Registro colaborador" }
     ],
     institucional: [
-      { ruta: "/institucional", label: "🏛️ Institucional" },
-      { ruta: "/informe-institucional", label: "📄 Informe" }
+      { ruta: "/institucional", label: "🏛️ Dashboard institucional" },
+      { ruta: "/informe-institucional", label: "📄 Informe" },
+      { ruta: "/panel-colaboradores", label: "🧑‍💼 Colaboradores" },
+      { ruta: "/validacion-pre-vercel", label: "✅ Validación final" }
     ]
   };
 
@@ -61,7 +65,12 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
           <Link
             key={index}
             to={enlace.ruta}
-            style={{ color: "white", marginRight: "1rem" }}
+            style={{
+              color: location.pathname === enlace.ruta ? "#f1c40f" : "white",
+              marginRight: "1rem",
+              textDecoration: "none",
+              fontWeight: "bold"
+            }}
           >
             {enlace.label}
           </Link>
