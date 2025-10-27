@@ -1,10 +1,17 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import AsistenteFinanciero from "./AsistenteFinanciero";
+import { createClient } from "@supabase/supabase-js";
+import { OfertaColaborador } from "../types";
+
+const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
 
 const PanelUsuario: React.FC = () => {
   const navigate = useNavigate();
   const nombreUsuario = localStorage.getItem("nombreUsuario") || "Usuario";
+  const correo = localStorage.getItem("correoUsuario");
+
+  const [ofertasFiltradas, setOfertasFiltradas] = useState<OfertaColaborador[]>([]);
 
   const modulos = [
     { nombre: "💸 Ingresos y Egresos", ruta: "/resumen-financiero", color: "#f39c12" },
@@ -16,6 +23,33 @@ const PanelUsuario: React.FC = () => {
     { nombre: "📊 Mi Progreso", ruta: "/vista-etapa", color: "#34495e" },
     { nombre: "🗣️ Foro Financiero", ruta: "/foro-financiero", color: "#2c3e50" }
   ];
+
+  useEffect(() => {
+    const obtenerOfertas = async () => {
+      if (!correo) return;
+
+      const { data: visualizacion } = await supabase
+        .from("registro_visualizacion")
+        .select("fecha_vista")
+        .eq("usuario_id", correo)
+        .eq("modulo", "DatosOfertas")
+        .single();
+
+      const { data: ofertas } = await supabase
+        .from("ofertas_colaborador")
+        .select("*")
+        .eq("visible", true)
+        .gt("fecha_expiracion", new Date().toISOString());
+
+      const nuevas = visualizacion
+        ? ofertas.filter(o => new Date(o.fecha_publicacion) > new Date(visualizacion.fecha_vista))
+        : ofertas;
+
+      setOfertasFiltradas(nuevas);
+    };
+
+    obtenerOfertas();
+  }, [correo]);
 
   const evaluarSaludFinanciera = () => {
     const ahorro = parseInt(localStorage.getItem("ahorro") || "0");
@@ -76,7 +110,6 @@ const PanelUsuario: React.FC = () => {
           ))}
         </div>
 
-        {/* ✅ Botón adicional para crear grupo */}
         <div style={{ marginTop: "2rem", textAlign: "center" }}>
           <button
             onClick={() => navigate("/crear-grupo")}
@@ -99,6 +132,25 @@ const PanelUsuario: React.FC = () => {
         <h2>🤖 Asistente Financiero</h2>
         <AsistenteFinanciero />
       </section>
+
+      {ofertasFiltradas.length > 0 && (
+        <section style={{ marginBottom: "3rem" }}>
+          <h2>📊 Datos y ofertas financieras</h2>
+          {ofertasFiltradas.map((oferta, index) => (
+            <div key={index} style={{
+              backgroundColor: "#f9f9f9",
+              padding: "1rem",
+              marginBottom: "1rem",
+              borderRadius: "8px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+            }}>
+              <strong>{oferta.titulo}</strong> — {oferta.tipo} ({oferta.pais})
+              <p>{oferta.descripcion}</p>
+              <small>Válido hasta: {oferta.fecha_expiracion}</small>
+            </div>
+          ))}
+        </section>
+      )}
 
       <section>
         <Link to="/modulos" style={{
