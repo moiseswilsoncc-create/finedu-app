@@ -1,22 +1,74 @@
-import React from "react";
-import { Participante } from "../types";
+import React, { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 
-type Props = {
-  metaGrupal: number;
-  participantes: Participante[];
+const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
+const supabaseKey = "TU_API_KEY";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+type Usuario = {
+  nombre: string;
+  correo: string;
+  ingresos: number;
+  egresos: number;
+  grupo_id: string | null;
 };
 
-const Resumen: React.FC<Props> = ({ metaGrupal, participantes }) => {
+const Resumen: React.FC = () => {
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [metaGrupal, setMetaGrupal] = useState<number>(0);
+  const [error, setError] = useState("");
+
   const correoUsuario = localStorage.getItem("correo");
-  const usuario = participantes.find(p => p.correo === correoUsuario);
+
+  useEffect(() => {
+    const cargarDatos = async () => {
+      if (!correoUsuario) {
+        setError("No se encontró el correo del usuario en la sesión.");
+        return;
+      }
+
+      const { data: usuarios, error: errorUsuario } = await supabase
+        .from("usuarios")
+        .select("*")
+        .eq("correo", correoUsuario)
+        .single();
+
+      if (errorUsuario || !usuarios) {
+        setError("No se encontraron datos del usuario.");
+        return;
+      }
+
+      setUsuario(usuarios);
+
+      if (usuarios.grupo_id) {
+        const { data: grupo, error: errorGrupo } = await supabase
+          .from("grupos")
+          .select("meta_grupal")
+          .eq("id", usuarios.grupo_id)
+          .single();
+
+        if (!errorGrupo && grupo?.meta_grupal) {
+          setMetaGrupal(grupo.meta_grupal);
+        }
+      }
+    };
+
+    cargarDatos();
+  }, [correoUsuario]);
+
+  if (error) {
+    return (
+      <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+        <h2 style={{ color: "#c0392b" }}>⚠️ Error</h2>
+        <p style={{ fontSize: "1.1rem", color: "#555" }}>{error}</p>
+      </div>
+    );
+  }
 
   if (!usuario) {
     return (
       <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-        <h2 style={{ color: "#c0392b" }}>⚠️ Usuario no encontrado</h2>
-        <p style={{ fontSize: "1.1rem", color: "#555" }}>
-          No se encontraron datos financieros asociados a tu sesión. Por favor registra tus ingresos y egresos en el módulo correspondiente.
-        </p>
+        <h2 style={{ color: "#2980b9" }}>⏳ Cargando datos...</h2>
       </div>
     );
   }
