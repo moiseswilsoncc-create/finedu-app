@@ -20,7 +20,7 @@ const DatosOfertas: React.FC = () => {
 
   const [fechaExpiracion, setFechaExpiracion] = useState("");
   const [mensaje, setMensaje] = useState("");
-  const correo = localStorage.getItem("correo");
+  const correo = localStorage.getItem("correoUsuario");
 
   useEffect(() => {
     const registrarVisualizacion = async () => {
@@ -79,7 +79,14 @@ const DatosOfertas: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: "700px", margin: "2rem auto", padding: "2rem", backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
+    <div style={{
+      maxWidth: "700px",
+      margin: "2rem auto",
+      padding: "2rem",
+      backgroundColor: "#fff",
+      borderRadius: "12px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+    }}>
       <h2 style={{ color: "#2c3e50", marginBottom: "1rem" }}>📢 Publicar datos y ofertas</h2>
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
         <input type="text" name="titulo" value={oferta.titulo} onChange={handleChange} placeholder="Título de la oferta" required style={inputStyle} />
@@ -94,11 +101,27 @@ const DatosOfertas: React.FC = () => {
         <input type="number" name="montoMinimo" value={oferta.montoMinimo} onChange={handleChange} placeholder="Monto mínimo ($)" required style={inputStyle} />
         <input type="text" name="pais" value={oferta.pais} onChange={handleChange} placeholder="País" required style={inputStyle} />
         <input type="date" value={fechaExpiracion} onChange={(e) => setFechaExpiracion(e.target.value)} required style={inputStyle} />
-        <button type="submit" style={{ padding: "0.8rem", backgroundColor: "#27ae60", color: "white", border: "none", borderRadius: "8px", fontSize: "1rem", cursor: "pointer" }}>
+        <button type="submit" style={{
+          padding: "0.8rem",
+          backgroundColor: "#27ae60",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          fontSize: "1rem",
+          cursor: "pointer"
+        }}>
           ✅ Publicar oferta
         </button>
       </form>
-      {mensaje && <p style={{ marginTop: "1rem", textAlign: "center", color: mensaje.includes("✅") ? "green" : "red" }}>{mensaje}</p>}
+      {mensaje && (
+        <p style={{
+          marginTop: "1rem",
+          textAlign: "center",
+          color: mensaje.includes("✅") ? "green" : "red"
+        }}>
+          {mensaje}
+        </p>
+      )}
     </div>
   );
 };
