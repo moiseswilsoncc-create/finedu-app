@@ -23,8 +23,8 @@ const RegistroUsuario: React.FC = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "apikey": "TU_API_KEY",
-        "Authorization": "Bearer TU_BEARER_TOKEN"
+        apikey: "TU_API_KEY",
+        Authorization: "Bearer TU_BEARER_TOKEN"
       }
     });
 
@@ -45,9 +45,9 @@ const RegistroUsuario: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "apikey": "TU_API_KEY",
-          "Authorization": "Bearer TU_BEARER_TOKEN",
-          "Prefer": "return=representation"
+          apikey: "TU_API_KEY",
+          Authorization: "Bearer TU_BEARER_TOKEN",
+          Prefer: "return=representation"
         },
         body: JSON.stringify({
           nombre,
@@ -115,8 +115,6 @@ const RegistroUsuario: React.FC = () => {
             <option value="">Selecciona</option>
             <option value="Femenino">Femenino</option>
             <option value="Masculino">Masculino</option>
-            <option value="Otro">Otro</option>
-            <option value="Prefiero no decirlo">Prefiero no decirlo</option>
           </select>
         </div>
 
