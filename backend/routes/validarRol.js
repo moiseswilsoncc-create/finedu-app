@@ -1,11 +1,11 @@
 // backend/routes/validarRol.js
 import express from "express";
-import { supabase } from "../supabaseClient.js"; // Asegúrate de tener la conexión configurada
+import { supabase } from "../supabaseClient.js";
 import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
-// Middleware institucional para validar rol de usuario
+// Endpoint institucional para validar el tipo de usuario
 router.post("/validar-rol", async (req, res) => {
   const { token, tipoSolicitado } = req.body;
 
