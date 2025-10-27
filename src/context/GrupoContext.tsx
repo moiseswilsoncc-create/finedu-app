@@ -13,13 +13,14 @@ type GrupoContextType = {
   setGrupo: (nombre: string, meta: number) => void;
   setParticipantes: (lista: Participante[]) => void;
   actualizarParticipante: (nombre: string, ingresos: number, egresos: number) => void;
+  resetGrupo: () => void;
 };
 
 const GrupoContext = createContext<GrupoContextType | undefined>(undefined);
 
 export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [nombreGrupoMeta, setNombreGrupoMeta] = useState("Grupo Finedu");
-  const [metaGrupal, setMetaGrupal] = useState(1000000);
+  const [metaGrupal, setMetaGrupal] = useState(1_000_000);
   const [participantes, setParticipantes] = useState<Participante[]>([]);
 
   const setGrupo = (nombre: string, meta: number) => {
@@ -40,6 +41,12 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
   };
 
+  const resetGrupo = () => {
+    setNombreGrupoMeta("Grupo Finedu");
+    setMetaGrupal(1_000_000);
+    setParticipantes([]);
+  };
+
   return (
     <GrupoContext.Provider
       value={{
@@ -49,6 +56,7 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setGrupo,
         setParticipantes,
         actualizarParticipante,
+        resetGrupo,
       }}
     >
       {children}
