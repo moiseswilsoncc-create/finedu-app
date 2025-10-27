@@ -1,4 +1,5 @@
-// src/utils/enviarInforme.ts
+// 📦 src/utils/enviarInforme.ts
+// 🔄 Simulación institucional del envío mensual de informes a colaboradores registrados
 
 interface Colaborador {
   nombre: string;
@@ -8,7 +9,7 @@ interface Colaborador {
 const colaboradores: Colaborador[] = [
   { nombre: "Institución A", email: "contacto@institucionA.cl" },
   { nombre: "Institución B", email: "info@institucionB.cl" },
-  // Puedes agregar más instituciones aquí
+  // 🧩 Puedes agregar más instituciones aquí
 ];
 
 export function enviarInformeMensual(): void {
