@@ -7,6 +7,7 @@ const solicitudColaboradorRoutes = require("./routes/solicitudColaborador");
 const ofertasRoutes = require("./routes/ofertas");
 const aportesRoutes = require("./routes/aportes");
 const simulacionesRoutes = require("./routes/simulaciones");
+const feedbackRoutes = require("./routes/feedback");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,6 +20,7 @@ app.use("/api", solicitudColaboradorRoutes);
 app.use("/api", ofertasRoutes);
 app.use("/api", aportesRoutes);
 app.use("/api", simulacionesRoutes);
+app.use("/api", feedbackRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {
