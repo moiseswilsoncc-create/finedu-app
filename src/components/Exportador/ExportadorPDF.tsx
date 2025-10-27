@@ -11,23 +11,43 @@ const ExportadorPDF: React.FC<ExportadorPDFProps> = ({ titulo, secciones }) => {
   const generarPDF = () => {
     const doc = new jsPDF();
 
+    // Encabezado institucional
     doc.setFontSize(18);
+    doc.setTextColor("#2c3e50");
     doc.text(titulo, 14, 22);
 
     doc.setFontSize(12);
-    doc.setTextColor(100);
+    doc.setTextColor(80);
+    doc.text("Informe generado automáticamente por Finedu LATAM", 14, 30);
 
+    // Listado de secciones
     secciones.forEach((seccion, index) => {
-      doc.text(`${index + 1}. ${seccion}`, 14, 35 + index * 8);
+      doc.text(`${index + 1}. ${seccion}`, 14, 40 + index * 8);
     });
 
+    // Tabla resumen
     autoTable(doc, {
-      startY: 35 + secciones.length * 8 + 10,
+      startY: 40 + secciones.length * 8 + 10,
       head: [["Sección", "Descripción"]],
       body: secciones.map((s, i) => [`${i + 1}`, s]),
       theme: "grid",
-      styles: { fontSize: 10 },
+      styles: {
+        fontSize: 10,
+        halign: "left",
+        valign: "middle",
+        cellPadding: 4
+      },
+      headStyles: {
+        fillColor: [44, 62, 80],
+        textColor: 255,
+        fontStyle: "bold"
+      }
     });
+
+    // Pie institucional
+    doc.setFontSize(10);
+    doc.setTextColor(120);
+    doc.text("© 2025 Finedu LATAM — Plataforma de educación y autonomía financiera", 14, doc.internal.pageSize.height - 10);
 
     doc.save("InformeInstitucional_Finedu.pdf");
   };
