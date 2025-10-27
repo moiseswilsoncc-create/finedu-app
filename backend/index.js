@@ -11,6 +11,7 @@ const feedbackRoutes = require("./routes/feedback");
 const actividadRoutes = require("./routes/actividad");
 const ingresoRoutes = require("./routes/ingreso");
 const configuracionRoutes = require("./routes/configuracion");
+const mensajesRoutes = require("./routes/mensajes");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -27,6 +28,7 @@ app.use("/api", feedbackRoutes);
 app.use("/api", actividadRoutes);
 app.use("/api", ingresoRoutes);
 app.use("/api", configuracionRoutes);
+app.use("/api", mensajesRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {
