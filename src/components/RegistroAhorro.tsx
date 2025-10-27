@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import supabase from "../supabaseClient"; // Asegúrate de tener esto configurado
 
 type Registro = {
   correo: string;
@@ -40,24 +41,13 @@ const RegistroAhorro: React.FC = () => {
 
   const obtenerNombreDesdeCorreo = async (correo: string) => {
     try {
-      const response = await fetch(
-        `https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios?correo=eq.${correo}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: "TU_API_KEY",
-            Authorization: "Bearer TU_API_KEY",
-          },
-        }
-      );
+      const { data, error } = await supabase
+        .from("usuarios")
+        .select("nombre")
+        .eq("correo", correo);
 
-      const data = await response.json();
-      if (data.length > 0 && data[0].nombre) {
-        setNombreUsuario(data[0].nombre);
-      } else {
-        setNombreUsuario("Usuario");
-      }
+      if (error) throw error;
+      setNombreUsuario(data?.[0]?.nombre || "Usuario");
     } catch (err) {
       console.error("Error al obtener nombre:", err);
       setNombreUsuario("Usuario");
@@ -72,20 +62,33 @@ const RegistroAhorro: React.FC = () => {
     }));
   };
 
-  const registrar = () => {
+  const registrar = async () => {
     if (!registro.correo.trim() || registro.monto <= 0) {
       alert("Completa todos los campos correctamente.");
       return;
     }
 
-    console.log("Registrando ahorro:", {
+    const nuevoRegistro = {
       grupo_id: grupoId || "modo-individual",
       ...registro,
       fecha: new Date().toISOString(),
-    });
+    };
 
-    alert(`✅ ${nombreUsuario}, tu aporte de ahorro fue registrado correctamente.`);
-    setRegistro({ correo: correoUsuario, monto: 0, tipo: "ahorro" });
+    try {
+      const { error } = await supabase.from("registro_ahorro").insert([nuevoRegistro]);
+
+      if (error) {
+        console.error("Error al guardar en Supabase:", error);
+        alert("❌ No se pudo registrar el ahorro.");
+        return;
+      }
+
+      alert(`✅ ${nombreUsuario}, tu aporte de ahorro fue registrado correctamente.`);
+      setRegistro({ correo: correoUsuario, monto: 0, tipo: "ahorro" });
+    } catch (err) {
+      console.error("Error general:", err);
+      alert("❌ Error al conectar con el servidor.");
+    }
   };
 
   if (!sesionValida) {
@@ -130,6 +133,9 @@ const RegistroAhorro: React.FC = () => {
       >
         Registrar ahorro
       </button>
+
+      {/* 🔍 Pendiente: visualización histórica de aportes registrados */}
+      {/* <HistorialAhorro correo={correoUsuario} grupoId={grupoId} /> */}
     </div>
   );
 };
