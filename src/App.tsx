@@ -26,7 +26,6 @@ import FelicitacionRegistro from "./components/FelicitacionRegistro";
 import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
 import RegistroColaborador from "./components/RegistroColaborador";
 import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
-
 // Componentes usuario
 import PanelUsuario from "./components/PanelUsuario";
 import SimuladorInversion from "./components/SimuladorInversion";
@@ -95,7 +94,6 @@ function App() {
       setTipoUsuario(null);
       navigate("/", { replace: true });
     };
-
     return (
       <FineduProvider>
         <div>
@@ -108,8 +106,9 @@ function App() {
               <Link to="/institucional">🏛️ Vista institucional</Link>
             </nav>
           )}
+
           <Routes>
-            {/* 🔐 Rutas públicas */}
+            {/* Rutas públicas */}
             <Route path="/" element={<Bienvenida />} />
             <Route path="/login" element={<Login />} />
             <Route path="/recuperar-clave" element={<RecuperarClave />} />
@@ -120,7 +119,7 @@ function App() {
             <Route path="/ingreso-colaborador" element={<VistaIngresoColaborador />} />
             <Route path="/registro-colaborador" element={<RegistroColaborador />} />
 
-            {/* 🔐 Rutas protegidas para usuario */}
+            {/* Rutas protegidas usuario */}
             <Route path="/editar-perfil" element={<RutaProtegida><EditarPerfilUsuario /></RutaProtegida>} />
             <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
             <Route path="/simulador-inversion" element={<RutaProtegida><SimuladorInversion /></RutaProtegida>} />
@@ -132,20 +131,14 @@ function App() {
             ]} /></RutaProtegida>} />
             <Route path="/test-financiero" element={<RutaProtegida><TestUsuario /></RutaProtegida>} />
             <Route path="/registro-ahorro" element={<RutaProtegida><RegistroAhorro /></RutaProtegida>} />
-            <Route path="/vista-grupal" element={
-              <RutaProtegida>
-                <VistaGrupal
-                  nombreGrupoMeta={nombreGrupoMeta}
-                  metaGrupal={metaGrupal}
-                  participantes={participantes}
-                />
-              </RutaProtegida>
-            } />
-            <Route path="/admin-grupo" element={<RutaProtegida><AdminGrupo /></RutaProtegida>} />
+            <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta={nombreGrupoMeta} metaGrupal={metaGrupal} participantes={participantes} /></RutaProtegida>} />
+            <Route path="/admin-grupo" element={<RutaProtegida><VistaEtapa /></RutaProtegida>} />
             <Route path="/evaluador-credito" element={<RutaProtegida><EvaluadorCreditoInteligente /></RutaProtegida>} />
             <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
             <Route path="/simuladores" element={<RutaProtegida><MenuSimuladores /></RutaProtegida>} />
-            {/* 🔐 Rutas protegidas para colaborador */}
+            <Route path="/datos-ofertas" element={<RutaProtegida><DatosOfertas /></RutaProtegida>} />
+
+            {/* Rutas colaborador */}
             <Route path="/colaborador" element={
               <RutaProtegida>
                 <>
@@ -161,21 +154,10 @@ function App() {
               </RutaProtegida>
             } />
 
-            {/* 🔐 Rutas institucionales */}
-            <Route path="/institucional" element={
-              <VistaInstitucional
-                participantes={participantes}
-                metaGrupal={metaGrupal}
-                pais={pais}
-                setPais={setPais}
-              />
-            } />
-
-            <Route path="/informe-institucional" element={
-              tipoUsuario === "institucional" ? (
-                <RutaProtegida><InformeInstitucional /></RutaProtegida>
-              ) : (
-                <Navigate to="/" />
+            {/* Rutas institucionales */}
+            <Route path="/institucional" element={<VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />} />
+            <Route path="/informe-institucional" element={tipoUsuario === "institucional" ? <RutaProtegida><InformeInstitucional /></RutaProtegida> :
+                              <Navigate to="/" />
               )
             } />
 
