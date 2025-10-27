@@ -4,9 +4,10 @@ import { formatearMoneda } from "../utils/formatearMoneda";
 
 type Props = {
   pais: string;
+  grupoActivo?: boolean; // Nuevo prop para lógica grupal
 };
 
-function SimuladorCredito({ pais }: Props) {
+function SimuladorCredito({ pais, grupoActivo = false }: Props) {
   const tasaBase = getTasa(pais, "consumo");
   const [monto, setMonto] = useState(1000000);
   const [plazoMeses, setPlazoMeses] = useState(12);
@@ -15,6 +16,10 @@ function SimuladorCredito({ pais }: Props) {
   const cuota = (monto * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -plazoMeses));
   const totalPagado = cuota * plazoMeses;
   const sobrecosto = totalPagado - monto;
+
+  // Simulación de impacto grupal (valor simbólico: 5 integrantes)
+  const integrantesGrupo = 5;
+  const impactoGrupal = grupoActivo ? sobrecosto * integrantesGrupo : 0;
 
   return (
     <div>
@@ -43,6 +48,12 @@ function SimuladorCredito({ pais }: Props) {
         <li>Cuota mensual estimada: {formatearMoneda(cuota, pais)}</li>
         <li>Total pagado: {formatearMoneda(totalPagado, pais)}</li>
         <li>Sobreprecio por intereses: {formatearMoneda(sobrecosto, pais)}</li>
+        {grupoActivo && (
+          <li>
+            Impacto grupal estimado (x{integrantesGrupo}):{" "}
+            {formatearMoneda(impactoGrupal, pais)}
+          </li>
+        )}
       </ul>
     </div>
   );
