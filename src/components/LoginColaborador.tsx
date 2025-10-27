@@ -7,6 +7,7 @@ const LoginColaborador = () => {
   const [clave, setClave] = useState("");
   const [intentosFallidos, setIntentosFallidos] = useState(0);
   const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
   const enviarCorreoRecuperacion = async (correo: string) => {
@@ -24,9 +25,12 @@ const LoginColaborador = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setCargando(true);
 
     if (clave.length !== 4) {
       setError("La clave debe tener exactamente 4 dígitos.");
+      setCargando(false);
       return;
     }
 
@@ -39,6 +43,7 @@ const LoginColaborador = () => {
       const mensaje = supabaseError.message || "";
       const nuevosIntentos = intentosFallidos + 1;
       setIntentosFallidos(nuevosIntentos);
+      setCargando(false);
 
       if (nuevosIntentos >= 3) {
         await enviarCorreoRecuperacion(correo);
@@ -90,15 +95,15 @@ const LoginColaborador = () => {
         {error && (
           <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>
         )}
-        <button type="submit" style={{
+        <button type="submit" disabled={cargando} style={{
           padding: "0.6rem 1.2rem",
-          backgroundColor: "#27ae60",
+          backgroundColor: cargando ? "#bdc3c7" : "#27ae60",
           color: "white",
           border: "none",
           borderRadius: "6px",
-          cursor: "pointer"
+          cursor: cargando ? "not-allowed" : "pointer"
         }}>
-          Ingresar
+          {cargando ? "Verificando..." : "Ingresar"}
         </button>
       </form>
     </div>
