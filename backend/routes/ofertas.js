@@ -2,32 +2,39 @@
 const express = require("express");
 const router = express.Router();
 const supabase = require("../supabaseClient"); // Asegúrate de tener esto configurado
+const crypto = require("crypto"); // Necesario para generar UUID
 
 router.post("/guardar-oferta", async (req, res) => {
-  const { colaborador, tipo, titulo, descripcion, pais, fechaExpiracion } = req.body;
+  const {
+    colaborador_id,
+    tipo,
+    titulo,
+    descripcion,
+    pais,
+    fecha_expiracion
+  } = req.body;
 
   // Validación básica
-  if (!colaborador || !tipo || !titulo || !descripcion || !pais || !fechaExpiracion) {
+  if (!colaborador_id || !tipo || !titulo || !descripcion || !pais || !fecha_expiracion) {
     return res.status(400).json({ success: false, error: "Faltan campos obligatorios." });
   }
 
   try {
-    const fechaPublicacion = new Date().toISOString();
+    const nuevaOferta = {
+      id: crypto.randomUUID(),
+      colaborador_id,
+      tipo,
+      titulo,
+      descripcion,
+      pais,
+      fecha_expiracion,
+      fecha_publicacion: new Date().toISOString(),
+      visible: true
+    };
 
     const { data, error } = await supabase
       .from("ofertas_colaborador")
-      .insert([
-        {
-          colaborador,
-          tipo,
-          titulo,
-          descripcion,
-          pais,
-          fecha_expiracion: fechaExpiracion,
-          fecha_publicacion: fechaPublicacion,
-          visible: true,
-        },
-      ]);
+      .insert([nuevaOferta]);
 
     if (error) {
       console.error("Error al insertar en Supabase:", error);
