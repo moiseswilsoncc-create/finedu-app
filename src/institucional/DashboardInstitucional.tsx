@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 
 const DashboardInstitucional: React.FC = () => {
-  const [datos, setDatos] = useState<any[]>([]);
   const [estado, setEstado] = useState("⏳ Cargando...");
+  const [datos, setDatos] = useState<any[]>([]);
 
   useEffect(() => {
     console.log("✅ DashboardInstitucional montado");
@@ -36,8 +36,15 @@ const DashboardInstitucional: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ padding: "2rem", color: "green", fontSize: "1.5rem" }}>
-      {estado}
+    <div style={{ padding: "2rem", fontSize: "1.5rem", color: "#333" }}>
+      <p>{estado}</p>
+      {datos.length > 0 && (
+        <ul>
+          {datos.map((item, index) => (
+            <li key={index}>{JSON.stringify(item)}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
