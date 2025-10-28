@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 import ValidacionPreVercel from "./ValidacionPreVercel";
 import EditorEstadoArchivos from "./EditorEstadoArchivos";
 import MetricaSupabase from "./MetricaSupabase";
 
+const supabase = createClient(
+  "https://ftsbnorudtcyrrubutt.supabase.co",
+  process.env.SUPABASE_KEY || "TU_API_KEY"
+);
+
 const DashboardInstitucional: React.FC = () => {
   const [mensaje, setMensaje] = useState("");
+  const [tokensVencidos, setTokensVencidos] = useState<number | null>(null);
 
   const limpiarTokens = async () => {
     try {
@@ -18,6 +25,24 @@ const DashboardInstitucional: React.FC = () => {
       setMensaje("❌ Error al ejecutar limpieza.");
     }
   };
+
+  useEffect(() => {
+    const cargarTokensVencidos = async () => {
+      const { data, error } = await supabase
+        .from("tokens_activacion")
+        .select("id")
+        .lt("fecha_expiracion", new Date().toISOString());
+
+      if (error) {
+        console.error("Error al consultar tokens vencidos:", error.message);
+        return;
+      }
+
+      setTokensVencidos(data?.length || 0);
+    };
+
+    cargarTokensVencidos();
+  }, []);
 
   return (
     <div style={containerStyle}>
@@ -43,6 +68,9 @@ const DashboardInstitucional: React.FC = () => {
 
       <section style={sectionStyle}>
         <h2 style={titleStyle}>🧹 Limpieza de tokens vencidos</h2>
+        <p style={{ fontSize: "1rem", color: "#555" }}>
+          Tokens vencidos detectados: <strong>{tokensVencidos ?? "..."}</strong>
+        </p>
         <button onClick={limpiarTokens} style={buttonStyle}>Ejecutar limpieza ahora</button>
         {mensaje && (
           <p style={{ marginTop: "1rem", color: mensaje.includes("✅") ? "green" : "red" }}>

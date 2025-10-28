@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { createClient } from "@supabase/supabase-js";
 
 interface Props {
   tipoUsuario: "usuario" | "colaborador" | "institucional" | null;
   onCerrarSesion: () => void;
 }
 
+const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
+
 const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
   const location = useLocation();
-  if (!tipoUsuario) return null;
-
+  const [enlacesPermitidos, setEnlacesPermitidos] = useState<string[]>([]);
   const nombreUsuario = localStorage.getItem("nombreUsuario") || "";
+  const correo = localStorage.getItem("correoUsuario");
 
   const capitalizarNombre = (nombre: string) =>
     nombre
@@ -18,15 +21,31 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
       .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
       .join(" ");
 
-  const logoFinedu = (
-    <img
-      src="/logo-finedu.png"
-      alt="Logo Finedu"
-      style={{ height: "40px", marginRight: "1rem" }}
-    />
-  );
+  useEffect(() => {
+    const cargarPermisos = async () => {
+      if (!correo) return;
 
-  const enlaces: Record<string, { ruta: string; label: string }[]> = {
+      const { data, error } = await supabase
+        .from("permisos_usuario")
+        .select("modulo")
+        .eq("usuario", correo)
+        .eq("acceso", true);
+
+      if (error) {
+        console.error("Error al cargar permisos:", error.message);
+        return;
+      }
+
+      const rutas = data?.map((p) => p.modulo) || [];
+      setEnlacesPermitidos(rutas);
+    };
+
+    cargarPermisos();
+  }, [correo]);
+
+  if (!tipoUsuario) return null;
+
+  const todosLosEnlaces: Record<string, { ruta: string; label: string }[]> = {
     usuario: [
       { ruta: "/usuario", label: "👤 Usuario" },
       { ruta: "/vista-grupal", label: "👥 Grupo" },
@@ -46,6 +65,10 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
     ]
   };
 
+  const enlacesFiltrados = todosLosEnlaces[tipoUsuario]?.filter((enlace) =>
+    enlacesPermitidos.includes(enlace.ruta)
+  ) || [];
+
   return (
     <nav
       style={{
@@ -60,8 +83,12 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
       aria-label="Barra de navegación principal"
     >
       <div style={{ display: "flex", alignItems: "center" }}>
-        {logoFinedu}
-        {enlaces[tipoUsuario]?.map((enlace, index) => (
+        <img
+          src="/logo-finedu.png"
+          alt="Logo Finedu"
+          style={{ height: "40px", marginRight: "1rem" }}
+        />
+        {enlacesFiltrados.map((enlace, index) => (
           <Link
             key={index}
             to={enlace.ruta}

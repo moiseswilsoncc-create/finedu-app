@@ -26,6 +26,7 @@ import FelicitacionRegistro from "./components/FelicitacionRegistro";
 import VistaIngresoColaborador from "./components/VistaIngresoColaborador";
 import RegistroColaborador from "./components/RegistroColaborador";
 import EditarPerfilUsuario from "./components/EditarPerfilUsuario";
+
 // Componentes usuario
 import PanelUsuario from "./components/PanelUsuario";
 import SimuladorInversion from "./components/SimuladorInversion";
@@ -137,7 +138,6 @@ function App() {
             <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
             <Route path="/simuladores" element={<RutaProtegida><MenuSimuladores /></RutaProtegida>} />
             <Route path="/datos-ofertas" element={<RutaProtegida><DatosOfertas /></RutaProtegida>} />
-
             {/* Rutas colaborador */}
             <Route path="/colaborador" element={
               <RutaProtegida>
@@ -155,21 +155,27 @@ function App() {
             } />
 
             {/* Rutas institucionales */}
-            <Route path="/institucional" element={<VistaInstitucional participantes={participantes} metaGrupal={metaGrupal} pais={pais} setPais={setPais} />} />
-            <Route path="/informe-institucional" element={tipoUsuario === "institucional" ? <RutaProtegida><InformeInstitucional /></RutaProtegida> :
-                              <Navigate to="/" />
-              )
+            <Route path="/institucional" element={
+              <VistaInstitucional
+                participantes={participantes}
+                metaGrupal={metaGrupal}
+                pais={pais}
+                setPais={setPais}
+              />
+            } />
+
+            <Route path="/informe-institucional" element={
+              tipoUsuario === "institucional"
+                ? <RutaProtegida><InformeInstitucional /></RutaProtegida>
+                : <Navigate to="/" />
             } />
 
             <Route path="/dashboard-institucional" element={
-              tipoUsuario === "institucional" ? (
-                <RutaProtegida><DashboardInstitucional /></RutaProtegida>
-              ) : (
-                <Navigate to="/" />
-              )
+              tipoUsuario === "institucional"
+                ? <RutaProtegida><DashboardInstitucional /></RutaProtegida>
+                : <Navigate to="/" />
             } />
           </Routes>
-
           {!tipoUsuario && location.pathname === "/" && (
             <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
           )}

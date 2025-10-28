@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 import GraficoLinea from "../components/Graficos/GraficoLinea";
 import MapaCalor from "../components/Visualizaciones/MapaCalor";
 import ExportadorPDF from "../components/Exportador/ExportadorPDF";
 
+const supabase = createClient(
+  "https://ftsbnorudtcyrrubutt.supabase.co",
+  process.env.SUPABASE_KEY || "TU_API_KEY"
+);
+
 const InformeInstitucional: React.FC = () => {
+  const [datosGrafico, setDatosGrafico] = useState<any[]>([]);
+  const [datosGeograficos, setDatosGeograficos] = useState<any[]>([]);
+  const [resumen, setResumen] = useState<any[]>([]);
+
   const secciones = [
     "Ahorro total",
     "Actividad de usuarios",
@@ -14,21 +24,28 @@ const InformeInstitucional: React.FC = () => {
     "Estadísticas avanzadas"
   ];
 
-  const datosGrafico = [
-    { mes: "Mayo", ahorro: 1_200_000 },
-    { mes: "Junio", ahorro: 1_800_000 },
-    { mes: "Julio", ahorro: 2_400_000 },
-    { mes: "Agosto", ahorro: 3_100_000 },
-    { mes: "Septiembre", ahorro: 4_200_000 },
-    { mes: "Octubre", ahorro: 5_200_000 },
-  ];
+  useEffect(() => {
+    const cargarDatos = async () => {
+      const { data: ahorroMensual } = await supabase
+        .from("resumen_financiero")
+        .select("mes, ahorro")
+        .order("mes", { ascending: true });
 
-  const datosGeograficos = [
-    { region: "Metropolitana", ahorro: 6_200_000 },
-    { region: "Valparaíso", ahorro: 1_800_000 },
-    { region: "Biobío", ahorro: 1_500_000 },
-    { region: "Otras regiones", ahorro: 2_500_000 },
-  ];
+      const { data: ahorroPorRegion } = await supabase
+        .from("ahorro_por_region")
+        .select("region, monto");
+
+      const { data: resumenInstitucional } = await supabase
+        .from("panel_institucional")
+        .select("indicador, valor");
+
+      setDatosGrafico(ahorroMensual || []);
+      setDatosGeograficos(ahorroPorRegion || []);
+      setResumen(resumenInstitucional || []);
+    };
+
+    cargarDatos();
+  }, []);
 
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto", backgroundColor: "#fefefe", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
@@ -38,7 +55,6 @@ const InformeInstitucional: React.FC = () => {
       </p>
 
       <GraficoLinea datos={datosGrafico} />
-
       <MapaCalor datos={datosGeograficos} />
 
       <div style={{ marginTop: "2rem" }}>
@@ -51,22 +67,12 @@ const InformeInstitucional: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Usuarios activos</td>
-              <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>1.245</td>
-            </tr>
-            <tr>
-              <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Ahorro total (CLP)</td>
-              <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>$12.800.000</td>
-            </tr>
-            <tr>
-              <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Simuladores utilizados</td>
-              <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>3.412</td>
-            </tr>
-            <tr>
-              <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Retención mensual</td>
-              <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>87%</td>
-            </tr>
+            {resumen.map((item, index) => (
+              <tr key={index}>
+                <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{item.indicador}</td>
+                <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{item.valor}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

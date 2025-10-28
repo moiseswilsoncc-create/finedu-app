@@ -29,15 +29,22 @@ const OfertaColaboradores: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMensaje("");
+    setError("");
 
     if (!tipo || !titulo || !descripcion || !fechaExpiracion || !pais || !ciudad) {
       setError("Todos los campos son obligatorios.");
       return;
     }
 
-    try {
-      const colaborador = localStorage.getItem("correoColaborador") || "desconocido@finedu.cl";
+    const colaborador = localStorage.getItem("correoColaborador") || "desconocido@finedu.cl";
 
+    if (!/\S+@\S+\.\S+/.test(colaborador)) {
+      setError("Correo del colaborador no válido.");
+      return;
+    }
+
+    try {
       const response = await axios.post("/guardar-oferta", {
         colaborador,
         tipo,
@@ -45,21 +52,26 @@ const OfertaColaboradores: React.FC = () => {
         descripcion,
         ciudad,
         pais,
-        fechaExpiracion
+        fecha_expiracion: fechaExpiracion
       });
 
-      if (response.data.success) {
+      if (response.data.mensaje) {
         setMensaje("✅ Oferta publicada correctamente.");
         setError("");
+        // Limpiar formulario
+        setTipo("");
+        setTitulo("");
+        setDescripcion("");
+        setPais("Chile");
+        setCiudad("Santiago");
+        setFechaExpiracion("");
         setTimeout(() => navigate("/panel-colaboradores"), 2000);
       } else {
         setError("❌ No se pudo guardar la oferta.");
-        setMensaje("");
       }
     } catch (err) {
       console.error("Error al guardar:", err);
       setError("Error de conexión con el servidor.");
-      setMensaje("");
     }
   };
 

@@ -5,7 +5,7 @@ import "../styles/MenuModulos.css";
 
 const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
 
-const modulosUsuario = [
+const todosLosModulos = [
   { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
   { ruta: "/registro-ahorro", label: "💰 Registro de Ahorro" },
   { ruta: "/simulador-inversion", label: "📈 Simulador de Inversión" },
@@ -14,19 +14,12 @@ const modulosUsuario = [
   { ruta: "/vista-grupal", label: "👨‍👩‍👧‍👦 Vista Grupal" },
   { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
   { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
-  { ruta: "/panel-ofertas", label: "📢 Ofertas activas" }
-];
-
-const modulosColaborador = [
+  { ruta: "/panel-ofertas", label: "📢 Ofertas activas" },
   { ruta: "/panel-colaboradores", label: "🧑‍💼 Panel del Colaborador" },
   { ruta: "/datos-ofertas", label: "📢 Publicar oferta" },
-  { ruta: "/registro-colaborador", label: "🧑‍💼 Registro colaborador" }
-];
-
-const modulosInstitucional = [
+  { ruta: "/registro-colaborador", label: "🧑‍💼 Registro colaborador" },
   { ruta: "/institucional", label: "🏛️ Dashboard institucional" },
   { ruta: "/informe-institucional", label: "📄 Informe" },
-  { ruta: "/panel-colaboradores", label: "🧑‍💼 Colaboradores" },
   { ruta: "/validacion-pre-vercel", label: "✅ Validación final" }
 ];
 
@@ -36,8 +29,27 @@ const MenuModulos = () => {
   const tipoUsuario = localStorage.getItem("tipoUsuario");
   const correo = localStorage.getItem("correoUsuario");
   const [nuevasOfertas, setNuevasOfertas] = useState(0);
+  const [modulosPermitidos, setModulosPermitidos] = useState<string[]>([]);
 
   useEffect(() => {
+    const verificarPermisos = async () => {
+      if (!correo) return;
+
+      const { data, error } = await supabase
+        .from("permisos_usuario")
+        .select("modulo")
+        .eq("usuario", correo)
+        .eq("acceso", true);
+
+      if (error) {
+        console.error("Error al cargar permisos:", error.message);
+        return;
+      }
+
+      const rutasPermitidas = data?.map((p) => p.modulo) || [];
+      setModulosPermitidos(rutasPermitidas);
+    };
+
     const verificarNovedades = async () => {
       if (!correo || tipoUsuario !== "usuario") return;
 
@@ -51,7 +63,7 @@ const MenuModulos = () => {
       const { data: ofertas } = await supabase
         .from("ofertas_colaborador")
         .select("id, fecha_publicacion")
-        .eq("visible", true)
+        .eq("visibilidad", true)
         .gt("fecha_expiracion", new Date().toISOString());
 
       if (vista && ofertas) {
@@ -62,21 +74,19 @@ const MenuModulos = () => {
       }
     };
 
+    verificarPermisos();
     verificarNovedades();
   }, [correo, tipoUsuario]);
 
-  const modulos =
-    tipoUsuario === "colaborador"
-      ? modulosColaborador
-      : tipoUsuario === "institucional"
-      ? modulosInstitucional
-      : modulosUsuario;
+  const modulosFiltrados = todosLosModulos.filter((modulo) =>
+    modulosPermitidos.includes(modulo.ruta)
+  );
 
   return (
     <div className="menu-modulos-container">
       <h2>📂 Accede a tus módulos</h2>
       <div className="modulo-grid">
-        {modulos.map((modulo, index) => (
+        {modulosFiltrados.map((modulo, index) => (
           <Link key={index} to={modulo.ruta} className="btn-modulo">
             {modulo.label}
             {modulo.ruta === "/panel-ofertas" && nuevasOfertas > 0 && (
