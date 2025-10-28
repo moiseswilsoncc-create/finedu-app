@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
 
@@ -14,6 +14,7 @@ const OfertaColaboradores: React.FC = () => {
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [pais, setPais] = useState("Chile");
+  const [ciudad, setCiudad] = useState("Santiago");
   const [fechaExpiracion, setFechaExpiracion] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
@@ -29,7 +30,7 @@ const OfertaColaboradores: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!tipo || !titulo || !descripcion || !fechaExpiracion || !pais) {
+    if (!tipo || !titulo || !descripcion || !fechaExpiracion || !pais || !ciudad) {
       setError("Todos los campos son obligatorios.");
       return;
     }
@@ -42,14 +43,15 @@ const OfertaColaboradores: React.FC = () => {
         tipo,
         titulo,
         descripcion,
+        ciudad,
         pais,
-        fechaExpiracion,
+        fechaExpiracion
       });
 
       if (response.data.success) {
         setMensaje("✅ Oferta publicada correctamente.");
         setError("");
-        setTimeout(() => navigate("/panel-colaborador"), 2000);
+        setTimeout(() => navigate("/panel-colaboradores"), 2000);
       } else {
         setError("❌ No se pudo guardar la oferta.");
         setMensaje("");
@@ -62,8 +64,8 @@ const OfertaColaboradores: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "600px", margin: "0 auto" }}>
-      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>📢 Publicar datos y ofertas</h3>
+    <div style={{ padding: "2rem", maxWidth: "700px", margin: "0 auto" }}>
+      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>📢 Publicar datos y ofertas institucionales</h3>
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <select value={tipo} onChange={(e) => setTipo(e.target.value)} required>
           <option value="">Selecciona tipo de publicación</option>
@@ -109,6 +111,14 @@ const OfertaColaboradores: React.FC = () => {
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
           rows={5}
+          required
+        />
+
+        <input
+          type="text"
+          placeholder="Ciudad"
+          value={ciudad}
+          onChange={(e) => setCiudad(e.target.value)}
           required
         />
 
