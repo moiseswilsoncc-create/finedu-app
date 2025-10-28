@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import TestInstitucional from "./TestInstitucional";
+import TestInstitucional from "./institucional/TestInstitucional";
 
 const App: React.FC = () => {
   const [tipoUsuario, setTipoUsuario] = useState<string | null>(null);
