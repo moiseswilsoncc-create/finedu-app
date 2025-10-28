@@ -34,3 +34,4 @@ Thumbs.db
 
 # 🧪 Tests temporales
 coverage/
+.vercel
