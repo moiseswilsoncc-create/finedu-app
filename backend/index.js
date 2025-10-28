@@ -8,7 +8,7 @@ import ofertasRoutes from "./routes/ofertas.js";
 import aportesRoutes from "./routes/aportes.js";
 import simulacionesRoutes from "./routes/simulaciones.js";
 import feedbackRoutes from "./routes/feedback.js";
-import actividadRoutes from "./routes/actividad.js";
+import actividadRoutes from "./routes/actividad.js"; // ✅ solo si actividad.js tiene `export default router`
 import ingresoRoutes from "./routes/ingreso.js";
 import configuracionRoutes from "./routes/configuracion.js";
 import mensajesRoutes from "./routes/mensajes.js";
