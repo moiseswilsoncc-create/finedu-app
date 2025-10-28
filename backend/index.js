@@ -15,8 +15,8 @@ import mensajesRoutes from "./routes/mensajes.js";
 import resumenRoutes from "./routes/resumen.js";
 import panelRoutes from "./routes/panel.js";
 import visualizacionRoutes from "./routes/visualizacion.js";
-import usuariosRoutes from "./routes/usuarios.js"; // ✅ Registro seguro
-import loginRoutes from "./routes/login.js";       // ✅ Login con verificación
+import usuariosRoutes from "./routes/usuarios.js";
+import loginRoutes from "./routes/login.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -37,10 +37,9 @@ app.use("/api", mensajesRoutes);
 app.use("/api", resumenRoutes);
 app.use("/api", panelRoutes);
 app.use("/api", visualizacionRoutes);
-app.use("/api", usuariosRoutes); // ✅ Registro
-app.use("/api", loginRoutes);    // ✅ Login
+app.use("/api", usuariosRoutes);
+app.use("/api", loginRoutes);
 
-// Ruta base
 app.get("/", (req, res) => {
   res.send("✅ Backend Finedu activo");
 });
