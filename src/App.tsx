@@ -1,25 +1,32 @@
-import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import TestInstitucional from "./institucional/TestInstitucional";
+import React, { useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => {
-  const [tipoUsuario, setTipoUsuario] = useState<string | null>(null);
-
   useEffect(() => {
     console.log("✅ App.tsx montado");
-    setTipoUsuario("institucional");
   }, []);
-
-  const cerrarSesion = () => {
-    localStorage.clear();
-    setTipoUsuario(null);
-  };
 
   return (
     <Routes>
-      <Route path="/dashboard-institucional" element={<TestInstitucional />} />
+      <Route path="/dashboard-institucional" element={
+        <div style={{
+          padding: "2rem",
+          fontSize: "1.5rem",
+          color: "#2c3e50", // Texto oscuro
+          backgroundColor: "#ecf0f1", // Fondo gris claro
+          borderRadius: "8px"
+        }}>
+          ✅ TestInstitucional montado correctamente
+        </div>
+      } />
       <Route path="/" element={
-        <div style={{ padding: "2rem", fontSize: "1.5rem", color: "#2c3e50" }}>
+        <div style={{
+          padding: "2rem",
+          fontSize: "1.5rem",
+          color: "#2c3e50",
+          backgroundColor: "#ecf0f1",
+          borderRadius: "8px"
+        }}>
           Bienvenido a Finedu. Usa <code>/dashboard-institucional</code> para validar el render.
         </div>
       } />
