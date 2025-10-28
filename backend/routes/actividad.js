@@ -1,13 +1,13 @@
-// Ruta: routes/actividad.js
-const express = require("express");
-const router = express.Router();
-const supabase = require("../supabaseClient");
-const crypto = require("crypto");
+// routes/actividad.js
+import express from "express";
+import supabase from "../supabaseClient.js";
+import crypto from "crypto";
 
-router.post("/guardar-actividad", async (req, res) => {
+const actividadRoutes = express.Router();
+
+actividadRoutes.post("/guardar-actividad", async (req, res) => {
   const { usuario_id, tipo, descripcion } = req.body;
 
-  // Validación básica
   if (!usuario_id || !tipo || !descripcion) {
     return res.status(400).json({ success: false, error: "Faltan campos obligatorios." });
   }
@@ -37,4 +37,4 @@ router.post("/guardar-actividad", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default actividadRoutes;
