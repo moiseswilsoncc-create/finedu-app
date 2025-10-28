@@ -165,10 +165,12 @@ function App() {
               />
             } />
 
-            <Route path="/informe-institucional" element={
-              tipoUsuario === "institucional"
-                ? <RutaProtegida><InformeInstitucional /></RutaProtegida>
-                : <Navigate to="/" />
+            <Route path="/dashboard-institucional" element={
+            tipoUsuario === "institucional"
+            ? <RutaProtegida><DashboardInstitucional /></RutaProtegida>
+            : <Navigate to="/" />
+            } />
+
             } />
 
             <Route path="/dashboard-institucional" element={
