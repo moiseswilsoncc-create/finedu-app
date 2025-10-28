@@ -61,7 +61,7 @@ import MenuSimuladores from "./components/MenuSimuladores";
 
 // Módulos institucionales
 import InformeInstitucional from "./modules/InformeInstitucional";
-import DashboardInstitucional from "./modules/DashboardInstitucional";
+import DashboardInstitucional from "./institucional/DashboardInstitucional";
 import EvaluadorCreditoInteligente from "./modules/EvaluadorCreditoInteligente";
 
 function App() {
