@@ -52,7 +52,7 @@ import PanelColaboradores from "./components/PanelColaboradores";
 import MetricasColaboradores from "./components/MetricasColaboradores";
 import GeneradorPDF from "./components/GeneradorPDF";
 import DatosOfertas from "./components/DatosOfertas";
-import OfertaColaboradores from "./components/OfertaColaboradores";
+import OfertasColaborador from "./components/OfertaColaboradores";
 
 // Componentes institucionales
 import VistaInstitucional from "./components/VistaInstitucional";
@@ -61,7 +61,7 @@ import MenuSimuladores from "./components/MenuSimuladores";
 
 // Módulos institucionales
 import InformeInstitucional from "./modules/InformeInstitucional";
-// import DashboardInstitucional from "./modules/DashboardInstitucional";
+import DashboardInstitucional from "./modules/DashboardInstitucional";
 import EvaluadorCreditoInteligente from "./modules/EvaluadorCreditoInteligente";
 function App() {
   try {
@@ -138,6 +138,7 @@ function App() {
             <Route path="/modulos" element={<RutaProtegida><MenuModulos /></RutaProtegida>} />
             <Route path="/simuladores" element={<RutaProtegida><MenuSimuladores /></RutaProtegida>} />
             <Route path="/datos-ofertas" element={<RutaProtegida><DatosOfertas /></RutaProtegida>} />
+
             {/* Rutas colaborador */}
             <Route path="/colaborador" element={
               <RutaProtegida>
@@ -172,10 +173,9 @@ function App() {
 
             <Route path="/dashboard-institucional" element={
               tipoUsuario === "institucional"
-                ? <RutaProtegida><DashboardInstitucional /></RutaProtegida>
-                : <Navigate to="/" />
-            } />
+                ? <RutaProtegida><DashboardInstitucional /></Ruta} />
           </Routes>
+
           {!tipoUsuario && location.pathname === "/" && (
             <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
           )}
@@ -217,3 +217,5 @@ function App() {
 }
 
 export default App;
+
+                                                             
