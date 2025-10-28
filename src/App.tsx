@@ -52,7 +52,7 @@ import PanelColaboradores from "./components/PanelColaboradores";
 import MetricasColaboradores from "./components/MetricasColaboradores";
 import GeneradorPDF from "./components/GeneradorPDF";
 import DatosOfertas from "./components/DatosOfertas";
-import OfertasColaborador from "./components/OfertasColaboradores";
+import OfertaColaboradores from "./components/OfertaColaboradores";
 
 // Componentes institucionales
 import VistaInstitucional from "./components/VistaInstitucional";
