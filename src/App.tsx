@@ -88,9 +88,6 @@ function App() {
   setTipoUsuario("institucional");
 }, []);
 
-      }
-    }, []);
-
     const cerrarSesion = () => {
       localStorage.clear();
       setTipoUsuario(null);
