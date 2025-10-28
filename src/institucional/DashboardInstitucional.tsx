@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const DashboardInstitucional: React.FC = () => {
-  console.log("✅ DashboardInstitucional montado");
+  useEffect(() => {
+    console.log("✅ DashboardInstitucional montado");
+  }, []);
 
   return (
     <div style={{ padding: "2rem", color: "green", fontSize: "1.5rem" }}>
