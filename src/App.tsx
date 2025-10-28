@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import DashboardInstitucional from "./institucional/DashboardInstitucional";
+import TestInstitucional from "./TestInstitucional";
 
 const App: React.FC = () => {
   const [tipoUsuario, setTipoUsuario] = useState<string | null>(null);
@@ -21,7 +21,7 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         {/* ✅ Ruta directa para depurar */}
-        <Route path="/dashboard-institucional" element={<DashboardInstitucional />} />
+        <Route path="/dashboard-institucional" element={<TestInstitucional />} />
 
         {/* 🔒 Ruta protegida real (desactivada temporalmente) */}
         {/* <Route path="/dashboard-institucional" element={
