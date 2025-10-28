@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/supabase/client"; // Asegúrate que esta ruta esté bien
+import { supabase } from "@/supabaseClient"; // ← Ruta corregida
 
 const DashboardInstitucional: React.FC = () => {
   const [datos, setDatos] = useState<any[]>([]);
