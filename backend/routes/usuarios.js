@@ -1,8 +1,9 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const router = express.Router();
-const { createClient } = require("@supabase/supabase-js");
+// Ruta: routes/usuarios.js
+import express from "express";
+import bcrypt from "bcryptjs";
+import { createClient } from "@supabase/supabase-js";
 
+const router = express.Router();
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 router.post("/registrar-usuario", async (req, res) => {
@@ -55,4 +56,4 @@ router.post("/registrar-usuario", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
