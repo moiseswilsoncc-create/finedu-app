@@ -2,29 +2,46 @@ import express from "express";
 import { createClient } from "@supabase/supabase-js";
 
 const router = express.Router();
-const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", process.env.SUPABASE_KEY || "TU_API_KEY");
+const supabase = createClient(
+  "https://ftsbnorudtcyrrubutt.supabase.co",
+  process.env.SUPABASE_KEY || "TU_API_KEY"
+);
 
 router.post("/guardar-oferta", async (req, res) => {
-  const { tipo, titulo, descripcion, pais, fecha_expiracion, colaborador } = req.body;
+  const {
+    tipo,
+    titulo,
+    descripcion,
+    ciudad,
+    pais,
+    fecha_expiracion,
+    colaborador
+  } = req.body;
 
-  if (!tipo || !titulo || !descripcion || !pais || !fecha_expiracion || !colaborador) {
+  if (!tipo || !titulo || !descripcion || !ciudad || !pais || !fecha_expiracion || !colaborador) {
     return res.status(400).json({ error: "Faltan campos obligatorios." });
   }
+
+  const fechaExp = new Date(fecha_expiracion);
+  const hoy = new Date();
+  const visibilidad = fechaExp > hoy;
 
   const { data, error } = await supabase.from("ofertas_colaborador").insert([
     {
       tipo,
       titulo,
       descripcion,
+      ciudad,
       pais,
-      fecha_expiracion,
+      fecha_expiracion: fechaExp.toISOString().split("T")[0],
       colaborador,
-      fecha_publicacion: new Date().toISOString(),
-      visibilidad: true,
-    },
+      fecha_publicacion: hoy.toISOString(),
+      visibilidad
+    }
   ]);
 
   if (error) {
+    console.error("❌ Error al guardar oferta:", error.message);
     return res.status(500).json({ error: "Error al guardar la oferta." });
   }
 
