@@ -6,6 +6,7 @@ import { GrupoProvider } from './context/GrupoContext';
 
 const rootElement = document.getElementById('root') as HTMLElement;
 const root = ReactDOM.createRoot(rootElement);
+console.log("✅ main.tsx ejecutado");
 
 root.render(
   <React.StrictMode>
