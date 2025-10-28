@@ -35,6 +35,7 @@ app.use("/api", mensajesRoutes);
 app.use("/api", resumenRoutes);
 app.use("/api", panelRoutes);
 app.use("/api", visualizacionRoutes);
+app.use("/api", usuariosRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {
