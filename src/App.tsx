@@ -172,7 +172,6 @@ function App() {
 
             <Route path="/dashboard-institucional" element={<DashboardInstitucional />} />
 
-            } />
           </Routes>
 
                     {!tipoUsuario && location.pathname === "/" && (
