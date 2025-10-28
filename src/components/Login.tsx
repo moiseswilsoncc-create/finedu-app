@@ -4,8 +4,7 @@ import axios from "../axiosConfig";
 
 function Login() {
   const [correo, setCorreo] = useState("");
-  const [contraseña, setContraseña] = useState("");
-  const [logueado, setLogueado] = useState(false);
+  const [clave, setClave] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -13,26 +12,23 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("/login", { correo, contraseña });
+      const response = await axios.post("/login", { correo, clave });
 
       if (response.data.success && response.data.usuario) {
-        const { nombre, correo: correoUsuario } = response.data.usuario;
+        const { nombre, correo: correoUsuario, tipoUsuario } = response.data.usuario;
 
         localStorage.setItem("logueado", "true");
-        localStorage.setItem("tipoUsuario", "usuario");
+        localStorage.setItem("tipoUsuario", tipoUsuario || "usuario");
         localStorage.setItem("nombreUsuario", nombre);
         localStorage.setItem("correoUsuario", correoUsuario);
 
-        setLogueado(true);
-        setError("");
-        console.log("Usuario autenticado:", response.data.usuario);
-        navigate("/panel-usuario");
+        navigate(tipoUsuario === "colaborador" ? "/panel-colaborador" : "/panel-usuario");
       } else {
         setError("Credenciales incorrectas.");
       }
     } catch (err) {
       setError("Error de conexión con el servidor.");
-      console.error(err);
+      console.error("Error en login:", err);
     }
   };
 
@@ -44,35 +40,46 @@ function Login() {
     <div style={{ padding: "2rem", maxWidth: "400px", margin: "auto", textAlign: "center" }}>
       <h3>🔐 Inicio de sesión</h3>
 
-      {!logueado ? (
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <input
-            type="email"
-            placeholder="Correo electrónico"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={contraseña}
-            onChange={(e) => setContraseña(e.target.value)}
-            required
-          />
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          <button type="submit">Ingresar</button>
-          <button
-            type="button"
-            onClick={handleRecuperarClave}
-            style={{ background: "none", border: "none", color: "blue", cursor: "pointer" }}
-          >
-            ¿Olvidaste tu contraseña?
-          </button>
-        </form>
-      ) : (
-        <p>¡Bienvenido de nuevo, {correo}!</p>
-      )}
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <input
+          type="email"
+          placeholder="Correo electrónico"
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Clave personal"
+          value={clave}
+          onChange={(e) => setClave(e.target.value)}
+          required
+        />
+        {error && <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>}
+        <button type="submit" style={{
+          padding: "0.6rem 1.2rem",
+          backgroundColor: "#2980b9",
+          color: "white",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer"
+        }}>
+          Ingresar
+        </button>
+        <button
+          type="button"
+          onClick={handleRecuperarClave}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#3498db",
+            cursor: "pointer",
+            fontSize: "0.95rem"
+          }}
+        >
+          ¿Olvidaste tu clave?
+        </button>
+      </form>
     </div>
   );
 }

@@ -1,32 +1,36 @@
 import React, { createContext, useContext } from "react";
 
-// Simulación de datos institucionales
+// 📊 Datos simulados institucionales para visualización y análisis
 const datosSimulados = {
-  ahorroTotal: 128000000,
-  ahorroMensual: 8200000,
+  ahorroTotal: 128_000_000,
+  ahorroMensual: 8_200_000,
   variacionMensual: 6.2,
-  tendenciaAhorro: [7200000, 7600000, 7800000, 8000000, 8200000, 8400000],
+  tendenciaAhorro: [7_200_000, 7_600_000, 7_800_000, 8_000_000, 8_200_000, 8_400_000],
   usuariosActivos: 1245,
   usuariosConAhorro: 842,
   usuariosConSimulacion: 516,
   usuariosConMetaCumplida: 312,
   usuariosConEgresosAltos: 198,
+
   segmentacionEdad: [
     ["18–25 años", "22%", "$85.000"],
     ["26–35 años", "34%", "$120.000"],
     ["36–50 años", "28%", "$145.000"],
     ["51+ años", "16%", "$110.000"],
   ],
+
   segmentacionSexo: [
     ["Mujeres", "58%", "$132.000"],
     ["Hombres", "42%", "$118.000"],
   ],
+
   simuladores: [
     ["Crédito consumo", 312, "+6.2%"],
     ["Crédito automotriz", 104, "-2.1%"],
     ["Crédito vivienda", 78, "+12.5%"],
     ["Inversión", 122, "+9.8%"],
   ],
+
   distribucionGeografica: {
     tabla: [
       ["Metropolitana", "$6.200.000", 520],
@@ -34,15 +38,18 @@ const datosSimulados = {
       ["Biobío", "$1.500.000", 140],
       ["Otras regiones", "$2.500.000", 425],
     ],
-    mapa: [/* datos para mapa de calor */],
+    mapa: [], // 🔧 pendiente para mapa de calor
   },
+
   retencion: [
     ["Nuevos grupos este mes", 42],
     ["Tasa de retención", "78%"],
   ],
+
   crecimientoGrupal: [
     ["Crecimiento promedio por grupo", "+11.3%"],
   ],
+
   analisisConversacional: {
     instituciones: [
       ["BancoEstado", 124, 78, 14, "+18%"],
@@ -70,6 +77,7 @@ const datosSimulados = {
       ["Negativo", "10%", "-3.1%"],
     ],
   },
+
   estadisticasAvanzadas: {
     indices: [
       ["Índice de vulnerabilidad financiera", "16.2%"],

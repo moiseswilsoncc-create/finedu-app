@@ -1,13 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Participante } from "../types";
 import { calcularEdad } from "../utils/calcularEdad";
+import { supabase } from "../supabaseClient"; // ✅ conexión declarada
 
 type Props = {
-  participantes: Participante[];
   metaGrupal: number;
 };
 
-function MetricasColaboradores({ participantes, metaGrupal }: Props) {
+function MetricasColaboradores({ metaGrupal }: Props) {
+  const navigate = useNavigate();
+  const tipoUsuario = localStorage.getItem("tipoUsuario");
+
+  const [participantes, setParticipantes] = useState<Participante[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (tipoUsuario === "colaborador") {
+      navigate("/panel-colaboradores");
+      return;
+    }
+
+    const obtenerParticipantes = async () => {
+      const { data, error } = await supabase.from("participantes").select("*");
+      if (error) {
+        console.error("Error al obtener participantes:", error.message);
+      } else {
+        setParticipantes(data || []);
+      }
+      setLoading(false);
+    };
+
+    obtenerParticipantes();
+  }, [navigate, tipoUsuario]);
+
+  if (loading) return <p>Cargando métricas colaborativas…</p>;
+
   const totalAhorro = participantes.reduce(
     (total, p) => total + (p.ingresos - p.egresos),
     0
@@ -21,26 +49,20 @@ function MetricasColaboradores({ participantes, metaGrupal }: Props) {
   const promedioAhorro =
     participantes.length > 0 ? totalAhorro / participantes.length : 0;
 
-  // Segmentación por edad
-  const gruposEdad = {
-    "10–20": 0,
-    "21–35": 0,
-    "36–60": 0,
-    "60+": 0,
-  };
-
-  const ahorroPorEdad: Record<string, number> = {
-    "10–20": 0,
-    "21–35": 0,
-    "36–60": 0,
-    "60+": 0,
-  };
-
-  // Segmentación por ciudad y comuna
+  const gruposEdad = { "10–20": 0, "21–35": 0, "36–60": 0, "60+": 0 };
+  const ahorroPorEdad: Record<string, number> = { "10–20": 0, "21–35": 0, "36–60": 0, "60+": 0 };
   const ciudades: Record<string, number> = {};
   const comunas: Record<string, number> = {};
   const ahorroPorCiudad: Record<string, number> = {};
   const ahorroPorComuna: Record<string, number> = {};
+
+  // Nuevas métricas por categoría de gasto
+  const categoriasGasto = {
+    "Comer afuera": { actual: 0, anterior: 0 },
+    "Ir al cine": { actual: 0, anterior: 0 },
+    "Transporte": { actual: 0, anterior: 0 },
+    "Compras": { actual: 0, anterior: 0 },
+  };
 
   participantes.forEach((p) => {
     const edad = calcularEdad(p.fechaNacimiento);
@@ -60,73 +82,88 @@ function MetricasColaboradores({ participantes, metaGrupal }: Props) {
       comunas[p.comuna] = (comunas[p.comuna] || 0) + 1;
       ahorroPorComuna[p.comuna] = (ahorroPorComuna[p.comuna] || 0) + ahorro;
     }
+
+    // Simulación de datos por categoría (pendiente conexión real)
+    if (p.gastosMensuales) {
+      Object.keys(categoriasGasto).forEach((cat) => {
+        categoriasGasto[cat].actual += p.gastosMensuales[cat]?.actual || 0;
+        categoriasGasto[cat].anterior += p.gastosMensuales[cat]?.anterior || 0;
+      });
+    }
   });
 
   return (
     <div style={{ padding: "1rem", border: "2px solid #ccc", borderRadius: "8px" }}>
-      <h2>📊 Métricas colaborativas</h2>
+      <h2>📊 Métricas colaborativas (uso institucional)</h2>
 
-      <h3>💰 Comportamiento financiero</h3>
-      <ul>
-        <li>Participantes activos: {participantes.length}</li>
-        <li>Ahorro total acumulado: ${totalAhorro.toLocaleString()}</li>
-        <li>Promedio de ahorro por persona: ${promedioAhorro.toLocaleString()}</li>
-        <li>Total de metas individuales (crédito): ${totalCredito.toLocaleString()}</li>
-        <li>Meta grupal declarada: ${metaGrupal.toLocaleString()}</li>
-      </ul>
+      <section>
+        <h3>💰 Comportamiento financiero</h3>
+        <ul>
+          <li>Participantes activos: {participantes.length}</li>
+          <li>Ahorro total acumulado: ${totalAhorro.toLocaleString()}</li>
+          <li>Promedio de ahorro por persona: ${promedioAhorro.toLocaleString()}</li>
+          <li>Total de metas individuales (crédito): ${totalCredito.toLocaleString()}</li>
+          <li>Meta grupal declarada: ${metaGrupal.toLocaleString()}</li>
+        </ul>
+      </section>
 
-      <h3>🧠 Educación financiera</h3>
-      <ul>
-        <li>Simuladores utilizados (pendiente de integración)</li>
-        <li>Promedio de simulaciones por usuario (pendiente)</li>
-        <li>Usuarios que usaron más de un simulador (pendiente)</li>
-      </ul>
+      <section>
+        <h3>📈 Variación mensual por categoría</h3>
+        <ul>
+          {Object.entries(categoriasGasto).map(([cat, valores]) => {
+            const variacion = valores.anterior > 0
+              ? ((valores.actual - valores.anterior) / valores.anterior) * 100
+              : 0;
+            const signo = variacion > 0 ? "🔺" : variacion < 0 ? "🔻" : "⏸️";
+            return (
+              <li key={cat}>
+                {cat}: {signo} {variacion.toFixed(2)}%
+              </li>
+            );
+          })}
+        </ul>
+      </section>
 
-      <h3>🤝 Colaboración grupal</h3>
-      <ul>
-        <li>Metas grupales creadas (pendiente)</li>
-        <li>Participantes por meta grupal (pendiente)</li>
-        <li>Porcentaje de cumplimiento grupal (pendiente)</li>
-      </ul>
+      <section>
+        <h3>🔍 Segmentación por edad</h3>
+        <ul>
+          {Object.keys(gruposEdad).map((rango) => (
+            <li key={rango}>
+              Edad {rango}: {gruposEdad[rango]} participantes — Ahorro total: ${ahorroPorEdad[rango].toLocaleString()}
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <h3>🔍 Segmentación por edad</h3>
-      <ul>
-        {Object.keys(gruposEdad).map((rango) => (
-          <li key={rango}>
-            Edad {rango}: {gruposEdad[rango]} participantes — Ahorro total: ${ahorroPorEdad[rango].toLocaleString()}
-          </li>
-        ))}
-      </ul>
+      <section>
+        <h3>🏙️ Participación por ciudad</h3>
+        <ul>
+          {Object.keys(ciudades).map((ciudad) => (
+            <li key={ciudad}>
+              {ciudad}: {ciudades[ciudad]} participantes — Ahorro total: ${ahorroPorCiudad[ciudad].toLocaleString()}
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <h3>🏙️ Participación por ciudad</h3>
-      <ul>
-        {Object.keys(ciudades).map((ciudad) => (
-          <li key={ciudad}>
-            {ciudad}: {ciudades[ciudad]} participantes — Ahorro total: ${ahorroPorCiudad[ciudad].toLocaleString()}
-          </li>
-        ))}
-      </ul>
+      <section>
+        <h3>🏘️ Participación por comuna</h3>
+        <ul>
+          {Object.keys(comunas).map((comuna) => (
+            <li key={comuna}>
+              {comuna}: {comunas[comuna]} participantes — Ahorro total: ${ahorroPorComuna[comuna].toLocaleString()}
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <h3>🏘️ Participación por comuna</h3>
-      <ul>
-        {Object.keys(comunas).map((comuna) => (
-          <li key={comuna}>
-            {comuna}: {comunas[comuna]} participantes — Ahorro total: ${ahorroPorComuna[comuna].toLocaleString()}
-          </li>
-        ))}
-      </ul>
-
-      <h3>💬 Comunidad y foro</h3>
-      <ul>
-        <li>Comentarios que mencionan instituciones (pendiente)</li>
-        <li>Tasa de participación por ciudad y comuna (pendiente)</li>
-      </ul>
-
-      <h3>📍 Impacto comparativo</h3>
-      <p>Visualización del ahorro y participación por ciudad y comuna para orientar futuras campañas.</p>
+      <section>
+        <h3>📬 Envío programado</h3>
+        <p>Estas métricas se enviarán automáticamente por correo a cada colaborador correspondiente cada 30 días.</p>
+      </section>
 
       <p style={{ fontStyle: "italic", marginTop: "1rem" }}>
-        Estas métricas se actualizan cada 30 días y pueden ser exportadas como PDF institucional.
+        Estas métricas están diseñadas para uso institucional y pueden ser ampliadas según necesidad.
       </p>
     </div>
   );

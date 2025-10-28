@@ -1,22 +1,100 @@
-import React from "react";
-import { Participante } from "../types";
+import React, { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+import VistaEtapa from "./VistaEtapa";
+import VistaGrupal from "./VistaGrupal";
 
-type Props = {
-  metaGrupal: number;
-  participantes: Participante[];
+const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
+const supabaseKey = "TU_API_KEY"; // 🔒 Reemplazar con variable segura
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+type Usuario = {
+  id: string;
+  nombre: string;
+  correo: string;
+  ingresos: number;
+  egresos: number;
+  grupo_id: string | null;
 };
 
-const Resumen: React.FC<Props> = ({ metaGrupal, participantes }) => {
-  const correoUsuario = localStorage.getItem("correo");
-  const usuario = participantes.find(p => p.correo === correoUsuario);
+type Participante = {
+  nombre: string;
+  ingresos: number;
+  egresos: number;
+};
 
-  if (!usuario) {
+const Resumen: React.FC = () => {
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [metaGrupal, setMetaGrupal] = useState<number>(0);
+  const [nombreGrupo, setNombreGrupo] = useState<string>("");
+  const [participantes, setParticipantes] = useState<Participante[]>([]);
+  const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(true);
+
+  const correoUsuario = localStorage.getItem("correo");
+
+  useEffect(() => {
+    const cargarDatos = async () => {
+      if (!correoUsuario) {
+        setError("No se encontró el correo del usuario en la sesión.");
+        setCargando(false);
+        return;
+      }
+
+      const { data: usuarios, error: errorUsuario } = await supabase
+        .from("usuarios")
+        .select("*")
+        .eq("correo", correoUsuario)
+        .single();
+
+      if (errorUsuario || !usuarios) {
+        setError("No se encontraron datos del usuario.");
+        setCargando(false);
+        return;
+      }
+
+      setUsuario(usuarios);
+
+      if (usuarios.grupo_id) {
+        const { data: grupo, error: errorGrupo } = await supabase
+          .from("grupos")
+          .select("meta_grupal, nombre")
+          .eq("id", usuarios.grupo_id)
+          .single();
+
+        if (grupo) {
+          setMetaGrupal(grupo.meta_grupal);
+          setNombreGrupo(grupo.nombre);
+        }
+
+        const { data: miembros, error: errorMiembros } = await supabase
+          .from("usuarios")
+          .select("nombre, ingresos, egresos")
+          .eq("grupo_id", usuarios.grupo_id);
+
+        if (miembros) {
+          setParticipantes(miembros);
+        }
+      }
+
+      setCargando(false);
+    };
+
+    cargarDatos();
+  }, [correoUsuario]);
+
+  if (error) {
     return (
       <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-        <h2 style={{ color: "#c0392b" }}>⚠️ Usuario no encontrado</h2>
-        <p style={{ fontSize: "1.1rem", color: "#555" }}>
-          No se encontraron datos financieros asociados a tu sesión. Por favor registra tus ingresos y egresos en el módulo correspondiente.
-        </p>
+        <h2 style={{ color: "#c0392b" }}>⚠️ Error</h2>
+        <p style={{ fontSize: "1.1rem", color: "#555" }}>{error}</p>
+      </div>
+    );
+  }
+
+  if (cargando || !usuario) {
+    return (
+      <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+        <h2 style={{ color: "#2980b9" }}>⏳ Cargando datos...</h2>
       </div>
     );
   }
@@ -29,10 +107,6 @@ const Resumen: React.FC<Props> = ({ metaGrupal, participantes }) => {
       <h2 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
         💸 Resumen de {usuario.nombre}
       </h2>
-
-      <p style={{ fontSize: "1.1rem", color: "#555", marginBottom: "1rem" }}>
-        Este módulo te muestra tus ingresos, egresos y tu aporte al cumplimiento de la meta grupal.
-      </p>
 
       <div style={{
         backgroundColor: "#ecf0f1",
@@ -47,7 +121,18 @@ const Resumen: React.FC<Props> = ({ metaGrupal, participantes }) => {
         <p><strong>Cumplimiento respecto a la meta grupal:</strong> {cumplimiento.toFixed(2)}%</p>
       </div>
 
-      <p style={{ fontSize: "0.95rem", color: "#888" }}>
+      {participantes.length > 0 && (
+        <>
+          <VistaEtapa participantes={participantes} />
+          <VistaGrupal
+            nombreGrupoMeta={nombreGrupo}
+            metaGrupal={metaGrupal}
+            participantes={participantes}
+          />
+        </>
+      )}
+
+      <p style={{ fontSize: "0.95rem", color: "#888", marginTop: "2rem" }}>
         Tu correo ha sido usado internamente para identificarte, pero nunca se muestra en pantalla.
       </p>
     </div>

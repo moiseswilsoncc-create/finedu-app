@@ -1,3 +1,6 @@
+// 📦 src/components/Visualizaciones/MapaCalor.tsx
+// 🔄 Visualización institucional del ahorro por región en formato de mapa de calor vertical
+
 import React from "react";
 import {
   Chart as ChartJS,
@@ -37,7 +40,8 @@ const MapaCalor: React.FC<MapaCalorProps> = ({ datos }) => {
       legend: { display: false },
       tooltip: {
         callbacks: {
-          label: (context: any) => `$${context.parsed.y.toLocaleString("es-CL")}`,
+          label: (context: any) =>
+            `$${context.parsed.y.toLocaleString("es-CL")}`,
         },
       },
     },
@@ -45,7 +49,8 @@ const MapaCalor: React.FC<MapaCalorProps> = ({ datos }) => {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value: number) => `$${value.toLocaleString("es-CL")}`,
+          callback: (value: number) =>
+            `$${value.toLocaleString("es-CL")}`,
         },
       },
     },
@@ -53,7 +58,9 @@ const MapaCalor: React.FC<MapaCalorProps> = ({ datos }) => {
 
   return (
     <div style={{ marginBottom: "2rem" }}>
-      <h3>📍 Distribución geográfica del ahorro</h3>
+      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
+        📍 Distribución geográfica del ahorro
+      </h3>
       <Bar data={data} options={options} />
     </div>
   );

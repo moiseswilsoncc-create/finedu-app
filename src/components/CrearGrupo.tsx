@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { supabase } from "../supabaseClient";
 
 const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
   const [nombreGrupo, setNombreGrupo] = useState("");
@@ -17,9 +18,9 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
     setCorreos(correos.filter(c => c !== correo));
   };
 
-  const crearGrupo = () => {
+  const crearGrupo = async () => {
     if (!nombreGrupo.trim()) {
-      alert("Debes ingresar un nombre para el grupo.");
+      alert("⚠️ Debes ingresar un nombre para el grupo.");
       return;
     }
 
@@ -27,15 +28,25 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
       nombre: nombreGrupo.trim(),
       administrador: usuario.correo,
       integrantes: [usuario.correo, ...correos],
-      creadoEn: new Date().toISOString()
+      creado_en: new Date().toISOString()
     };
 
-    console.log("Grupo creado:", grupo);
-    alert(`✅ Grupo "${grupo.nombre}" creado exitosamente. Eres el administrador.`);
+    try {
+      const { error } = await supabase.from("grupos").insert([grupo]);
 
-    // Reset
-    setNombreGrupo("");
-    setCorreos([]);
+      if (error) {
+        console.error("❌ Error al crear grupo:", error);
+        alert("No se pudo crear el grupo. Intenta nuevamente.");
+        return;
+      }
+
+      alert(`✅ Grupo "${grupo.nombre}" creado exitosamente. Eres el administrador.`);
+      setNombreGrupo("");
+      setCorreos([]);
+    } catch (err) {
+      console.error("❌ Error inesperado:", err);
+      alert("Hubo un problema al conectar con el servidor.");
+    }
   };
 
   return (

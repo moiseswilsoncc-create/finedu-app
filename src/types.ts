@@ -42,3 +42,38 @@ export type OfertaColaborador = {
   montoMinimo: number;
   pais: string;
 };
+
+// Usuario registrado en Supabase
+export interface Usuario {
+  nombre: string;
+  correo: string;
+  ingresos: number;
+  egresos: number;
+  grupo_id: string | null;
+}
+
+// Grupo financiero en Supabase
+export interface Grupo {
+  id: string;
+  nombre: string;
+  ciudad: string;
+  comuna: string;
+  pais: string;
+  meta_grupal: number;
+  fecha_creacion: string;
+  activo: boolean;
+}
+
+// Colaborador institucional
+export interface Colaborador {
+  nombre: string;
+  apellido: string;
+  correo: string;
+  institucion: string;
+  pais: string;
+  ciudad: string;
+  rol: string;
+  area: string;
+  fecha_solicitud: string;
+  estado: "pendiente" | "aprobado" | "rechazado";
+}

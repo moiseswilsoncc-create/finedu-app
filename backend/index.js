@@ -1,0 +1,46 @@
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+
+// Rutas institucionales
+const solicitudColaboradorRoutes = require("./routes/solicitudColaborador");
+const ofertasRoutes = require("./routes/ofertas");
+const aportesRoutes = require("./routes/aportes");
+const simulacionesRoutes = require("./routes/simulaciones");
+const feedbackRoutes = require("./routes/feedback");
+const actividadRoutes = require("./routes/actividad");
+const ingresoRoutes = require("./routes/ingreso");
+const configuracionRoutes = require("./routes/configuracion");
+const mensajesRoutes = require("./routes/mensajes");
+const resumenRoutes = require("./routes/resumen");
+const panelRoutes = require("./routes/panel");
+const visualizacionRoutes = require("./routes/visualizacion");
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+app.use(cors());
+app.use(bodyParser.json());
+
+// Activar rutas institucionales
+app.use("/api", solicitudColaboradorRoutes);
+app.use("/api", ofertasRoutes);
+app.use("/api", aportesRoutes);
+app.use("/api", simulacionesRoutes);
+app.use("/api", feedbackRoutes);
+app.use("/api", actividadRoutes);
+app.use("/api", ingresoRoutes);
+app.use("/api", configuracionRoutes);
+app.use("/api", mensajesRoutes);
+app.use("/api", resumenRoutes);
+app.use("/api", panelRoutes);
+app.use("/api", visualizacionRoutes);
+
+// Ruta base
+app.get("/", (req, res) => {
+  res.send("✅ Backend Finedu activo");
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor backend corriendo en puerto ${PORT}`);
+});

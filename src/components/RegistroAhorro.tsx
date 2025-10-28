@@ -1,137 +1,162 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
+import SimuladorCredito from "./SimuladorCredito";
+import GraficoLinea from "./Graficos/GraficoLinea";
 
-type Registro = {
-  correo: string;
-  monto: number;
-  tipo: string;
+type Grupo = {
+  id: string;
+  nombre: string;
+  estado: string; // "activo" o "inactivo"
+  integrantes: number;
 };
 
-const RegistroAhorro: React.FC = () => {
-  const [registro, setRegistro] = useState<Registro>({
-    correo: "",
-    monto: 0,
-    tipo: "ahorro",
-  });
+type Aporte = {
+  fecha: string;
+  monto: number;
+};
 
-  const [sesionValida, setSesionValida] = useState(false);
-  const [nombreUsuario, setNombreUsuario] = useState("");
-  const [correoUsuario, setCorreoUsuario] = useState("");
-  const [grupoId, setGrupoId] = useState("");
+function RegistroAhorro() {
+  const [grupo, setGrupo] = useState<Grupo | null>(null);
+  const [paisUsuario, setPaisUsuario] = useState("Chile");
+  const [historial, setHistorial] = useState<Aporte[]>([]);
+  const [monto, setMonto] = useState("");
+  const [mensaje, setMensaje] = useState("");
+
+  const usuarioId = localStorage.getItem("usuarioId");
+  const grupoActivo = grupo?.estado === "activo";
 
   useEffect(() => {
-    const logueado = localStorage.getItem("logueado") === "true";
-    const correo = localStorage.getItem("correoUsuario") || "";
-    const grupo = localStorage.getItem("grupoId") || "";
+    const obtenerGrupo = async () => {
+      if (!usuarioId) return;
 
-    setSesionValida(logueado && correo !== "");
-    setCorreoUsuario(correo);
-    setGrupoId(grupo);
+      const { data, error } = await supabase
+        .from("grupos_financieros")
+        .select("id, nombre, estado, integrantes")
+        .eq("usuario_id", usuarioId)
+        .single();
 
-    setRegistro({
-      correo: correo,
-      monto: 0,
-      tipo: "ahorro",
-    });
-
-    if (correo) {
-      obtenerNombreDesdeCorreo(correo);
-    }
-  }, []);
-
-  const obtenerNombreDesdeCorreo = async (correo: string) => {
-    try {
-      const response = await fetch(
-        `https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios?correo=eq.${correo}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: "TU_API_KEY",
-            Authorization: "Bearer TU_API_KEY",
-          },
-        }
-      );
-
-      const data = await response.json();
-      if (data.length > 0 && data[0].nombre) {
-        setNombreUsuario(data[0].nombre);
-      } else {
-        setNombreUsuario("Usuario");
+      if (error) {
+        console.error("Error al obtener grupo:", error.message);
+        return;
       }
-    } catch (err) {
-      console.error("Error al obtener nombre:", err);
-      setNombreUsuario("Usuario");
+
+      setGrupo(data);
+    };
+
+    const obtenerAportes = async () => {
+      if (!usuarioId) return;
+
+      const { data, error } = await supabase
+        .from("aportes_usuario")
+        .select("fecha, monto")
+        .eq("usuario_id", usuarioId)
+        .order("fecha", { ascending: true });
+
+      if (error) {
+        console.error("Error al obtener aportes:", error.message);
+        return;
+      }
+
+      setHistorial(data || []);
+    };
+
+    obtenerGrupo();
+    obtenerAportes();
+  }, [usuarioId]);
+
+  const registrarAporte = async () => {
+    if (!usuarioId || !monto) return;
+
+    const { error } = await supabase.from("aportes_usuario").insert([
+      {
+        usuario_id: usuarioId,
+        monto: parseFloat(monto),
+        fecha: new Date().toISOString()
+      }
+    ]);
+
+    if (error) {
+      console.error("Error al registrar aporte:", error.message);
+      setMensaje("❌ Error al registrar aporte.");
+    } else {
+      setMonto("");
+      setMensaje("✅ Aporte registrado correctamente.");
+      setTimeout(() => setMensaje(""), 3000);
+      const { data } = await supabase
+        .from("aportes_usuario")
+        .select("fecha, monto")
+        .eq("usuario_id", usuarioId)
+        .order("fecha", { ascending: true });
+      setHistorial(data || []);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setRegistro((prev) => ({
-      ...prev,
-      [name]: name === "monto" ? Number(value) : value,
-    }));
-  };
+  const labels = historial.map((aporte) =>
+    new Date(aporte.fecha).toLocaleDateString("es-CL", {
+      month: "short",
+      year: "numeric"
+    })
+  );
 
-  const registrar = () => {
-    if (!registro.correo.trim() || registro.monto <= 0) {
-      alert("Completa todos los campos correctamente.");
-      return;
-    }
-
-    console.log("Registrando ahorro:", {
-      grupo_id: grupoId || "modo-individual",
-      ...registro,
-      fecha: new Date().toISOString(),
-    });
-
-    alert(`✅ ${nombreUsuario}, tu aporte de ahorro fue registrado correctamente.`);
-    setRegistro({ correo: correoUsuario, monto: 0, tipo: "ahorro" });
-  };
-
-  if (!sesionValida) {
-    return (
-      <div style={{ textAlign: "center", marginTop: "3rem" }}>
-        <h3>⚠️ Usuario no encontrado</h3>
-        <p>No se encontraron datos financieros asociados a tu sesión. Por favor inicia sesión para registrar tus ahorros.</p>
-      </div>
-    );
-  }
+  const datos = historial.map((aporte) => aporte.monto);
 
   return (
-    <div style={{ maxWidth: "500px", margin: "2rem auto", padding: "1rem" }}>
-      <h2>💰 Registro de Ahorro</h2>
-      <p style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>
-        👤 <strong>{nombreUsuario}</strong>, registra tus aportes de ahorro personal o grupal.
-      </p>
+    <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+      <h2>📘 Registro de ahorro</h2>
 
-      <label style={{ display: "block", marginBottom: "0.5rem" }}>
-        Monto en pesos chilenos:
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
         <input
           type="number"
-          name="monto"
-          value={registro.monto}
-          onChange={handleChange}
-          placeholder="Ej: 50000"
-          style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
+          value={monto}
+          onChange={(e) => setMonto(e.target.value)}
+          placeholder="Monto a registrar"
+          style={{
+            flex: 1,
+            padding: "0.6rem",
+            borderRadius: "6px",
+            border: "1px solid #ccc"
+          }}
         />
-      </label>
+        <button
+          onClick={registrarAporte}
+          style={{
+            padding: "0.6rem 1rem",
+            backgroundColor: "#2980b9",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer"
+          }}
+        >
+          Registrar
+        </button>
+      </div>
 
-      <button
-        onClick={registrar}
-        style={{
-          padding: "0.5rem 1rem",
-          backgroundColor: "#27ae60",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          marginTop: "1rem",
-        }}
-      >
-        Registrar ahorro
-      </button>
+      {mensaje && (
+        <p style={{ color: mensaje.includes("✅") ? "green" : "red" }}>{mensaje}</p>
+      )}
+
+      {grupoActivo && (
+        <p style={{ color: "#27ae60", marginBottom: "1rem" }}>
+          ✅ Tu grupo está activo. Este aporte impactará en el panel grupal.
+        </p>
+      )}
+
+      {historial.length > 0 ? (
+        <GraficoLinea
+          titulo="Evolución de aportes mensuales"
+          labels={labels}
+          datos={datos}
+        />
+      ) : (
+        <p style={{ marginTop: "1rem", color: "#888" }}>
+          No hay aportes registrados aún.
+        </p>
+      )}
+
+      <SimuladorCredito pais={paisUsuario} grupoActivo={grupoActivo} />
     </div>
   );
-};
+}
 
 export default RegistroAhorro;

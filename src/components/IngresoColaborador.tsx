@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DatosColaborador } from "../types";
+import { supabase } from "../supabaseClient"; // Asegúrate de tenerlo configurado
 
 type Props = {
   setPais: (pais: string) => void;
@@ -20,19 +21,26 @@ function IngresoColaborador({ setPais }: Props) {
   const [camposCompletos, setCamposCompletos] = useState(false);
   const [claveValida, setClaveValida] = useState(true);
 
-  const listaAutorizada = [
-    "colaborador@finedu.cl",
-    "institucion@finedu.cl",
-    "admin@finedu.cl"
-    // Puedes ampliar esta lista o conectarla a una API
-  ];
-
   useEffect(() => {
     const todosCompletos = Object.values(datos).every(valor => valor.trim() !== "");
     setCamposCompletos(todosCompletos);
-    setCorreoValido(listaAutorizada.includes(datos.correo));
     setClaveValida(datos.clave.length >= 8);
   }, [datos]);
+
+  useEffect(() => {
+    const validarCorreo = async () => {
+      if (!datos.correo) return;
+      const { data, error } = await supabase
+        .from("correos_autorizados")
+        .select("correo")
+        .eq("correo", datos.correo)
+        .single();
+
+      setCorreoValido(!!data && !error);
+    };
+
+    validarCorreo();
+  }, [datos.correo]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -40,12 +48,33 @@ function IngresoColaborador({ setPais }: Props) {
     if (name === "pais") setPais(value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (camposCompletos && correoValido && claveValida) {
-      // Aquí podrías agregar lógica para enviar los datos a una API
-      setRegistrado(true);
-    }
+    if (!camposCompletos || !correoValido || !claveValida) return;
+
+    // Enviar clave al backend para hashing
+    const response = await fetch("/api/hash-clave", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clave: datos.clave })
+    });
+
+    const { claveHasheada } = await response.json();
+
+    const { error } = await supabase.from("colaboradores").insert([
+      {
+        nombreResponsable: datos.nombreResponsable,
+        institucion: datos.institucion,
+        pais: datos.pais,
+        ciudad: datos.ciudad,
+        correo: datos.correo,
+        clave: claveHasheada,
+        fechaRegistro: new Date().toISOString()
+      }
+    ]);
+
+    if (!error) setRegistrado(true);
+    else console.error("Error al registrar colaborador:", error.message);
   };
 
   return (

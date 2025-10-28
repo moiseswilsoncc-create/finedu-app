@@ -3,15 +3,15 @@ import React from "react";
 type Credito = {
   nombre: string;
   tipo: "consumo" | "hipotecario";
-  plazoTotal: number; // en meses
-  cuotaActual: number; // número de cuota actual
+  plazoTotal: number;
+  cuotaActual: number;
   cuotaMensual: number;
 };
 
 type OfertaSimulada = {
   monto: number;
-  tasa: number; // anual en %
-  plazo: number; // en meses
+  tasa: number;
+  plazo: number;
 };
 
 type Props = {
@@ -34,7 +34,10 @@ const EvaluadorCreditoInteligente: React.FC<Props> = ({
       .filter(c => c.plazoTotal - c.cuotaActual <= meses)
       .reduce((acc, c) => acc + c.cuotaMensual, 0);
 
-    const cuotaSimulada = ofertaSimulada ? calcularCuota(ofertaSimulada.monto, ofertaSimulada.tasa, ofertaSimulada.plazo) : 0;
+    const cuotaSimulada = ofertaSimulada
+      ? calcularCuota(ofertaSimulada.monto, ofertaSimulada.tasa, ofertaSimulada.plazo)
+      : 0;
+
     const cargaTotal = carga + cuotaSimulada;
     const porcentaje = (cargaTotal / ingresosMensuales) * 100;
 
@@ -49,26 +52,38 @@ const EvaluadorCreditoInteligente: React.FC<Props> = ({
   });
 
   return (
-    <div style={{ maxWidth: "700px", margin: "2rem auto", padding: "2rem", border: "1px solid #ccc", borderRadius: "12px", backgroundColor: "#fefefe" }}>
-      <h2>🧠 Evaluación Inteligente de Carga Crediticia</h2>
-      <p><strong>Ingresos mensuales:</strong> ${ingresosMensuales.toLocaleString()}</p>
-      <p><strong>Egresos mensuales:</strong> ${egresosMensuales.toLocaleString()}</p>
+    <div style={{
+      maxWidth: "700px",
+      margin: "2rem auto",
+      padding: "2rem",
+      border: "1px solid #ccc",
+      borderRadius: "12px",
+      backgroundColor: "#fefefe"
+    }}>
+      <h2 style={{ color: "#2c3e50" }}>🧠 Evaluación Inteligente de Carga Crediticia</h2>
+      <p><strong>Ingresos mensuales:</strong> ${ingresosMensuales.toLocaleString("es-CL")}</p>
+      <p><strong>Egresos mensuales:</strong> ${egresosMensuales.toLocaleString("es-CL")}</p>
 
-      <h3 style={{ marginTop: "2rem" }}>📊 Proyección por tramos</h3>
+      <h3 style={{ marginTop: "2rem", color: "#34495e" }}>📊 Proyección por tramos</h3>
       {cargaPorTramo.map((tramo, index) => (
-        <div key={index} style={{ marginTop: "1.5rem", padding: "1rem", backgroundColor: "#f9f9f9", borderRadius: "8px" }}>
+        <div key={index} style={{
+          marginTop: "1.5rem",
+          padding: "1rem",
+          backgroundColor: "#f9f9f9",
+          borderRadius: "8px"
+        }}>
           <h4>⏳ Próximos {tramo.meses} meses</h4>
-          <p>Carga actual por créditos en este tramo: ${tramo.carga.toLocaleString()}</p>
+          <p>Carga actual por créditos en este tramo: ${tramo.carga.toLocaleString("es-CL")}</p>
           {ofertaSimulada && (
-            <p>Cuota estimada de nueva oferta: ${tramo.cuotaSimulada.toLocaleString()}</p>
+            <p>Cuota estimada de nueva oferta: ${tramo.cuotaSimulada.toLocaleString("es-CL")}</p>
           )}
-          <p><strong>Carga total proyectada:</strong> ${tramo.cargaTotal.toLocaleString()} ({tramo.porcentaje.toFixed(1)}%)</p>
+          <p><strong>Carga total proyectada:</strong> ${tramo.cargaTotal.toLocaleString("es-CL")} ({tramo.porcentaje.toFixed(1)}%)</p>
           <p><strong>Recomendación:</strong> {tramo.recomendacion}</p>
         </div>
       ))}
 
-      <h3 style={{ marginTop: "2rem" }}>📄 Detalle de Créditos Activos</h3>
-      {creditosActivos.map((c, i) => mostrarDetalleCredito(c))}
+      <h3 style={{ marginTop: "2rem", color: "#34495e" }}>📄 Detalle de Créditos Activos</h3>
+      {creditosActivos.map((c) => mostrarDetalleCredito(c))}
     </div>
   );
 };
@@ -90,13 +105,18 @@ function mostrarDetalleCredito(credito: Credito) {
   const restanteDinero = restanteMeses * credito.cuotaMensual;
 
   return (
-    <div key={credito.nombre} style={{ marginBottom: "1rem", padding: "1rem", backgroundColor: "#f4f4f4", borderRadius: "8px" }}>
+    <div key={credito.nombre} style={{
+      marginBottom: "1rem",
+      padding: "1rem",
+      backgroundColor: "#f4f4f4",
+      borderRadius: "8px"
+    }}>
       <h4>📄 {credito.nombre} ({credito.tipo})</h4>
       <p>Plazo total: {credito.plazoTotal} meses</p>
       <p>Cuota actual: {credito.cuotaActual} / {credito.plazoTotal}</p>
-      <p>Valor de la cuota: ${credito.cuotaMensual.toLocaleString()}</p>
-      <p>Total pagado: ${pagado.toLocaleString()}</p>
-      <p>Faltan: ${restanteDinero.toLocaleString()} ({restanteMeses} meses)</p>
+      <p>Valor de la cuota: ${credito.cuotaMensual.toLocaleString("es-CL")}</p>
+      <p>Total pagado: ${pagado.toLocaleString("es-CL")}</p>
+      <p>Faltan: ${restanteDinero.toLocaleString("es-CL")} ({restanteMeses} meses)</p>
     </div>
   );
 }

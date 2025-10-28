@@ -8,7 +8,6 @@ type Props = {
 };
 
 const VistaGrupal: React.FC<Props> = ({ nombreGrupoMeta, metaGrupal, participantes }) => {
-  // Validación institucional: si no hay grupo asignado, mostrar estado vacío
   const grupoAsignado = nombreGrupoMeta && nombreGrupoMeta.trim() !== "" && participantes.length > 0;
 
   if (!grupoAsignado) {
@@ -20,14 +19,14 @@ const VistaGrupal: React.FC<Props> = ({ nombreGrupoMeta, metaGrupal, participant
     );
   }
 
-  const totalAhorro = participantes.reduce(
+  const totalAhorro = participants.reduce(
     (acc, p) => acc + (p.ingresos - p.egresos),
     0
   );
 
   const progreso = Math.min((totalAhorro / metaGrupal) * 100, 100);
 
-  const participantesOrdenados = [...participantes].sort(
+  const participantesOrdenados = [...participants].sort(
     (a, b) => (b.ingresos - b.egresos) - (a.ingresos - a.egresos)
   );
 

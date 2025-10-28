@@ -16,9 +16,11 @@ function VistaEtapa({ participantes }: Props) {
       (acc, p) => acc + (p.ingresos - p.egresos),
       0
     );
-    const ahorroProyectado = ahorroTotal * (meses / 1); // suponiendo que los datos son mensuales
-    return ahorroProyectado;
+    return ahorroTotal * meses;
   };
+
+  const calcularIndividual = (p: Participante, meses: number) =>
+    (p.ingresos - p.egresos) * meses;
 
   return (
     <div>
@@ -28,6 +30,15 @@ function VistaEtapa({ participantes }: Props) {
         <li>3 meses: ${calcularPorEtapa(3).toLocaleString("es-CL")}</li>
         <li>6 meses: ${calcularPorEtapa(6).toLocaleString("es-CL")}</li>
         <li>12 meses: ${calcularPorEtapa(12).toLocaleString("es-CL")}</li>
+      </ul>
+
+      <h4>Ahorro individual proyectado (12 meses)</h4>
+      <ul>
+        {participantes.map((p, i) => (
+          <li key={i}>
+            {p.nombre}: ${calcularIndividual(p, 12).toLocaleString("es-CL")}
+          </li>
+        ))}
       </ul>
     </div>
   );
