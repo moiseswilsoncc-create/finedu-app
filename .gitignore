@@ -1,0 +1,36 @@
+# 🔐 Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# 📦 Dependencias
+node_modules/
+
+# 🛠️ Archivos de compilación
+dist/
+build/
+.next/
+out/
+.cache/
+.vscode/
+.idea/
+
+# 🧪 Logs y errores
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 💾 Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# 📄 Archivos temporales
+*.log
+*.csv
+*.pdf
+*.zip
+*.tgz
+
+# 🧪 Tests temporales
+coverage/
