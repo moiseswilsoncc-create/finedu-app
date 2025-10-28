@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { supabase } from "@/supabaseClient";
+useEffect(() => {
+  console.log("🔍 Supabase URL:", import.meta.env.VITE_SUPABASE_URL);
+  console.log("🔍 Supabase KEY:", import.meta.env.VITE_SUPABASE_ANON_KEY);
 
-const DashboardInstitucional: React.FC = () => {
-  const [estado, setEstado] = useState("🧪 Supabase importado correctamente");
+  const cargarDatos = async () => {
+    const { data, error } = await supabase.from("ahorro_por_region").select("*");
+    console.log("📊 Supabase respuesta:", { data, error });
 
-  useEffect(() => {
-    console.log("✅ Componente montado");
-    console.log("🔍 Supabase:", supabase);
-  }, []);
+    if (error) {
+      setEstado("❌ Error al obtener datos");
+    } else if (!data || data.length === 0) {
+      setEstado("⚠️ Sin datos disponibles");
+    } else {
+      setEstado("✅ Datos cargados correctamente");
+      setDatos(data);
+    }
+  };
 
-  return (
-    <div style={{ padding: "2rem", fontSize: "1.5rem", color: "#333" }}>
-      <p>{estado}</p>
-    </div>
-  );
-};
-
-export default DashboardInstitucional;
+  cargarDatos();
+}, []);
