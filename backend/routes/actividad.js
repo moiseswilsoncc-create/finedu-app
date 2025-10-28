@@ -3,9 +3,9 @@ import express from "express";
 import supabase from "../supabaseClient.js";
 import crypto from "crypto";
 
-const router = express.Router();
+const actividadRoutes = express.Router();
 
-router.post("/guardar-actividad", async (req, res) => {
+actividadRoutes.post("/guardar-actividad", async (req, res) => {
   const { usuario_id, tipo, descripcion } = req.body;
 
   if (!usuario_id || !tipo || !descripcion) {
@@ -37,4 +37,4 @@ router.post("/guardar-actividad", async (req, res) => {
   }
 });
 
-export default router;
+export default actividadRoutes;
