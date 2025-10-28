@@ -1,8 +1,9 @@
 // Ruta: routes/feedback.js
-const express = require("express");
+import express from "express";
+import supabase from "../supabaseClient.js";
+import crypto from "crypto";
+
 const router = express.Router();
-const supabase = require("../supabaseClient");
-const crypto = require("crypto");
 
 router.post("/guardar-feedback", async (req, res) => {
   const { usuario_id, tipo, mensaje } = req.body;
@@ -38,4 +39,4 @@ router.post("/guardar-feedback", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
