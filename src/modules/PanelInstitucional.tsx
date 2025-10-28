@@ -1,17 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 import InformeInstitucional from "./InformeInstitucional";
 
+const supabase = createClient(
+  "https://ftsbnorudtcyrrubutt.supabase.co",
+  process.env.SUPABASE_KEY || "TU_API_KEY"
+);
+
 const PanelInstitucional: React.FC = () => {
+  const [colaboradores, setColaboradores] = useState<any[]>([]);
   const historialInformes = [
     { mes: "Julio", url: "/informes/Julio2025.pdf" },
     { mes: "Agosto", url: "/informes/Agosto2025.pdf" },
-    { mes: "Septiembre", url: "/informes/Septiembre2025.pdf" },
+    { mes: "Septiembre", url: "/informes/Septiembre2025.pdf" }
   ];
 
-  const colaboradores = [
-    { nombre: "Institución A", email: "contacto@institucionA.cl" },
-    { nombre: "Institución B", email: "info@institucionB.cl" },
-  ];
+  useEffect(() => {
+    const cargarColaboradores = async () => {
+      const { data, error } = await supabase
+        .from("colaboradores")
+        .select("nombre, correo");
+
+      if (error) {
+        console.error("Error al cargar colaboradores:", error.message);
+        return;
+      }
+
+      setColaboradores(data || []);
+    };
+
+    cargarColaboradores();
+  }, []);
 
   return (
     <div style={{
@@ -56,9 +75,9 @@ const PanelInstitucional: React.FC = () => {
           </thead>
           <tbody>
             {colaboradores.map((colaborador) => (
-              <tr key={colaborador.email}>
+              <tr key={colaborador.correo}>
                 <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{colaborador.nombre}</td>
-                <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{colaborador.email}</td>
+                <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{colaborador.correo}</td>
               </tr>
             ))}
           </tbody>
