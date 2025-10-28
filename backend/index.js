@@ -45,5 +45,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
+  
   console.log(`🚀 Servidor backend corriendo en puerto ${PORT}`);
 });
