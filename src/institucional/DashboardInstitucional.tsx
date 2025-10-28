@@ -1,15 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { supabase } from "@/supabaseClient"; // ← Ruta corregida
+useEffect(() => {
+  console.log("✅ DashboardInstitucional montado");
 
-const DashboardInstitucional: React.FC = () => {
-  const [datos, setDatos] = useState<any[]>([]);
-
-  useEffect(() => {
-    console.log("✅ DashboardInstitucional montado");
-
-    const obtenerDatos = async () => {
+  const obtenerDatos = async () => {
+    try {
       const { data, error } = await supabase
-        .from("ahorro_por_region") // ← tabla pendiente que tú institucionalizaste
+        .from("ahorro_por_region")
         .select("*");
 
       if (error) {
@@ -18,16 +13,10 @@ const DashboardInstitucional: React.FC = () => {
         console.log("📊 Datos obtenidos:", data);
         setDatos(data);
       }
-    };
+    } catch (err) {
+      console.error("❌ Error inesperado:", err);
+    }
+  };
 
-    obtenerDatos();
-  }, []);
-
-  return (
-    <div style={{ padding: "2rem", color: "green", fontSize: "1.5rem" }}>
-      ✅ DashboardInstitucional cargado correctamente
-    </div>
-  );
-};
-
-export default DashboardInstitucional;
+  obtenerDatos();
+}, []);
