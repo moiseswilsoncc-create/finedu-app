@@ -84,10 +84,10 @@ function App() {
       setParticipantes([...participantes, participanteConMeta]);
     };
 
-    useEffect(() => {
-      const tipo = localStorage.getItem("tipoUsuario");
-      if (tipo === "usuario" || tipo === "colaborador" || tipo === "institucional") {
-        setTipoUsuario(tipo as typeof tipoUsuario);
+   useEffect(() => {
+  setTipoUsuario("institucional");
+}, []);
+
       }
     }, []);
 
