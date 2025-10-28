@@ -63,6 +63,7 @@ import MenuSimuladores from "./components/MenuSimuladores";
 import InformeInstitucional from "./modules/InformeInstitucional";
 import DashboardInstitucional from "./modules/DashboardInstitucional";
 import EvaluadorCreditoInteligente from "./modules/EvaluadorCreditoInteligente";
+
 function App() {
   try {
     const location = useLocation();
@@ -95,6 +96,7 @@ function App() {
       setTipoUsuario(null);
       navigate("/", { replace: true });
     };
+
     return (
       <FineduProvider>
         <div>
@@ -165,20 +167,20 @@ function App() {
               />
             } />
 
-            <Route path="/dashboard-institucional" element={
-            tipoUsuario === "institucional"
-            ? <RutaProtegida><DashboardInstitucional /></RutaProtegida>
-            : <Navigate to="/" />
-            } />
-
+            <Route path="/informe-institucional" element={
+              tipoUsuario === "institucional"
+                ? <RutaProtegida><InformeInstitucional /></RutaProtegida>
+                : <Navigate to="/" />
             } />
 
             <Route path="/dashboard-institucional" element={
               tipoUsuario === "institucional"
-                ? <RutaProtegida><DashboardInstitucional /></Ruta} />
+                ? <RutaProtegida><DashboardInstitucional /></RutaProtegida>
+                : <Navigate to="/" />
+            } />
           </Routes>
 
-          {!tipoUsuario && location.pathname === "/" && (
+                    {!tipoUsuario && location.pathname === "/" && (
             <SelectorTipoUsuario setTipoUsuario={setTipoUsuario} />
           )}
 
@@ -219,5 +221,3 @@ function App() {
 }
 
 export default App;
-
-                                                             
