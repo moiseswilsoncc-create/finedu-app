@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import bcrypt from "bcryptjs";
 
 const RegistroUsuario: React.FC = () => {
   const [nombre, setNombre] = useState("");
@@ -60,7 +59,6 @@ const RegistroUsuario: React.FC = () => {
         return;
       }
 
-      const hash = await bcrypt.hash(contraseña, 10);
       const grupoId = localStorage.getItem("grupoId") || null;
 
       const response = await fetch("https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios", {
@@ -80,7 +78,7 @@ const RegistroUsuario: React.FC = () => {
           ciudad,
           comuna,
           correo,
-          contraseña: hash,
+          contraseña,
           grupo_id: grupoId,
           created_at: new Date().toISOString()
         })
