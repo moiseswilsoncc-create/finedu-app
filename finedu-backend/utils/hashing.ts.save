@@ -1,0 +1,17 @@
+import bcrypt from "bcrypt";
+
+const SALT_ROUNDS = 10;
+
+export const encriptarClave = async (clave: string): Promise<string> => {
+  const hash = await bcrypt.hash(clave, SALT_ROUNDS);
+  return hash;
+};
+
+export const validarClave = async (
+  claveIngresada: string,
+  hashGuardado: string
+): Promise<boolean> => {
+  const esValida = await bcrypt.compare(claveIngresada, hashGuardado);
+  return esValida;
+};
+

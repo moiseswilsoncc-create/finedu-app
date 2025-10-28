@@ -10,6 +10,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.76.1",
     "axios": "^1.6.8",
+    "bcrypt": "^6.0.0",
     "chart.js": "^4.4.0",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.28",
