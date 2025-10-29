@@ -11,7 +11,7 @@ Este bloque agrupa los simuladores financieros que permiten al usuario comparar 
 | `MenuSimuladores.tsx`        | `src/simuladores`        | ✅ Validado       | No          | Navegación agrupada por tipo de simulador (inversión, crédito, ahorro grupal)             |
 | `SimuladorInversion.tsx`     | `src/simuladores`        | ✅ Validado       | No          | Compara ahorro vs inversión en 3, 6 y 12 meses, con trazabilidad mensual                  |
 | `SimuladorCredito.tsx`       | `src/simuladores`        | ✅ Validado       | No          | Simula deuda grupal, cuotas, intereses y su impacto mensual                               |
-| `SimuladorAhorroGrupal.tsx`  | `src/simuladores`        | ⏳ Pendiente      | No          | Permitirá simular ahorro colaborativo con metas compartidas                               |
+| `SimuladorAhorroGrupal.tsx`  | `src/simuladores`        | ✅ Validado       | No          | Simula metas compartidas entre participantes, calcula tiempo estimado y aportes grupales  |
 | `compararSimulaciones.ts`    | `backend/utils`          | ✅ Validado       | No          | Lógica que permite comparar resultados entre simuladores                                  |
 
 ---
@@ -22,6 +22,7 @@ Este bloque agrupa los simuladores financieros que permiten al usuario comparar 
 - La lógica comparativa entre ahorro e inversión está institucionalizada y validada.
 - La navegación agrupada evita confusión y refuerza la experiencia profesional.
 - Cada simulador registra actividad y resultados para trazabilidad y evaluación futura.
+- El simulador grupal refuerza la filosofía colaborativa de Finedu.
 
 ---
 
@@ -29,8 +30,8 @@ Este bloque agrupa los simuladores financieros que permiten al usuario comparar 
 
 - `SimuladorInversion.tsx` y `SimuladorCredito.tsx` alimentan `ResumenFinanciero.tsx` y `actividad.js`.
 - `MenuSimuladores.tsx` se conecta con `App.tsx` y rutas protegidas por rol.
+- `SimuladorAhorroGrupal.tsx` se integrará con Supabase en la segunda fase para guardar simulaciones reales.
 - `compararSimulaciones.ts` se usa internamente por los simuladores para mostrar resultados comparativos.
-- Este bloque se integrará con Supabase en la segunda fase para guardar simulaciones reales.
 
 ---
 
