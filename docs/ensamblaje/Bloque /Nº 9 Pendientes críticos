@@ -1,1 +1,38 @@
+# 🧩 Bloque 9: Pendientes críticos
+
+Este bloque agrupa los módulos y endpoints que están en desarrollo o por activar en la siguiente fase. Incluye simulación institucional, exportación de informes, y el endpoint `/guardar-oferta` para colaboradores. Son piezas clave para cerrar el ensamblaje y activar trazabilidad completa.
+
+---
+
+## 📄 Tabla de pendientes
+
+| 🧩 Archivo / Módulo               | 📂 Ruta                        | ⚙️ Estado         | 🔁 Repetido | 🧠 ¿Qué hará este archivo?                                                                 |
+|----------------------------------|--------------------------------|------------------|-------------|--------------------------------------------------------------------------------------------|
+| `simulacionInstitucional.tsx`   | `src/institucional`            | ⏳ En diseño      | No          | Permitirá simular impacto agregado por institución, con filtros por tipo de usuario       |
+| `exportarInforme.tsx`           | `src/institucional`            | ⏳ En diseño      | No          | Permitirá exportar métricas y simulaciones en formato PDF o CSV para auditoría externa    |
+| `guardar-oferta.js`             | `backend/routes`               | ⏳ Pendiente      | No          | Endpoint Express para recibir datos del formulario de colaboradores y guardar en Supabase |
+| `eliminar-ofertas-caducadas.ts` | `backend/scripts`              | ✅ Validado       | No          | Elimina ofertas vencidas automáticamente según fecha de expiración                        |
+| `cronLimpieza.ts`               | `backend/scripts`              | ⏳ Pendiente      | No          | Permitirá ejecutar limpieza automática vía Vercel cron                                     |
+
+---
+
+## 🧠 Observaciones institucionales
+
+- Estos módulos completan la trazabilidad institucional y permiten escalar Finedu hacia alianzas y auditorías.
+- La simulación institucional será clave para mostrar impacto agregado por tipo de usuario, región o colaborador.
+- La exportación de informes permitirá presentar resultados ante entidades externas.
+- El endpoint `/guardar-oferta` institucionaliza el ingreso de ofertas colaborativas con trazabilidad completa.
+
+---
+
+## 🔗 Conexiones con otros bloques
+
+- `simulacionInstitucional.tsx` se alimentará de `actividad.js`, `finanzasUsuario.js`, `feedback.js` y simuladores.
+- `exportarInforme.tsx` se conectará con `DashboardInstitucional.tsx` y métricas agregadas.
+- `guardar-oferta.js` se conectará con `guardarOferta.tsx` y la tabla `ofertas_colaborador` en Supabase.
+- `cronLimpieza.ts` ejecutará `limpiarTokensVencidos.js` y `eliminar-ofertas-caducadas.ts` automáticamente.
+
+---
+
+✅ Este bloque queda trazado y documentado como parte del ensamblaje institucional de Finedu.
 
