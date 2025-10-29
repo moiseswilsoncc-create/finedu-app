@@ -1,0 +1,40 @@
+# 🧩 Bloque 2: Usuario
+
+Este bloque agrupa todos los archivos que permiten a los usuarios interactuar con Finedu de forma personalizada, trazable y educativa. Incluye simuladores, configuración, resumen financiero, feedback y cálculo de impacto mensual.
+
+---
+
+## 📄 Tabla de archivos
+
+| 🧩 Archivo / Módulo               | 📂 Ruta                        | ⚙️ Estado         | 🔁 Repetido | 🧠 ¿Qué hace este archivo?                                                                 |
+|----------------------------------|--------------------------------|------------------|-------------|--------------------------------------------------------------------------------------------|
+| `ResumenFinanciero.tsx`         | `src/usuario`                  | ✅ Validado       | No          | Muestra el impacto mensual del usuario: deuda activa, ahorro, simulaciones                |
+| `ConfiguracionUsuario.tsx`      | `src/usuario`                  | ✅ Validado       | No          | Permite modificar idioma, notificaciones, vista y preferencias personales                 |
+| `FeedbackUsuario.tsx`           | `src/usuario`                  | ✅ Validado       | No          | Permite enviar mensajes institucionales clasificados por tipo (sugerencia, error, etc.)   |
+| `guardarProyeccion.ts`          | `backend/routes`               | ✅ Validado       | No          | Guarda metas financieras simuladas por el usuario (vacaciones, paseo, ahorro grupal)      |
+| `finanzasUsuario.js`            | `backend/routes`               | ✅ Validado       | No          | Calcula el impacto mensual real del usuario según ingresos, egresos y deudas              |
+| `configuracion.js`              | `backend/routes`               | ✅ Validado       | No          | Guarda y actualiza preferencias del usuario en Supabase                                   |
+| `feedback.js`                   | `backend/routes`               | ✅ Validado       | No          | Recibe y guarda mensajes enviados por usuarios, con trazabilidad por IP y fecha           |
+| `actividad.js`                  | `backend/routes`               | ✅ Mejorado       | No          | Registra cada acción del usuario: navegación, simulación, configuración, feedback         |
+
+---
+
+## 🧠 Observaciones institucionales
+
+- Este bloque representa la experiencia personalizada del usuario dentro de Finedu.
+- Refuerza la trazabilidad emocional y funcional: cada acción queda registrada.
+- Permite medir el impacto real de decisiones financieras individuales y grupales.
+- Es base para el cálculo del IPC personalizado y la evaluación del sistema por parte del usuario.
+
+---
+
+## 🔗 Conexiones con otros bloques
+
+- `ResumenFinanciero.tsx` se alimenta de datos de `finanzasUsuario.js`, `guardarProyeccion.ts`, `aportes.js` y simuladores.
+- `ConfiguracionUsuario.tsx` se conecta con `configuracion.js` y se refleja en la experiencia de navegación.
+- `FeedbackUsuario.tsx` se conecta con `feedback.js` y es visible para colaboradores e institucional.
+- `actividad.js` se activa desde `App.tsx` y registra navegación por rol.
+
+---
+
+✅ Este bloque queda validado y documentado como parte del ensamblaje institucional de Finedu.
