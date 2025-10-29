@@ -1,25 +1,28 @@
 {
   "name": "finedu-backend",
   "version": "1.0.0",
-  "description": "Backend institucional de Finedu con trazabilidad, seguridad y conexión a Supabase",
-  "main": "index.js",
   "type": "module",
+  "description": "Backend institucional de Finedu con Express, rutas colaborador y conexión segura a Supabase",
+  "main": "index.ts",
   "scripts": {
-    "start": "node index.js"
+    "dev": "node --loader ts-node/esm index.ts"
   },
   "dependencies": {
-    "express": "^4.21.2",
-    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
-    "bcryptjs": "^2.4.3",
-    "@supabase/supabase-js": "^2.39.5"
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   },
   "keywords": [
     "finedu",
     "backend",
-    "supabase",
     "express",
-    "auth",
+    "typescript",
+    "supabase",
+    "colaborador",
     "institucional"
   ],
   "author": "Wilson",

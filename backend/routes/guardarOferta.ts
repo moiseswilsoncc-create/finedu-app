@@ -23,7 +23,7 @@ const DatosOfertas: React.FC = () => {
     setMensaje("");
 
     try {
-      const response = await axios.post("/guardar-oferta", formulario);
+      const response = await axios.post("http://localhost:4000/api/guardar-oferta", formulario);
       setMensaje(response.data.mensaje || "✅ Oferta registrada correctamente.");
       setFormulario({
         tipo: "",
