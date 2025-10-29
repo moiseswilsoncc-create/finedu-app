@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import guardarOfertaRoutes from "./routes/guardarOferta.js";
 
 // Rutas institucionales
 import solicitudColaboradorRoutes from "./routes/solicitudColaborador.js";
@@ -39,6 +40,7 @@ app.use("/api", panelRoutes);
 app.use("/api", visualizacionRoutes);
 app.use("/api", usuariosRoutes);
 app.use("/api", loginRoutes);
+app.use("/api", guardarOfertaRoutes);
 
 app.get("/", (req, res) => {
   res.send("✅ Backend Finedu activo");
