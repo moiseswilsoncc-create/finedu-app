@@ -1,19 +1,21 @@
 // Ruta: routes/configuracion.js
-const express = require("express");
-const router = express.Router();
-const supabase = require("../supabaseClient");
-const crypto = require("crypto");
+import express from "express";
+import supabase from "../supabaseClient.js";
+import crypto from "crypto";
 
+const router = express.Router();
+
+// ✅ Guardar o actualizar configuración del usuario
 router.post("/guardar-configuracion", async (req, res) => {
   const { usuario_id, idioma, notificaciones, vista_simplificada } = req.body;
 
-  // Validación básica
+  // 🧩 Validación básica
   if (!usuario_id) {
-    return res.status(400).json({ success: false, error: "Falta el ID del usuario." });
+    return res.status(400).json({ success: false, error: "❌ Falta el ID del usuario." });
   }
 
   try {
-    // Verificar si ya existe configuración previa
+    // 🔍 Verificar si ya existe configuración previa
     const { data: existente, error: errorExistente } = await supabase
       .from("configuracion_usuario")
       .select("id")
@@ -25,8 +27,9 @@ router.post("/guardar-configuracion", async (req, res) => {
     }
 
     let resultado;
+
     if (existente) {
-      // Actualizar configuración existente
+      // 🔁 Actualizar configuración existente
       const { data, error } = await supabase
         .from("configuracion_usuario")
         .update({
@@ -40,7 +43,7 @@ router.post("/guardar-configuracion", async (req, res) => {
       if (error) throw error;
       resultado = data;
     } else {
-      // Crear nueva configuración
+      // 🆕 Crear nueva configuración
       const { data, error } = await supabase
         .from("configuracion_usuario")
         .insert([{
@@ -56,11 +59,12 @@ router.post("/guardar-configuracion", async (req, res) => {
       resultado = data;
     }
 
+    console.log("✅ Configuración guardada:", resultado);
     return res.status(200).json({ success: true, data: resultado });
   } catch (err) {
-    console.error("Error al guardar configuración:", err);
-    return res.status(500).json({ success: false, error: "Error interno del servidor." });
+    console.error("❌ Error al guardar configuración:", err);
+    return res.status(500).json({ success: false, error: "❌ Error interno del servidor." });
   }
 });
 
-module.exports = router;
+export default router;
