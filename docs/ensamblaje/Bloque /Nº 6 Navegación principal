@@ -1,0 +1,36 @@
+# 🧩 Bloque 6: Navegación principal
+
+Este bloque representa el núcleo de navegación de Finedu. Es el punto de entrada que redirige a cada usuario según su rol (`usuario`, `colaborador`, `institucional`) y activa los módulos correspondientes. Aquí se define la experiencia profesional, agrupada y trazable del sistema.
+
+---
+
+## 📄 Tabla de archivos
+
+| 🧩 Archivo / Módulo       | 📂 Ruta            | ⚙️ Estado         | 🔁 Repetido | 🧠 ¿Qué hace este archivo?                                                                 |
+|--------------------------|--------------------|------------------|-------------|--------------------------------------------------------------------------------------------|
+| `App.tsx`                | `src/`             | ✅ Reconstruido   | No          | Núcleo de navegación. Redirige por rol, activa rutas protegidas, agrupa módulos            |
+| `verificarRol.js`        | `backend/middleware`| ✅ Mejorado       | No          | Protege rutas según rol. Se conecta con `App.tsx` y todos los endpoints                    |
+| `MenuSimuladores.tsx`    | `src/simuladores`  | ✅ Validado       | No          | Navegación agrupada por tipo de simulador                                                  |
+| `PanelColaboradores.tsx` | `src/colaborador`  | ✅ Validado       | No          | Accesible solo si rol es `colaborador`, activado desde `App.tsx`                          |
+| `DashboardInstitucional.tsx`| `src/institucional`| ✅ Validado     | No          | Accesible solo si rol es `institucional`, activado desde `App.tsx`                        |
+
+---
+
+## 🧠 Observaciones institucionales
+
+- Este bloque define la experiencia profesional del usuario desde el primer render.
+- La navegación agrupada evita confusión y permite escalar el sistema sin perder claridad.
+- Cada ruta está protegida por rol, reforzando seguridad y trazabilidad.
+- `App.tsx` se convierte en el corazón de la locomotora: conecta todos los módulos y define el flujo.
+
+---
+
+## 🔗 Conexiones con otros bloques
+
+- `App.tsx` se conecta con `login.js` y `verificarRol.js` para redirigir por rol.
+- Activa `MenuSimuladores.tsx`, `PanelColaboradores.tsx`, `DashboardInstitucional.tsx` según el tipo de usuario.
+- Todas las rutas están protegidas por `verificarRol.js`, que valida el token y el rol antes de permitir acceso.
+
+---
+
+✅ Este bloque queda validado y documentado como parte del ensamblaje institucional de Finedu.
