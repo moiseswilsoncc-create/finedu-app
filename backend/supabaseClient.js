@@ -1,6 +1,17 @@
-// backend/supabaseClient.js
-import { createClient } from "@supabase/supabase-js";
+// Archivo: supabaseClient.js
+const { createClient } = require("@supabase/supabase-js");
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+// 🧩 Variables de entorno
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
-export default supabase;
+// 🔐 Validación básica
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error("❌ Faltan variables de entorno para Supabase.");
+  process.exit(1);
+}
+
+// 🚀 Cliente Supabase institucional
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+module.exports = supabase;
