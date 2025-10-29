@@ -68,5 +68,4 @@ const DashboardInstitucional: React.FC = () => {
   );
 };
 
-// Exportación doble para compatibilidad total
 export default DashboardInstitucional;
