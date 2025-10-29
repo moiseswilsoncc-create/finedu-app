@@ -1,15 +1,17 @@
 // Ruta: routes/ingreso.js
-const express = require("express");
-const router = express.Router();
-const supabase = require("../supabaseClient");
-const crypto = require("crypto");
+import express from "express";
+import supabase from "../supabaseClient.js";
+import crypto from "crypto";
 
+const router = express.Router();
+
+// ✅ Registrar ingreso del usuario
 router.post("/guardar-ingreso", async (req, res) => {
   const { usuario_id, ip, dispositivo } = req.body;
 
-  // Validación básica
+  // 🧩 Validación básica
   if (!usuario_id || !ip || !dispositivo) {
-    return res.status(400).json({ success: false, error: "Faltan campos obligatorios." });
+    return res.status(400).json({ success: false, error: "❌ Faltan campos obligatorios." });
   }
 
   try {
@@ -26,15 +28,16 @@ router.post("/guardar-ingreso", async (req, res) => {
       .insert([nuevoIngreso]);
 
     if (error) {
-      console.error("Error al insertar en Supabase:", error);
-      return res.status(500).json({ success: false, error: "Error al guardar el ingreso." });
+      console.error("❌ Error al insertar en Supabase:", error);
+      return res.status(500).json({ success: false, error: "❌ Error al guardar el ingreso." });
     }
 
+    console.log("✅ Ingreso registrado:", data);
     return res.status(200).json({ success: true, data });
   } catch (err) {
-    console.error("Error general:", err);
-    return res.status(500).json({ success: false, error: "Error interno del servidor." });
+    console.error("❌ Error general:", err);
+    return res.status(500).json({ success: false, error: "❌ Error interno del servidor." });
   }
 });
 
-module.exports = router;
+export default router;
