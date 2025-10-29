@@ -5,12 +5,13 @@ import crypto from "crypto";
 
 const router = express.Router();
 
+// ✅ Guardar feedback del usuario
 router.post("/guardar-feedback", async (req, res) => {
   const { usuario_id, tipo, mensaje } = req.body;
 
-  // Validación básica
+  // 🧩 Validación básica
   if (!usuario_id || !tipo || !mensaje) {
-    return res.status(400).json({ success: false, error: "Faltan campos obligatorios." });
+    return res.status(400).json({ success: false, error: "❌ Faltan campos obligatorios." });
   }
 
   try {
@@ -28,14 +29,15 @@ router.post("/guardar-feedback", async (req, res) => {
       .insert([nuevoFeedback]);
 
     if (error) {
-      console.error("Error al insertar en Supabase:", error);
-      return res.status(500).json({ success: false, error: "Error al guardar el feedback." });
+      console.error("❌ Error al insertar en Supabase:", error);
+      return res.status(500).json({ success: false, error: "❌ Error al guardar el feedback." });
     }
 
+    console.log("✅ Feedback registrado:", data);
     return res.status(200).json({ success: true, data });
   } catch (err) {
-    console.error("Error general:", err);
-    return res.status(500).json({ success: false, error: "Error interno del servidor." });
+    console.error("❌ Error general:", err);
+    return res.status(500).json({ success: false, error: "❌ Error interno del servidor." });
   }
 });
 
