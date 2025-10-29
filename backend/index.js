@@ -1,3 +1,4 @@
+// Archivo: index.js
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -28,6 +29,9 @@ import visualizacionRoutes from "./routes/visualizacion.js";
 import usuariosRoutes from "./routes/usuarios.js";
 import loginRoutes from "./routes/login.js";
 import guardarOfertaRoutes from "./routes/guardarOferta.js"; // ✅ Nueva ruta colaborador
+
+// 🧠 Conexión Supabase institucional (opcional si se usa en index directamente)
+// import supabase from "./supabaseClient.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
