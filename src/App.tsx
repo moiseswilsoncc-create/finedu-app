@@ -1,27 +1,37 @@
-// src/App.tsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
-// Importa todos los componentes principales
+// Módulos institucionales
 import DashboardInstitucional from "./institucional/DashboardInstitucional";
-// Puedes seguir agregando otros módulos aquí:
+
+// Módulos colaborador
+import FormularioOferta from "./componentes/FormularioOferta";
+
+// Módulos simuladores (pendientes de activación)
 // import SimuladorInversion from "./simuladores/SimuladorInversion";
 // import MenuSimuladores from "./simuladores/MenuSimuladores";
+
+// Módulos de autenticación (pendientes)
 // import Login from "./auth/Login";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        {/* Ruta raíz redirige al dashboard */}
+        {/* Ruta raíz redirige al dashboard institucional */}
         <Route path="/" element={<Navigate to="/dashboard-institucional" replace />} />
 
-        {/* Rutas principales */}
+        {/* Rutas institucionales */}
         <Route path="/dashboard-institucional" element={<DashboardInstitucional />} />
 
-        {/* Ejemplos de otras rutas que puedes activar */}
+        {/* Rutas colaborador */}
+        <Route path="/colaborador/oferta" element={<FormularioOferta />} />
+
+        {/* Rutas simuladores (activables) */}
         {/* <Route path="/simulador-inversion" element={<SimuladorInversion />} /> */}
         {/* <Route path="/menu-simuladores" element={<MenuSimuladores />} /> */}
+
+        {/* Rutas de autenticación (activables) */}
         {/* <Route path="/login" element={<Login />} /> */}
 
         {/* Ruta de fallback */}
