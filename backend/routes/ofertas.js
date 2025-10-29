@@ -1,8 +1,9 @@
 // Ruta: routes/ofertas.js
-const express = require("express");
+import express from "express";
+import supabase from "../supabaseClient.js";
+import crypto from "crypto";
+
 const router = express.Router();
-const supabase = require("../supabaseClient");
-const crypto = require("crypto");
 
 // ✅ Guardar nueva oferta institucional
 router.post("/guardar-oferta", async (req, res) => {
@@ -73,4 +74,4 @@ router.delete("/eliminar-ofertas-caducadas", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
