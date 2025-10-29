@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import DashboardInstitucional from "./institucional/DashboardInstitucional";
 
 // 🤝 Módulos colaborador
-import FormularioOferta from "./componentes/FormularioOferta";
+import FormularioOferta from "./components/FormularioOferta";
 
 // 📊 Módulos simuladores (pendientes de activación)
 // import SimuladorInversion from "./simuladores/SimuladorInversion";
