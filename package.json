@@ -2,6 +2,7 @@
   "name": "finedu-frontend",
   "version": "1.0.0",
   "private": true,
+  "description": "Frontend institucional de Finedu con navegación profesional, simuladores, trazabilidad y conexión a Supabase",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -25,5 +26,18 @@
     "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.8"
-  }
+  },
+  "keywords": [
+    "finedu",
+    "frontend",
+    "react",
+    "vite",
+    "supabase",
+    "simuladores",
+    "institucional",
+    "chart",
+    "pdf"
+  ],
+  "author": "Wilson",
+  "license": "MIT"
 }
