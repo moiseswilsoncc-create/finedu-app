@@ -1,8 +1,10 @@
 // Ruta: routes/solicitudColaborador.js
-const express = require("express");
-const router = express.Router();
-const supabase = require("../supabaseClient"); // Asegúrate de tener esto configurado
+import express from "express";
+import supabase from "../supabaseClient.js";
 
+const router = express.Router();
+
+// ✅ Registrar solicitud de colaborador institucional
 router.post("/solicitud-colaborador", async (req, res) => {
   const {
     nombre,
@@ -15,12 +17,12 @@ router.post("/solicitud-colaborador", async (req, res) => {
     contrasena,
   } = req.body;
 
-  // Validación básica
+  // 🧩 Validación básica
   if (
     !nombre || !apellido || !rol || !area ||
     !institucion || !pais || !ciudad || !contrasena
   ) {
-    return res.status(400).json({ success: false, error: "Faltan campos obligatorios." });
+    return res.status(400).json({ success: false, error: "❌ Faltan campos obligatorios." });
   }
 
   try {
@@ -44,15 +46,16 @@ router.post("/solicitud-colaborador", async (req, res) => {
       ]);
 
     if (error) {
-      console.error("Error al guardar solicitud:", error);
-      return res.status(500).json({ success: false, error: "Error al registrar la solicitud." });
+      console.error("❌ Error al guardar solicitud:", error);
+      return res.status(500).json({ success: false, error: "❌ Error al registrar la solicitud." });
     }
 
+    console.log("✅ Solicitud registrada:", data);
     return res.status(200).json({ success: true, data });
   } catch (err) {
-    console.error("Error general:", err);
-    return res.status(500).json({ success: false, error: "Error interno del servidor." });
+    console.error("❌ Error general:", err);
+    return res.status(500).json({ success: false, error: "❌ Error interno del servidor." });
   }
 });
 
-module.exports = router;
+export default router;
