@@ -1,15 +1,17 @@
 // Ruta: routes/simulaciones.js
-const express = require("express");
-const router = express.Router();
-const supabase = require("../supabaseClient");
-const crypto = require("crypto");
+import express from "express";
+import supabase from "../supabaseClient.js";
+import crypto from "crypto";
 
+const router = express.Router();
+
+// ✅ Guardar simulación financiera
 router.post("/guardar-simulacion", async (req, res) => {
   const { usuario_id, tipo, resultado } = req.body;
 
-  // Validación básica
+  // 🧩 Validación básica
   if (!usuario_id || !tipo || !resultado) {
-    return res.status(400).json({ success: false, error: "Faltan campos obligatorios." });
+    return res.status(400).json({ success: false, error: "❌ Faltan campos obligatorios." });
   }
 
   try {
@@ -26,15 +28,16 @@ router.post("/guardar-simulacion", async (req, res) => {
       .insert([nuevaSimulacion]);
 
     if (error) {
-      console.error("Error al insertar en Supabase:", error);
-      return res.status(500).json({ success: false, error: "Error al guardar la simulación." });
+      console.error("❌ Error al insertar en Supabase:", error);
+      return res.status(500).json({ success: false, error: "❌ Error al guardar la simulación." });
     }
 
+    console.log("✅ Simulación registrada:", data);
     return res.status(200).json({ success: true, data });
   } catch (err) {
-    console.error("Error general:", err);
-    return res.status(500).json({ success: false, error: "Error interno del servidor." });
+    console.error("❌ Error general:", err);
+    return res.status(500).json({ success: false, error: "❌ Error interno del servidor." });
   }
 });
 
-module.exports = router;
+export default router;
