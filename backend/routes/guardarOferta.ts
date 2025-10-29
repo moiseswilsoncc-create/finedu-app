@@ -1,15 +1,16 @@
 import express from "express";
 import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
 
-// 🧩 Conexión institucional a Supabase
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// ✅ Ruta POST para guardar oferta colaborador
 router.post("/guardar-oferta", async (req, res) => {
   const {
     tipo,
@@ -23,7 +24,6 @@ router.post("/guardar-oferta", async (req, res) => {
 
   console.log("📨 Oferta recibida:", req.body);
 
-  // 🔍 Validación básica
   if (
     !tipo ||
     !titulo ||
