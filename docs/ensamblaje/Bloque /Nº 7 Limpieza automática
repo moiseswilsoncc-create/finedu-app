@@ -1,0 +1,34 @@
+# 🧩 Bloque 7: Limpieza automática
+
+Este bloque agrupa los scripts que mantienen el sistema Finedu limpio, seguro y libre de datos caducados. Refuerza la trazabilidad y evita acumulación innecesaria en Supabase, manteniendo la arquitectura institucional ordenada y funcional.
+
+---
+
+## 📄 Tabla de archivos
+
+| 🧩 Archivo / Módulo               | 📂 Ruta                  | ⚙️ Estado         | 🔁 Repetido | 🧠 ¿Qué hace este archivo?                                                                 |
+|----------------------------------|--------------------------|------------------|-------------|--------------------------------------------------------------------------------------------|
+| `limpiarTokensVencidos.js`       | `backend/scripts`        | ✅ Validado       | No          | Elimina automáticamente los tokens de activación que han expirado                         |
+| `eliminar-ofertas-caducadas.ts`  | `backend/scripts`        | ✅ Validado       | No          | Elimina ofertas colaborativas cuya fecha de expiración ya pasó                            |
+| `cronLimpieza.ts` (opcional)     | `backend/scripts`        | ⏳ Pendiente      | No          | Permitirá programar limpieza automática vía Vercel cron o backend                         |
+
+---
+
+## 🧠 Observaciones institucionales
+
+- Este bloque garantiza que el sistema no se contamine con tokens o ofertas vencidas.
+- Refuerza la seguridad y la eficiencia operativa de Finedu.
+- Permite mantener Supabase optimizado y trazable.
+- Será clave para la segunda fase de automatización y monitoreo institucional.
+
+---
+
+## 🔗 Conexiones con otros bloques
+
+- `limpiarTokensVencidos.js` se conecta con `ActivarColaborador.tsx` y `enviarCorreoActivacion.js`.
+- `eliminar-ofertas-caducadas.ts` se conecta con `guardarOferta.tsx` y `ofertas.js`.
+- Ambos scripts pueden ejecutarse manualmente o programarse con `cronLimpieza.ts` en la siguiente fase.
+
+---
+
+✅ Este bloque queda validado y documentado como parte del ensamblaje institucional de Finedu.
