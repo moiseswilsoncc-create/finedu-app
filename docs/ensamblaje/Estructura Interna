@@ -1,0 +1,13 @@
+ensamblaje/
+├── estadoConstruccionFinedu.md          # Documento maestro con todos los bloques, avances y diagrama
+├── finedu_diagrama_flujo.png            # Visualización de arquitectura viva del sistema
+├── bloques/                             # Subcarpeta con archivos por bloque funcional
+│   ├── bloque_auth_seguridad.md
+│   ├── bloque_usuario.md
+│   ├── bloque_colaborador.md
+│   ├── bloque_simuladores.md
+│   ├── bloque_institucional.md
+│   ├── bloque_navegacion.md
+│   ├── bloque_limpieza_automatica.md
+│   ├── bloque_metricas.md
+│   ├── bloque_pendientes.md
