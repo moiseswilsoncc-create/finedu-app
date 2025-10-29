@@ -1,0 +1,42 @@
+# 👤 Bloque 2: Usuario
+
+Este bloque define la experiencia del usuario final dentro de Finedu. Institucionaliza la navegación agrupada, el acceso a simuladores, el resumen financiero y la trazabilidad de cada acción. Es el núcleo operativo para quienes usan Finedu como herramienta de autonomía financiera.
+
+---
+
+## 📁 Componentes validados
+
+- `Resumen.tsx`: panel financiero con conexión directa a Supabase
+- `SimuladorAhorro.tsx`, `SimuladorInversion.tsx`: lógica comparativa y trazabilidad de decisiones
+- `PanelDeuda.tsx`: integración de ahorro simulado, inversión y deudas activas
+- `MenuModulos.tsx`: navegación agrupada por rol
+- `Navbar.tsx`: visibilidad dinámica y profesional
+- `types.ts`: estructura de datos clara y segura
+
+---
+
+## 🧠 Propósito institucional
+
+- Empoderar al usuario con visibilidad total de sus compromisos financieros
+- Permitir simulación comparativa entre ahorro e inversión
+- Integrar navegación profesional y agrupada
+- Conectar cada acción con trazabilidad real en Supabase
+
+---
+
+## ✅ Estado
+
+**Validado**  
+Este bloque está completamente funcional, trazado y documentado. Representa el corazón operativo de Finedu para usuarios finales.
+
+---
+
+## 🧩 Hito emocional
+
+La validación de este bloque marcó el momento en que Finedu dejó de ser una idea y se convirtió en una herramienta real. El usuario ya no navega por pantallas vacías: ahora toma decisiones informadas, con trazabilidad y propósito.
+
+---
+
+## 🔗 Referencia cruzada
+
+Incluido en el documento maestro [`estadoConstruccionFinedu.md`](../estadoConstruccionFinedu.md)
