@@ -1,69 +1,41 @@
-import React, { useState } from "react";
-import axios from "axios";
+// backend/routes/guardarOferta.ts
+import express from "express";
+import { createClient } from "@supabase/supabase-js";
 
-const DatosOfertas: React.FC = () => {
-  const [formulario, setFormulario] = useState({
-    tipo: "",
-    titulo: "",
-    descripcion: "",
-    ciudad: "",
-    pais: "",
-    fecha_expiracion: "",
-    colaborador: ""
-  });
+const router = express.Router();
 
-  const [mensaje, setMensaje] = useState("");
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormulario({ ...formulario, [e.target.name]: e.target.value });
-  };
+router.post("/guardar-oferta", async (req, res) => {
+  const { tipo, titulo, descripcion, pais, fecha_expiracion, correo } = req.body;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMensaje("");
+  console.log("📨 Oferta recibida:", req.body);
 
-    try {
-      const response = await axios.post("/guardar-oferta", formulario);
-      setMensaje(response.data.mensaje || "✅ Oferta registrada correctamente.");
-      setFormulario({
-        tipo: "",
-        titulo: "",
-        descripcion: "",
-        ciudad: "",
-        pais: "",
-        fecha_expiracion: "",
-        colaborador: ""
-      });
-    } catch (error: any) {
-      setMensaje("❌ Error al registrar la oferta.");
-      console.error("Error:", error.message);
+  // Validación básica
+  if (!tipo || !titulo || !descripcion || !pais || !fecha_expiracion || !correo) {
+    console.warn("⚠️ Datos incompletos");
+    return res.status(400).json({ error: "Todos los campos son obligatorios" });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("ofertas_colaborador")
+      .insert([{ tipo, titulo, descripcion, pais, fecha_expiracion, correo }]);
+
+    if (error) {
+      console.error("❌ Error al guardar en Supabase:", error);
+      return res.status(500).json({ error: "Error al guardar la oferta" });
     }
-  };
 
-  return (
-    <div>
-      <h2>📢 Ingreso de Oferta Institucional</h2>
-      <form onSubmit={handleSubmit}>
-        <select name="tipo" value={formulario.tipo} onChange={handleChange} required>
-          <option value="">Selecciona tipo</option>
-          <option value="Crédito">Crédito</option>
-          <option value="Curso">Curso</option>
-          <option value="Beneficio">Beneficio</option>
-        </select>
+    console.log("✅ Oferta guardada:", data);
+    res.status(200).json({ mensaje: "Oferta registrada correctamente", data });
+  } catch (err) {
+    console.error("❌ Error inesperado:", err);
+    res.status(500).json({ error: "Error inesperado" });
+  }
+});
 
-        <input type="text" name="titulo" placeholder="Título" value={formulario.titulo} onChange={handleChange} required />
-        <textarea name="descripcion" placeholder="Descripción" value={formulario.descripcion} onChange={handleChange} required />
-        <input type="text" name="ciudad" placeholder="Ciudad" value={formulario.ciudad} onChange={handleChange} required />
-        <input type="text" name="pais" placeholder="País" value={formulario.pais} onChange={handleChange} required />
-        <input type="date" name="fecha_expiracion" value={formulario.fecha_expiracion} onChange={handleChange} required />
-        <input type="email" name="colaborador" placeholder="Correo del colaborador" value={formulario.colaborador} onChange={handleChange} required />
-
-        <button type="submit">Guardar Oferta</button>
-      </form>
-
-      {mensaje && <p>{mensaje}</p>}
-    </div>
-  );
-};
-
-export default DatosOfertas;
+export default router;
