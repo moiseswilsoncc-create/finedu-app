@@ -1,0 +1,100 @@
+/* ================================
+   Finedu · Estilos Globales
+   ================================ */
+
+/* 🎨 Paleta institucional */
+:root {
+  --color-primario: #0057A3;     /* Azul institucional */
+  --color-secundario: #F4B400;   /* Amarillo motivacional */
+  --color-fondo: #F9FAFB;        /* Fondo claro */
+  --color-texto: #1F2937;        /* Texto oscuro */
+  --color-exito: #2E7D32;        /* Verde para metas cumplidas */
+  --color-error: #D32F2F;        /* Rojo para alertas */
+}
+
+/* 🔄 Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 🧱 Tipografía base */
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  line-height: 1.6;
+}
+
+/* 🧭 Contenedor principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 🖼️ Logo */
+.logo {
+  height: 60px;
+  margin-bottom: 20px;
+}
+
+/* 🔘 Botones */
+.btn-primario {
+  background-color: var(--color-primario);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primario:hover {
+  background-color: #004080;
+}
+
+.btn-secundario {
+  background-color: var(--color-secundario);
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-secundario:hover {
+  background-color: #e0a800;
+}
+
+/* ✅ Mensajes de éxito y error */
+.alert-exito {
+  background-color: var(--color-exito);
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.alert-error {
+  background-color: var(--color-error);
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+/* 📱 Responsive básico */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .btn-primario,
+  .btn-secundario {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
