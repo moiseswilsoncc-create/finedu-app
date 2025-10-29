@@ -1,17 +1,20 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
+// backend/index.ts
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import guardarOferta from "./routes/guardarOferta";
 
-// ✅ Verifica que el div#root exista
-const rootElement = document.getElementById("root");
+dotenv.config();
 
-if (rootElement) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
-} else {
-  console.error("❌ No se encontró el elemento #root en index.html");
-}
+const app = express();
+const PORT = process.env.PORT || 4000;
+
+app.use(cors());
+app.use(express.json());
+
+// ✅ Ruta para guardar ofertas de colaboradores
+app.use("/api", guardarOferta);
+
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor Express corriendo en http://localhost:${PORT}`);
+});
