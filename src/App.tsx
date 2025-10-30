@@ -7,9 +7,9 @@ import EditorEstadoArchivos from "./institucional/EditorEstadoArchivos";
 import EditorTrazabilidad from "./institucional/EditorTrazabilidad";
 import MetricaSupabase from "./institucional/MetricaSupabase";
 import TestInstitucional from "./institucional/TestInstitucional";
-import PantallaInicial from "./institucional/PantallaInicial";
+import Bienvenida from "./institucional/Bienvenida";
 
-console.log("🧼 App.tsx actualizado con ruta raíz y 5 módulos institucionales");
+console.log("🧼 App.tsx actualizado con Bienvenida como pantalla raíz y 5 módulos institucionales");
 
 const App: React.FC = () => {
   return (
@@ -19,8 +19,8 @@ const App: React.FC = () => {
           path="/"
           element={
             <>
-              {console.log("✅ Renderizando PantallaInicial")}
-              <PantallaInicial />
+              {console.log("✅ Renderizando Bienvenida")}
+              <Bienvenida />
             </>
           }
         />
