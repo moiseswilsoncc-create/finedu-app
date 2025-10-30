@@ -7,7 +7,8 @@ import EditorEstadoArchivos from "./institucional/EditorEstadoArchivos";
 import EditorTrazabilidad from "./institucional/EditorTrazabilidad";
 import MetricaSupabase from "./institucional/MetricaSupabase";
 import TestInstitucional from "./institucional/TestInstitucional";
-import Bienvenida from "./institucional/Bienvenida";
+import Bienvenida from "./components/Bienvenida";
+
 
 console.log("🧼 App.tsx actualizado con Bienvenida como pantalla raíz y 5 módulos institucionales");
 
