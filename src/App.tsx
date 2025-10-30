@@ -8,10 +8,11 @@ import EditorTrazabilidad from "./institucional/EditorTrazabilidad";
 import MetricaSupabase from "./institucional/MetricaSupabase";
 import TestInstitucional from "./institucional/TestInstitucional";
 
-// 🧠 Pantalla raíz
+// 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
+import RegistroUsuario from "./components/RegistroUsuario"; // ✅ nuevo componente
 
-console.log("🧼 App.tsx actualizado con Bienvenida como pantalla raíz y 5 módulos institucionales");
+console.log("🧼 App.tsx actualizado con Bienvenida como pantalla raíz y 6 módulos institucionales");
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,15 @@ const App: React.FC = () => {
           <>
             {console.log("✅ Renderizando Bienvenida")}
             <Bienvenida />
+          </>
+        }
+      />
+      <Route
+        path="/registro-usuario"
+        element={
+          <>
+            {console.log("✅ Renderizando RegistroUsuario")}
+            <RegistroUsuario />
           </>
         }
       />
