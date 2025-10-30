@@ -1,7 +1,7 @@
 import React from "react";
 
 const Bienvenida: React.FC = () => {
-  console.log("✅ Bienvenida con textos activada");
+  console.log("✅ Bienvenida con textos y botones visibles");
 
   return (
     <div style={{
@@ -20,6 +20,61 @@ const Bienvenida: React.FC = () => {
       <p style={{ fontSize: "1.05rem", marginBottom: "2rem", color: "#555" }}>
         Finedu promueve el ahorro grupal, la autonomía financiera y el acceso gratuito a inteligencia económica. Cada usuario puede avanzar a su ritmo, acompañado por colaboradores e instituciones que fortalecen su progreso.
       </p>
+
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "1rem"
+      }}>
+        <button
+          style={{
+            padding: "0.8rem 1.5rem",
+            backgroundColor: "#e74c3c",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            cursor: "pointer",
+            width: "100%",
+            maxWidth: "300px"
+          }}
+        >
+          🚀 ¡No pierdas esta oportunidad! Registrarte Ahora
+        </button>
+
+        <button
+          style={{
+            padding: "0.8rem 1.5rem",
+            backgroundColor: "#3498db",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            cursor: "pointer",
+            width: "100%",
+            maxWidth: "300px"
+          }}
+        >
+          👤 Ingreso usuarios registrados
+        </button>
+
+        <button
+          style={{
+            padding: "0.8rem 1.5rem",
+            backgroundColor: "#2ecc71",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            cursor: "pointer",
+            width: "100%",
+            maxWidth: "300px"
+          }}
+        >
+          👥 Ingreso colaboradores
+        </button>
+      </div>
     </div>
   );
 };
