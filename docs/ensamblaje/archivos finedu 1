@@ -1,1 +1,69 @@
+# 📂 backend
+
+| Archivo / Ruta             | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|---------------------------|--------------------------------------|---------------------|------------------|----------------|
+| index.js                  | Entrada del backend                  | No                  | No               | Sistema        |
+| server.js                 | Servidor Express                     | No                  | No               | Sistema        |
+| package.json              | Dependencias backend                 | No                  | No               | Sistema        |
+| supabaseClient.js         | Conexión Supabase backend            | No                  | No               | Sistema        |
+| routes/                   | Rutas del backend                    | No                  | No               | Sistema        |
+| middleware/               | Middleware Express                   | No                  | No               | Sistema        |
+| data/usuarios.json        | Datos de usuarios                    | No                  | No               | Sistema        |
+| docs/                     | Documentación técnica                | No                  | No               | Sistema        |
+| finedu-backend/utils/     | Utilidades backend                   | No                  | No               | Sistema        |
+
+# 📂 raíz del proyecto
+
+| Archivo / Ruta                     | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|-----------------------------------|--------------------------------------|---------------------|------------------|----------------|
+| App.tsx                           | Enrutador principal del sistema      | Sí                  | No               | Sistema        |
+| index.tsx                         | Entrada raíz del frontend            | Sí                  | No               | Sistema        |
+| main.tsx                          | Montaje de la aplicación             | Sí                  | No               | Sistema        |
+| axiosConfig.ts                    | Configuración de Axios               | No                  | No               | Sistema        |
+| configFinanciera.ts               | Configuración de simuladores         | No                  | No               | Sistema        |
+| index.css                         | Estilos globales                     | No                  | No               | Sistema        |
+| supabaseClient.ts                 | Conexión a Supabase                  | No                  | No               | Sistema        |
+| types.ts                          | Tipado institucional                 | No                  | No               | Sistema        |
+| vercel-trigger.tsx                | Activador de despliegue              | No                  | No               | Sistema        |
+| vercel.json                       | Configuración de Vercel              | No                  | No               | Sistema        |
+| .env / .env.local.save            | Variables de entorno                 | No                  | No               | Sistema        |
+| .gitignore / README.md / index.html| Configuración y documentación       | No                  | No               | Sistema        |
+| package-lock.json / package.json  | Dependencias del proyecto            | No                  | No               | Sistema        |
+| tsconfig.json / tsconfig.node.json| Configuración de TypeScript          | No                  | No               | Sistema        |
+| trigger-redeploy.txt / vite.config.js| Configuración de despliegue        | No                  | No               | Sistema        |
+
+# 📂 context
+
+| Archivo / Ruta             | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|---------------------------|--------------------------------------|---------------------|------------------|----------------|
+| FineduContext.tsx         | Contexto global de sesión            | No                  | No               | Sistema        |
+| GrupoContext.tsx          | Contexto global de grupo             | No                  | No               | Sistema        |
+
+# 📂 utils
+
+| Archivo / Ruta             | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|---------------------------|--------------------------------------|---------------------|------------------|----------------|
+| calcularEdad.ts           | Cálculo de edad                      | No                  | No               | Sistema        |
+| enviarInforme.ts          | Envío de informe                     | No                  | No               | Sistema        |
+| formatearMoneda.ts        | Formato de moneda                    | No                  | No               | Sistema        |
+| getDivisa.ts              | Obtener divisa                       | No                  | No               | Sistema        |
+| getTasa.ts                | Obtener tasa                         | No                  | No               | Sistema        |
+
+# 📂 scripts
+
+| Archivo / Ruta             | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|---------------------------|--------------------------------------|---------------------|------------------|----------------|
+| activarEnvio.ts           | Activador de envío institucional     | No                  | No               | Sistema        |
+
+# 📂 styles
+
+| Archivo / Ruta             | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|---------------------------|--------------------------------------|---------------------|------------------|----------------|
+| MenuModulos.css           | Estilos de navegación por rol        | No                  | No               | Sistema        |
+
+# 📂 cron
+
+| Archivo / Ruta                     | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|-----------------------------------|--------------------------------------|---------------------|------------------|----------------|
+| eliminarOfertasCaducadas.ts       | Expiración automática de ofertas     | No                  | No               | Sistema        |
 
