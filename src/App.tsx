@@ -11,7 +11,7 @@ import TestInstitucional from "./institucional/TestInstitucional";
 // 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
 import RegistroUsuario from "./components/RegistroUsuario";
-import PanelUsuario from "./components/PanelUsuario"; // ✅ Nuevo componente activado
+import PanelUsuario from "./components/PanelUsuario"; // ✅ Activado
 
 console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario y PanelUsuario");
 
