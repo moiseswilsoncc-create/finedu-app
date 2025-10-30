@@ -8,7 +8,10 @@ import EditorTrazabilidad from "./institucional/EditorTrazabilidad";
 import MetricaSupabase from "./institucional/MetricaSupabase";
 import TestInstitucional from "./institucional/TestInstitucional";
 
-console.log("🧼 App.tsx actualizado con render directo en ruta raíz y 5 módulos institucionales");
+// 🧠 Pantalla raíz
+import Bienvenida from "./components/Bienvenida";
+
+console.log("🧼 App.tsx actualizado con Bienvenida como pantalla raíz y 5 módulos institucionales");
 
 const App: React.FC = () => {
   return (
@@ -16,9 +19,10 @@ const App: React.FC = () => {
       <Route
         path="/"
         element={
-          <div style={{ padding: "2rem", fontSize: "1.5rem" }}>
-            ✅ Render directo funcionando
-          </div>
+          <>
+            {console.log("✅ Renderizando Bienvenida")}
+            <Bienvenida />
+          </>
         }
       />
       <Route
