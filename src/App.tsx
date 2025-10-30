@@ -63,6 +63,9 @@ const App: React.FC = () => {
           path="/validacion-pre-vercel"
           element={
             <>
+              {console.log("⚠️ Renderizando ValidacionPreVercel (placeholder)")}
+              <div>Validación pendiente</div>
+            </>
           }
         />
       </Routes>
