@@ -1,0 +1,24 @@
+## 🧩 Milestone validado: Pantalla de Bienvenida
+
+**Fecha:** 30 de octubre de 2025  
+**Responsable:** Wilson (arquitecto y fundador)  
+**Estado:** ✅ Validado en Vercel, GitHub y render local
+
+### 📍 Componentes involucrados
+- `src/components/Bienvenida.tsx`
+- `src/pages/RegistroUsuario.tsx`
+- `src/pages/LoginUsuario.tsx`
+- `src/pages/IngresoColaborador.tsx`
+- `src/App.tsx` (rutas activadas)
+
+### 📍 Validaciones completadas
+- ✅ Render del mensaje de bienvenida
+- ✅ Visual de textos explicativos
+- ✅ Visual de botones con estilos accesibles
+- ✅ Navegación funcional con `useNavigate()` hacia:
+  - `/registro-usuario`
+  - `/login-usuario`
+  - `/ingreso-colaborador`
+- ✅ Componentes destino activos con trazabilidad:
+  ```tsx
+  export default () => <div>📌 [NombreComponente] funcionando</div>;
