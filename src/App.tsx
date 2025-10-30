@@ -1,14 +1,77 @@
-// src/institucional/PantallaInicial.tsx
-
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-const PantallaInicial: React.FC = () => {
+// 🧠 Módulos institucionales disponibles
+import DashboardInstitucional from "./institucional/DashboardInstitucional";
+import EditorEstadoArchivos from "./institucional/EditorEstadoArchivos";
+import EditorTrazabilidad from "./institucional/EditorTrazabilidad";
+import MetricaSupabase from "./institucional/MetricaSupabase";
+import TestInstitucional from "./institucional/TestInstitucional";
+import PantallaInicial from "./institucional/PantallaInicial";
+
+console.log("🧼 App.tsx actualizado con ruta raíz y 5 módulos institucionales");
+
+const App: React.FC = () => {
   return (
-    <div style={{ padding: "2rem", textAlign: "center" }}>
-      <h1>Bienvenido a FINEDU</h1>
-      <p>Selecciona un módulo desde la navegación institucional</p>
-    </div>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              {console.log("✅ Renderizando PantallaInicial")}
+              <PantallaInicial />
+            </>
+          }
+        />
+        <Route
+          path="/dashboard-institucional"
+          element={
+            <>
+              {console.log("✅ Renderizando DashboardInstitucional")}
+              <DashboardInstitucional />
+            </>
+          }
+        />
+        <Route
+          path="/editor-estado"
+          element={
+            <>
+              {console.log("✅ Renderizando EditorEstadoArchivos")}
+              <EditorEstadoArchivos />
+            </>
+          }
+        />
+        <Route
+          path="/editor-trazabilidad"
+          element={
+            <>
+              {console.log("✅ Renderizando EditorTrazabilidad")}
+              <EditorTrazabilidad />
+            </>
+          }
+        />
+        <Route
+          path="/metrica-supabase"
+          element={
+            <>
+              {console.log("✅ Renderizando MetricaSupabase")}
+              <MetricaSupabase />
+            </>
+          }
+        />
+        <Route
+          path="/test-institucional"
+          element={
+            <>
+              {console.log("✅ Renderizando TestInstitucional")}
+              <TestInstitucional />
+            </>
+          }
+        />
+      </Routes>
+    </Router>
   );
 };
 
-export default PantallaInicial;
+export default App;
