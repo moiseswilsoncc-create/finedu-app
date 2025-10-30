@@ -1,0 +1,37 @@
+# 🧩 Bloque 1: Autenticación y Seguridad
+
+Este bloque agrupa todos los archivos relacionados con el acceso seguro a Finedu, la activación de colaboradores, la protección de rutas por rol y la limpieza automática de tokens. Es la primera capa de defensa y trazabilidad del sistema.
+
+---
+
+## 📄 Tabla de archivos
+
+| 🧩 Archivo / Módulo         | 📂 Ruta                        | ⚙️ Estado         | 🔁 Repetido | 🧠 ¿Qué hace este archivo?                                                                 |
+|----------------------------|--------------------------------|------------------|-------------|--------------------------------------------------------------------------------------------|
+| `login.js`                 | `backend/routes`               | ✅ Validado       | No          | Autentica usuarios por correo, genera token JWT, asigna rol, y registra acceso             |
+| `verificarRol.js`          | `backend/middleware`           | ✅ Mejorado       | No          | Middleware que protege rutas según rol (`usuario`, `colaborador`, `institucional`)         |
+| `auth.js`                  | `backend/routes`               | ❌ Eliminado      | ✅ Sí        | Repetido y obsoleto, reemplazado por `login.js` y `verificarRol.js`                        |
+| `enviarCorreoActivacion.js`| `backend/routes`               | ✅ Validado       | No          | Envía correo con token de activación a colaboradores, registra IP y agente                 |
+| `ActivarColaborador.tsx`   | `src/auth`                     | ✅ Validado       | No          | Frontend para activar cuenta colaborador con token, conecta con Supabase                  |
+| `limpiarTokensVencidos.js` | `backend/scripts`              | ✅ Validado       | No          | Script automático que elimina tokens expirados de activación                               |
+
+---
+
+## 🧠 Observaciones institucionales
+
+- Este bloque garantiza que solo usuarios autenticados y activados puedan acceder a los módulos de Finedu.
+- La trazabilidad por token, IP y agente permite auditar cada acceso.
+- La limpieza automática de tokens vencidos refuerza la seguridad y evita acumulación innecesaria en Supabase.
+- La activación por correo institucionaliza el onboarding de colaboradores con control y transparencia.
+
+---
+
+## 🔗 Conexiones con otros bloques
+
+- `login.js` y `verificarRol.js` se conectan directamente con `App.tsx` para redirigir por rol.
+- `ActivarColaborador.tsx` se conecta con `enviarCorreoActivacion.js` y Supabase.
+- `limpiarTokensVencidos.js` se ejecuta como script programado desde backend o Vercel cron.
+
+---
+
+✅ Este bloque queda validado y documentado como parte del ensamblaje institucional de Finedu.

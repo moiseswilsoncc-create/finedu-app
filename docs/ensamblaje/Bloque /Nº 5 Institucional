@@ -1,0 +1,36 @@
+# 🧩 Bloque 5: Institucional
+
+Este bloque representa el módulo de control, evaluación y trazabilidad del sistema Finedu. Está diseñado para uso exclusivo de perfiles institucionales (bancos, ONG, entidades públicas) que necesitan visualizar el impacto del sistema, las métricas de participación y la actividad colaborativa.
+
+---
+
+## 📄 Tabla de archivos
+
+| 🧩 Archivo / Módulo             | 📂 Ruta                        | ⚙️ Estado         | 🔁 Repetido | 🧠 ¿Qué hace este archivo?                                                                 |
+|--------------------------------|--------------------------------|------------------|-------------|--------------------------------------------------------------------------------------------|
+| `DashboardInstitucional.tsx`   | `src/institucional`            | ✅ Validado       | No          | Muestra métricas de uso, simulaciones activas, ofertas colaborativas y trazabilidad       |
+| `actividad.js`                 | `backend/routes`               | ✅ Mejorado       | No          | Registra navegación, simulación, configuración y feedback por usuario                     |
+| `feedback.js`                  | `backend/routes`               | ✅ Validado       | No          | Recibe mensajes institucionales desde usuarios, clasificados por tipo                     |
+| `finanzasUsuario.js`           | `backend/routes`               | ✅ Validado       | No          | Calcula impacto mensual por usuario, útil para métricas agregadas                         |
+| `configuracion.js`             | `backend/routes`               | ✅ Validado       | No          | Permite ajustar parámetros institucionales si se accede con rol adecuado                  |
+
+---
+
+## 🧠 Observaciones institucionales
+
+- Este bloque permite a entidades visualizar el impacto real del sistema en sus usuarios.
+- Refuerza la trazabilidad colaborativa: cada simulación, oferta y feedback queda registrada.
+- Es base para informes institucionales, auditorías y decisiones estratégicas.
+- Se conecta con todos los bloques: usuario, colaborador, simuladores y navegación.
+
+---
+
+## 🔗 Conexiones con otros bloques
+
+- `DashboardInstitucional.tsx` se alimenta de `actividad.js`, `feedback.js`, `finanzasUsuario.js` y `ofertas.js`.
+- Se accede desde `App.tsx` solo si el rol es `institucional`, protegido por `verificarRol.js`.
+- Este bloque será clave para activar simulación institucional y exportación de informes en la siguiente fase.
+
+---
+
+✅ Este bloque queda validado y documentado como parte del ensamblaje institucional de Finedu.

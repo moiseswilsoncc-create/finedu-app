@@ -21,8 +21,7 @@ function SimuladorCredito({ pais, grupoActivo = false }: Props) {
     if (!usuarioId) return;
 
     const obtenerDatosFinancieros = async () => {
-      // Aporte grupal activo
-      const { data: ahorro, error: errorAhorro } = await supabase
+      const { data: ahorro } = await supabase
         .from("aportes_grupales")
         .select("monto_mensual")
         .eq("usuario_id", usuarioId)
@@ -31,8 +30,7 @@ function SimuladorCredito({ pais, grupoActivo = false }: Props) {
 
       if (ahorro) setCuotaAhorro(ahorro.monto_mensual);
 
-      // Créditos vigentes
-      const { data: creditos, error: errorCreditos } = await supabase
+      const { data: creditos } = await supabase
         .from("creditos_tomados")
         .select("cuota_mensual")
         .eq("usuario_id", usuarioId)
@@ -43,9 +41,8 @@ function SimuladorCredito({ pais, grupoActivo = false }: Props) {
         setCuotasVigentes(total);
       }
 
-      // Integrantes del grupo (si aplica)
       if (grupoActivo) {
-        const { data: grupo, error: errorGrupo } = await supabase
+        const { data: grupo } = await supabase
           .from("grupos_financieros")
           .select("integrantes")
           .eq("usuario_id", usuarioId)
@@ -67,47 +64,105 @@ function SimuladorCredito({ pais, grupoActivo = false }: Props) {
 
   const cuotaTotalMensual = cuotaSimulada + cuotaAhorro + cuotasVigentes;
 
+  const registrarSimulacionCredito = async () => {
+    const usuarioId = localStorage.getItem("usuarioId");
+    if (!usuarioId) return;
+
+    const { error } = await supabase.from("simulaciones").insert([
+      {
+        usuario: usuarioId,
+        tipo: "credito",
+        pais,
+        monto_solicitado: monto,
+        plazo_meses: plazoMeses,
+        cuota_mensual: cuotaSimulada,
+        cuota_total_mensual: cuotaTotalMensual,
+        fecha: new Date().toISOString()
+      }
+    ]);
+
+    if (error) {
+      console.error("❌ Error al registrar simulación de crédito:", error.message);
+    } else {
+      console.log("✅ Simulación de crédito registrada en Supabase");
+    }
+
+    await supabase.from("registro_actividad").insert([
+      {
+        usuario: usuarioId,
+        modulo: "SimuladorCredito",
+        accion: "Simulación ejecutada",
+        fecha: new Date().toISOString()
+      }
+    ]);
+  };
+
   return (
-    <div>
-      <h3>Simulador de crédito de consumo ({pais})</h3>
+    <div style={{
+      padding: "2rem",
+      maxWidth: "700px",
+      margin: "2rem auto",
+      backgroundColor: "#fefefe",
+      borderRadius: "12px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
+    }}>
+      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
+        🧮 Simulador de crédito de consumo ({pais})
+      </h3>
 
-      <label>
-        Monto solicitado:
-        <input
-          type="number"
-          value={monto}
-          onChange={(e) => setMonto(Number(e.target.value))}
-        />
-      </label>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
+        <label>
+          Monto solicitado:
+          <input
+            type="number"
+            value={monto}
+            onChange={(e) => setMonto(Number(e.target.value))}
+            style={{ marginLeft: "0.5rem", padding: "0.4rem", borderRadius: "6px", border: "1px solid #ccc" }}
+          />
+        </label>
 
-      <label>
-        Plazo en meses:
-        <input
-          type="number"
-          value={plazoMeses}
-          onChange={(e) => setPlazoMeses(Number(e.target.value))}
-        />
-      </label>
+        <label>
+          Plazo en meses:
+          <input
+            type="number"
+            value={plazoMeses}
+            onChange={(e) => setPlazoMeses(Number(e.target.value))}
+            style={{ marginLeft: "0.5rem", padding: "0.4rem", borderRadius: "6px", border: "1px solid #ccc" }}
+          />
+        </label>
+      </div>
 
-      <ul>
+      <ul style={{ lineHeight: "1.8", fontSize: "1.05rem" }}>
         <li>Tasa base anual: {tasaBase}%</li>
         <li>Cuota mensual estimada: {formatearMoneda(cuotaSimulada, pais)}</li>
         <li>Total pagado: {formatearMoneda(totalPagado, pais)}</li>
         <li>Sobreprecio por intereses: {formatearMoneda(sobrecosto, pais)}</li>
         {grupoActivo && integrantesGrupo !== null && (
           <li>
-            Impacto grupal estimado (x{integrantesGrupo}):{" "}
-            {formatearMoneda(impactoGrupal, pais)}
+            Impacto grupal estimado (x{integrantesGrupo}): {formatearMoneda(impactoGrupal, pais)}
           </li>
         )}
         <li>Compromiso de ahorro mensual: {formatearMoneda(cuotaAhorro, pais)}</li>
         <li>Cuotas de créditos vigentes: {formatearMoneda(cuotasVigentes, pais)}</li>
         <li>
-          <strong>
-            Cuota total mensual estimada: {formatearMoneda(cuotaTotalMensual, pais)}
-          </strong>
+          <strong>Cuota total mensual estimada: {formatearMoneda(cuotaTotalMensual, pais)}</strong>
         </li>
       </ul>
+
+      <button
+        onClick={registrarSimulacionCredito}
+        style={{
+          marginTop: "1.5rem",
+          padding: "0.6rem 1.2rem",
+          backgroundColor: "#e67e22",
+          color: "#fff",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer"
+        }}
+      >
+        📥 Guardar simulación
+      </button>
     </div>
   );
 }

@@ -1,0 +1,70 @@
+# 🧩 Estado de Construcción Finedu
+
+Este documento consolida el ensamblaje técnico y emocional del sistema Finedu, incluyendo todos los bloques funcionales, el diagrama de flujo institucional, los avances validados y los pendientes trazables. Es el punto de referencia para auditoría, escalabilidad y presentación institucional.
+
+---
+
+## 📁 Estructura de bloques funcionales
+
+| Bloque | Archivo | Estado |
+|--------|---------|--------|
+| 🔐 Autenticación y seguridad | [`bloque_auth_seguridad.md`](./Bloque%20/bloque_auth_seguridad.md) | ✅ Validado |
+| 👤 Usuario | [`bloque_usuario.md`](./Bloque%20/bloque_usuario.md) | ✅ Validado |
+| 🤝 Colaborador | [`bloque_colaborador.md`](./Bloque%20/bloque_colaborador.md) | 🔄 Parcial |
+| 📊 Simuladores | [`bloque_simuladores.md`](./Bloque%20/bloque_simuladores.md) | ✅ Validado |
+| 🏢 Institucional | [`bloque_institucional.md`](./Bloque%20/bloque_institucional.md) | ✅ Validado |
+| 🧭 Navegación | [`bloque_navegacion.md`](./Bloque%20/bloque_navegacion.md) | ✅ Validado |
+| 🧹 Limpieza automática | [`bloque_limpieza_automatica.md`](./Bloque%20/bloque_limpieza_automatica.md) | ❌ Pendiente |
+| 📈 Métricas | [`bloque_metricas.md`](./Bloque%20/bloque_metricas.md) | 🔄 Parcial |
+| 📌 Pendientes | [`bloque_pendientes.md`](./Bloque%20/bloque_pendientes.md) | ✅ Activo |
+
+---
+
+## 🖼️ Diagrama de flujo institucional
+
+![finedu_diagrama_flujo.png](./finedu_diagrama_flujo.png)
+
+Representa la arquitectura viva del sistema, incluyendo navegación por rol, módulos activos, conexión Supabase y seguridad.
+
+---
+
+## ✅ Avances técnicos validados
+
+- Conexión Supabase trazable y funcional
+- Corrección de `supabaseClient.ts` con `import.meta.env`
+- Validación de `DashboardInstitucional.tsx` con render limpio
+- Navegación agrupada por rol (`MenuModulos.tsx`, `Navbar.tsx`)
+- Simuladores con lógica comparativa y panel de deuda total
+- Control de acceso por rol y hashing institucionalizado
+- Modularización y documentación de cada archivo funcional
+
+---
+
+## 🔄 Pendientes institucionales
+
+- Crear endpoint Express `/guardar-oferta`  
+  → Recibe datos del formulario colaborador y guarda en `ofertas_colaborador`
+
+- Activar lógica de expiración automática de ofertas  
+  → Validar fecha de expiración y eliminar registros vencidos
+
+- Integrar panel de métricas institucionales  
+  → Visualizar impacto por región, uso por módulo, evolución de usuarios
+
+---
+
+## 🧠 Filosofía de ensamblaje
+
+Cada bloque funcional está documentado, validado y trazado para permitir:
+
+- Escalabilidad institucional
+- Auditoría técnica y emocional
+- Presentación profesional ante entidades externas
+- Evolución controlada del sistema
+
+---
+
+## 🫱🏻‍🫲🏼 Agradecimiento
+
+Este ensamblaje es fruto de una construcción paciente, resiliente y colaborativa. Cada corrección técnica representa un hito emocional. Cada validación es una señal de que Finedu está vivo, creciendo y listo para transformar la autonomía financiera en Chile y LATAM.
+

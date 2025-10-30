@@ -1,8 +1,13 @@
-// finedu-app/src/supabaseClient.ts
+// src/supabaseClient.ts
 import { createClient } from "@supabase/supabase-js";
 
-// Usamos variables de entorno públicas para que estén disponibles en el navegador
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// ✅ Variables adaptadas para Vite (no usar process.env)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// ✅ Trazabilidad para validar en consola
+console.log("🔍 Supabase URL:", supabaseUrl);
+console.log("🔍 Supabase KEY:", supabaseAnonKey);
+
+// ✅ Crear cliente Supabase
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

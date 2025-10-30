@@ -1,0 +1,37 @@
+# 🧩 Bloque 8: Métricas y Evaluación
+
+Este bloque institucionaliza la medición del impacto de Finedu desde la perspectiva del usuario y del sistema. Incluye el cálculo del IPC personalizado, el foro financiero para retroalimentación colaborativa, y la evaluación directa del sistema por parte del usuario.
+
+---
+
+## 📄 Tabla de archivos
+
+| 🧩 Archivo / Módulo             | 📂 Ruta                        | ⚙️ Estado         | 🔁 Repetido | 🧠 ¿Qué hace este archivo?                                                                 |
+|--------------------------------|--------------------------------|------------------|-------------|--------------------------------------------------------------------------------------------|
+| `IPCUsuario.tsx`               | `src/usuario`                  | ✅ Validado       | No          | Calcula el IPC personalizado del usuario según sus gastos reales registrados              |
+| `foroFinanciero.tsx`          | `src/usuario`                  | ✅ Validado       | No          | Espacio para compartir experiencias, consejos y dudas financieras entre usuarios          |
+| `evaluarFinedu.tsx`           | `src/usuario`                  | ✅ Validado       | No          | Permite al usuario evaluar el sistema Finedu con puntuación y comentarios trazables       |
+| `ipc.js`                      | `backend/routes`               | ✅ Validado       | No          | Calcula IPC personalizado y lo guarda en Supabase                                         |
+| `evaluacion.js`               | `backend/routes`               | ✅ Validado       | No          | Recibe evaluación del sistema por parte del usuario y la guarda con trazabilidad          |
+
+---
+
+## 🧠 Observaciones institucionales
+
+- Este bloque permite medir el impacto real del sistema en la vida financiera de cada usuario.
+- El IPC personalizado es una innovación que conecta simulación con realidad.
+- El foro financiero refuerza la comunidad y el aprendizaje colaborativo.
+- La evaluación del sistema permite mejorar Finedu con base en retroalimentación directa.
+
+---
+
+## 🔗 Conexiones con otros bloques
+
+- `IPCUsuario.tsx` se alimenta de datos de `finanzasUsuario.js`, `actividad.js` y simuladores.
+- `foroFinanciero.tsx` se conecta con `feedback.js` y puede ser moderado por colaboradores.
+- `evaluarFinedu.tsx` se conecta con `evaluacion.js` y queda visible en `DashboardInstitucional.tsx`.
+
+---
+
+✅ Este bloque queda validado y documentado como parte del ensamblaje institucional de Finedu.
+

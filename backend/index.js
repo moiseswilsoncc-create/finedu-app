@@ -1,8 +1,19 @@
+// Archivo: index.js
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import dotenv from "dotenv";
 
-// Rutas institucionales
+// 🧩 Carga de variables de entorno
+dotenv.config();
+
+// 🔍 Validación de entorno crítico
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.error("❌ Variables de entorno faltantes. Verifica tu archivo .env");
+  process.exit(1);
+}
+
+// 🧭 Importación de rutas institucionales
 import solicitudColaboradorRoutes from "./routes/solicitudColaborador.js";
 import ofertasRoutes from "./routes/ofertas.js";
 import aportesRoutes from "./routes/aportes.js";
@@ -17,14 +28,19 @@ import panelRoutes from "./routes/panel.js";
 import visualizacionRoutes from "./routes/visualizacion.js";
 import usuariosRoutes from "./routes/usuarios.js";
 import loginRoutes from "./routes/login.js";
+import guardarOfertaRoutes from "./routes/guardarOferta.js"; // ✅ Nueva ruta colaborador
+
+// 🧠 Conexión Supabase institucional (opcional si se usa en index directamente)
+// import supabase from "./supabaseClient.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// 🧩 Middleware institucional
 app.use(cors());
 app.use(bodyParser.json());
 
-// Activar rutas institucionales
+// 🚀 Activación de rutas
 app.use("/api", solicitudColaboradorRoutes);
 app.use("/api", ofertasRoutes);
 app.use("/api", aportesRoutes);
@@ -39,11 +55,14 @@ app.use("/api", panelRoutes);
 app.use("/api", visualizacionRoutes);
 app.use("/api", usuariosRoutes);
 app.use("/api", loginRoutes);
+app.use("/api", guardarOfertaRoutes); // ✅ Ruta colaborador activa
 
+// 🧭 Ruta base para diagnóstico
 app.get("/", (req, res) => {
   res.send("✅ Backend Finedu activo");
 });
 
+// 🚀 Inicio del servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor backend corriendo en puerto ${PORT}`);
 });

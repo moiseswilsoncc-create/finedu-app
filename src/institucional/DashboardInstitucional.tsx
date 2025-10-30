@@ -1,118 +1,71 @@
-import React, { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
-import ValidacionPreVercel from "./ValidacionPreVercel";
-import EditorEstadoArchivos from "./EditorEstadoArchivos";
-import MetricaSupabase from "./MetricaSupabase";
-
-const supabase = createClient(
-  "https://ftsbnorudtcyrrubutt.supabase.co",
-  process.env.SUPABASE_KEY || "TU_API_KEY"
-);
+// src/institucional/DashboardInstitucional.tsx
+import React, { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
 
 const DashboardInstitucional: React.FC = () => {
-  const [mensaje, setMensaje] = useState("");
-  const [tokensVencidos, setTokensVencidos] = useState<number | null>(null);
-
-  const limpiarTokens = async () => {
-    try {
-      const res = await fetch("https://TU_BACKEND_URL/limpiar-tokens-vencidos", {
-        method: "POST"
-      });
-      const data = await res.json();
-      setMensaje(data.mensaje || "✅ Limpieza ejecutada.");
-    } catch (error) {
-      console.error("❌ Error al limpiar tokens:", error);
-      setMensaje("❌ Error al ejecutar limpieza.");
-    }
-  };
+  const [estado, setEstado] = useState("⏳ Cargando...");
+  const [datos, setDatos] = useState<any[]>([]);
 
   useEffect(() => {
-    const cargarTokensVencidos = async () => {
-      const { data, error } = await supabase
-        .from("tokens_activacion")
-        .select("id")
-        .lt("fecha_expiracion", new Date().toISOString());
+    console.log("🧩 Componente montado");
+    console.log("🔍 Supabase URL:", import.meta.env.VITE_SUPABASE_URL);
+    console.log("🔍 Supabase KEY:", import.meta.env.VITE_SUPABASE_ANON_KEY);
 
-      if (error) {
-        console.error("Error al consultar tokens vencidos:", error.message);
-        return;
+    const cargarDatos = async () => {
+      try {
+        const { data, error } = await supabase.from("ahorro_por_region").select("*");
+        console.log("📊 Supabase respuesta:", { data, error });
+
+        if (error) {
+          setEstado("❌ Error al obtener datos");
+        } else if (!data || data.length === 0) {
+          setEstado("⚠️ Sin datos disponibles");
+        } else {
+          setEstado("✅ Datos cargados correctamente");
+          setDatos(data);
+        }
+      } catch (err) {
+        console.error("❌ Error inesperado:", err);
+        setEstado("❌ Error inesperado");
       }
-
-      setTokensVencidos(data?.length || 0);
     };
 
-    cargarTokensVencidos();
+    cargarDatos();
   }, []);
 
   return (
-    <div style={containerStyle}>
-      <header style={headerStyle}>
-        <img src="/logo-finedu.png" alt="Logo Finedu" style={{ height: "50px" }} />
-        <h1 style={{ marginLeft: "1rem", color: "#2c3e50" }}>🏛️ Dashboard Institucional</h1>
-      </header>
+    <div style={{ padding: "2rem", fontFamily: "sans-serif", color: "#333" }}>
+      <h1>📊 Dashboard Institucional</h1>
+      <p>{estado}</p>
 
-      <section style={sectionStyle}>
-        <h2 style={titleStyle}>✅ Validación final antes de subir a Vercel</h2>
-        <ValidacionPreVercel />
-      </section>
-
-      <section style={sectionStyle}>
-        <h2 style={titleStyle}>🛠️ Editor de estado de archivos</h2>
-        <EditorEstadoArchivos />
-      </section>
-
-      <section style={sectionStyle}>
-        <h2 style={titleStyle}>📊 Métricas Supabase</h2>
-        <MetricaSupabase />
-      </section>
-
-      <section style={sectionStyle}>
-        <h2 style={titleStyle}>🧹 Limpieza de tokens vencidos</h2>
-        <p style={{ fontSize: "1rem", color: "#555" }}>
-          Tokens vencidos detectados: <strong>{tokensVencidos ?? "..."}</strong>
-        </p>
-        <button onClick={limpiarTokens} style={buttonStyle}>Ejecutar limpieza ahora</button>
-        {mensaje && (
-          <p style={{ marginTop: "1rem", color: mensaje.includes("✅") ? "green" : "red" }}>
-            {mensaje}
-          </p>
-        )}
-      </section>
+      {datos.length > 0 && (
+        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "1rem" }}>
+          <thead>
+            <tr style={{ backgroundColor: "#f0f0f0" }}>
+              <th style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Región</th>
+              <th style={{ padding: "0.5rem", border: "1px solid #ccc" }}>País</th>
+              <th style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Monto Total</th>
+              <th style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {datos.map((fila, index) => (
+              <tr key={index}>
+                <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{fila.region || "—"}</td>
+                <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{fila.país || "—"}</td>
+                <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>
+                  {fila.monto_total ? `$${fila.monto_total.toLocaleString("es-CL")}` : "—"}
+                </td>
+                <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>
+                  {fila.fecha ? new Date(fila.fecha).toLocaleDateString("es-CL") : "—"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
-};
-
-const containerStyle = {
-  padding: "2rem",
-  maxWidth: "1200px",
-  margin: "0 auto",
-  backgroundColor: "#f9f9f9",
-  borderRadius: "12px"
-};
-
-const headerStyle = {
-  display: "flex",
-  alignItems: "center",
-  marginBottom: "2rem"
-};
-
-const sectionStyle = {
-  marginBottom: "3rem"
-};
-
-const titleStyle = {
-  color: "#34495e",
-  marginBottom: "1rem"
-};
-
-const buttonStyle = {
-  padding: "0.8rem",
-  backgroundColor: "#e67e22",
-  color: "white",
-  border: "none",
-  borderRadius: "8px",
-  fontSize: "1rem",
-  cursor: "pointer"
 };
 
 export default DashboardInstitucional;

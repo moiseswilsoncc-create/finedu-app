@@ -1,13 +1,14 @@
 {
   "name": "finedu-frontend",
   "version": "1.0.0",
-  "private": true,
+  "description": "Frontend institucional de Finedu con React, Vite y navegación profesional",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@supabase/supabase-js": "^2.77.0",
     "axios": "^1.13.1",
     "bcrypt": "^6.0.0",
@@ -15,16 +16,36 @@
     "chart.js": "^4.4.0",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.28",
+=======
+>>>>>>> f878064fafcd3cf8c791b20028e2d00255669147
     "react": "^18.2.0",
-    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3"
+    "react-router-dom": "^6.22.3",
+    "axios": "^1.6.0",
+    "@supabase/supabase-js": "^2.0.0"
   },
   "devDependencies": {
+    "vite": "^5.0.0",
+    "typescript": "^5.3.3",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+<<<<<<< HEAD
     "@vitejs/plugin-react": "^4.7.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.8"
   }
+=======
+    "@vitejs/plugin-react": "^4.0.0"
+  },
+  "keywords": [
+    "finedu",
+    "frontend",
+    "react",
+    "vite",
+    "institucional",
+    "colaborador"
+  ],
+  "author": "Wilson",
+  "license": "MIT"
+>>>>>>> f878064fafcd3cf8c791b20028e2d00255669147
 }

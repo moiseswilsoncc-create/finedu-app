@@ -1,0 +1,75 @@
+# 📂 components
+
+| Archivo / Ruta                     | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|-----------------------------------|--------------------------------------|---------------------|------------------|----------------|
+| AdminGrupo.tsx                    | Administración de grupo financiero   | Sí                  | Sí               | Usuario        |
+| AhorroGrupal.tsx                  | Visualización de ahorro grupal       | Sí                  | Sí               | Usuario        |
+| AsistenteFinanciero.tsx           | Asistente de simulación              | Sí                  | Sí               | Usuario        |
+| Bienvenida.tsx                    | Pantalla de bienvenida               | Sí                  | Sí               | Todos los roles|
+| BotonCerrarSesion.tsx             | Cierre de sesión                     | Sí                  | Sí               | Todos los roles|
+| CambioClaveColaborador.tsx        | Cambio de clave colaborador          | Sí                  | Sí               | Colaborador    |
+| ComparadorAhorro.tsx              | Comparación de ahorro                | Sí                  | Sí               | Usuario        |
+| CrearGrupo.tsx                    | Crear grupo financiero               | Sí                  | Sí               | Usuario        |
+| DatosOfertas.tsx                  | Visualización de ofertas             | Sí                  | Sí               | Usuario        |
+| DiagnosticoSistema.tsx            | Diagnóstico de entorno               | No                  | No               | Sistema        |
+| EditarIngresosEgresos.tsx         | Edición de flujo mensual             | Sí                  | Sí               | Usuario        |
+| EditarOferta.tsx                  | Edición de oferta colaborador        | Sí                  | Sí               | Colaborador    |
+| EditarPerfilUsuario.tsx           | Edición de perfil de usuario         | Sí                  | Sí               | Usuario        |
+| FelicitacionRegistro.tsx          | Mensaje de bienvenida                | Sí                  | Sí               | Usuario        |
+| FormularioOferta.tsx              | Crear oferta como colaborador        | Sí                  | Sí               | Colaborador    |
+| ForoFinanciero.tsx                | Publicaciones y comentarios          | Sí                  | Sí               | Usuario        |
+| GeneradorPDF.tsx                  | Generación de informes PDF           | Sí                  | Sí               | Institucional  |
+| GraficoAhorro.tsx                 | Visualización de ahorro              | Sí                  | Sí               | Usuario        |
+| Login.tsx                         | Entrada general de login             | Sí                  | Sí               | Todos los roles|
+| MenuModulos.tsx                   | Agrupación de módulos por rol        | No                  | No               | Sistema        |
+| MenuSimuladores.tsx               | Navegación entre simuladores         | Sí                  | Sí               | Usuario        |
+| MetricasColaboradores.tsx         | Métricas por colaborador             | Sí                  | Sí               | Institucional  |
+| Navbar.tsx                        | Navegación general                   | No                  | No               | Sistema        |
+| NuevaClave.tsx                    | Recuperación de clave                | Sí                  | Sí               | Todos los roles|
+| OfertaColaboradores.tsx           | Ver ofertas activas                  | Sí                  | Sí               | Colaborador    |
+| PanelGrupo.tsx                    | Panel de grupo financiero            | Sí                  | Sí               | Usuario        |
+| PanelImpacto.tsx                  | Impacto financiero mensual           | Sí                  | Sí               | Usuario        |
+| PanelUsuario.tsx                  | Panel principal del usuario          | Sí                  | Sí               | Usuario        |
+| PublicarOfertaColaborador.tsx     | Publicar nueva oferta                | Sí                  | Sí               | Colaborador    |
+| RecuperarClave.tsx                | Recuperación de clave                | Sí                  | Sí               | Todos los roles|
+| RegistroAhorro.tsx                | Registro de simulación de ahorro     | Sí                  | Sí               | Usuario        |
+| RegistroColaborador.tsx           | Registro de nuevo colaborador        | Sí                  | Sí               | Colaborador    |
+| RegistroUsuario.tsx               | Registro de nuevo usuario            | Sí                  | Sí               | Usuario        |
+| Resumen.tsx                       | Resumen financiero mensual           | Sí                  | Sí               | Usuario        |
+| ResumenFinanciero.tsx             | Panel de resumen financiero          | Sí                  | Sí               | Usuario        |
+| RutaAdministrador.tsx             | Ruta protegida institucional         | Sí                  | Sí               | Institucional  |
+| RutaColaborador.tsx               | Ruta protegida colaborador           | Sí                  | Sí               | Colaborador    |
+| RutaProtegida.tsx                 | Ruta protegida general               | Sí                  | Sí               | Todos los roles|
+| SelectorTipoUsuario.tsx           | Selección de tipo de usuario         | Sí                  | Sí               | Todos los roles|
+
+# 📂 simuladores
+
+| Archivo / Ruta                     | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|-----------------------------------|--------------------------------------|---------------------|------------------|----------------|
+| SimuladorCredito.tsx              | Simulación de crédito general        | Sí                  | Sí               | Usuario        |
+| SimuladorCreditoAuto.tsx          | Simulación de crédito automotriz     | Sí                  | Sí               | Usuario        |
+| SimuladorCreditoVivienda.tsx      | Simulación de crédito hipotecario    | Sí                  | Sí               | Usuario        |
+| SimuladorInversion.tsx            | Simulación de inversión              | Sí                  | Sí               | Usuario        |
+
+# 📂 vistas
+
+| Archivo / Ruta                     | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|-----------------------------------|--------------------------------------|---------------------|------------------|----------------|
+| VistaEtapa.tsx                    | Visualización de etapas              | Sí                  | Sí               | Usuario        |
+| VistaGrupal.tsx                   | Visualización de metas grupales      | Sí                  | Sí               | Usuario        |
+| VistaIngresoColaborador.tsx       | Vista de ingreso colaborador         | Sí                  | Sí               | Colaborador    |
+| VistaIngresoUsuario.tsx           | Vista de ingreso usuario             | Sí                  | Sí               | Usuario        |
+| VistaInstitucional.tsx            | Vista general institucional          | Sí                  | Sí               | Institucional  |
+| VistaMetaIndividual.tsx           | Visualización de metas individuales  | Sí                  | Sí               | Usuario        |
+| VistaParticipante.tsx             | Vista de participantes de grupo      | Sí                  | Sí               | Usuario        |
+
+# 📂 components/Exportador, Graficos, Tablas, Visualizaciones
+
+| Archivo / Ruta                     | Función principal                    | ¿Activo en App.tsx? | ¿Acceso directo? | Rol que accede |
+|-----------------------------------|--------------------------------------|---------------------|------------------|----------------|
+| ExportadorPDF.tsx                 | Exportación de informe PDF           | Sí                  | Sí               | Institucional  |
+| LayoutInformeInstitucional.tsx    | Diseño de informe institucional      | Sí                  | Sí               | Institucional  |
+| GraficoComparador.tsx             | Comparación de métricas              | Sí                  | Sí               | Institucional  |
+| GraficoLinea.tsx                  | Evolución financiera                 | Sí                  | Sí               | Usuario        |
+| TablaResumen.tsx                  | Tabla de resumen financiero          | Sí                  | Sí               | Usuario        |
+| MapaCalor.tsx                     | Mapa de calor institucional          | Sí                  | Sí               | Institucional  |

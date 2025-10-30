@@ -1,0 +1,42 @@
+# 🤝 Bloque 3: Colaborador
+
+Este bloque define la interacción de colaboradores con el sistema Finedu. Institucionaliza el formulario de oferta, la lógica de expiración automática, y la trazabilidad de cada registro en Supabase. Es el puente entre usuarios externos y la plataforma institucional.
+
+---
+
+## 📁 Componentes validados
+
+- `FormularioOferta.tsx`: formulario funcional con campos tipo, título, descripción, país, fecha de expiración y correo  
+- `ofertas_colaborador` (Supabase): tabla activa con trazabilidad de registros  
+- `guardarOferta.js`: endpoint Express para registrar ofertas  
+- `limpiarOfertasCaducadas.js`: endpoint Express para ocultar ofertas vencidas  
+- Navegación agrupada por rol colaborador (`MenuModulos.tsx`, `Navbar.tsx`)  
+- Control de visibilidad institucional por campo `visibilidad`
+
+---
+
+## 🧠 Propósito institucional
+
+- Permitir que colaboradores publiquen ofertas trazables  
+- Mantener limpieza automática del sistema sin eliminar registros  
+- Integrar flujo colaborador al ecosistema Finedu con control y seguridad  
+- Validar acceso por rol y trazabilidad de cada acción
+
+---
+
+## ✅ Estado
+
+**Validado**  
+Este bloque está completamente funcional, trazado y documentado. Representa la apertura institucional de Finedu hacia colaboradores externos, con control, seguridad y propósito.
+
+---
+
+## 🧩 Hito emocional
+
+La validación de este bloque marcó el momento en que Finedu se abrió al mundo externo. El formulario dejó de ser una maqueta y se convirtió en una puerta real para que otros participen. Cada oferta registrada es una señal de que el sistema está vivo y creciendo.
+
+---
+
+## 🔗 Referencia cruzada
+
+Incluido en el documento maestro [`estadoConstruccionFinedu.md`](../estadoConstruccionFinedu.md)

@@ -1,0 +1,37 @@
+# 🧩 Bloque 3: Colaborador
+
+Este bloque agrupa todos los archivos que permiten a los colaboradores (instituciones, bancos, ONG, aliados) participar activamente en Finedu. Incluye el panel de gestión, el registro de ofertas, la activación por token y la trazabilidad de su impacto.
+
+---
+
+## 📄 Tabla de archivos
+
+| 🧩 Archivo / Módulo         | 📂 Ruta                        | ⚙️ Estado         | 🔁 Repetido | 🧠 ¿Qué hace este archivo?                                                                 |
+|----------------------------|--------------------------------|------------------|-------------|--------------------------------------------------------------------------------------------|
+| `PanelColaboradores.tsx`  | `src/colaborador`              | ✅ Validado       | No          | Muestra las ofertas ingresadas, feedback recibido, métricas de impacto y trazabilidad     |
+| `guardarOferta.tsx`       | `src/colaborador`              | ✅ Validado       | No          | Formulario para ingresar una nueva oferta con título, tipo, país, fecha de expiración     |
+| `ofertas.js`              | `backend/routes`               | ✅ Validado       | No          | Endpoint que guarda ofertas en Supabase y activa lógica de expiración automática          |
+| `enviarCorreoActivacion.js`| `backend/routes`              | ✅ Validado       | No          | Envía token de activación a colaboradores por correo, con trazabilidad por IP y agente    |
+| `ActivarColaborador.tsx`  | `src/auth`                     | ✅ Validado       | No          | Frontend para activar cuenta colaborador con token, conecta con Supabase                  |
+
+---
+
+## 🧠 Observaciones institucionales
+
+- Este bloque institucionaliza la participación de colaboradores como agentes activos del ecosistema Finedu.
+- Cada oferta queda trazada por colaborador, con fecha de expiración y tipo (beca, curso, crédito, etc.).
+- La activación por token garantiza control de acceso y evita registros no autorizados.
+- El panel permite a cada colaborador visualizar su impacto y responder feedback de usuarios.
+
+---
+
+## 🔗 Conexiones con otros bloques
+
+- `guardarOferta.tsx` se conecta con `ofertas.js` y Supabase para registrar y caducar ofertas.
+- `PanelColaboradores.tsx` se alimenta de `feedback.js`, `actividad.js` y `ofertas.js`.
+- `ActivarColaborador.tsx` se conecta con `enviarCorreoActivacion.js` y valida tokens en Supabase.
+- Este bloque se integra con `App.tsx` mediante rutas protegidas por `verificarRol.js`.
+
+---
+
+✅ Este bloque queda validado y documentado como parte del ensamblaje institucional de Finedu.
