@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-// 🔁 Confirmación de limpieza de ruta rota
+// 🔁 Confirmación institucional: App.tsx limpio, sin referencias a ValidacionPreVerced
 
 // 🧠 Módulos institucionales disponibles
 import DashboardInstitucional from "./institucional/DashboardInstitucional";
@@ -10,7 +10,7 @@ import EditorTrazabilidad from "./institucional/EditorTrazabilidad";
 import MetricaSupabase from "./institucional/MetricaSupabase";
 import TestInstitucional from "./institucional/TestInstitucional";
 
-console.log("🧼 App.tsx actualizado con 6 módulos institucionales disponibles");
+console.log("🧼 App.tsx actualizado con 5 rutas institucionales disponibles");
 
 const App: React.FC = () => {
   return (
@@ -61,11 +61,10 @@ const App: React.FC = () => {
             </>
           }
         />
-          }
-        />
       </Routes>
     </Router>
   );
 };
 
+// 🔁 Confirmación institucional final para redeploy limpio
 export default App;
