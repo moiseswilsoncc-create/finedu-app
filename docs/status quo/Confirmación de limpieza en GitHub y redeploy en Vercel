@@ -1,0 +1,18 @@
+## 🧩 Milestone técnico: Confirmación de limpieza en GitHub y redeploy en Vercel
+
+**Fecha:** 30 de octubre de 2025  
+**Responsable:** Wilson  
+**Estado:** ✅ En curso
+
+### 📍 Diagnóstico
+- ✅ Repositorio limpio en GitHub
+- ❌ Vercel aún compila por caché o build fallido
+
+### 📍 Corrección aplicada
+- ✅ Validación en GitHub
+- ✅ Redeploy manual desde Vercel
+
+### 📍 Impacto institucional
+- Proyecto limpio y funcional
+- Build desbloqueado
+- Listo para activar `ResumenFinanciero.tsx`
