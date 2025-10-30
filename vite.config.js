@@ -6,10 +6,7 @@ export default defineConfig({
   plugins: [react()],
   root: '.',
   build: {
-    outDir: 'dist',
-    rollupOptions: {
-      external: ['react-chartjs-2'] // ✅ Solución crítica para Vercel
-    }
+    outDir: 'dist'
   },
   server: {
     port: 3000
@@ -18,5 +15,11 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'src')
     }
+  },
+  optimizeDeps: {
+    include: ['react-chartjs-2'] // ✅ fuerza inclusión en dependencias optimizadas
+  },
+  ssr: {
+    external: ['react-chartjs-2'] // ✅ evita que Vite intente procesarlo como ESM
   }
 })
