@@ -11,3 +11,4 @@ import ValidacionPreVercel from "./institucional/ValidacionPreVercel";
 <Route path="/metrica-supabase" element={<><MetricaSupabase /></>} />
 <Route path="/test-institucional" element={<><TestInstitucional /></>} />
 <Route path="/validacion-pre-vercel" element={<><ValidacionPreVercel /></>} />
+
