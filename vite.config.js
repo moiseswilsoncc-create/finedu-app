@@ -4,17 +4,19 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  root: '.', // Asegura que la raíz sea la carpeta actual
+  root: '.',
   build: {
-    // ⚠️ Eliminamos input personalizado que causaba error
-    outDir: 'dist', // Puedes especificar el directorio de salida si lo deseas
+    outDir: 'dist',
+    rollupOptions: {
+      external: ['react-chartjs-2'] // ✅ Solución crítica para Vercel
+    }
   },
   server: {
     port: 3000
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src') // Alias útil para importar desde src
+      '@': resolve(__dirname, 'src')
     }
   }
 })
