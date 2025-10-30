@@ -1,12 +1,17 @@
+// 🧩 Copia técnica: RegistroAhorro.tsx
+// Estado: ✅ Aislado para compatibilidad con Vercel
+// Ubicación: src/components/RegistroAhorro.tsx
+// Conectado al sistema activo sin gráfico
+
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import SimuladorCredito from "./SimuladorCredito";
-import GraficoLinea from "./Graficos/GraficoLinea";
+// import GraficoLinea from "./Graficos/GraficoLinea"; // 🚫 Aislado temporalmente
 
 type Grupo = {
   id: string;
   nombre: string;
-  estado: string; // "activo" o "inactivo"
+  estado: string;
   integrantes: number;
 };
 
@@ -91,15 +96,6 @@ function RegistroAhorro() {
     }
   };
 
-  const labels = historial.map((aporte) =>
-    new Date(aporte.fecha).toLocaleDateString("es-CL", {
-      month: "short",
-      year: "numeric"
-    })
-  );
-
-  const datos = historial.map((aporte) => aporte.monto);
-
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       <h2>📘 Registro de ahorro</h2>
@@ -143,11 +139,9 @@ function RegistroAhorro() {
       )}
 
       {historial.length > 0 ? (
-        <GraficoLinea
-          titulo="Evolución de aportes mensuales"
-          labels={labels}
-          datos={datos}
-        />
+        <p style={{ marginTop: "1rem", color: "#888" }}>
+          Gráfico desactivado temporalmente por compatibilidad en Vercel.
+        </p>
       ) : (
         <p style={{ marginTop: "1rem", color: "#888" }}>
           No hay aportes registrados aún.
