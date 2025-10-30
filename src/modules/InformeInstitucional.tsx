@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
-import GraficoLinea from "../components/Graficos/GraficoLinea";
 import MapaCalor from "../components/Visualizaciones/MapaCalor";
 import ExportadorPDF from "../components/Exportador/ExportadorPDF";
 
@@ -10,7 +9,6 @@ const supabase = createClient(
 );
 
 const InformeInstitucional: React.FC = () => {
-  const [datosGrafico, setDatosGrafico] = useState<any[]>([]);
   const [datosGeograficos, setDatosGeograficos] = useState<any[]>([]);
   const [resumen, setResumen] = useState<any[]>([]);
 
@@ -26,11 +24,6 @@ const InformeInstitucional: React.FC = () => {
 
   useEffect(() => {
     const cargarDatos = async () => {
-      const { data: ahorroMensual } = await supabase
-        .from("resumen_financiero")
-        .select("mes, ahorro")
-        .order("mes", { ascending: true });
-
       const { data: ahorroPorRegion } = await supabase
         .from("ahorro_por_region")
         .select("region, monto");
@@ -39,7 +32,6 @@ const InformeInstitucional: React.FC = () => {
         .from("panel_institucional")
         .select("indicador, valor");
 
-      setDatosGrafico(ahorroMensual || []);
       setDatosGeograficos(ahorroPorRegion || []);
       setResumen(resumenInstitucional || []);
     };
@@ -54,7 +46,6 @@ const InformeInstitucional: React.FC = () => {
         Este informe presenta las métricas clave de participación, ahorro y actividad dentro de la plataforma Finedu.
       </p>
 
-      <GraficoLinea datos={datosGrafico} />
       <MapaCalor datos={datosGeograficos} />
 
       <div style={{ marginTop: "2rem" }}>
