@@ -1,12 +1,11 @@
 // 🧩 Copia técnica: RegistroAhorro.tsx
-// Estado: ✅ Aislado para compatibilidad con Vercel
+// Estado: ✅ Compatible con Vercel
 // Ubicación: src/components/RegistroAhorro.tsx
 // Conectado al sistema activo sin gráfico
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import SimuladorCredito from "./SimuladorCredito";
-// import GraficoLinea from "./Graficos/GraficoLinea"; // 🚫 Aislado temporalmente
 
 type Grupo = {
   id: string;
@@ -140,7 +139,7 @@ function RegistroAhorro() {
 
       {historial.length > 0 ? (
         <p style={{ marginTop: "1rem", color: "#888" }}>
-          Gráfico desactivado temporalmente por compatibilidad en Vercel.
+          Aportes registrados correctamente. El gráfico fue desactivado por compatibilidad en Vercel.
         </p>
       ) : (
         <p style={{ marginTop: "1rem", color: "#888" }}>
