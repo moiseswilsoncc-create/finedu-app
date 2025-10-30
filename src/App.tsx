@@ -7,7 +7,6 @@ import EditorEstadoArchivos from "./institucional/EditorEstadoArchivos";
 import EditorTrazabilidad from "./institucional/EditorTrazabilidad";
 import MetricaSupabase from "./institucional/MetricaSupabase";
 import TestInstitucional from "./institucional/TestInstitucional";
-import ValidacionPreVercel from "./institucional/ValidacionPreVercel";
 
 console.log("🧼 App.tsx actualizado con 6 módulos institucionales disponibles");
 
@@ -64,9 +63,6 @@ const App: React.FC = () => {
           path="/validacion-pre-vercel"
           element={
             <>
-              {console.log("✅ Renderizando ValidacionPreVercel")}
-              <ValidacionPreVercel />
-            </>
           }
         />
       </Routes>
