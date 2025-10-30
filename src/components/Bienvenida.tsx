@@ -1,7 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Bienvenida: React.FC = () => {
-  console.log("✅ Bienvenida con textos y botones visibles");
+  const navigate = useNavigate();
+  console.log("✅ Bienvenida con navegación activada");
 
   return (
     <div style={{
@@ -28,6 +30,7 @@ const Bienvenida: React.FC = () => {
         gap: "1rem"
       }}>
         <button
+          onClick={() => navigate("/registro-usuario")}
           style={{
             padding: "0.8rem 1.5rem",
             backgroundColor: "#e74c3c",
@@ -44,6 +47,7 @@ const Bienvenida: React.FC = () => {
         </button>
 
         <button
+          onClick={() => navigate("/login-usuario")}
           style={{
             padding: "0.8rem 1.5rem",
             backgroundColor: "#3498db",
@@ -60,6 +64,7 @@ const Bienvenida: React.FC = () => {
         </button>
 
         <button
+          onClick={() => navigate("/ingreso-colaborador")}
           style={{
             padding: "0.8rem 1.5rem",
             backgroundColor: "#2ecc71",
