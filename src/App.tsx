@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+// 🔁 Confirmación de limpieza de ruta rota
+
 // 🧠 Módulos institucionales disponibles
 import DashboardInstitucional from "./institucional/DashboardInstitucional";
 import EditorEstadoArchivos from "./institucional/EditorEstadoArchivos";
