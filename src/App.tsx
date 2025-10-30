@@ -11,9 +11,9 @@ import TestInstitucional from "./institucional/TestInstitucional";
 // 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
 import RegistroUsuario from "./components/RegistroUsuario";
-import RegistroAhorro from "./components/RegistroAhorro";
+import PanelUsuario from "./components/PanelUsuario"; // ✅ Nuevo componente activado
 
-console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario y RegistroAhorro");
+console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario y PanelUsuario");
 
 const App: React.FC = () => {
   return (
@@ -37,11 +37,11 @@ const App: React.FC = () => {
         }
       />
       <Route
-        path="/registro-ahorro"
+        path="/panel-usuario"
         element={
           <>
-            {console.log("✅ Renderizando RegistroAhorro")}
-            <RegistroAhorro />
+            {console.log("✅ Renderizando PanelUsuario")}
+            <PanelUsuario />
           </>
         }
       />
