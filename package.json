@@ -1,6 +1,6 @@
 {
   "name": "finedu-frontend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Frontend institucional de Finedu con React, Vite y navegación profesional",
   "scripts": {
     "dev": "vite",
