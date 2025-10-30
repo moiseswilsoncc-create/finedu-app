@@ -14,6 +14,9 @@ const RegistroUsuario: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+  const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
   useEffect(() => {
     console.log("✅ Componente RegistroUsuario montado");
   }, []);
@@ -33,12 +36,12 @@ const RegistroUsuario: React.FC = () => {
   };
 
   const existeCorreo = async (correo: string) => {
-    const response = await fetch(`https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios?correo=eq.${correo}`, {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/usuarios?correo=eq.${correo}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        apikey: "TU_API_KEY",
-        Authorization: "Bearer TU_BEARER_TOKEN"
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`
       }
     });
 
@@ -61,12 +64,12 @@ const RegistroUsuario: React.FC = () => {
 
       const grupoId = localStorage.getItem("grupoId") || null;
 
-      const response = await fetch("https://ftsbnorudtcyrrubutt.supabase.co/rest/v1/usuarios", {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/usuarios`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          apikey: "TU_API_KEY",
-          Authorization: "Bearer TU_BEARER_TOKEN",
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
           Prefer: "return=representation"
         },
         body: JSON.stringify({
