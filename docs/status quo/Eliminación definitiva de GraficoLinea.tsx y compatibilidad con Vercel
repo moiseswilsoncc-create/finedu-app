@@ -1,0 +1,19 @@
+## 🧩 Milestone técnico: Eliminación definitiva de GraficoLinea.tsx y compatibilidad con Vercel
+
+**Fecha:** 30 de octubre de 2025  
+**Responsable:** Wilson  
+**Estado:** ✅ Completado
+
+### 📍 Diagnóstico
+- ❌ Vercel bloqueado por referencia a `react-chartjs-2` en `GraficoLinea.tsx`
+- ✅ Archivo eliminado localmente, pero persistía en el árbol remoto
+
+### 📍 Corrección aplicada
+- ✅ Eliminado desde GitHub y validado con `find`
+- ✅ Confirmado en `grep` y `git status`
+- ✅ Redeploy manual en Vercel
+
+### 📍 Impacto institucional
+- Proyecto funcional y compatible
+- Build desbloqueado
+- Sistema listo para avanzar con módulos activos
