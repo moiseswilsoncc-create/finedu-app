@@ -11,9 +11,10 @@ import TestInstitucional from "./institucional/TestInstitucional";
 // 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
 import RegistroUsuario from "./components/RegistroUsuario";
+import RegistroColaborador from "./components/RegistroColaborador"; // ✅ Nuevo componente
 import PanelUsuario from "./components/PanelUsuario"; // ✅ Activado
 
-console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario y PanelUsuario");
+console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario, RegistroColaborador y PanelUsuario");
 
 const App: React.FC = () => {
   return (
@@ -33,6 +34,15 @@ const App: React.FC = () => {
           <>
             {console.log("✅ Renderizando RegistroUsuario")}
             <RegistroUsuario />
+          </>
+        }
+      />
+      <Route
+        path="/registro-colaborador"
+        element={
+          <>
+            {console.log("✅ Renderizando RegistroColaborador")}
+            <RegistroColaborador />
           </>
         }
       />
