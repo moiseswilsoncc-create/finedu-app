@@ -1,0 +1,42 @@
+## 🚀 Milestone técnico: Conexión Supabase ↔ Vercel (Frontend Vite)  
+**📅 Fecha:** 30 de octubre de 2025  
+**👤 Responsable:** Wilson  
+**📌 Estado:** ✅ Aplicado
+
+---
+
+### 🔍 Diagnóstico
+
+- El frontend mostraba pantalla en blanco tras despliegue en Vercel  
+- Se detectó que las variables de entorno estaban mal nombradas (`KEY_` en vez de `VITE_`)  
+- Vite no expone variables sin el prefijo `VITE_`, lo que rompía el render silenciosamente  
+- La conexión con Supabase fallaba por `undefined` en `SUPABASE_URL` y `SUPABASE_KEY`
+
+---
+
+### 🛠️ Corrección aplicada
+
+- ✅ Se corrigió el archivo `.env` local con prefijos `VITE_`  
+- ✅ Se actualizaron las variables en Vercel con los mismos nombres  
+- ✅ Se actualizó el código fuente para usar `import.meta.env.VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`  
+- ✅ Se redeployó el proyecto y la pantalla volvió a renderizar correctamente  
+- ✅ Se validó desde consola que las variables están expuestas y el render activo
+
+---
+
+### 🔐 Validación de seguridad
+
+- ✅ Se confirmó que las políticas RLS están activas en la tabla `usuarios`  
+  - `insertar_usuarios` → `INSERT` para `public`  
+  - `permitir_seleccion_usuarios` → `SELECT` para `public`  
+- ✅ La clave `anon` tiene acceso autorizado para lectura y escritura  
+- ⚠️ Advertencia no crítica: múltiples instancias de `GoTrueClient` detectadas
+
+---
+
+### 🧠 Impacto institucional
+
+- El sistema volvió a renderizar, marcando el retorno de la presencia visual y funcional  
+- Se valida la conexión entre Supabase y Vercel como estable y trazable  
+- Este hito desbloquea el flujo de registro y navegación institucional  
+- Se documenta como cierre de una falla crítica y señal de resiliencia técnica y emocional
