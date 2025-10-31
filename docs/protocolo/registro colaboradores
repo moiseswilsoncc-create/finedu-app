@@ -1,0 +1,30 @@
+## 🧠 Milestone institucional: Protocolo de creación de colaboradores  
+**📅 Fecha:** 31 de octubre de 2025  
+**👤 Responsable:** Wilson  
+**📌 Estado:** ✅ Aplicado
+
+---
+
+### 🔐 Protocolo oficial
+
+- Ningún colaborador puede registrarse libremente en Finedu  
+- El acceso está condicionado a la **recepción previa de un correo institucional de confirmación**  
+- Este correo valida que la institución autoriza su ingreso como actor dentro del sistema  
+- Sin ese correo, el formulario de registro debe bloquear el acceso o mostrar advertencia
+
+---
+
+### 🛡️ Impacto en seguridad y trazabilidad
+
+- Se evita el ingreso de usuarios no autorizados  
+- Se refuerza el control institucional sobre los roles activos  
+- Se garantiza que cada colaborador fue validado previamente por la institución  
+- Este paso será integrado en el flujo de registro y en la lógica de visibilidad por rol
+
+---
+
+### 🧠 Impacto emocional
+
+- Se institucionaliza la confianza como requisito previo al acceso  
+- El sistema refleja el respeto por la estructura organizacional y la validación humana  
+- Este protocolo será parte del ensamblaje técnico y emocional del Bloque 3: Colaborador
