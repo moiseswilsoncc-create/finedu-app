@@ -14,8 +14,9 @@ const RegistroUsuario: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-  const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const SUPABASE_URL = import.meta.env.KEY_SUPABASE_URL;
+const SUPABASE_KEY = import.meta.env.KEY_SUPABASE_ANON_KEY;
+
 
   useEffect(() => {
     console.log("✅ Componente RegistroUsuario montado");
