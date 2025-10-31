@@ -38,17 +38,23 @@ const RegistroUsuario: React.FC = () => {
   };
 
   const existeCorreo = async (correo: string) => {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/usuarios?correo=eq.${correo}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`
-      }
-    });
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/usuarios?correo=eq.${correo}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_KEY,
+          Authorization: SUPABASE_KEY
+        }
+      });
 
-    const data = await response.json();
-    return data.length > 0;
+      const data = await response.json();
+      console.log("📦 Verificación de correo:", data);
+      return Array.isArray(data) && data.length > 0;
+    } catch (err) {
+      console.error("❌ Error al verificar correo:", err);
+      return false;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,7 +77,7 @@ const RegistroUsuario: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
           apikey: SUPABASE_KEY,
-          Authorization: `Bearer ${SUPABASE_KEY}`,
+          Authorization: SUPABASE_KEY,
           Prefer: "return=representation"
         },
         body: JSON.stringify({
@@ -90,7 +96,9 @@ const RegistroUsuario: React.FC = () => {
       });
 
       const data = await response.json();
-      if (response.ok) {
+      console.log("📦 Respuesta Supabase:", data);
+
+      if (response.ok && data) {
         localStorage.setItem("nombreUsuario", `${nombre} ${apellido}`);
         localStorage.setItem("logueado", "true");
         localStorage.setItem("tipoUsuario", "usuario");
@@ -98,7 +106,7 @@ const RegistroUsuario: React.FC = () => {
         if (grupoId) localStorage.setItem("grupoId", grupoId);
         navigate("/registro-ahorro");
       } else {
-        setError("No se pudo registrar el usuario.");
+        setError("No se pudo registrar el usuario. Verifica los datos o intenta más tarde.");
       }
     } catch (err) {
       console.error("❌ Error al guardar usuario:", err);
