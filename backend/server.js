@@ -8,4 +8,11 @@ app.use(express.json());
 // Montar rutas de seguridad
 app.use(seguridadRouter);
 
-// ... el resto de tu configuración
+// Aquí puedes montar otras rutas existentes
+// import otrasRutas from "./routes/otras.js";
+// app.use(otrasRutas);
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor backend escuchando en puerto ${PORT}`);
+});
