@@ -65,9 +65,10 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
     ]
   };
 
-  const enlacesFiltrados = todosLosEnlaces[tipoUsuario]?.filter((enlace) =>
-    enlacesPermitidos.includes(enlace.ruta)
-  ) || [];
+  const enlacesFiltrados =
+    todosLosEnlaces[tipoUsuario]?.filter((enlace) =>
+      enlacesPermitidos.includes(enlace.ruta)
+    ) || [];
 
   return (
     <nav
@@ -102,6 +103,22 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
             {enlace.label}
           </Link>
         ))}
+
+        {/* 🔑 Botón fijo solo para pruebas */}
+        <Link
+          to="/invitacion-colaboradores"
+          style={{
+            color:
+              location.pathname === "/invitacion-colaboradores"
+                ? "#f1c40f"
+                : "white",
+            marginRight: "1rem",
+            textDecoration: "none",
+            fontWeight: "bold"
+          }}
+        >
+          📨 Invitación (test)
+        </Link>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
