@@ -1,0 +1,31 @@
+# 📌 Milestone: Colaboradores – Invitación, Registro e Ingreso
+**Estado:** En curso  
+**Fecha de actualización:** 01/11/2025  
+
+---
+
+## ✅ Avances logrados
+- Creado componente **`InvitacionColaboradores.tsx`** para generar invitaciones.  
+- Integrado en **`App.tsx`** con ruta `/invitacion-colaboradores`.  
+- Agregado botón fijo en **Navbar** para pruebas de invitación.  
+- Diseñado endpoint **`/api/invitar-colaborador`** (Express + Supabase + correo).  
+- Definido mensaje de correo profesional para instituciones financieras.  
+- Checklist de validación del flujo completo: invitación → registro → activación → publicación.  
+- Implementadas pantallas de **Registro Colaborador** (`/registro-colaborador`) y **Ingreso Colaborador** (`/ingreso-colaborador`).  
+- Validado acceso al **Panel de Colaboradores** (`/panel-colaboradores`) tras login exitoso.  
+
+---
+
+## 🔜 Pendientes para cierre del módulo
+- Validar en entorno real que el endpoint inserta en **Supabase** y dispara el correo.  
+- Confirmar que el colaborador invitado puede registrarse en `/registro-colaborador`.  
+- Verificar activación en tabla **`colaboradores_activos`**.  
+- Probar acceso al **panel de colaboradores** y publicación de ofertas.  
+- Documentar el flujo con un **diagrama visual** en `estadoConstruccionFinedu.md`.  
+
+---
+
+## 📖 Notas institucionales
+- Este milestone consolida el **módulo de colaboradores** como parte del ecosistema Finedu.  
+- Cada avance y corrección debe registrarse aquí para mantener trazabilidad.  
+- Una vez cerrado, se marcará como **Completado** y se abrirá el siguiente milestone para **Métricas y Reputación**.  
