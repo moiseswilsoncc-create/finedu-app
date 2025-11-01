@@ -65,7 +65,7 @@ const RegistroUsuario: React.FC = () => {
           {
             nombre,
             apellido,
-            fecha_nacimiento: fechaNacimiento,
+            fechaNacimiento,
             sexo,
             pais,
             ciudad,
