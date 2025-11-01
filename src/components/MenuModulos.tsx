@@ -1,12 +1,24 @@
+// Archivo: src/components/MenuModulos.tsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import "../styles/MenuModulos.css";
 
-const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
+// ⚠️ Reemplaza TU_API_KEY por la clave pública de tu proyecto
+const supabase = createClient(
+  "https://ftsbnorudtcyrrubutt.supabase.co",
+  "TU_API_KEY"
+);
 
+// 📌 Lista de módulos visibles para USUARIOS
+// 🔹 Se eliminaron módulos de colaboradores, institucionales y validación técnica
 const todosLosModulos = [
   { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
+
+  // Módulo central de finanzas
+  { ruta: "/finanzas", label: "💵 Finanzas" },
+
+  // Otros módulos disponibles para usuarios
   { ruta: "/registro-ahorro", label: "💰 Registro de Ahorro" },
   { ruta: "/simulador-inversion", label: "📈 Simulador de Inversión" },
   { ruta: "/test-financiero", label: "🧠 Test Financiero" },
@@ -14,13 +26,10 @@ const todosLosModulos = [
   { ruta: "/vista-grupal", label: "👨‍👩‍👧‍👦 Vista Grupal" },
   { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
   { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
+
+  // 🔹 Usuarios sí pueden ver ofertas de colaboradores
   { ruta: "/panel-ofertas", label: "📢 Ofertas activas" },
-  { ruta: "/panel-colaboradores", label: "🧑‍💼 Panel del Colaborador" },
-  { ruta: "/datos-ofertas", label: "📢 Publicar oferta" },
-  { ruta: "/registro-colaborador", label: "🧑‍💼 Registro colaborador" },
-  { ruta: "/institucional", label: "🏛️ Dashboard institucional" },
-  { ruta: "/informe-institucional", label: "📄 Informe" },
-  { ruta: "/validacion-pre-vercel", label: "✅ Validación final" }
+  { ruta: "/datos-ofertas", label: "📢 Publicar oferta" }
 ];
 
 const MenuModulos = () => {
@@ -67,8 +76,8 @@ const MenuModulos = () => {
         .gt("fecha_expiracion", new Date().toISOString());
 
       if (vista && ofertas) {
-        const nuevas = ofertas.filter((o) =>
-          new Date(o.fecha_publicacion) > new Date(vista.fecha_vista)
+        const nuevas = ofertas.filter(
+          (o) => new Date(o.fecha_publicacion) > new Date(vista.fecha_vista)
         );
         setNuevasOfertas(nuevas.length);
       }
