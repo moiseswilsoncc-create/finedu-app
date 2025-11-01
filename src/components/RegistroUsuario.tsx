@@ -78,7 +78,7 @@ const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
         headers: {
           "Content-Type": "application/json",
           apikey: SUPABASE_KEY,
-          Authorization: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
           Prefer: "return=representation"
         },
         body: JSON.stringify({
