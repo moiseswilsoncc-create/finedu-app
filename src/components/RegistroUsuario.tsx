@@ -15,8 +15,7 @@ const RegistroUsuario: React.FC = () => {
   const navigate = useNavigate();
 
   const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
+  const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   useEffect(() => {
     console.log("✅ Componente RegistroUsuario montado");
@@ -73,6 +72,7 @@ const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
       const grupoId = localStorage.getItem("grupoId") || null;
 
+      // 1. Insertar en tabla usuarios
       const response = await fetch(`${SUPABASE_URL}/rest/v1/usuarios`, {
         method: "POST",
         headers: {
@@ -99,7 +99,29 @@ const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
       const data = await response.json();
       console.log("📦 Respuesta Supabase:", data);
 
-      if (response.ok && data) {
+      if (response.ok && data[0]?.id) {
+        // 2. Insertar en tabla usuarios_activos
+        const responseActivo = await fetch(`${SUPABASE_URL}/rest/v1/usuarios_activos`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            Prefer: "return=representation"
+          },
+          body: JSON.stringify({
+            usuario_id: data[0].id,
+            correo,
+            comuna,
+            pais,
+            rol: "usuario",
+            fecha_activacion: new Date().toISOString()
+          })
+        });
+
+        const resultadoActivo = await responseActivo.json();
+        console.log("📦 Activación registrada:", resultadoActivo);
+
         localStorage.setItem("nombreUsuario", `${nombre} ${apellido}`);
         localStorage.setItem("logueado", "true");
         localStorage.setItem("tipoUsuario", "usuario");
