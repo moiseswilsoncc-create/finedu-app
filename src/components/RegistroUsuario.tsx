@@ -33,25 +33,6 @@ const RegistroUsuario: React.FC = () => {
     return true;
   };
 
-  const existeCorreo = async (correo: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("usuarios")
-        .select("id")
-        .eq("correo", correo);
-
-      if (error) {
-        console.error("❌ Error al verificar correo:", error.message);
-        return false;
-      }
-
-      return Array.isArray(data) && data.length > 0;
-    } catch (err) {
-      console.error("❌ Error al verificar correo:", err);
-      return false;
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -59,8 +40,20 @@ const RegistroUsuario: React.FC = () => {
     if (!validarFormato()) return;
 
     try {
-      const yaExiste = await existeCorreo(correo);
-      if (yaExiste) {
+      // Validar si el correo ya existe
+      const { data: usuarioExiste, error: errorBusqueda } = await supabase
+        .from("usuarios")
+        .select("id")
+        .eq("correo", correo)
+        .single();
+
+      if (errorBusqueda && errorBusqueda.code !== "PGRST116") {
+        console.error("❌ Error al verificar correo:", errorBusqueda.message);
+        setError("Error al verificar el correo. Intenta más tarde.");
+        return;
+      }
+
+      if (usuarioExiste) {
         setError("Este correo ya está registrado.");
         return;
       }
@@ -74,13 +67,13 @@ const RegistroUsuario: React.FC = () => {
           {
             nombre,
             apellido,
-            fechaNacimiento,
+            fecha_nacimiento: fechaNacimiento,
             sexo,
             pais,
             ciudad,
             comuna,
             correo,
-            contraseña,
+            clave: contraseña,
             grupo_id: grupoId,
             created_at: new Date().toISOString()
           }
@@ -102,9 +95,12 @@ const RegistroUsuario: React.FC = () => {
           {
             usuario_id: nuevoUsuario.id,
             correo,
-            comuna,
-            pais,
+            nombre: `${nombre} ${apellido}`,
             rol: "usuario",
+            pais,
+            comuna,
+            grupo_id: grupoId,
+            activo: true,
             fecha_activacion: new Date().toISOString()
           }
         ]);
