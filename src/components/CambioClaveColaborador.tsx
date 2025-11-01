@@ -1,50 +1,69 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../axiosConfig";
+import { supabase } from "../supabaseClient";
 
 const CambioClaveColaborador: React.FC = () => {
   const [claveActual, setClaveActual] = useState("");
   const [nuevaClave, setNuevaClave] = useState("");
   const [confirmacion, setConfirmacion] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const claveGuardada = "clave-temporal"; // Simulación: clave recibida por correo
-  const correo = "colaborador@finedu.cl"; // Puedes reemplazar con dato dinámico si lo tienes
+  const correo = localStorage.getItem("correoColaborador");
 
   const handleCambio = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
-    if (claveActual.trim() !== claveGuardada) {
-      alert("❌ La clave actual no es válida.");
+    if (!correo) {
+      setError("No se encontró el correo en la sesión.");
       return;
     }
 
     if (nuevaClave.length < 6) {
-      alert("⚠️ La nueva clave debe tener al menos 6 caracteres.");
+      setError("⚠️ La nueva clave debe tener al menos 6 caracteres.");
       return;
     }
 
     if (nuevaClave !== confirmacion) {
-      alert("⚠️ La confirmación no coincide con la nueva clave.");
+      setError("⚠️ La confirmación no coincide con la nueva clave.");
       return;
     }
 
     try {
-      const response = await axios.post("/auth/nueva-clave", {
-        token: "abc123", // Token simulado, puedes reemplazar por uno real si lo tienes
-        correo,
-        nuevaClave,
-      });
+      // 1. Validar clave actual
+      const { data: colaborador, error: errorBusqueda } = await supabase
+        .from("colaboradores")
+        .select("id, clave")
+        .eq("correo", correo)
+        .single();
 
-      if (response.data.success) {
-        alert("✅ Clave actualizada correctamente.");
-        navigate("/colaborador");
-      } else {
-        alert("❌ No se pudo actualizar la clave. Verifica los datos.");
+      if (errorBusqueda || !colaborador) {
+        setError("❌ No se encontró el colaborador.");
+        return;
       }
-    } catch (error) {
-      console.error("Error al cambiar la clave:", error);
-      alert("❌ Error de conexión. Intenta nuevamente.");
+
+      if (colaborador.clave !== claveActual) {
+        setError("❌ La clave actual no es válida.");
+        return;
+      }
+
+      // 2. Actualizar clave
+      const { error: errorUpdate } = await supabase
+        .from("colaboradores")
+        .update({ clave: nuevaClave })
+        .eq("correo", correo);
+
+      if (errorUpdate) {
+        setError("❌ No se pudo actualizar la clave.");
+        return;
+      }
+
+      alert("✅ Clave actualizada correctamente.");
+      navigate("/panel-colaboradores");
+    } catch (err) {
+      console.error("Error al cambiar la clave:", err);
+      setError("❌ Error de conexión. Intenta nuevamente.");
     }
   };
 
@@ -88,6 +107,7 @@ const CambioClaveColaborador: React.FC = () => {
           required
           style={{ width: "100%", padding: "0.6rem", marginBottom: "1.5rem" }}
         />
+        {error && <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>}
         <button
           type="submit"
           style={{
