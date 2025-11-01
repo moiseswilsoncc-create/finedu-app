@@ -14,101 +14,61 @@ import RegistroUsuario from "./components/RegistroUsuario";
 import RegistroColaborador from "./components/RegistroColaborador"; // ✅ Registro colaborador
 import PanelUsuario from "./components/PanelUsuario"; // ✅ Panel usuario
 import IngresoColaborador from "./components/IngresoColaborador"; // ✅ Ingreso colaborador
+import LoginColaborador from "./components/LoginColaborador"; // ✅ Login colaborador
+import PanelColaboradores from "./components/PanelColaboradores"; // ✅ Panel colaboradores
 
-console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario, RegistroColaborador, IngresoColaborador y PanelUsuario");
+console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario, RegistroColaborador, IngresoColaborador, LoginColaborador, PanelUsuario y PanelColaboradores");
 
 const App: React.FC = () => {
   return (
     <Routes>
       <Route
         path="/"
-        element={
-          <>
-            {console.log("✅ Renderizando Bienvenida")}
-            <Bienvenida />
-          </>
-        }
+        element={<Bienvenida />}
       />
       <Route
         path="/registro-usuario"
-        element={
-          <>
-            {console.log("✅ Renderizando RegistroUsuario")}
-            <RegistroUsuario />
-          </>
-        }
+        element={<RegistroUsuario />}
       />
       <Route
         path="/registro-colaborador"
-        element={
-          <>
-            {console.log("✅ Renderizando RegistroColaborador")}
-            <RegistroColaborador />
-          </>
-        }
+        element={<RegistroColaborador />}
       />
       <Route
         path="/ingreso-colaborador"
-        element={
-          <>
-            {console.log("✅ Renderizando IngresoColaborador")}
-            <IngresoColaborador />
-          </>
-        }
+        element={<IngresoColaborador />}
+      />
+      <Route
+        path="/login-colaborador"
+        element={<LoginColaborador />}
+      />
+      <Route
+        path="/panel-colaboradores"
+        element={<PanelColaboradores />}
       />
       <Route
         path="/panel-usuario"
-        element={
-          <>
-            {console.log("✅ Renderizando PanelUsuario")}
-            <PanelUsuario />
-          </>
-        }
+        element={<PanelUsuario />}
       />
       <Route
         path="/dashboard-institucional"
-        element={
-          <>
-            {console.log("✅ Renderizando DashboardInstitucional")}
-            <DashboardInstitucional />
-          </>
-        }
+        element={<DashboardInstitucional />}
       />
       <Route
         path="/editor-estado"
-        element={
-          <>
-            {console.log("✅ Renderizando EditorEstadoArchivos")}
-            <EditorEstadoArchivos />
-          </>
-        }
+        element={<EditorEstadoArchivos />}
       />
       <Route
         path="/editor-trazabilidad"
-        element={
-          <>
-            {console.log("✅ Renderizando EditorTrazabilidad")}
-            <EditorTrazabilidad />
-          </>
-        }
+        element={<EditorTrazabilidad />}
       />
       <Route
         path="/metrica-supabase"
-        element={
-          <>
-            {console.log("✅ Renderizando MetricaSupabase")}
-            <MetricaSupabase />
-          </>
-        }
+        element={<MetricaSupabase />}
       />
       <Route
         path="/test-institucional"
-        element={
-          <>
-            {console.log("✅ Renderizando TestInstitucional")}
-            <TestInstitucional />
-          </>
-        }
+        element={<TestInstitucional />}
       />
     </Routes>
   );
