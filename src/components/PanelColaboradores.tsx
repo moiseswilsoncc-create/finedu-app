@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../supabaseClient"; // ✅ usar cliente centralizado
 import { Colaborador } from "../types";
-
-const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
-const supabaseKey = "TU_API_KEY";
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const PanelColaboradores: React.FC = () => {
   const navigate = useNavigate();
   const [colaborador, setColaborador] = useState<Colaborador | null>(null);
   const [error, setError] = useState("");
 
-  const correo = localStorage.getItem("correo");
+  // ✅ usar la misma clave que guardamos en LoginColaborador
+  const correo = localStorage.getItem("correoColaborador");
 
   useEffect(() => {
     const cargarColaborador = async () => {
@@ -60,8 +57,10 @@ const PanelColaboradores: React.FC = () => {
       <h2 style={{ color: "#3498db", marginBottom: "1rem" }}>🤝 Panel de colaboradores</h2>
 
       <p style={{ fontSize: "1.1rem", marginBottom: "2rem", lineHeight: "1.6" }}>
-        Bienvenido {colaborador.nombre} {colaborador.apellido} al espacio institucional de Finedu. Este panel está diseñado exclusivamente para que puedas publicar contenido útil para los usuarios, como ofertas de crédito, tasas preferenciales, cursos de finanzas o beneficios. 
-        Toda la información que ingreses será visible para los usuarios en su panel bajo el bloque <strong>“📊 Datos y ofertas financieras”</strong>.
+        Bienvenido {colaborador.nombreResponsable || colaborador.nombre}{" "}
+        {colaborador.apellido || ""} al espacio institucional de Finedu.  
+        Este panel está diseñado para que publiques contenido útil para los usuarios: ofertas de crédito, tasas preferenciales, cursos de finanzas o beneficios.  
+        Toda la información que ingreses será visible en el bloque <strong>“📊 Datos y ofertas financieras”</strong>.
       </p>
 
       <div style={{
@@ -78,45 +77,39 @@ const PanelColaboradores: React.FC = () => {
         <p><strong>Estado de solicitud:</strong> {colaborador.estado}</p>
       </div>
 
-      {/* Botón para publicar contenido institucional */}
       <div style={{ marginBottom: "2rem", textAlign: "center" }}>
         <button
           onClick={() => navigate("/datos-ofertas")}
-          style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: "#27ae60",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
+          style={buttonStyle("#27ae60")}
         >
           📢 Publicar datos y ofertas
         </button>
       </div>
 
-      {/* Botón para cambiar clave */}
       <div style={{ marginBottom: "2rem", textAlign: "center" }}>
         <button
           onClick={() => navigate("/cambio-clave-colaborador")}
-          style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: "#e67e22",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
+          style={buttonStyle("#e67e22")}
         >
           🔒 Cambiar mi clave
         </button>
       </div>
 
       <div style={{ marginTop: "2rem", textAlign: "center", color: "#888", fontStyle: "italic" }}>
-        Recuerda que los informes de métricas te llegarán directamente por correo. Este panel no permite visualizar datos internos ni fichas de usuarios.
+        Recuerda que los informes de métricas te llegarán directamente por correo.  
+        Este panel no permite visualizar datos internos ni fichas de usuarios.
       </div>
     </div>
   );
 };
+
+const buttonStyle = (bgColor: string) => ({
+  padding: "0.6rem 1.2rem",
+  backgroundColor: bgColor,
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer"
+});
 
 export default PanelColaboradores;
