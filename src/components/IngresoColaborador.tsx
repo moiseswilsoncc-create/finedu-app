@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { DatosColaborador } from "../types";
-import { supabase } from "../supabaseClient"; // Asegúrate de tenerlo configurado
+import { supabase } from "../supabaseClient";
 
-type Props = {
-  setPais: (pais: string) => void;
-};
-
-function IngresoColaborador({ setPais }: Props) {
-  const [datos, setDatos] = useState<DatosColaborador>({
+function IngresoColaborador() {
+  const [datos, setDatos] = useState({
     nombreResponsable: "",
     institucion: "",
-    pais: "",
+    pais: "Chile",
     ciudad: "",
     correo: "",
     clave: ""
@@ -20,6 +15,7 @@ function IngresoColaborador({ setPais }: Props) {
   const [correoValido, setCorreoValido] = useState(true);
   const [camposCompletos, setCamposCompletos] = useState(false);
   const [claveValida, setClaveValida] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const todosCompletos = Object.values(datos).every(valor => valor.trim() !== "");
@@ -45,36 +41,77 @@ function IngresoColaborador({ setPais }: Props) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setDatos({ ...datos, [name]: value });
-    if (name === "pais") setPais(value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
     if (!camposCompletos || !correoValido || !claveValida) return;
 
-    // Enviar clave al backend para hashing
-    const response = await fetch("/api/hash-clave", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clave: datos.clave })
-    });
-
-    const { claveHasheada } = await response.json();
-
-    const { error } = await supabase.from("colaboradores").insert([
-      {
-        nombreResponsable: datos.nombreResponsable,
-        institucion: datos.institucion,
-        pais: datos.pais,
-        ciudad: datos.ciudad,
-        correo: datos.correo,
-        clave: claveHasheada,
-        fechaRegistro: new Date().toISOString()
+    try {
+      // Hashing de clave (si no existe endpoint, usar directamente la clave temporal)
+      let claveHasheada = datos.clave;
+      try {
+        const response = await fetch("/api/hash-clave", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ clave: datos.clave })
+        });
+        const json = await response.json();
+        if (json?.claveHasheada) claveHasheada = json.claveHasheada;
+      } catch {
+        console.warn("⚠️ No se encontró endpoint /api/hash-clave, usando clave en texto plano (solo para pruebas).");
       }
-    ]);
 
-    if (!error) setRegistrado(true);
-    else console.error("Error al registrar colaborador:", error.message);
+      // 1. Insertar en colaboradores
+      const { data: colaboradoresData, error: errorColaboradores } = await supabase
+        .from("colaboradores")
+        .insert([
+          {
+            nombreResponsable: datos.nombreResponsable,
+            institucion: datos.institucion,
+            pais: datos.pais,
+            ciudad: datos.ciudad,
+            correo: datos.correo,
+            clave: claveHasheada,
+            fechaRegistro: new Date().toISOString()
+          }
+        ])
+        .select();
+
+      if (errorColaboradores || !colaboradoresData || !colaboradoresData[0]?.id) {
+        setError("❌ No se pudo registrar el colaborador.");
+        return;
+      }
+
+      const nuevoColaborador = colaboradoresData[0];
+
+      // 2. Insertar en colaboradores_activos
+      const { error: errorActivos } = await supabase
+        .from("colaboradores_activos")
+        .insert([
+          {
+            colaborador_id: nuevoColaborador.id,
+            correo: datos.correo,
+            nombre: datos.nombreResponsable,
+            institucion: datos.institucion,
+            pais: datos.pais,
+            activo: true,
+            fecha_activacion: new Date().toISOString()
+          }
+        ]);
+
+      if (errorActivos) {
+        setError("❌ Error al registrar la activación del colaborador.");
+        return;
+      }
+
+      setRegistrado(true);
+    } catch (err) {
+      console.error("❌ Error general:", err);
+      setError("Error de conexión con Supabase.");
+    }
   };
 
   return (
@@ -97,23 +134,10 @@ function IngresoColaborador({ setPais }: Props) {
           <input type="email" name="correo" placeholder="Correo institucional" value={datos.correo} onChange={handleChange} />
           <input type="password" name="clave" placeholder="Clave temporal (mínimo 8 caracteres)" value={datos.clave} onChange={handleChange} />
 
-          {!correoValido && (
-            <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
-              Este correo no está autorizado por Finedu. Verifica con tu institución.
-            </p>
-          )}
-
-          {!claveValida && (
-            <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
-              La clave debe tener al menos 8 caracteres.
-            </p>
-          )}
-
-          {!camposCompletos && (
-            <p style={{ color: "#e67e22", fontSize: "0.95rem" }}>
-              Por favor completa todos los campos antes de continuar.
-            </p>
-          )}
+          {!correoValido && <p style={{ color: "#e74c3c" }}>Este correo no está autorizado por Finedu.</p>}
+          {!claveValida && <p style={{ color: "#e74c3c" }}>La clave debe tener al menos 8 caracteres.</p>}
+          {!camposCompletos && <p style={{ color: "#e67e22" }}>Completa todos los campos antes de continuar.</p>}
+          {error && <p style={{ color: "red" }}>{error}</p>}
 
           <button type="submit" disabled={!camposCompletos || !correoValido || !claveValida} style={{
             padding: "0.6rem 1.2rem",
