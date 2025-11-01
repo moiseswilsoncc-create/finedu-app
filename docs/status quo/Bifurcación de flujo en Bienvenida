@@ -1,0 +1,14 @@
+## 🧩 Milestone técnico: Bifurcación de flujo en Bienvenida
+
+**📍 Diagnóstico**
+- Antes: un solo botón de colaboradores → siempre registro
+- Problema: colaboradores ya registrados no tenían acceso directo al login
+
+**📍 Corrección aplicada**
+- Dos botones separados:
+  - `/ingreso-colaborador` → primera vez (registro tras invitación)
+  - `/login-colaborador` → ingresos posteriores (login normal)
+
+**📍 Impacto**
+- Flujo de colaboradores completo y claro
+- Experiencia de usuario alineada con protocolo institucional
