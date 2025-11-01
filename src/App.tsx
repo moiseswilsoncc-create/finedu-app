@@ -13,9 +13,9 @@ import Bienvenida from "./components/Bienvenida";
 import RegistroUsuario from "./components/RegistroUsuario";
 import RegistroColaborador from "./components/RegistroColaborador"; // ✅ Registro colaborador
 import PanelUsuario from "./components/PanelUsuario"; // ✅ Panel usuario
-import VistaIngresoColaborador from "./components/VistaIngresoColaborador"; // ✅ Vista ingreso colaborador
+import IngresoColaborador from "./components/IngresoColaborador"; // ✅ Ingreso colaborador
 
-console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario, RegistroColaborador, VistaIngresoColaborador y PanelUsuario");
+console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario, RegistroColaborador, IngresoColaborador y PanelUsuario");
 
 const App: React.FC = () => {
   return (
@@ -48,11 +48,11 @@ const App: React.FC = () => {
         }
       />
       <Route
-        path="/vista-ingreso-colaborador"
+        path="/ingreso-colaborador"
         element={
           <>
-            {console.log("✅ Renderizando VistaIngresoColaborador")}
-            <VistaIngresoColaborador />
+            {console.log("✅ Renderizando IngresoColaborador")}
+            <IngresoColaborador />
           </>
         }
       />
