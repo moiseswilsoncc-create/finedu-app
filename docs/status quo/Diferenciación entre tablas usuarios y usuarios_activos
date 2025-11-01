@@ -1,0 +1,20 @@
+## 🧩 Milestone técnico: Diferenciación entre tablas usuarios y usuarios_activos
+
+**Fecha:** 1 de noviembre de 2025  
+**Responsable:** Wilson  
+**Estado:** ✅ Aclarado
+
+### 📍 Diagnóstico
+- Tablas tienen propósitos distintos
+- No requieren los mismos campos
+- Solo deben coincidir en campos obligatorios
+
+### 📍 Acción recomendada
+- Verificar estructura de `usuarios_activos`
+- Incluir solo campos `NOT NULL` y trazables
+- Evitar duplicación innecesaria
+
+### 📍 Impacto institucional
+- Activación más eficiente
+- Registro modular y trazable
+- Panel financiero listo para métricas agrupadas
