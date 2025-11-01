@@ -16,8 +16,9 @@ import PanelUsuario from "./components/PanelUsuario"; // ✅ Panel usuario
 import IngresoColaborador from "./components/IngresoColaborador"; // ✅ Ingreso colaborador
 import LoginColaborador from "./components/LoginColaborador"; // ✅ Login colaborador
 import PanelColaboradores from "./components/PanelColaboradores"; // ✅ Panel colaboradores
+import InvitacionColaboradores from "./components/InvitacionColaboradores"; // ✅ Invitación colaboradores
 
-console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario, RegistroColaborador, IngresoColaborador, LoginColaborador, PanelUsuario y PanelColaboradores");
+console.log("🧼 App.tsx actualizado con Bienvenida, RegistroUsuario, RegistroColaborador, IngresoColaborador, LoginColaborador, PanelUsuario, PanelColaboradores e InvitacionColaboradores");
 
 const App: React.FC = () => {
   return (
@@ -69,6 +70,10 @@ const App: React.FC = () => {
       <Route
         path="/test-institucional"
         element={<TestInstitucional />}
+      />
+      <Route
+        path="/invitacion-colaboradores"
+        element={<InvitacionColaboradores />}
       />
     </Routes>
   );
