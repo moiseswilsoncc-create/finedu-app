@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient"; // Ajusta la ruta si es necesario
 
 const RegistroUsuario: React.FC = () => {
   const [nombre, setNombre] = useState("");
@@ -14,13 +15,8 @@ const RegistroUsuario: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-  const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
   useEffect(() => {
     console.log("✅ Componente RegistroUsuario montado");
-    console.log("🔍 SUPABASE_URL:", SUPABASE_URL);
-    console.log("🔍 SUPABASE_KEY:", SUPABASE_KEY);
   }, []);
 
   const validarFormato = () => {
@@ -39,17 +35,16 @@ const RegistroUsuario: React.FC = () => {
 
   const existeCorreo = async (correo: string) => {
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/usuarios?correo=eq.${correo}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_KEY,
-          Authorization: SUPABASE_KEY
-        }
-      });
+      const { data, error } = await supabase
+        .from("usuarios")
+        .select("id")
+        .eq("correo", correo);
 
-      const data = await response.json();
-      console.log("📦 Verificación de correo:", data);
+      if (error) {
+        console.error("❌ Error al verificar correo:", error.message);
+        return false;
+      }
+
       return Array.isArray(data) && data.length > 0;
     } catch (err) {
       console.error("❌ Error al verificar correo:", err);
@@ -73,66 +68,62 @@ const RegistroUsuario: React.FC = () => {
       const grupoId = localStorage.getItem("grupoId") || null;
 
       // 1. Insertar en tabla usuarios
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/usuarios`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_KEY,
-          Authorization: `Bearer ${SUPABASE_KEY}`,
-          Prefer: "return=representation"
-        },
-        body: JSON.stringify({
-          nombre,
-          apellido,
-          fechaNacimiento,
-          sexo,
-          pais,
-          ciudad,
-          comuna,
-          correo,
-          contraseña,
-          grupo_id: grupoId,
-          created_at: new Date().toISOString()
-        })
-      });
+      const { data: usuariosData, error: errorUsuarios } = await supabase
+        .from("usuarios")
+        .insert([
+          {
+            nombre,
+            apellido,
+            fechaNacimiento,
+            sexo,
+            pais,
+            ciudad,
+            comuna,
+            correo,
+            contraseña,
+            grupo_id: grupoId,
+            created_at: new Date().toISOString()
+          }
+        ])
+        .select();
 
-      const data = await response.json();
-      console.log("📦 Respuesta Supabase:", data);
+      if (errorUsuarios || !usuariosData || !usuariosData[0]?.id) {
+        console.error("❌ Error al insertar en usuarios:", errorUsuarios?.message);
+        setError("No se pudo registrar el usuario. Verifica los datos o intenta más tarde.");
+        return;
+      }
 
-      if (response.ok && data[0]?.id) {
-        // 2. Insertar en tabla usuarios_activos
-        const responseActivo = await fetch(`${SUPABASE_URL}/rest/v1/usuarios_activos`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            Prefer: "return=representation"
-          },
-          body: JSON.stringify({
-            usuario_id: data[0].id,
+      const nuevoUsuario = usuariosData[0];
+
+      // 2. Insertar en tabla usuarios_activos
+      const { error: errorActivos } = await supabase
+        .from("usuarios_activos")
+        .insert([
+          {
+            usuario_id: nuevoUsuario.id,
             correo,
             comuna,
             pais,
             rol: "usuario",
             fecha_activacion: new Date().toISOString()
-          })
-        });
+          }
+        ]);
 
-        const resultadoActivo = await responseActivo.json();
-        console.log("📦 Activación registrada:", resultadoActivo);
-
-        localStorage.setItem("nombreUsuario", `${nombre} ${apellido}`);
-        localStorage.setItem("logueado", "true");
-        localStorage.setItem("tipoUsuario", "usuario");
-        localStorage.setItem("correoUsuario", correo);
-        if (grupoId) localStorage.setItem("grupoId", grupoId);
-        navigate("/registro-ahorro");
-      } else {
-        setError("No se pudo registrar el usuario. Verifica los datos o intenta más tarde.");
+      if (errorActivos) {
+        console.error("❌ Error al insertar en usuarios_activos:", errorActivos.message);
+        setError("Error al registrar la activación del usuario.");
+        return;
       }
+
+      // Guardar en localStorage y redirigir
+      localStorage.setItem("nombreUsuario", `${nombre} ${apellido}`);
+      localStorage.setItem("logueado", "true");
+      localStorage.setItem("tipoUsuario", "usuario");
+      localStorage.setItem("correoUsuario", correo);
+      if (grupoId) localStorage.setItem("grupoId", grupoId);
+      navigate("/registro-ahorro");
     } catch (err) {
-      console.error("❌ Error al guardar usuario:", err);
+      console.error("❌ Error general:", err);
       setError("Error de conexión con Supabase.");
     }
   };
