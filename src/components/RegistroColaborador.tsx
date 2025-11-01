@@ -11,7 +11,7 @@ const RegistroColaborador: React.FC = () => {
   const [pais, setPais] = useState("Chile");
   const [ciudad, setCiudad] = useState("");
   const [correo, setCorreo] = useState("");
-  const [contrasena, setContrasena] = useState("");
+  const [clave, setClave] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -22,8 +22,8 @@ const RegistroColaborador: React.FC = () => {
       setError("Este correo no es válido. Por favor, intenta de nuevo.");
       return false;
     }
-    if (contrasena.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres.");
+    if (clave.length < 8) {
+      setError("La clave debe tener al menos 8 caracteres.");
       return false;
     }
     return true;
@@ -49,11 +49,11 @@ const RegistroColaborador: React.FC = () => {
         return;
       }
 
-      // 2. Hash de contraseña
+      // 2. Hash de clave
       const response = await fetch("/api/hash-clave", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ clave: contrasena })
+        body: JSON.stringify({ clave })
       });
       const json = await response.json();
       if (!json?.claveHasheada) {
@@ -153,7 +153,7 @@ const RegistroColaborador: React.FC = () => {
         <div><label>🌎 País</label><input type="text" value={pais} onChange={(e) => setPais(e.target.value)} required style={inputStyle} /></div>
         <div><label>🏙️ Ciudad</label><input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required style={inputStyle} /></div>
         <div><label>📧 Correo electrónico</label><input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} /></div>
-        <div><label>🔒 Clave personal</label><input type="password" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required style={inputStyle} /></div>
+        <div><label>🔒 Clave personal</label><input type="password" value={clave} onChange={(e) => setClave(e.target.value)} required style={inputStyle} /></div>
         <button type="submit" disabled={loading} style={{
           padding: "0.8rem",
           backgroundColor: loading ? "#95a5a6" : "#2ecc71",
