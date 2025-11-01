@@ -1,0 +1,19 @@
+## 🧩 Milestone técnico: Activación directa de conexión Supabase
+
+**Fecha:** 1 de noviembre de 2025  
+**Responsable:** Wilson  
+**Estado:** ✅ Aplicado
+
+### 📍 Claves activas
+- URL: `https://ftsnonrudtcyrruubutt.supabase.co`
+- anon key: clave pública institucional
+
+### 📍 Acción aplicada
+- Actualización directa de `supabaseClient.ts`
+- Conexión lista para validación de correo y registro
+- Sin dependencias de entorno en Vercel
+
+### 📍 Impacto institucional
+- Registro desbloqueado
+- Activación trazable
+- Panel financiero listo para métricas agrupadas
