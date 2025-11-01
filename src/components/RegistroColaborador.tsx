@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
@@ -13,11 +13,8 @@ const RegistroColaborador: React.FC = () => {
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log("✅ Componente RegistroColaborador montado");
-  }, []);
 
   const validarFormato = () => {
     const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
@@ -25,8 +22,8 @@ const RegistroColaborador: React.FC = () => {
       setError("Este correo no es válido. Por favor, intenta de nuevo.");
       return false;
     }
-    if (contrasena.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+    if (contrasena.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres.");
       return false;
     }
     return true;
@@ -35,9 +32,9 @@ const RegistroColaborador: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     if (!validarFormato()) return;
 
+    setLoading(true);
     try {
       // 1. Validar invitación institucional
       const { data: invitacion, error: errorInvitacion } = await supabase
@@ -48,10 +45,25 @@ const RegistroColaborador: React.FC = () => {
 
       if (errorInvitacion || !invitacion) {
         setError("❌ No tienes autorización institucional para registrarte.");
+        setLoading(false);
         return;
       }
 
-      // 2. Insertar en tabla colaboradores
+      // 2. Hash de contraseña
+      const response = await fetch("/api/hash-clave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clave: contrasena })
+      });
+      const json = await response.json();
+      if (!json?.claveHasheada) {
+        setError("❌ No se pudo procesar la clave de forma segura.");
+        setLoading(false);
+        return;
+      }
+      const claveHasheada = json.claveHasheada;
+
+      // 3. Insertar en tabla colaboradores
       const { data: colaboradoresData, error: errorColaboradores } = await supabase
         .from("colaboradores")
         .insert([
@@ -64,21 +76,22 @@ const RegistroColaborador: React.FC = () => {
             pais,
             ciudad,
             correo,
-            contrasena,
-            created_at: new Date().toISOString()
+            clave: claveHasheada,
+            fecha_registro: new Date().toISOString()
           }
         ])
         .select();
 
-      if (errorColaboradores || !colaboradoresData || !colaboradoresData[0]?.id) {
+      if (errorColaboradores || !colaboradoresData?.[0]?.id) {
         console.error("❌ Error al insertar en colaboradores:", errorColaboradores?.message);
         setError("No se pudo registrar el colaborador. Intenta más tarde.");
+        setLoading(false);
         return;
       }
 
       const nuevoColaborador = colaboradoresData[0];
 
-      // 3. Insertar en tabla colaboradores_activos
+      // 4. Insertar en tabla colaboradores_activos
       const { error: errorActivos } = await supabase
         .from("colaboradores_activos")
         .insert([
@@ -97,20 +110,23 @@ const RegistroColaborador: React.FC = () => {
       if (errorActivos) {
         console.error("❌ Error al insertar en colaboradores_activos:", errorActivos.message);
         setError("Error al registrar la activación del colaborador.");
+        setLoading(false);
         return;
       }
 
-      // 4. Guardar en localStorage y redirigir
-      localStorage.setItem("nombreColaborador", `${nombre} ${apellido}`);
+      // 5. Guardar datos mínimos en localStorage y redirigir
+      localStorage.setItem("colaborador_id", nuevoColaborador.id);
       localStorage.setItem("logueado", "true");
       localStorage.setItem("tipoUsuario", "colaborador");
-      localStorage.setItem("correoColaborador", correo);
 
       alert("✅ Registro de colaborador exitoso!");
-      navigate("/vista-ingreso-colaborador");
+      navigate("/ingreso-colaborador");
+
     } catch (err) {
       console.error("❌ Error general:", err);
       setError("Error de conexión con Supabase.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -138,15 +154,17 @@ const RegistroColaborador: React.FC = () => {
         <div><label>🏙️ Ciudad</label><input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required style={inputStyle} /></div>
         <div><label>📧 Correo electrónico</label><input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} /></div>
         <div><label>🔒 Clave personal</label><input type="password" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required style={inputStyle} /></div>
-        <button type="submit" style={{
+        <button type="submit" disabled={loading} style={{
           padding: "0.8rem",
-          backgroundColor: "#2ecc71",
+          backgroundColor: loading ? "#95a5a6" : "#2ecc71",
           color: "white",
           border: "none",
           borderRadius: "8px",
           fontSize: "1rem",
-          cursor: "pointer"
-        }}>✅ Registrarme ahora</button>
+          cursor: loading ? "not-allowed" : "pointer"
+        }}>
+          {loading ? "Procesando..." : "✅ Registrarme ahora"}
+        </button>
       </form>
 
       {error && <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>{error}</p>}
