@@ -1,0 +1,19 @@
+## 🧩 Milestone técnico: Verificación de registro exitoso en Supabase
+
+**Fecha:** 1 de noviembre de 2025  
+**Responsable:** Wilson  
+**Estado:** ✅ Confirmado
+
+### 📍 Diagnóstico
+- Registro en `usuarios` exitoso
+- Activación en `usuarios_activos` confirmada
+- Registro visible en Supabase
+
+### 📍 Acción aplicada
+- Verificación por correo y fecha
+- Confirmación de campo `activo: true`
+
+### 📍 Impacto institucional
+- Flujo de registro validado
+- Activación trazable
+- Panel financiero listo para métricas agrupadas
