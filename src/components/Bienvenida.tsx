@@ -29,6 +29,7 @@ const Bienvenida: React.FC = () => {
         alignItems: "center",
         gap: "1rem"
       }}>
+        {/* 🔀 Botones para usuarios */}
         <button
           onClick={() => navigate("/registro-usuario")}
           style={buttonStyle("#e74c3c")}
@@ -43,16 +44,16 @@ const Bienvenida: React.FC = () => {
           👤 Ingreso usuarios registrados
         </button>
 
-        {/* 🔀 Bifurcación para colaboradores */}
+        {/* 🔀 Botones para colaboradores */}
         <button
-          onClick={() => navigate("/ingreso-colaborador")}
+          onClick={() => navigate("/registro-colaborador")}
           style={buttonStyle("#2ecc71")}
         >
           🆕 Primera vez como colaborador
         </button>
 
         <button
-          onClick={() => navigate("/login-colaborador")}
+          onClick={() => navigate("/ingreso-colaborador")}
           style={buttonStyle("#16a085")}
         >
           🔐 Ya tengo cuenta de colaborador
