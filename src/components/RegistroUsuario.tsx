@@ -21,12 +21,11 @@ const RegistroUsuario: React.FC = () => {
 
   const validarFormato = () => {
     const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
-    const claveValida = contraseña.length >= 6;
     if (!correoValido) {
-      setError("El formato del correo no es válido.");
+      setError("Este correo no existe. Por favor, intenta de nuevo.");
       return false;
     }
-    if (!claveValida) {
+    if (contraseña.length < 6) {
       setError("La contraseña debe tener al menos 6 caracteres.");
       return false;
     }
@@ -41,19 +40,18 @@ const RegistroUsuario: React.FC = () => {
 
     try {
       // Validar si el correo ya existe
-      const { data: usuarioExiste, error: errorBusqueda } = await supabase
+      const { data: coincidencias, error: errorBusqueda } = await supabase
         .from("usuarios")
         .select("id")
-        .eq("correo", correo)
-        .single();
+        .eq("correo", correo);
 
-      if (errorBusqueda && errorBusqueda.code !== "PGRST116") {
+      if (errorBusqueda) {
         console.error("❌ Error al verificar correo:", errorBusqueda.message);
         setError("Error al verificar el correo. Intenta más tarde.");
         return;
       }
 
-      if (usuarioExiste) {
+      if (Array.isArray(coincidencias) && coincidencias.length > 0) {
         setError("Este correo ya está registrado.");
         return;
       }
@@ -73,7 +71,7 @@ const RegistroUsuario: React.FC = () => {
             ciudad,
             comuna,
             correo,
-            clave: contraseña,
+            contraseña,
             grupo_id: grupoId,
             created_at: new Date().toISOString()
           }
@@ -117,6 +115,8 @@ const RegistroUsuario: React.FC = () => {
       localStorage.setItem("tipoUsuario", "usuario");
       localStorage.setItem("correoUsuario", correo);
       if (grupoId) localStorage.setItem("grupoId", grupoId);
+
+      alert("✅ Registro exitoso!");
       navigate("/registro-ahorro");
     } catch (err) {
       console.error("❌ Error general:", err);
