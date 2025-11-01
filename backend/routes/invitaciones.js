@@ -1,3 +1,4 @@
+// Archivo: routes/invitaciones.js
 import express from "express";
 import { createClient } from "@supabase/supabase-js";
 import nodemailer from "nodemailer";
@@ -6,11 +7,11 @@ const router = express.Router();
 
 // 🔑 Cliente Supabase con service_role (solo backend)
 const supabase = createClient(
-  "https://TU_PROYECTO.supabase.co",
+  process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// 📧 Configuración de correo (ejemplo con Gmail, pero ideal usar SendGrid/Resend en producción)
+// 📧 Configuración de correo (ejemplo con Gmail, ideal usar SendGrid/Resend en producción)
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -20,7 +21,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // 📨 Endpoint para invitar colaborador
-router.post("/api/invitar-colaborador", async (req, res) => {
+router.post("/invitar-colaborador", async (req, res) => {
   try {
     const { correo, institucion, rol, expira } = req.body;
 
@@ -35,11 +36,11 @@ router.post("/api/invitar-colaborador", async (req, res) => {
     ]);
 
     if (error) {
-      console.error("Error Supabase:", error.message);
+      console.error("❌ Error Supabase:", error.message);
       return res.status(400).json({ ok: false, error: error.message });
     }
 
-    // 2. Enviar correo
+    // 2. Enviar correo profesional
     const mailOptions = {
       from: `"Finedu" <${process.env.MAIL_USER}>`,
       to: correo,
@@ -58,9 +59,9 @@ router.post("/api/invitar-colaborador", async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    return res.json({ ok: true, mensaje: "Invitación creada y correo enviado" });
+    return res.json({ ok: true, mensaje: "✅ Invitación creada y correo enviado" });
   } catch (err) {
-    console.error("Error general:", err);
+    console.error("❌ Error general:", err);
     return res.status(500).json({ ok: false, error: "Error interno del servidor" });
   }
 });
