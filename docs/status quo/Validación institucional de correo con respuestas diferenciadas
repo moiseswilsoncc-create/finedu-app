@@ -1,0 +1,15 @@
+## 🧩 Milestone técnico: Validación institucional de correo con respuestas diferenciadas
+
+**Fecha:** 1 de noviembre de 2025  
+**Responsable:** Wilson  
+**Estado:** ✅ Aplicado
+
+### 📍 Lógica aplicada
+- Correo mal escrito → `"Este correo no existe. Por favor, intenta de nuevo."`
+- Correo duplicado → `"Este correo ya está registrado."`
+- Correo nuevo y válido → `"Registro exitoso!"`
+
+### 📍 Impacto institucional
+- Registro claro y educativo
+- Prevención de duplicidad
+- Activación lista para métricas agrupadas
