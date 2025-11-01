@@ -29,6 +29,7 @@ import visualizacionRoutes from "./routes/visualizacion.js";
 import usuariosRoutes from "./routes/usuarios.js";
 import loginRoutes from "./routes/login.js";
 import guardarOfertaRoutes from "./routes/guardarOferta.js"; // ✅ Nueva ruta colaborador
+import invitacionesRoutes from "./routes/invitaciones.js";
 
 // 🧠 Conexión Supabase institucional (opcional si se usa en index directamente)
 // import supabase from "./supabaseClient.js";
@@ -56,6 +57,7 @@ app.use("/api", visualizacionRoutes);
 app.use("/api", usuariosRoutes);
 app.use("/api", loginRoutes);
 app.use("/api", guardarOfertaRoutes); // ✅ Ruta colaborador activa
+app.use("/api", invitacionesRoutes);
 
 // 🧭 Ruta base para diagnóstico
 app.get("/", (req, res) => {
