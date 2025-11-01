@@ -99,6 +99,7 @@ const RegistroUsuario: React.FC = () => {
             comuna,
             grupo_id: grupoId,
             activo: true,
+            fechaNacimiento,
             fecha_activacion: new Date().toISOString()
           }
         ]);
