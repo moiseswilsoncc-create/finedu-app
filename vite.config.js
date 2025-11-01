@@ -12,7 +12,8 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000
+    port: 5173, // 🔧 frontend fijo en 5173
+    open: true  // abre el navegador automáticamente
   },
   resolve: {
     alias: {
