@@ -31,57 +31,48 @@ const Bienvenida: React.FC = () => {
       }}>
         <button
           onClick={() => navigate("/registro-usuario")}
-          style={{
-            padding: "0.8rem 1.5rem",
-            backgroundColor: "#e74c3c",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontSize: "1rem",
-            cursor: "pointer",
-            width: "100%",
-            maxWidth: "300px"
-          }}
+          style={buttonStyle("#e74c3c")}
         >
           🚀 ¡No pierdas esta oportunidad! Registrarte Ahora
         </button>
 
         <button
           onClick={() => navigate("/login-usuario")}
-          style={{
-            padding: "0.8rem 1.5rem",
-            backgroundColor: "#3498db",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontSize: "1rem",
-            cursor: "pointer",
-            width: "100%",
-            maxWidth: "300px"
-          }}
+          style={buttonStyle("#3498db")}
         >
           👤 Ingreso usuarios registrados
         </button>
 
+        {/* 🔀 Bifurcación para colaboradores */}
         <button
           onClick={() => navigate("/ingreso-colaborador")}
-          style={{
-            padding: "0.8rem 1.5rem",
-            backgroundColor: "#2ecc71",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontSize: "1rem",
-            cursor: "pointer",
-            width: "100%",
-            maxWidth: "300px"
-          }}
+          style={buttonStyle("#2ecc71")}
         >
-          👥 Ingreso colaboradores
+          🆕 Primera vez como colaborador
+        </button>
+
+        <button
+          onClick={() => navigate("/login-colaborador")}
+          style={buttonStyle("#16a085")}
+        >
+          🔐 Ya tengo cuenta de colaborador
         </button>
       </div>
     </div>
   );
 };
+
+// 🎨 Reutilizamos estilos para simplificar
+const buttonStyle = (bgColor: string) => ({
+  padding: "0.8rem 1.5rem",
+  backgroundColor: bgColor,
+  color: "white",
+  border: "none",
+  borderRadius: "8px",
+  fontSize: "1rem",
+  cursor: "pointer",
+  width: "100%",
+  maxWidth: "300px"
+});
 
 export default Bienvenida;
