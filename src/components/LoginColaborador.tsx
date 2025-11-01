@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
-const LoginColaborador = () => {
+const LoginColaborador: React.FC = () => {
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
   const [intentosFallidos, setIntentosFallidos] = useState(0);
@@ -10,61 +10,55 @@ const LoginColaborador = () => {
   const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
-  const enviarCorreoRecuperacion = async (correo: string) => {
-    try {
-      await fetch("/api/enviar-recuperacion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo })
-      });
-      console.log(`📩 Enviado correo de recuperación a ${correo}`);
-    } catch (err) {
-      console.error("Error al enviar correo de recuperación:", err);
-    }
-  };
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setCargando(true);
 
-    if (clave.length !== 4) {
-      setError("La clave debe tener exactamente 4 dígitos.");
-      setCargando(false);
-      return;
-    }
+    try {
+      // Buscar colaborador en la tabla
+      const { data: colaborador, error: errorBusqueda } = await supabase
+        .from("colaboradores")
+        .select("id, correo, clave, nombreResponsable, institucion, pais")
+        .eq("correo", correo)
+        .single();
 
-    const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
-      email: correo,
-      password: clave
-    });
-
-    if (supabaseError) {
-      const mensaje = supabaseError.message || "";
-      const nuevosIntentos = intentosFallidos + 1;
-      setIntentosFallidos(nuevosIntentos);
-      setCargando(false);
-
-      if (nuevosIntentos >= 3) {
-        await enviarCorreoRecuperacion(correo);
-        setError("Hemos enviado un enlace de recuperación a tu correo registrado.");
-      } else if (mensaje.includes("Invalid login credentials")) {
-        setError("Correo o clave incorrectos. Intenta nuevamente.");
-      } else {
-        setError("Error inesperado: " + mensaje);
+      if (errorBusqueda || !colaborador) {
+        setError("❌ Correo no encontrado o no autorizado.");
+        setCargando(false);
+        return;
       }
 
-      return;
+      // Comparar clave (⚠️ en producción debería ser hash)
+      if (colaborador.clave !== clave) {
+        const nuevosIntentos = intentosFallidos + 1;
+        setIntentosFallidos(nuevosIntentos);
+        setCargando(false);
+
+        if (nuevosIntentos >= 3) {
+          setError("Has superado el número de intentos. Contacta a tu institución.");
+        } else {
+          setError("❌ Clave incorrecta. Intenta nuevamente.");
+        }
+        return;
+      }
+
+      // Guardar sesión en localStorage
+      localStorage.setItem("logueado", "true");
+      localStorage.setItem("tipoUsuario", "colaborador");
+      localStorage.setItem("correoColaborador", colaborador.correo);
+      localStorage.setItem("nombreColaborador", colaborador.nombreResponsable);
+      localStorage.setItem("institucionColaborador", colaborador.institucion);
+      localStorage.setItem("paisColaborador", colaborador.pais);
+
+      alert("✅ Bienvenido, colaborador!");
+      navigate("/dashboard-institucional");
+    } catch (err) {
+      console.error("❌ Error general en login colaborador:", err);
+      setError("Error de conexión con Supabase.");
+    } finally {
+      setCargando(false);
     }
-
-    localStorage.setItem("logueado", "true");
-    localStorage.setItem("tipoUsuario", "colaborador");
-    localStorage.setItem("correoColaborador", correo);
-
-    const nombreExtraido = correo.split("@")[0];
-    localStorage.setItem("nombreColaborador", nombreExtraido);
-
-    navigate("/panel-colaboradores");
   };
 
   return (
@@ -87,14 +81,12 @@ const LoginColaborador = () => {
         />
         <input
           type="password"
-          placeholder="Clave personal (4 dígitos)"
+          placeholder="Clave personal"
           value={clave}
           onChange={(e) => setClave(e.target.value)}
           required
         />
-        {error && (
-          <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>
-        )}
+        {error && <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>}
         <button type="submit" disabled={cargando} style={{
           padding: "0.6rem 1.2rem",
           backgroundColor: cargando ? "#bdc3c7" : "#27ae60",
