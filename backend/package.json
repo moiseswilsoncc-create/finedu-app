@@ -3,24 +3,23 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Backend institucional de Finedu con Express, rutas colaborador y conexión segura a Supabase",
-  "main": "index.ts",
+  "main": "server.js",
   "scripts": {
-    "dev": "node --loader ts-node/esm index.ts"
+    "dev": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "bcrypt": "^5.1.1"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "keywords": [
     "finedu",
     "backend",
     "express",
-    "typescript",
     "supabase",
     "colaborador",
     "institucional"
