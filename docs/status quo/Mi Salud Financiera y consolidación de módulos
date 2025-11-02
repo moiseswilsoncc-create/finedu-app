@@ -1,0 +1,63 @@
+# 🏗️ Milestone Institucional — Estado de Construcción Finedu
+
+## ✅ Avances completados
+
+### Bloque 1: Ingresos
+- [x] Creación de tabla `ingresos` en Supabase con tipos globales: Sueldo, Boletas de honorarios, Mesada, Otros.
+- [x] Integración de ingresos en el flujo consolidado.
+- [x] Inclusión de **ahorros personales** e **inversiones** como parte de los ingresos.
+
+### Bloque 2: Egresos
+- [x] Creación de tabla `egresos` en Supabase.
+- [x] Inclusión de categoría **Créditos** (consumo, automotriz, hipotecario, tarjeta de crédito, comercial, personal).
+- [x] Inclusión de **ahorros grupales** como egreso fijo mensual.
+- [x] Consolidación de egresos fijos y variables.
+
+### Bloque 3: Créditos
+- [x] Creación de tabla `creditos` en Supabase.
+- [x] Integración de cuotas mensuales y fecha de término.
+- [x] Lógica de liberación de flujo al terminar un crédito.
+- [x] Integración con simulador de créditos para consistencia.
+
+### Bloque 4: Colaboradores
+- [x] Creación de tabla `ofertas_colaborador` en Supabase.
+- [x] Formulario de oferta y navegación por rol colaborador.
+- [x] Endpoint Express `/guardar-oferta`.
+- [x] Lógica de expiración automática de ofertas.
+- [x] Validación de visibilidad institucional.
+
+### Bloque 5: Resumen Financiero (Mi Salud Financiera)
+- [x] Consolidación de ingresos, egresos, créditos, ahorros personales, inversiones y ahorros grupales.
+- [x] Cálculo de **saldo mensual disponible**.
+- [x] **Comparativo con mes anterior** (ingresos, egresos, saldo).
+- [x] **Proyección a 6 meses** con liberación de créditos y compromisos.
+- [x] Indicadores de salud financiera con íconos:
+  - 👍 Buen ahorro (≥20% ingresos).
+  - 😀 Carita feliz (termina un crédito o compromiso → libera flujo).
+  - 😷 Carita con mascarilla (saldo <10% ingresos).
+  - 🤒 Carita enfermo (saldo negativo).
+- [x] Estado final de salud financiera (mes actual + proyección).
+
+---
+
+## ⏳ Pendientes / Próximos pasos
+
+- [ ] Documentar en `estadoConstruccionFinedu.md` la validación final de **Mi Salud Financiera** como milestone consolidado.
+- [ ] Integrar **notificaciones automáticas** cuando el saldo proyectado sea negativo o muy ajustado.
+- [ ] Agregar **sugerencias personalizadas** (ej: “reduce gastos en viajes” o “aumenta tu ahorro personal”).
+- [ ] Visualización gráfica (línea o barras) de la evolución del saldo proyectado.
+- [ ] Integrar **resumen financiero institucional** en `DashboardInstitucional.tsx`.
+- [ ] Validar accesibilidad y experiencia de usuario (UX) con íconos y mensajes claros.
+- [ ] Preparar módulo de **analítica colectiva** (comparar salud financiera promedio de la comunidad).
+- [ ] Documentar rollback y control de versiones para este módulo.
+
+---
+
+## 📌 Estado actual
+El módulo **Mi Salud Financiera** ya entrega:
+- Resumen del mes actual.
+- Comparativo con mes anterior.
+- Proyección a 6 meses.
+- Estado final de salud financiera con indicadores visuales.
+
+👉 Pendiente: enriquecer con **alertas proactivas, sugerencias personalizadas y visualización gráfica** para cerrar el ciclo de acompañamiento financiero.
