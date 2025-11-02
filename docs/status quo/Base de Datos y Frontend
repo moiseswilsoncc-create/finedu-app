@@ -1,0 +1,130 @@
+# 📊 Estado de Construcción Finedu — Base de Datos y Frontend
+
+Este documento institucionaliza la estructura actual de **Supabase** y los **archivos de frontend** creados para el proyecto **Finedu**.  
+Incluye los módulos de **Ingresos**, **Egresos** y **Créditos**, junto con los componentes React y el archivo de menú de navegación.
+
+---
+
+## 1. Ingresos
+
+### Tablas en Supabase
+- **tipos_ingreso**
+  - Contiene tipos de ingreso globales y personalizados.
+  - `usuario_id = null` → tipo global.
+  - `usuario_id = correo/id` → tipo creado por un usuario.
+
+- **ingresos**
+  - Registra cada ingreso del usuario.
+  - Relaciona con `tipos_ingreso`.
+
+### Tipos globales iniciales
+- Sueldo  
+- Boletas de honorarios  
+- Mesada  
+- Otros  
+
+---
+
+## 2. Egresos
+
+### Tablas en Supabase
+- **categorias_egresos**
+  - Categorías globales y personalizadas.
+- **items_egresos**
+  - Ítems asociados a cada categoría.
+- **egresos**
+  - Registros de gastos de cada usuario.
+
+### Categorías globales iniciales
+- Hogar  
+- Abarrotes  
+- Aseo  
+- Cuidado Personal  
+- Vestuario  
+- Frutas y Verduras  
+- Carnes  
+- Auto  
+- Mascota  
+- Salud  
+- Viajes  
+- Educación  
+- Entretenimiento  
+- Seguros  
+- Regalos y Donaciones  
+- Mantenimiento  
+- Tecnología  
+- Créditos y Deudas  
+
+### Ejemplos de ítems globales
+- **Hogar** → Luz, Agua, Gas, Arriendo, Dividendo, Cable, Teléfono fijo, Móviles  
+- **Auto** → Bencina, Cambio de aceite, Ruedas, Seguro vehicular, Mantenciones  
+- **Mascota** → Alimento, Peluquería, Veterinario, Vacunas  
+- **Salud** → Remedios, Consultas médicas, Hospitalizaciones, Exámenes, Seguros médicos  
+- **Créditos y Deudas** → Tarjetas Comerciales, Tarjetas Bancarias, Crédito de Consumo, Crédito Hipotecario, Crédito Automotriz, Líneas de Crédito, Otros préstamos personales  
+
+---
+
+## 3. Créditos
+
+### Tabla en Supabase
+- **creditos**
+  - Guarda información detallada de cada crédito.
+  - Campos:
+    - Fecha  
+    - Tipo de deuda  
+    - Monto contado  
+    - Valor crédito  
+    - Número de cuotas  
+    - Valor de la cuota  
+    - Total del crédito  
+    - Diferencia (total – contado)  
+    - Porcentaje extra  
+    - Tasa mensual efectiva  
+    - Tasa anual efectiva  
+    - Fecha de término  
+
+---
+
+## 4. Archivos de Frontend
+
+### `src/components/Egresos.tsx`
+- Contenedor principal del módulo de Egresos.
+- Lista todas las categorías como enlaces a sub‑componentes.
+- Categorías incluidas: Hogar, Abarrotes, Aseo, Cuidado Personal, Vestuario, Frutas y Verduras, Carnes, Auto, Mascota, Salud, Viajes, Educación, Entretenimiento, Seguros, Regalos y Donaciones, Mantenimiento, Tecnología, Créditos y Deudas.
+
+### `src/components/EgresoCreditos.tsx`
+- Sub‑módulo específico para **Créditos y Deudas**.
+- Permite registrar:
+  - Fecha  
+  - Tipo de deuda  
+  - Monto contado  
+  - Valor crédito  
+  - Número de cuotas  
+  - Valor de la cuota  
+- Calcula automáticamente:
+  - Total del crédito  
+  - Diferencia en dinero  
+  - Diferencia en %  
+  - Tasa mensual efectiva  
+  - Tasa anual efectiva  
+  - Fecha de término del crédito  
+- Muestra los créditos registrados en una tabla.
+
+### `src/components/MenuModulos.tsx`
+- Archivo de navegación principal.
+- Contiene los accesos a los módulos oficiales del sistema:
+  - Finanzas (Ingresos, Egresos, Ahorro Personal, Ahorro Grupal)  
+  - Resumen Financiero  
+  - Colaboradores  
+  - Créditos y Deudas  
+- Implementa navegación dinámica y rol‑based access (según usuario/colaborador).  
+- Es el **punto de entrada institucional** para la experiencia del usuario.
+
+---
+
+## 📌 Próximos pasos
+- Integrar estas tablas en el **Resumen Financiero** para consolidar métricas.  
+- Conectar el módulo de **Créditos** con el panel de **Salud Financiera** para proyectar pagos futuros.  
+- Mantener este documento actualizado con cada cambio estructural en la base de datos o en los archivos de frontend.  
+
+---
