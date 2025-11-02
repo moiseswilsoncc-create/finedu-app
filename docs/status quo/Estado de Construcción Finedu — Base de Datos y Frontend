@@ -1,0 +1,65 @@
+# 📊 Estado de Construcción Finedu — Base de Datos y Frontend
+
+Este documento institucionaliza la estructura actual de **Supabase** y los **archivos de frontend** creados para el proyecto **Finedu**.  
+Incluye los módulos de **Ingresos**, **Egresos**, **Créditos** y el **Resumen Financiero**.
+
+---
+
+## 1. Ingresos
+*(… se mantiene lo ya documentado …)*
+
+---
+
+## 2. Egresos
+*(… se mantiene lo ya documentado …)*
+
+---
+
+## 3. Créditos
+*(… se mantiene lo ya documentado …)*
+
+---
+
+## 4. Archivos de Frontend
+*(… se mantiene lo ya documentado …)*
+
+---
+
+## 5. Resumen Financiero
+
+### Propósito
+El **Resumen Financiero** es un módulo independiente que consolida la información de todos los demás módulos (Ingresos, Egresos, Créditos, Ahorro Personal y Ahorro Grupal).  
+Su objetivo es entregar al usuario una **visión global y en tiempo real** de su situación financiera.
+
+### Métricas consolidadas
+- **Ingresos totales** (sumatoria de todos los ingresos registrados).  
+- **Egresos totales** (sumatoria de todos los gastos registrados).  
+- **Balance neto** (Ingresos – Egresos).  
+- **Ahorro personal y grupal** (sumatoria de ambos submódulos).  
+- **Deudas activas** (total de créditos vigentes).  
+- **Compromiso mensual de deuda** (suma de cuotas de créditos activas).  
+- **Fecha de término de deudas** (máxima entre todas las fechas de término de créditos).  
+
+### Integración con otros módulos
+- **Ingresos** → aporta los montos y tipos de ingreso.  
+- **Egresos** → aporta los gastos clasificados por categoría e ítem.  
+- **Créditos** → aporta el total de deuda, cuotas mensuales y tasas efectivas.  
+- **Ahorro Personal y Grupal** → aportan los montos acumulados de ahorro.  
+
+### Visualización esperada
+- Panel con **gráficos comparativos** (Ingresos vs Egresos, Ahorro vs Deuda).  
+- Indicadores clave en tarjetas:  
+  - Balance mensual  
+  - Total de deudas  
+  - Próximo pago de crédito  
+  - Ahorro acumulado  
+- Alertas de **salud financiera**:  
+  - “Tus egresos superan tus ingresos este mes.”  
+  - “Tienes X cuotas pendientes hasta [fecha].”  
+
+---
+
+## 📌 Próximos pasos
+- Implementar el **Resumen Financiero** como un componente independiente (`ResumenFinanciero.tsx`).  
+- Conectar este componente directamente a Supabase para obtener datos en tiempo real.  
+- Documentar la lógica de consolidación y los cálculos de métricas en este mismo archivo.  
