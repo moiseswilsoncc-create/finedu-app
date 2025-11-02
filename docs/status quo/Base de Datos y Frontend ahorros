@@ -1,0 +1,84 @@
+# 📊 Estado de Construcción Finedu — Base de Datos y Frontend
+
+Este documento institucionaliza la estructura actual de **Supabase** y los **archivos de frontend** creados para el proyecto **Finedu**.  
+Incluye los módulos de **Ingresos**, **Egresos**, **Créditos**, **Ahorro Personal**, **Ahorro Grupal** y el **Resumen Financiero**.
+
+---
+
+## 1. Ingresos
+*(… se mantiene lo ya documentado …)*
+
+---
+
+## 2. Egresos
+*(… se mantiene lo ya documentado …)*
+
+---
+
+## 3. Créditos
+*(… se mantiene lo ya documentado …)*
+
+---
+
+## 4. Ahorro Personal (Ahorro e Inversión)
+*(… se mantiene lo ya documentado …)*
+
+---
+
+## 5. Ahorro Grupal
+
+### Tablas en Supabase
+- **grupos_ahorro**
+  - Define el grupo de ahorro colectivo.
+  - Campos: `id`, `nombre`, `tipo_ahorro`, `meta_total`, `aporte_mensual`, `tasa`, `plazo_meses`, `monto_final`, `fecha_fin`, `administrador_id`, `created_at`.
+
+- **participantes_grupo**
+  - Lista de usuarios que pertenecen a un grupo.
+  - Campos: `id`, `grupo_id`, `usuario_id`, `rol` (administrador o miembro).
+  - Un mismo usuario puede ser **administrador de un grupo** y **miembro en otros** sin limitaciones.
+
+- **aportes_grupales**
+  - Registra cada aporte realizado por los participantes.
+  - Campos: `id`, `grupo_id`, `usuario_id`, `monto`, `fecha`, `descripcion`.
+
+### Roles
+- **Administrador**
+  - Crea el grupo, define meta, tipo de ahorro, tasa y plazo.
+  - Agrega/elimina participantes.
+  - Registra y edita aportes.
+- **Miembros**
+  - Pueden visualizar el progreso del grupo en tiempo real.
+  - No tienen permisos de edición.
+
+### Tipos de ahorro grupal
+- Ahorro normal  
+- Ahorro con interés  
+- Ahorro en UF  
+- APV  
+- Otro (personalizado por el administrador)
+
+### Cálculos proyectados
+- Aporte grupal mensual (participantes × aporte individual).  
+- Meses estimados para alcanzar la meta.  
+- Interés generado (si aplica).  
+- Monto final proyectado.  
+- Fecha estimada de término.  
+
+### Ejemplo de flujo
+1. Juan crea el grupo “Paseo Fin de Año” con meta $2.000.000, tipo “Ahorro con interés”, tasa 3% anual.  
+2. Juan queda como **administrador** en `grupos_ahorro` y también como participante en `participantes_grupo`.  
+3. Agrega a 10 apoderados con sus correos → quedan como **miembros**.  
+4. Cada mes, Juan registra los aportes en `aportes_grupales`.  
+5. Todos los miembros pueden ver el progreso, pero solo Juan puede editar.  
+
+---
+
+## 6. Resumen Financiero
+*(… se mantiene lo ya documentado …)*
+
+---
+
+## 📌 Próximos pasos
+- Integrar Ahorro Grupal al **Resumen Financiero**.  
+- Implementar validación de usuarios en Supabase (solo correos registrados pueden ser agregados a un grupo).  
+- Documentar métricas colectivas: total ahorrado, aportes por usuario, intereses generados y fecha de cumplimiento de la meta.  
