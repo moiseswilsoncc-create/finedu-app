@@ -149,4 +149,23 @@ const EgresoCreditos: React.FC = () => {
               <tr key={i}>
                 <td>{c.fecha}</td>
                 <td>{c.tipo}</td>
-                <td>${c.contado.toLocaleString("es-CL")}</
+                <td>${c.contado.toLocaleString("es-CL")}</td>
+                <td>${c.credito.toLocaleString("es-CL")}</td>
+                <td>{c.cuotas}</td>
+                <td>${c.valorCuota.toLocaleString("es-CL")}</td>
+                <td>${c.totalCredito.toLocaleString("es-CL")}</td>
+                <td>${c.diferencia.toLocaleString("es-CL")}</td>
+                <td>{c.porcentaje.toFixed(2)}%</td>
+                <td>{(c.tasaMensual * 100).toFixed(2)}%</td>
+                <td>{(c.tasaAnual * 100).toFixed(2)}%</td>
+                <td>{c.fechaTermino}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+};
+
+export default EgresoCreditos;
