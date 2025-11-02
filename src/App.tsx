@@ -25,7 +25,7 @@ import IngresoColaborador from "./components/IngresoColaborador";
 import LoginColaborador from "./components/LoginColaborador";
 import PanelColaboradores from "./components/PanelColaboradores";
 import InvitacionColaboradores from "./components/InvitacionColaboradores";
-import OfertasColaborador from "./components/OfertasColaborador";
+import OfertasColaboradores from "./components/OfertasColaboradores";
 import PublicarOfertaColaboradores from "./components/PublicarOfertaColaboradores";
 // 🧩 Institucional
 import DashboardInstitucional from "./institucional/DashboardInstitucional";
