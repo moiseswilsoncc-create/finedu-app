@@ -131,6 +131,13 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
     }
   };
 
+  // Desactivar encuesta (solo institucional)
+  const desactivarEncuesta = async () => {
+    if (!usuarioInstitucional || !encuesta) return;
+    await supabase.from("encuestas_foro").update({ activa: false }).eq("id", encuesta.id);
+    setEncuesta(null);
+  };
+
   return (
     <div style={{ maxWidth: "800px", margin: "2rem auto", padding: "1rem" }}>
       <h2>🗣️ Foro Financiero Comunitario</h2>
@@ -158,6 +165,14 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
           <button onClick={votar} style={{ marginTop: "0.5rem", padding: "0.4rem 1rem" }}>
             Votar
           </button>
+          {usuarioInstitucional && (
+            <button
+              onClick={desactivarEncuesta}
+              style={{ marginLeft: "1rem", padding: "0.4rem 1rem", background: "#e74c3c", color: "white" }}
+            >
+              Desactivar encuesta
+            </button>
+          )}
         </div>
       ) : usuarioInstitucional ? (
         <button
@@ -233,13 +248,4 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
               <p style={{ margin: "0.5rem 0" }}>{c.contenido}</p>
               <small style={{ color: "#636e72" }}>
                 Publicado {new Date(c.fecha).toLocaleString()}
-              </small>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-};
-
-export default ForoFinanciero;
+              </small
