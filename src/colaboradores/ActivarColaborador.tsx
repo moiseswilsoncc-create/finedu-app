@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
-const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
-
 const ActivarColaborador: React.FC = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
