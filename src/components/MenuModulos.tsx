@@ -11,12 +11,16 @@ const todosLosModulos = [
 
   // Módulo central de finanzas
   { ruta: "/finanzas", label: "💵 Finanzas" },
+  { ruta: "/finanzas/ingresos", label: "💰 Ingresos" },
+  { ruta: "/finanzas/egresos", label: "💸 Egresos" },
+  { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
+  { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
+  { ruta: "/finanzas/foro", label: "💬 Foro Financiero" }, // 🔹 Nuevo módulo integrado
 
   // Otros módulos disponibles para usuarios
   { ruta: "/registro-ahorro", label: "💰 Registro de Ahorro" },
   { ruta: "/simulador-inversion", label: "📈 Simulador de Inversión" },
   { ruta: "/test-financiero", label: "🧠 Test Financiero" },
-  { ruta: "/resumen-financiero", label: "📊 Resumen Financiero" },
   { ruta: "/vista-grupal", label: "👨‍👩‍👧‍👦 Vista Grupal" },
   { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
   { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
