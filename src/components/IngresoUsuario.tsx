@@ -28,7 +28,7 @@ function IngresoUsuario({ setPais }: Props) {
   useEffect(() => {
     const todosCompletos = Object.values(datos).every(valor => valor.trim() !== "");
     setCamposCompletos(todosCompletos);
-    setClaveValida(datos.clave.length === 4);
+    setClaveValida(datos.clave.length === 6);
   }, [datos]);
 
   useEffect(() => {
