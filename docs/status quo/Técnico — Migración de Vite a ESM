@@ -1,0 +1,55 @@
+
+y garantiza estabilidad en builds y despliegues futuros.
+
+---
+
+### 📌 Alcance
+- Migrar `vite.config.js` a `vite.config.mjs` (o mantener `.js` pero declarando `"type": "module"` en `package.json`).
+- Reemplazar cualquier uso de `require("vite")` por `import`.
+- Validar compatibilidad con plugins (`@vitejs/plugin-react`, Supabase, etc.).
+- Confirmar que el build en Vercel se ejecuta sin advertencias.
+
+---
+
+### 📋 Tareas
+1. **Revisión inicial**
+   - Identificar si el proyecto usa `"type": "module"` en `package.json`.
+   - Revisar si existen scripts o dependencias que aún usen `require`.
+
+2. **Migración de configuración**
+   - Renombrar `vite.config.js` → `vite.config.mjs`.
+   - Actualizar imports:
+     ```js
+     import { defineConfig } from "vite";
+     import react from "@vitejs/plugin-react";
+
+     export default defineConfig({
+       plugins: [react()],
+     });
+     ```
+
+3. **Ajuste de scripts Node (si aplica)**
+   - Cambiar `const vite = require("vite")` → `import * as vite from "vite";`.
+
+4. **Validación**
+   - Ejecutar `vite build` y confirmar que no aparece la advertencia.
+   - Desplegar en Vercel y validar logs de build.
+
+5. **Documentación**
+   - Registrar en `estadoConstruccionFinedu.md`:
+     - Fecha de migración.
+     - Cambios aplicados.
+     - Confirmación de build limpio.
+
+---
+
+### ✅ Criterios de éxito
+- El proyecto compila sin advertencias de CJS en Vite.  
+- El despliegue en Vercel es exitoso y sin warnings.  
+- La configuración queda documentada como **única fuente oficial** para futuros mantenedores.
+
+---
+
+### 📅 Estado
+- **Pendiente de ejecución** (no bloquea avances actuales).  
+- Se recomienda programar esta migración como **tarea técnica preventiva** antes de la próxima actualización mayor de Vite.
