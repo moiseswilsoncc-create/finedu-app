@@ -1,6 +1,7 @@
+// src/components/Login.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../axiosConfig";
+import { api } from "../axiosConfig"; // ✅ usamos el cliente configurado
 
 function Login() {
   const [correo, setCorreo] = useState("");
@@ -12,7 +13,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("/login", { correo, clave });
+      const response = await api.post("/login", { correo, clave }); // ✅ usamos api
 
       if (response.data.success && response.data.usuario) {
         const { nombre, correo: correoUsuario, tipoUsuario } = response.data.usuario;
@@ -56,14 +57,17 @@ function Login() {
           required
         />
         {error && <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>}
-        <button type="submit" style={{
-          padding: "0.6rem 1.2rem",
-          backgroundColor: "#2980b9",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer"
-        }}>
+        <button
+          type="submit"
+          style={{
+            padding: "0.6rem 1.2rem",
+            backgroundColor: "#2980b9",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer"
+          }}
+        >
           Ingresar
         </button>
         <button
@@ -85,3 +89,4 @@ function Login() {
 }
 
 export default Login;
+
