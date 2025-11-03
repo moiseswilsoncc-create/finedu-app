@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
 
-const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
+
 
 interface Colaborador {
   id: string;
