@@ -4,7 +4,6 @@ import { OfertaColaborador } from "../types";
 
 const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
 const supabaseKey = "TU_API_KEY";
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const EditarOferta: React.FC = () => {
   const [ofertas, setOfertas] = useState<any[]>([]);
