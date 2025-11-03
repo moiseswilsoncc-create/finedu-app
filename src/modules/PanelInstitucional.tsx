@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../supabaseClient";
 import InformeInstitucional from "./InformeInstitucional";
 
-const supabase = createClient(
-  "https://ftsbnorudtcyrrubutt.supabase.co",
-  process.env.SUPABASE_KEY || "TU_API_KEY"
-);
 
 const PanelInstitucional: React.FC = () => {
   const [colaboradores, setColaboradores] = useState<any[]>([]);
