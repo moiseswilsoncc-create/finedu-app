@@ -1,6 +1,7 @@
+// src/components/OfertasColaboradores.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../axiosConfig";
+import { api } from "../axiosConfig"; // ✅ usamos el cliente configurado
 import { supabase } from "../supabaseClient";
 
 const OfertasColaboradores: React.FC = () => {
@@ -38,7 +39,8 @@ const OfertasColaboradores: React.FC = () => {
       return;
     }
 
-    const colaborador = localStorage.getItem("correoColaborador") || "desconocido@finedu.cl";
+    const colaborador =
+      localStorage.getItem("correoColaborador") || "desconocido@finedu.cl";
 
     if (!/\S+@\S+\.\S+/.test(colaborador)) {
       setError("Correo del colaborador no válido.");
@@ -46,7 +48,7 @@ const OfertasColaboradores: React.FC = () => {
     }
 
     try {
-      const response = await axios.post("/guardar-oferta", {
+      const response = await api.post("/guardar-oferta", { // ✅ usamos api
         colaborador,
         tipo,
         titulo,
@@ -78,12 +80,19 @@ const OfertasColaboradores: React.FC = () => {
 
   return (
     <div style={{ padding: "2rem", maxWidth: "700px", margin: "0 auto" }}>
-      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>📢 Publicar datos y ofertas institucionales</h3>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
+        📢 Publicar datos y ofertas institucionales
+      </h3>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      >
         <select value={tipo} onChange={(e) => setTipo(e.target.value)} required>
           <option value="">Selecciona tipo de publicación</option>
           {tiposDisponibles.map((t, index) => (
-            <option key={index} value={t}>{t}</option>
+            <option key={index} value={t}>
+              {t}
+            </option>
           ))}
         </select>
 
@@ -153,14 +162,17 @@ const OfertasColaboradores: React.FC = () => {
         {mensaje && <p style={{ color: "#2ecc71" }}>{mensaje}</p>}
         {error && <p style={{ color: "#e74c3c" }}>{error}</p>}
 
-        <button type="submit" style={{
-          padding: "0.6rem 1.2rem",
-          backgroundColor: "#3498db",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer"
-        }}>
+        <button
+          type="submit"
+          style={{
+            padding: "0.6rem 1.2rem",
+            backgroundColor: "#3498db",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer"
+          }}
+        >
           Publicar oferta
         </button>
       </form>
