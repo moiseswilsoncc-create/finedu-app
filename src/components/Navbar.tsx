@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../supabaseClient";
 
 interface Props {
   tipoUsuario: "usuario" | "colaborador" | "institucional" | null;
