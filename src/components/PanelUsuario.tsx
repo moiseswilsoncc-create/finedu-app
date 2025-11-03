@@ -4,8 +4,6 @@ import AsistenteFinanciero from "./AsistenteFinanciero";
 import { supabase } from "../supabaseClient";
 import { OfertaColaborador } from "../types";
 
-const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
-
 const PanelUsuario: React.FC = () => {
   const navigate = useNavigate();
   const nombreUsuario = localStorage.getItem("nombreUsuario") || "Usuario";
