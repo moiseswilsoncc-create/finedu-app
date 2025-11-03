@@ -232,21 +232,20 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
             }}
           >
             {c.tema}
-          </span>
-        </div>
-        <p style={{ margin: "0.5rem 0" }}>{c.contenido}</p>
-        <small style={{ color: "#636e72" }}>
-          Publicado {new Date(c.fecha).toLocaleString()}
-        </small>
-      </li>
-    ))}
-   </ul>
-    )}
-  </div>   {/* cierre del bloque "no cargando" */}
-  )}          {/* cierre del condicional cargando ? : */}    
-  </div>        {/* cierre del div principal */}
- );
+                    </span>
+                  </div>
+                  <p style={{ margin: "0.5rem 0" }}>{c.contenido}</p>
+                  <small style={{ color: "#636e72" }}>
+                    Publicado {new Date(c.fecha).toLocaleString()}
+                  </small>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>   {/* cierre del bloque "no cargando" */}
+      )}
+    </div>       {/* cierre del div principal */}
+  );
 };
 
 export default ForoFinanciero;
-
