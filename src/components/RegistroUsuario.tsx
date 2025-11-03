@@ -26,7 +26,7 @@ const RegistroUsuario: React.FC = () => {
       return false;
     }
     if (contraseña.length < 6) {
-      setError("La contraseña debe tener al menos 4 caracteres.");
+      setError("La contraseña debe tener al menos 6 caracteres.");
       return false;
     }
     return true;
