@@ -12,7 +12,6 @@ const RegistroUsuario: React.FC = () => {
   const [comuna, setComuna] = useState("");
   const [correo, setCorreo] = useState("");
   const [contraseña, setContraseña] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,11 +21,11 @@ const RegistroUsuario: React.FC = () => {
   const validarFormato = () => {
     const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
     if (!correoValido) {
-      setError("Este correo no existe. Por favor, intenta de nuevo.");
+      navigate("/error-acceso", { state: { mensaje: "Este correo no es válido. Intenta de nuevo." } });
       return false;
     }
     if (contraseña.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+      navigate("/error-acceso", { state: { mensaje: "La contraseña debe tener al menos 6 caracteres." } });
       return false;
     }
     return true;
@@ -34,7 +33,6 @@ const RegistroUsuario: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
 
     if (!validarFormato()) return;
 
@@ -46,13 +44,12 @@ const RegistroUsuario: React.FC = () => {
         .eq("correo", correo);
 
       if (errorBusqueda) {
-        console.error("❌ Error al verificar correo:", errorBusqueda.message);
-        setError("Error al verificar el correo. Intenta más tarde.");
+        navigate("/error-acceso", { state: { mensaje: "Error al verificar el correo. Intenta más tarde." } });
         return;
       }
 
       if (Array.isArray(coincidencias) && coincidencias.length > 0) {
-        setError("Este correo ya está registrado.");
+        navigate("/error-acceso", { state: { mensaje: "Este correo ya está registrado." } });
         return;
       }
 
@@ -79,8 +76,7 @@ const RegistroUsuario: React.FC = () => {
         .select();
 
       if (errorUsuarios || !usuariosData || !usuariosData[0]?.id) {
-        console.error("❌ Error al insertar en usuarios:", errorUsuarios?.message);
-        setError("No se pudo registrar el usuario. Verifica los datos o intenta más tarde.");
+        navigate("/error-acceso", { state: { mensaje: "No se pudo registrar el usuario. Intenta más tarde." } });
         return;
       }
 
@@ -105,8 +101,7 @@ const RegistroUsuario: React.FC = () => {
         ]);
 
       if (errorActivos) {
-        console.error("❌ Error al insertar en usuarios_activos:", errorActivos.message);
-        setError("Error al registrar la activación del usuario.");
+        navigate("/error-acceso", { state: { mensaje: "Error al registrar la activación del usuario." } });
         return;
       }
 
@@ -117,14 +112,14 @@ const RegistroUsuario: React.FC = () => {
       localStorage.setItem("correoUsuario", correo);
       if (grupoId) localStorage.setItem("grupoId", grupoId);
 
-      alert("✅ Registro exitoso!");
-      navigate("/registro-ahorro");
+      // 🚀 Redirigir a pantalla de éxito
+      navigate("/registro-exitoso");
+
     } catch (err) {
       console.error("❌ Error general:", err);
-      setError("Error de conexión con Supabase.");
+      navigate("/error-acceso", { state: { mensaje: "Error de conexión con Supabase." } });
     }
   };
-
   return (
     <div style={{
       maxWidth: "600px",
@@ -168,8 +163,6 @@ const RegistroUsuario: React.FC = () => {
           cursor: "pointer"
         }}>✅ Registrarme ahora</button>
       </form>
-
-      {error && <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>{error}</p>}
     </div>
   );
 };
