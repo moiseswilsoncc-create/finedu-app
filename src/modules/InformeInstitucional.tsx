@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../supabaseClient";
 import MapaCalor from "../components/Visualizaciones/MapaCalor";
 import ExportadorPDF from "../components/Exportador/ExportadorPDF";
-
-const supabase = createClient(
-  "https://ftsbnorudtcyrrubutt.supabase.co",
-  process.env.SUPABASE_KEY || "TU_API_KEY"
-);
 
 const InformeInstitucional: React.FC = () => {
   const [datosGeograficos, setDatosGeograficos] = useState<any[]>([]);
