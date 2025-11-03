@@ -4,7 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 const VistaErrorAcceso: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const mensaje = (location.state as { mensaje?: string })?.mensaje;
+  const state = location.state as { mensaje?: string; origen?: string };
+  const mensaje = state?.mensaje;
+  const origen = state?.origen; // "registro" o "login"
 
   return (
     <div
@@ -25,8 +27,8 @@ const VistaErrorAcceso: React.FC = () => {
         {mensaje || "No pudimos validar tus credenciales o completar el registro."}
       </p>
       <p style={{ marginTop: "1rem", color: "#7f8c8d" }}>
-        Verifica tus datos e inténtalo nuevamente.  
-        Si el problema persiste, utiliza la opción de recuperación de clave.
+        Verifica tus datos e inténtalo nuevamente.
+        {origen === "login" && " Si el problema persiste, utiliza la opción de recuperación de clave."}
       </p>
       <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", justifyContent: "center" }}>
         <button
@@ -42,19 +44,22 @@ const VistaErrorAcceso: React.FC = () => {
         >
           Volver a intentar
         </button>
-        <button
-          onClick={() => navigate("/recuperar-clave")}
-          style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: "#e67e22",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
-        >
-          Recuperar clave
-        </button>
+
+        {origen === "login" && (
+          <button
+            onClick={() => navigate("/recuperar-clave")}
+            style={{
+              padding: "0.6rem 1.2rem",
+              backgroundColor: "#e67e22",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
+          >
+            Recuperar clave
+          </button>
+        )}
       </div>
     </div>
   );
