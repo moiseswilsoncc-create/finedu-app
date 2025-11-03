@@ -32,7 +32,7 @@ const LoginUsuario: React.FC = () => {
         if (nuevosIntentos >= 3) {
           // 🔒 Bloqueo y envío de correo de recuperación
           await supabase.auth.resetPasswordForEmail(correo, {
-            redirectTo: "https://tudominio.com/reset-clave"
+            redirectTo: "https://finedu-app.vercel.app/reset-clave"
           });
           navigate("/error-acceso", {
             state: { mensaje: "Has superado el número de intentos. Te enviamos un correo para restablecer tu clave." }
@@ -59,7 +59,6 @@ const LoginUsuario: React.FC = () => {
       setEnviando(false);
     }
   };
-
   return (
     <form
       onSubmit={handleLogin}
