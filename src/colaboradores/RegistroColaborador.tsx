@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { supabase } from "../supabaseClient";
 
-
-const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
-
 const RegistroColaborador: React.FC = () => {
   const [formulario, setFormulario] = useState({
     nombre: "",
