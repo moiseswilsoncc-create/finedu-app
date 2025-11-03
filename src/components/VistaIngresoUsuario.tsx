@@ -9,29 +9,28 @@ const VistaIngresoUsuario: React.FC = () => {
     const nombre = localStorage.getItem("nombreUsuario");
     setNombreUsuario(nombre);
 
-    // Activar sesión y tipo de usuario
-    localStorage.setItem("tipoUsuario", "usuario");
-    localStorage.setItem("logueado", "true");
-
     // Redirigir automáticamente al panel de usuario
     const timer = setTimeout(() => {
       navigate("/usuario", { replace: true });
-    }, 2500); // Espera 2.5 segundos para mostrar el mensaje
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
-    <div style={{
-      maxWidth: "600px",
-      margin: "3rem auto",
-      padding: "2rem",
-      border: "1px solid #ccc",
-      borderRadius: "12px",
-      textAlign: "center",
-      backgroundColor: "#f9f9f9",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-    }}>
+    <div
+      role="status"
+      style={{
+        maxWidth: "600px",
+        margin: "3rem auto",
+        padding: "2rem",
+        border: "1px solid #ccc",
+        borderRadius: "12px",
+        textAlign: "center",
+        backgroundColor: "#f9f9f9",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+      }}
+    >
       <h2 style={{ color: "#2ecc71" }}>
         🎉 ¡Registro exitoso{nombreUsuario ? `, ${nombreUsuario}` : ""}!
       </h2>
@@ -47,6 +46,20 @@ const VistaIngresoUsuario: React.FC = () => {
       <p style={{ marginTop: "2rem", color: "#888" }}>
         Redirigiendo a tu panel personal...
       </p>
+      <button
+        onClick={() => navigate("/usuario", { replace: true })}
+        style={{
+          marginTop: "1.5rem",
+          padding: "0.6rem 1.2rem",
+          backgroundColor: "#2980b9",
+          color: "white",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer"
+        }}
+      >
+        Ir ahora
+      </button>
     </div>
   );
 };
