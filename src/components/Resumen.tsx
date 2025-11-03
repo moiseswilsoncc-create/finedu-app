@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../supabaseClient";
 import VistaEtapa from "./VistaEtapa";
 import VistaGrupal from "./VistaGrupal";
 
