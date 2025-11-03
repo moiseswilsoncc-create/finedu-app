@@ -1,4 +1,4 @@
-// Archivo: src/App.tsx
+// src/App.tsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -8,7 +8,7 @@ import RegistroUsuario from "./components/RegistroUsuario";
 import LoginUsuario from "./components/LoginUsuario";
 import PanelUsuario from "./components/PanelUsuario";
 
-// 🧩 Módulo Finanzas (corazón del sistema)
+// 🧩 Módulo Finanzas
 import Finanzas from "./components/Finanzas";
 import Ingresos from "./components/Ingresos";
 import Egresos from "./components/Egresos";
@@ -25,7 +25,7 @@ import IngresoColaborador from "./components/IngresoColaborador";
 import LoginColaborador from "./components/LoginColaborador";
 import PanelColaboradores from "./components/PanelColaboradores";
 import InvitacionColaboradores from "./components/InvitacionColaboradores";
-import OfertasColaboradores from "./components/OfertasColaboradores";
+import OfertasColaboradores from "./components/OfertasColaboradores"; // usado en /datos-ofertas
 import PublicarOfertaColaborador from "./components/PublicarOfertaColaborador";
 
 // 🧩 Institucional
@@ -35,11 +35,11 @@ import EditorTrazabilidad from "./institucional/EditorTrazabilidad";
 import MetricaSupabase from "./institucional/MetricaSupabase";
 import TestInstitucional from "./institucional/TestInstitucional";
 
-// 🧩 Menú y navegación
+// 🧩 Navegación
 import MenuModulos from "./components/MenuModulos";
 import Navbar from "./components/Navbar";
 
-console.log("🧼 App.tsx actualizado: mapa maestro con todas las rutas activas");
+console.log("🧼 App.tsx actualizado: rutas oficiales consolidadas");
 
 // 🔒 Ruta protegida: solo permite acceso si hay usuario logueado
 const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -115,6 +115,9 @@ const App: React.FC = () => {
         <Route path="/invitacion-colaboradores" element={<InvitacionColaboradores />} />
         <Route path="/ofertas-colaboradores" element={<OfertasColaboradores />} />
         <Route path="/publicar-oferta-colaborador" element={<PublicarOfertaColaborador />} />
+
+        {/* 🔹 Nueva ruta oficial para publicar ofertas */}
+        <Route path="/datos-ofertas" element={<OfertasColaboradores />} />
 
         {/* Institucional */}
         <Route path="/dashboard-institucional" element={<DashboardInstitucional />} />
