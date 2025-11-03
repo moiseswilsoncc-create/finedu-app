@@ -4,12 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import "../styles/MenuModulos.css";
 
-// ⚠️ Reemplaza TU_API_KEY por la clave pública de tu proyecto
-const supabase = createClient(
-  "https://ftsbnorudtcyrrubutt.supabase.co",
-  "TU_API_KEY"
-);
-
 // 📌 Lista de módulos visibles para USUARIOS
 // 🔹 Se eliminaron módulos de colaboradores, institucionales y validación técnica
 const todosLosModulos = [
