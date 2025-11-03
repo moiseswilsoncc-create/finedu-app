@@ -1,9 +1,15 @@
+# 🛠️ Milestone Técnico — Migración de Vite a ESM
+
+## 🎯 Objetivo
+Asegurar la compatibilidad futura del proyecto con las versiones más recientes de **Vite**, migrando la configuración de **CommonJS (CJS)** a **ECMAScript Modules (ESM)**.  
+Esto elimina la advertencia actual:
+
 
 y garantiza estabilidad en builds y despliegues futuros.
 
 ---
 
-### 📌 Alcance
+## 📌 Alcance
 - Migrar `vite.config.js` a `vite.config.mjs` (o mantener `.js` pero declarando `"type": "module"` en `package.json`).
 - Reemplazar cualquier uso de `require("vite")` por `import`.
 - Validar compatibilidad con plugins (`@vitejs/plugin-react`, Supabase, etc.).
@@ -11,7 +17,7 @@ y garantiza estabilidad en builds y despliegues futuros.
 
 ---
 
-### 📋 Tareas
+## 📋 Tareas
 1. **Revisión inicial**
    - Identificar si el proyecto usa `"type": "module"` en `package.json`.
    - Revisar si existen scripts o dependencias que aún usen `require`.
@@ -43,13 +49,13 @@ y garantiza estabilidad en builds y despliegues futuros.
 
 ---
 
-### ✅ Criterios de éxito
+## ✅ Criterios de éxito
 - El proyecto compila sin advertencias de CJS en Vite.  
 - El despliegue en Vercel es exitoso y sin warnings.  
 - La configuración queda documentada como **única fuente oficial** para futuros mantenedores.
 
 ---
 
-### 📅 Estado
+## 📅 Estado
 - **Pendiente de ejecución** (no bloquea avances actuales).  
 - Se recomienda programar esta migración como **tarea técnica preventiva** antes de la próxima actualización mayor de Vite.
