@@ -1,11 +1,12 @@
 // src/axiosConfig.ts
 import axios from "axios";
 
-const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // 👈 cambio clave
+// ✅ Usamos import.meta.env en lugar de process.env
+const apiUrl = import.meta.env.VITE_API_URL;
+
+export const api = axios.create({
+  baseURL: apiUrl,
   headers: {
     "Content-Type": "application/json",
   },
 });
-
-export default instance;
