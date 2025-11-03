@@ -1,4 +1,3 @@
-// src/components/Finanza.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -117,13 +116,12 @@ const Finanza: React.FC<{ pais: string }> = ({ pais }) => {
   }, []);
 
   const modulos = [
-    { titulo: "💵 Ingresos", ruta: "/ingresos", descripcion: "Registra y gestiona tus ingresos" },
-    { titulo: "💸 Egresos", ruta: "/egresos", descripcion: "Controla tus gastos y compromisos" },
+    { titulo: "💵 Ingresos", ruta: "/finanzas/ingresos", descripcion: "Registra y gestiona tus ingresos" },
+    { titulo: "💸 Egresos", ruta: "/finanzas/egresos", descripcion: "Controla tus gastos y compromisos" },
     { titulo: "🤝 Ofertas de Colaboradores", ruta: "/ofertas-colaboradores", descripcion: "Accede a oportunidades y beneficios" },
-    { titulo: "💳 Simulador de Créditos", ruta: "/creditos", descripcion: "Simula créditos y cuotas" },
-    { titulo: "📊 Resumen Financiero", ruta: "/", descripcion: "Tu salud financiera consolidada" },
+    { titulo: "💳 Simulador de Créditos", ruta: "/finanzas/creditos", descripcion: "Simula créditos y cuotas" },
+    { titulo: "📊 Resumen Financiero", ruta: "/finanzas/resumen", descripcion: "Tu salud financiera consolidada" },
   ];
-
   return (
     <div style={containerStyle}>
       <h2 style={titleStyle}>🩺 Tu Salud Financiera</h2>
