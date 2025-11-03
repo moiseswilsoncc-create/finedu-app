@@ -1,6 +1,6 @@
 // src/components/InvitacionColaboradores.tsx
 import React, { useState } from "react";
-import axios from "../axiosConfig";
+import { api } from "../axiosConfig"; // ✅ usamos el cliente configurado
 
 const InvitacionColaboradores: React.FC = () => {
   const [correo, setCorreo] = useState("");
@@ -27,7 +27,7 @@ const InvitacionColaboradores: React.FC = () => {
     }
 
     try {
-      const res = await axios.post("/api/invitar-colaborador", {
+      const res = await api.post("/api/invitar-colaborador", {
         correo,
         institucion,
         rol,
@@ -52,7 +52,10 @@ const InvitacionColaboradores: React.FC = () => {
   return (
     <div style={{ padding: "2rem", maxWidth: "600px", margin: "0 auto" }}>
       <h3 style={{ marginBottom: "1rem" }}>📨 Invitar nuevo colaborador</h3>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      >
         <input
           type="email"
           placeholder="Correo del colaborador"
