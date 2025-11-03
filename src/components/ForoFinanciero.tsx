@@ -240,12 +240,14 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
                   </small>
                 </li>
               ))}
-            </ul>
+           </ul>
           )}
-        </div>   
-      )}         {/* cierre del bloque "no cargando" */} 
-    </div>       
-  );        {/* cierre del div principal */}  
+        </div>
+        {/* cierre del bloque "no cargando" */}
+      )}
+    </div>
+    {/* cierre del div principal */}
+  );
 };
 
 export default ForoFinanciero;
