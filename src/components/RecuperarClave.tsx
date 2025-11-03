@@ -1,52 +1,55 @@
 // src/components/RecuperarClave.tsx
 import React, { useState } from "react";
-import { api } from "../axiosConfig"; // ✅ usamos el cliente configurado
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient"; // ✅ usamos Supabase directo
 
-function RecuperarClave() {
+const RecuperarClave: React.FC = () => {
   const [correo, setCorreo] = useState("");
   const [enviado, setEnviado] = useState(false);
-  const [error, setError] = useState("");
+  const [enviando, setEnviando] = useState(false);
   const navigate = useNavigate();
-
-  const listaAutorizada = [
-    "usuario@finedu.cl",
-    "colaborador@finedu.cl",
-    "admin@finedu.cl"
-    // Puedes ampliar esta lista o conectarla a una API
-  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!correo.includes("@")) {
-      setError("Por favor ingresa un correo válido.");
-      return;
-    }
-
-    if (!listaAutorizada.includes(correo)) {
-      setError("Este correo no está autorizado por Finedu.");
-      return;
-    }
+    setEnviando(true);
 
     try {
-      const response = await api.post("/recuperar-clave", { correo }); // ✅ usamos api
+      // 1. Validar si el correo existe en la tabla usuarios
+      const { data: usuario, error: errorBusqueda } = await supabase
+        .from("usuarios")
+        .select("id")
+        .eq("correo", correo)
+        .single();
 
-      if (response.data.success) {
-        setEnviado(true);
-        setError("");
-        console.log("Enlace de recuperación enviado a:", correo);
-
-        // Simulación: redirige con token ficticio
-        setTimeout(() => {
-          navigate(`/nueva-clave?token=${response.data.token}&correo=${correo}`);
-        }, 2000);
-      } else {
-        setError("❌ El correo no está registrado.");
+      if (errorBusqueda || !usuario) {
+        navigate("/error-acceso", {
+          state: { mensaje: "❌ Este correo no está registrado en Finedu.", origen: "login" }
+        });
+        return;
       }
+
+      // 2. Enviar correo de recuperación con Supabase Auth
+      const { error } = await supabase.auth.resetPasswordForEmail(correo, {
+        redirectTo: "https://finedu-app.vercel.app/nueva-clave"
+      });
+
+      if (error) {
+        navigate("/error-acceso", {
+          state: { mensaje: "❌ No se pudo enviar el correo de recuperación.", origen: "login" }
+        });
+        return;
+      }
+
+      // ✅ Éxito
+      setEnviado(true);
+
     } catch (err) {
-      console.error("Error de conexión:", err);
-      setError("No se pudo conectar con el servidor.");
+      console.error("Error inesperado:", err);
+      navigate("/error-acceso", {
+        state: { mensaje: "❌ Error inesperado al intentar recuperar la clave.", origen: "login" }
+      });
+    } finally {
+      setEnviando(false);
     }
   };
 
@@ -58,7 +61,8 @@ function RecuperarClave() {
         padding: "2rem",
         backgroundColor: "#fefefe",
         borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        textAlign: "center"
       }}
     >
       <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
@@ -72,39 +76,40 @@ function RecuperarClave() {
         >
           <input
             type="email"
-            placeholder="Correo institucional"
+            placeholder="Correo registrado en Finedu"
             value={correo}
             onChange={(e) => setCorreo(e.target.value)}
             required
+            style={{
+              padding: "0.6rem",
+              borderRadius: "6px",
+              border: "1px solid #ccc"
+            }}
           />
-
-          {error && (
-            <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>
-          )}
 
           <button
             type="submit"
+            disabled={enviando}
             style={{
               padding: "0.6rem 1.2rem",
-              backgroundColor: "#3498db",
+              backgroundColor: enviando ? "#ccc" : "#3498db",
               color: "white",
               border: "none",
               borderRadius: "6px",
-              cursor: "pointer"
+              cursor: enviando ? "not-allowed" : "pointer"
             }}
           >
-            Enviar enlace de recuperación
+            {enviando ? "Enviando..." : "Enviar enlace de recuperación"}
           </button>
         </form>
       ) : (
         <p style={{ fontSize: "1.1rem", color: "#2ecc71" }}>
-          Hemos enviado un enlace temporal a <strong>{correo}</strong>. Revisa tu
-          bandeja de entrada y sigue las instrucciones para crear una nueva
-          contraseña.
+          ✅ Hemos enviado un enlace temporal a <strong>{correo}</strong>.  
+          Revisa tu bandeja de entrada y sigue las instrucciones para crear una nueva contraseña.
         </p>
       )}
     </div>
   );
-}
+};
 
 export default RecuperarClave;
