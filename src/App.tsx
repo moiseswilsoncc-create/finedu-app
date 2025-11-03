@@ -69,8 +69,9 @@ const App: React.FC = () => {
         <Route path="/login-colaborador" element={<LoginColaborador />} />
         <Route path="/panel-colaboradores" element={<PanelColaboradores />} />
         <Route path="/invitacion-colaboradores" element={<InvitacionColaboradores />} />
-        <Route path="/ofertas" element={<OfertaColaboradores />} />
-        <Route path="/publicar" element={<PublicarOfertaColaborador />} />
+        <Route path="/oferta-colaboradores" element={<OfertaColaboradores />} />
+        <Route path="/publicar-oferta-colaborador" element={<PublicarOfertaColaborador />} />
+
 
         {/* Institucional */}
         <Route path="/dashboard-institucional" element={<DashboardInstitucional />} />
