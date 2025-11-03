@@ -1,6 +1,6 @@
 // Archivo: src/App.tsx
 import React from "react";
-import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 // 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
@@ -40,9 +40,10 @@ import MenuModulos from "./components/MenuModulos";
 import Navbar from "./components/Navbar";
 
 console.log("🧼 App.tsx actualizado: mapa maestro con todas las rutas activas");
+
 const App: React.FC = () => {
   return (
-    <Router>
+    <>
       <Navbar />
       <MenuModulos />
       <Routes>
@@ -60,6 +61,7 @@ const App: React.FC = () => {
         <Route path="/finanzas/egresos" element={<Egresos />} />
         <Route path="/finanzas/resumen" element={<ResumenFinanciero />} />
         <Route path="/finanzas/creditos" element={<SimuladorCreditos />} />
+
         {/* Otros módulos de usuario */}
         <Route path="/vista-grupal" element={<VistaGrupal />} />
         <Route path="/admin-grupo" element={<AdminGrupo />} />
@@ -73,7 +75,6 @@ const App: React.FC = () => {
         <Route path="/ofertas-colaboradores" element={<OfertasColaboradores />} />
         <Route path="/publicar-oferta-colaborador" element={<PublicarOfertaColaborador />} />
 
-
         {/* Institucional */}
         <Route path="/dashboard-institucional" element={<DashboardInstitucional />} />
         <Route path="/editor-estado" element={<EditorEstadoArchivos />} />
@@ -84,7 +85,7 @@ const App: React.FC = () => {
         {/* Menú de módulos */}
         <Route path="/menu-modulos" element={<MenuModulos />} />
       </Routes>
-    </Router>
+    </>
   );
 };
 
