@@ -11,7 +11,7 @@ const VistaIngresoUsuario: React.FC = () => {
 
     // Redirigir automáticamente al panel de usuario
     const timer = setTimeout(() => {
-      navigate("/usuario", { replace: true });
+      navigate("/panel-usuario", { replace: true });
     }, 2500);
 
     return () => clearTimeout(timer);
@@ -47,7 +47,7 @@ const VistaIngresoUsuario: React.FC = () => {
         Redirigiendo a tu panel personal...
       </p>
       <button
-        onClick={() => navigate("/usuario", { replace: true })}
+        onClick={() => navigate("/panel-usuario", { replace: true })}
         style={{
           marginTop: "1.5rem",
           padding: "0.6rem 1.2rem",
