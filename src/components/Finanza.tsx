@@ -27,11 +27,23 @@ const Finanza: React.FC<{ pais: string }> = ({ pais }) => {
       const hoy = new Date();
 
       // Ingresos y egresos actuales
-      const { data: ingresosData } = await supabase.from("ingresos").select("monto").eq("usuario_id", usuarioId);
-      const { data: egresosData } = await supabase.from("egresos").select("monto").eq("usuario_id", usuarioId);
+      const { data: ingresosData } = await supabase
+        .from("ingresos")
+        .select("monto")
+        .eq("usuario_id", usuarioId);
 
-      const totalIngresos = ingresosData?.reduce((sum, i) => sum + i.monto, 0) || 0;
-      const totalEgresos = egresosData?.reduce((sum, e) => sum + e.monto, 0) || 0;
+      const { data: egresosData } = await supabase
+        .from("egresos")
+        .select("monto")
+        .eq("usuario_id", usuarioId);
+
+      const totalIngresos = Array.isArray(ingresosData)
+        ? ingresosData.reduce((sum, i) => sum + i.monto, 0)
+        : 0;
+
+      const totalEgresos = Array.isArray(egresosData)
+        ? egresosData.reduce((sum, e) => sum + e.monto, 0)
+        : 0;
 
       setIngresos(totalIngresos);
       setEgresos(totalEgresos);
@@ -78,8 +90,14 @@ const Finanza: React.FC<{ pais: string }> = ({ pais }) => {
           .gte("fecha", new Date(fecha.getFullYear(), fecha.getMonth(), 1).toISOString())
           .lte("fecha", new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0).toISOString());
 
-        const totalIng = ingresosMes?.reduce((sum, i) => sum + i.monto, 0) || 0;
-        const totalEgr = egresosMes?.reduce((sum, e) => sum + e.monto, 0) || 0;
+        const totalIng = Array.isArray(ingresosMes)
+          ? ingresosMes.reduce((sum, i) => sum + i.monto, 0)
+          : 0;
+
+        const totalEgr = Array.isArray(egresosMes)
+          ? egresosMes.reduce((sum, e) => sum + e.monto, 0)
+          : 0;
+
         const saldoMes = totalIng - totalEgr;
 
         let iconoMes = "👍";
@@ -101,7 +119,7 @@ const Finanza: React.FC<{ pais: string }> = ({ pais }) => {
   const modulos = [
     { titulo: "💵 Ingresos", ruta: "/ingresos", descripcion: "Registra y gestiona tus ingresos" },
     { titulo: "💸 Egresos", ruta: "/egresos", descripcion: "Controla tus gastos y compromisos" },
-    { titulo: "🤝 Ofertas de Colaboradores", ruta: "/ofertas", descripcion: "Accede a oportunidades y beneficios" },
+    { titulo: "🤝 Ofertas de Colaboradores", ruta: "/ofertas-colaboradores", descripcion: "Accede a oportunidades y beneficios" },
     { titulo: "💳 Simulador de Créditos", ruta: "/creditos", descripcion: "Simula créditos y cuotas" },
     { titulo: "📊 Resumen Financiero", ruta: "/", descripcion: "Tu salud financiera consolidada" },
   ];
@@ -116,7 +134,7 @@ const Finanza: React.FC<{ pais: string }> = ({ pais }) => {
         Tu estado actual: <strong>{icono}</strong> {mensaje}
       </p>
       <p style={{ color: "#2c3e50", marginBottom: "2rem" }}>
-        Saldo disponible: {formatearMoneda(saldoActual, pais)}
+        Saldo disponible: {pais ? formatearMoneda(saldoActual, pais) : saldoActual}
       </p>
 
       {alerta && (
@@ -127,28 +145,30 @@ const Finanza: React.FC<{ pais: string }> = ({ pais }) => {
 
       <h3>📊 Últimos 3 meses</h3>
       <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem" }}>
-        {historico.map((h, i) => (
-          <div key={i} style={miniCard}>
-            <strong>{h.mes}</strong> <br /> {h.icono}
-          </div>
-        ))}
+        {Array.isArray(historico) &&
+          historico.map((h, i) => (
+            <div key={i} style={miniCard}>
+              <strong>{h.mes}</strong> <br /> {h.icono}
+            </div>
+          ))}
       </div>
 
       <h3>📌 Indicadores rápidos</h3>
       <div style={kpiGrid}>
-        <div style={kpiCard}>💵 Ingresos: {formatearMoneda(ingresos, pais)}</div>
-        <div style={kpiCard}>💸 Egresos: {formatearMoneda(egresos, pais)}</div>
-        <div style={kpiCard}>📊 Saldo: {formatearMoneda(saldoActual, pais)}</div>
+        <div style={kpiCard}>💵 Ingresos: {pais ? formatearMoneda(ingresos, pais) : ingresos}</div>
+        <div style={kpiCard}>💸 Egresos: {pais ? formatearMoneda(egresos, pais) : egresos}</div>
+        <div style={kpiCard}>📊 Saldo: {pais ? formatearMoneda(saldoActual, pais) : saldoActual}</div>
       </div>
 
       <h3 style={{ marginTop: "2rem" }}>📂 Módulos disponibles</h3>
       <div style={gridStyle}>
-        {modulos.map((m, index) => (
-          <div key={index} style={cardStyle} onClick={() => navigate(m.ruta)}>
-            <h3>{m.titulo}</h3>
-            <p>{m.descripcion}</p>
-          </div>
-        ))}
+        {Array.isArray(modulos) &&
+          modulos.map((m, index) => (
+            <div key={index} style={cardStyle} onClick={() => navigate(m.ruta)}>
+              <h3>{m.titulo}</h3>
+              <p>{m.descripcion}</p>
+            </div>
+          ))}
       </div>
     </div>
   );
@@ -203,5 +223,3 @@ const kpiCard = {
 };
 
 export default Finanza;
-
-
