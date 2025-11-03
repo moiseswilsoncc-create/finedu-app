@@ -240,7 +240,7 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
               ))}
             </ul>
           )}
-        </>
+        </div>
       )}
     </div>
   );
