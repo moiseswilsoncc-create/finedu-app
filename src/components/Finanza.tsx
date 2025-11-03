@@ -168,5 +168,39 @@ const titleStyle = {
 const gridStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
- gap: "1.5rem",
+  gap: "1.5rem",
+};
+
+const cardStyle = {
+  background: "#f9f9f9",
+  padding: "1rem",
+  borderRadius: "8px",
+  cursor: "pointer",
+  boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+};
+
+const miniCard = {
+  background: "#ecf0f1",
+  padding: "0.5rem 1rem",
+  borderRadius: "6px",
+  textAlign: "center" as const,
+  flex: 1,
+};
+
+const kpiGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+  gap: "1rem",
+  marginBottom: "2rem",
+};
+
+const kpiCard = {
+  background: "#f4f6f7",
+  padding: "1rem",
+  borderRadius: "8px",
+  textAlign: "center" as const,
+  fontWeight: "bold" as const,
+};
+
+export default Finanza;
 
