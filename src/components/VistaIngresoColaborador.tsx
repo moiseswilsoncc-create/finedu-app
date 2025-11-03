@@ -4,7 +4,6 @@ import { supabase } from "../supabaseClient";
 
 const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
 const supabaseKey = "TU_API_KEY"; // 🔒 Reemplazar con variable segura
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const VistaIngresoColaborador: React.FC = () => {
   const navigate = useNavigate();
