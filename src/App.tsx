@@ -14,10 +14,7 @@ import Ingresos from "./components/Ingresos";
 import Egresos from "./components/Egresos";
 import ResumenFinanciero from "./components/ResumenFinanciero";
 import SimuladorCreditos from "./components/SimuladorCreditos";
-
-// 🧩 Otros módulos de usuario
-import VistaGrupal from "./components/VistaGrupal";
-import AdminGrupo from "./components/AdminGrupo";
+import ForoFinanciero from "./components/ForoFinanciero"; // 🔹 Integrado en Finanzas
 
 // 🧩 Colaboradores
 import RegistroColaborador from "./components/RegistroColaborador";
@@ -25,7 +22,7 @@ import IngresoColaborador from "./components/IngresoColaborador";
 import LoginColaborador from "./components/LoginColaborador";
 import PanelColaboradores from "./components/PanelColaboradores";
 import InvitacionColaboradores from "./components/InvitacionColaboradores";
-import OfertasColaboradores from "./components/OfertasColaboradores"; // usado en /datos-ofertas
+import OfertasColaboradores from "./components/OfertasColaboradores";
 import PublicarOfertaColaborador from "./components/PublicarOfertaColaborador";
 
 // 🧩 Institucional
@@ -41,7 +38,7 @@ import Navbar from "./components/Navbar";
 
 console.log("🧼 App.tsx actualizado: rutas oficiales consolidadas");
 
-// 🔒 Ruta protegida: solo permite acceso si hay usuario logueado
+// 🔒 Ruta protegida
 const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const usuarioId = localStorage.getItem("usuarioId");
   return usuarioId ? <>{children}</> : <Navigate to="/login-usuario" replace />;
@@ -53,7 +50,7 @@ const App: React.FC = () => {
       <Navbar />
       <MenuModulos />
       <Routes>
-        {/* Bienvenida siempre en la raíz */}
+        {/* Bienvenida */}
         <Route path="/" element={<Bienvenida />} />
 
         {/* Usuarios */}
@@ -102,10 +99,14 @@ const App: React.FC = () => {
             </RutaProtegida>
           }
         />
-
-        {/* Otros módulos de usuario */}
-        <Route path="/vista-grupal" element={<VistaGrupal />} />
-        <Route path="/admin-grupo" element={<AdminGrupo />} />
+        <Route
+          path="/finanzas/foro"
+          element={
+            <RutaProtegida>
+              <ForoFinanciero />
+            </RutaProtegida>
+          }
+        />
 
         {/* Colaboradores */}
         <Route path="/registro-colaborador" element={<RegistroColaborador />} />
@@ -115,8 +116,6 @@ const App: React.FC = () => {
         <Route path="/invitacion-colaboradores" element={<InvitacionColaboradores />} />
         <Route path="/ofertas-colaboradores" element={<OfertasColaboradores />} />
         <Route path="/publicar-oferta-colaborador" element={<PublicarOfertaColaborador />} />
-
-        {/* 🔹 Nueva ruta oficial para publicar ofertas */}
         <Route path="/datos-ofertas" element={<OfertasColaboradores />} />
 
         {/* Institucional */}
