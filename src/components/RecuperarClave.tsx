@@ -1,5 +1,6 @@
+// src/components/RecuperarClave.tsx
 import React, { useState } from "react";
-import axios from "../axiosConfig";
+import { api } from "../axiosConfig"; // ✅ usamos el cliente configurado
 import { useNavigate } from "react-router-dom";
 
 function RecuperarClave() {
@@ -29,7 +30,7 @@ function RecuperarClave() {
     }
 
     try {
-      const response = await axios.post("/recuperar-clave", { correo });
+      const response = await api.post("/recuperar-clave", { correo }); // ✅ usamos api
 
       if (response.data.success) {
         setEnviado(true);
@@ -50,18 +51,25 @@ function RecuperarClave() {
   };
 
   return (
-    <div style={{
-      maxWidth: "500px",
-      margin: "3rem auto",
-      padding: "2rem",
-      backgroundColor: "#fefefe",
-      borderRadius: "12px",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-    }}>
-      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>🔁 Recuperar contraseña</h3>
+    <div
+      style={{
+        maxWidth: "500px",
+        margin: "3rem auto",
+        padding: "2rem",
+        backgroundColor: "#fefefe",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+      }}
+    >
+      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
+        🔁 Recuperar contraseña
+      </h3>
 
       {!enviado ? (
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+        >
           <input
             type="email"
             placeholder="Correo institucional"
@@ -70,22 +78,29 @@ function RecuperarClave() {
             required
           />
 
-          {error && <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>}
+          {error && (
+            <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>
+          )}
 
-          <button type="submit" style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: "#3498db",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}>
+          <button
+            type="submit"
+            style={{
+              padding: "0.6rem 1.2rem",
+              backgroundColor: "#3498db",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
+          >
             Enviar enlace de recuperación
           </button>
         </form>
       ) : (
         <p style={{ fontSize: "1.1rem", color: "#2ecc71" }}>
-          Hemos enviado un enlace temporal a <strong>{correo}</strong>. Revisa tu bandeja de entrada y sigue las instrucciones para crear una nueva contraseña.
+          Hemos enviado un enlace temporal a <strong>{correo}</strong>. Revisa tu
+          bandeja de entrada y sigue las instrucciones para crear una nueva
+          contraseña.
         </p>
       )}
     </div>
