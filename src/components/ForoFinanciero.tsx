@@ -205,49 +205,47 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
   </button>
 </div>
 
-{/* -------------------- Lista de comentarios -------------------- */}
-{comentarios.length === 0 ? (
-  <p>No hay comentarios vigentes. Sé el primero en compartir.</p>
-) : (
-  <ul style={{ listStyle: "none", padding: 0 }}>
-    {comentarios.map((c) => (
-      <li
-        key={c.id}
-        style={{
-          marginBottom: "1.5rem",
-          border: "1px solid #e0e0e0",
-          borderRadius: "8px",
-          padding: "1rem",
-          backgroundColor: "#fafafa",
-        }}
-      >
-        <div style={{ marginBottom: "0.5rem" }}>
-          <strong>{c.autor}</strong>{" "}
-          <span
-            style={{
-              marginLeft: "0.5rem",
-              background: "#dfe6e9",
-              padding: "0.2rem 0.5rem",
-              borderRadius: "4px",
-            }}
-          >
-            {c.tema}
-                    </span>
-                  </div>
-                  <p style={{ margin: "0.5rem 0" }}>{c.contenido}</p>
-                  <small style={{ color: "#636e72" }}>
-                    Publicado {new Date(c.fecha).toLocaleString()}
-                  </small>
-                </li>
-              ))}
-           </ul>
-          )}
-        </div>
-        {/* cierre del bloque "no cargando" */}
-      )}
-    </div>
-    {/* cierre del div principal */}
-  );
+{/* Lista de comentarios */}
+        {comentarios.length === 0 ? (
+          <p>No hay comentarios vigentes. Sé el primero en compartir.</p>
+        ) : (
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {comentarios.map((c) => (
+              <li
+                key={c.id}
+                style={{
+                  marginBottom: "1.5rem",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: "8px",
+                  padding: "1rem",
+                  backgroundColor: "#fafafa",
+                }}
+              >
+                <div style={{ marginBottom: "0.5rem" }}>
+                  <strong>{c.autor}</strong>{" "}
+                  <span
+                    style={{
+                      marginLeft: "0.5rem",
+                      background: "#dfe6e9",
+                      padding: "0.2rem 0.5rem",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    {c.tema}
+                  </span>
+                </div>
+                <p style={{ margin: "0.5rem 0" }}>{c.contenido}</p>
+                <small style={{ color: "#636e72" }}>
+                  Publicado {new Date(c.fecha).toLocaleString()}
+                </small>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )}
+  </div>
+);
 };
 
 export default ForoFinanciero;
