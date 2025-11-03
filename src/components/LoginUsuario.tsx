@@ -25,9 +25,9 @@ const LoginUsuario: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 🔐 Validación estricta: clave numérica de 4 dígitos
+    // 🔐 Validación estricta: clave numérica de 6 dígitos
     if (!/^\d{4}$/.test(clave)) {
-      setError("La clave debe ser numérica y de 4 dígitos.");
+      setError("La clave debe ser numérica y de 6 dígitos.");
       return;
     }
 
@@ -92,7 +92,7 @@ const LoginUsuario: React.FC = () => {
         />
         <input
           type="password"
-          placeholder="Clave personal (4 dígitos)"
+          placeholder="Clave personal (6 dígitos)"
           value={clave}
           onChange={(e) => setClave(e.target.value)}
           required
