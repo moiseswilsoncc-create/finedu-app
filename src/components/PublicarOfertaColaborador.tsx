@@ -3,8 +3,6 @@ import { supabase } from "../supabaseClient";
 import axios from "../axiosConfig";
 import { OfertaColaborador } from "../types";
 
-const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
-
 const PublicarOfertaColaborador: React.FC = () => {
   const [oferta, setOferta] = useState<OfertaColaborador>({
     titulo: "",
