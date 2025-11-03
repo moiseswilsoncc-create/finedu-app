@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
+import { supabase } from "../supabaseClient";
 
 interface Archivo {
   id: string;
