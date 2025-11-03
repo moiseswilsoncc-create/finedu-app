@@ -1,7 +1,6 @@
 // src/components/OfertasColaboradores.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../axiosConfig"; // ✅ usamos el cliente configurado
 import { supabase } from "../supabaseClient";
 
 const OfertasColaboradores: React.FC = () => {
@@ -48,33 +47,42 @@ const OfertasColaboradores: React.FC = () => {
     }
 
     try {
-      const response = await api.post("/guardar-oferta", { // ✅ usamos api
-        colaborador,
-        tipo,
-        titulo,
-        descripcion,
-        ciudad,
-        pais,
-        fecha_expiracion: fechaExpiracion
-      });
+      const { data, error: supaError } = await supabase
+        .from("ofertas_colaborador")
+        .insert([
+          {
+            correo: colaborador,
+            institucion: titulo, // puedes mapear a otro campo si prefieres
+            rol: tipo,
+            fecha_invitacion: new Date().toISOString(),
+            expira: fechaExpiracion,
+          },
+        ]);
 
-      if (response.data.mensaje) {
-        setMensaje("✅ Oferta publicada correctamente.");
-        setError("");
-        // Limpiar formulario
-        setTipo("");
-        setTitulo("");
-        setDescripcion("");
-        setPais("Chile");
-        setCiudad("Santiago");
-        setFechaExpiracion("");
-        setTimeout(() => navigate("/panel-colaboradores"), 2000);
-      } else {
-        setError("❌ No se pudo guardar la oferta.");
+      if (supaError) {
+        console.error("Error Supabase:", supaError.message);
+        setError("❌ No se pudo guardar la oferta. Intenta nuevamente.");
+        return;
       }
-    } catch (err) {
-      console.error("Error al guardar:", err);
-      setError("Error de conexión con el servidor.");
+
+      console.log("Oferta guardada:", data);
+      setMensaje("✅ Oferta publicada correctamente.");
+      setError("");
+
+      // Limpiar formulario
+      setTipo("");
+      setTitulo("");
+      setDescripcion("");
+      setPais("Chile");
+      setCiudad("Santiago");
+      setFechaExpiracion("");
+
+      // Redirigir al panel tras 2s
+      setTimeout(() => navigate("/panel-colaboradores"), 2000);
+
+    } catch (err: any) {
+      console.error("Error inesperado:", err);
+      setError("⚠️ Error inesperado al guardar la oferta.");
     }
   };
 
