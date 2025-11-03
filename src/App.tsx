@@ -25,7 +25,7 @@ import IngresoColaborador from "./components/IngresoColaborador";
 import LoginColaborador from "./components/LoginColaborador";
 import PanelColaboradores from "./components/PanelColaboradores";
 import InvitacionColaboradores from "./components/InvitacionColaboradores";
-import OfertaColaboradores from "./components/OfertaColaboradores";
+import OfertasColaboradores from "./components/OfertasColaboradores";
 import PublicarOfertaColaboradores from "./components/PublicarOfertaColaboradores";
 // 🧩 Institucional
 import DashboardInstitucional from "./institucional/DashboardInstitucional";
@@ -69,7 +69,7 @@ const App: React.FC = () => {
         <Route path="/login-colaborador" element={<LoginColaborador />} />
         <Route path="/panel-colaboradores" element={<PanelColaboradores />} />
         <Route path="/invitacion-colaboradores" element={<InvitacionColaboradores />} />
-        <Route path="/oferta-colaboradores" element={<OfertaColaboradores />} />
+        <Route path="/ofertas-colaboradores" element={<OfertasColaboradores />} />
         <Route path="/publicar-oferta-colaborador" element={<PublicarOfertaColaborador />} />
 
 
