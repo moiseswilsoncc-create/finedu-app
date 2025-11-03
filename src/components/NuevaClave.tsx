@@ -1,12 +1,12 @@
 // src/components/NuevaClave.tsx
 import React, { useState } from "react";
-import { api } from "../axiosConfig"; // ✅ usamos el cliente configurado
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { api } from "../axiosConfig"; // ✅ cliente axios configurado
 
-function NuevaClave() {
+const NuevaClave: React.FC = () => {
   const [nuevaClave, setNuevaClave] = useState("");
   const [confirmacion, setConfirmacion] = useState("");
-  const [error, setError] = useState("");
+  const [enviando, setEnviando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -18,35 +18,43 @@ function NuevaClave() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validación por tipo de usuario
+    // 🔎 Validaciones
     if (esColaborador && nuevaClave.length < 8) {
-      setError("La clave para colaboradores debe tener al menos 8 caracteres.");
+      navigate("/error-acceso", {
+        state: { mensaje: "La clave para colaboradores debe tener al menos 8 caracteres.", origen: "login" }
+      });
       return;
     }
 
-    if (!esColaborador && nuevaClave.length !== 4) {
-      setError("La clave para usuarios debe tener exactamente 4 dígitos.");
+    if (!esColaborador && nuevaClave.length < 6) {
+      navigate("/error-acceso", {
+        state: { mensaje: "La clave para usuarios debe tener al menos 6 caracteres.", origen: "login" }
+      });
       return;
     }
 
     if (nuevaClave !== confirmacion) {
-      setError("Las contraseñas no coinciden.");
+      navigate("/error-acceso", {
+        state: { mensaje: "Las contraseñas no coinciden.", origen: "login" }
+      });
       return;
     }
 
+    setEnviando(true);
+
     try {
-      const response = await api.post("/nueva-clave", { // ✅ usamos api
+      const response = await api.post("/nueva-clave", {
         token,
         correo,
-        nuevaClave, // 🔐 pendiente: aplicar hashing en backend
+        nuevaClave // 🔐 hashing en backend
       });
 
       if (response.data.success) {
         setMensaje("✅ Contraseña actualizada correctamente.");
-        setError("");
 
+        // Guardar sesión mínima
         localStorage.setItem("logueado", "true");
-        localStorage.setItem("nombreUsuario", "Recuperado Finedu");
+        localStorage.setItem("nombreUsuario", correo?.split("@")[0] || "Usuario Finedu");
 
         if (esColaborador) {
           localStorage.setItem("tipoUsuario", "colaborador");
@@ -56,13 +64,17 @@ function NuevaClave() {
           setTimeout(() => navigate("/panel-usuario"), 2000);
         }
       } else {
-        setError("❌ No se pudo actualizar la contraseña.");
-        setMensaje("");
+        navigate("/error-acceso", {
+          state: { mensaje: "❌ No se pudo actualizar la contraseña.", origen: "login" }
+        });
       }
     } catch (err) {
       console.error("Error de conexión:", err);
-      setError("No se pudo conectar con el servidor.");
-      setMensaje("");
+      navigate("/error-acceso", {
+        state: { mensaje: "No se pudo conectar con el servidor.", origen: "login" }
+      });
+    } finally {
+      setEnviando(false);
     }
   };
 
@@ -74,7 +86,8 @@ function NuevaClave() {
         padding: "2rem",
         backgroundColor: "#fefefe",
         borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        textAlign: "center"
       }}
     >
       <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
@@ -86,9 +99,7 @@ function NuevaClave() {
       >
         <input
           type="password"
-          placeholder={
-            esColaborador ? "Mínimo 8 caracteres" : "Exactamente 4 dígitos"
-          }
+          placeholder={esColaborador ? "Mínimo 8 caracteres" : "Mínimo 6 caracteres"}
           value={nuevaClave}
           onChange={(e) => setNuevaClave(e.target.value)}
           required
@@ -104,26 +115,24 @@ function NuevaClave() {
         {mensaje && (
           <p style={{ color: "#2ecc71", fontSize: "0.95rem" }}>{mensaje}</p>
         )}
-        {error && (
-          <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>
-        )}
 
         <button
           type="submit"
+          disabled={enviando}
           style={{
             padding: "0.6rem 1.2rem",
-            backgroundColor: "#3498db",
+            backgroundColor: enviando ? "#ccc" : "#3498db",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: "pointer"
+            cursor: enviando ? "not-allowed" : "pointer"
           }}
         >
-          Actualizar contraseña
+          {enviando ? "Actualizando..." : "Actualizar contraseña"}
         </button>
       </form>
     </div>
   );
-}
+};
 
 export default NuevaClave;
