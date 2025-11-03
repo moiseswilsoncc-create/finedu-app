@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { formatearMoneda } from "../utils/formatearMoneda";
 
-const Finanza: React.FC<{ pais: string }> = ({ pais }) => {
+const Finanzas: React.FC<{ pais: string }> = ({ pais }) => {
   const navigate = useNavigate();
 
   const [usuario, setUsuario] = useState("Usuario");
@@ -220,4 +220,4 @@ const kpiCard = {
   fontWeight: "bold" as const,
 };
 
-export default Finanza;
+export default Finanzas;
