@@ -7,6 +7,8 @@ import Bienvenida from "./components/Bienvenida";
 import RegistroUsuario from "./components/RegistroUsuario";
 import LoginUsuario from "./components/LoginUsuario";
 import PanelUsuario from "./components/PanelUsuario";
+import VistaIngresoUsuario from "./components/VistaIngresoUsuario";   // ✅ Nuevo
+import VistaErrorAcceso from "./components/VistaErrorAcceso";         // ✅ Nuevo
 
 // 🧩 Módulo Finanzas
 import Finanzas from "./components/Finanzas";
@@ -57,6 +59,10 @@ const App: React.FC = () => {
         <Route path="/registro-usuario" element={<RegistroUsuario />} />
         <Route path="/login-usuario" element={<LoginUsuario />} />
         <Route path="/panel-usuario" element={<PanelUsuario />} />
+
+        {/* ✅ Nuevas pantallas de flujo de acceso */}
+        <Route path="/registro-exitoso" element={<VistaIngresoUsuario />} />
+        <Route path="/error-acceso" element={<VistaErrorAcceso />} />
 
         {/* Finanzas (protegido) */}
         <Route
