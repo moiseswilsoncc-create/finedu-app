@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import axios from "../axiosConfig";
-import { OfertaColaborador } from "../types";
+import { OfertasColaboradorres } from "../types";
 
 const PublicarOfertaColaborador: React.FC = () => {
   const [oferta, setOferta] = useState<OfertaColaborador>({
