@@ -28,7 +28,8 @@ function IngresoUsuario({ setPais }: Props) {
   useEffect(() => {
     const todosCompletos = Object.values(datos).every(valor => valor.trim() !== "");
     setCamposCompletos(todosCompletos);
-    setClaveValida(datos.clave.length === 6);
+    // 🔐 Ahora validamos mínimo 6 caracteres
+    setClaveValida(datos.clave.length >= 6);
   }, [datos]);
 
   useEffect(() => {
@@ -116,7 +117,13 @@ function IngresoUsuario({ setPais }: Props) {
           <input type="text" name="ciudad" placeholder="Ciudad" value={datos.ciudad} onChange={handleChange} />
           <input type="text" name="comuna" placeholder="Comuna" value={datos.comuna} onChange={handleChange} />
           <input type="email" name="correo" placeholder="Correo electrónico" value={datos.correo} onChange={handleChange} />
-          <input type="password" name="clave" placeholder="Clave personal (4 dígitos)" value={datos.clave} onChange={handleChange} />
+          <input
+            type="password"
+            name="clave"
+            placeholder="Clave personal (mínimo 6 caracteres)"
+            value={datos.clave}
+            onChange={handleChange}
+          />
 
           {!correoValido && (
             <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
@@ -126,7 +133,7 @@ function IngresoUsuario({ setPais }: Props) {
 
           {!claveValida && (
             <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
-              La clave debe tener exactamente 4 dígitos.
+              La clave debe tener al menos 6 caracteres.
             </p>
           )}
 
