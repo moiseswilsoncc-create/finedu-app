@@ -4,7 +4,6 @@ import { Grupo } from "../types";
 
 const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
 const supabaseKey = "TU_API_KEY";
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const PanelGrupo: React.FC = () => {
   const [grupo, setGrupo] = useState<Grupo | null>(null);
