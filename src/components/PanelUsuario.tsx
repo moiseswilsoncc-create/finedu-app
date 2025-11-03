@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import AsistenteFinanciero from "./AsistenteFinanciero";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../supabaseClient";
 import { OfertaColaborador } from "../types";
 
 const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
