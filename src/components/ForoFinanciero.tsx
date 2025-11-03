@@ -155,69 +155,6 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
     setEncuesta({ ...encuesta, votos: nuevosVotos });
     setMsg("✅ Tu voto fue registrado.");
   };
-  return (
-    <div style={{ maxWidth: "800px", margin: "2rem auto", padding: "1rem" }}>
-      <h2>🗣️ Foro Financiero Comunitario</h2>
-      <p>Comparte consejos, oportunidades y participa en encuestas institucionales.</p>
-
-      {msg && <div style={{ marginBottom: "0.75rem", color: "#2c3e50" }}>{msg}</div>}
-
-      {cargando ? (
-        <p>Cargando datos…</p>
-      ) : (
-        <>
-          {/* Encuesta activa */}
-          {encuesta && (
-            <div
-              style={{
-                marginBottom: "2rem",
-                padding: "1rem",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-              }}
-            >
-              <h3>📝 Encuesta</h3>
-              <p>
-                <strong>{encuesta.pregunta}</strong>
-              </p>
-
-              {encuesta.opciones.map((op, idx) => (
-                <div key={idx} style={{ margin: "0.25rem 0" }}>
-                  <label>
-                    <input
-                      type="radio"
-                      name="opcion"
-                      value={idx}
-                      checked={opcionSeleccionada === idx}
-                      onChange={() => setOpcionSeleccionada(idx)}
-                      style={{ marginRight: "0.5rem" }}
-                    />
-                    {op}{" "}
-                    <span style={{ color: "#7f8c8d" }}>
-                      ({encuesta.votos[idx] ?? 0} votos)
-                    </span>
-                  </label>
-                </div>
-              ))}
-
-              <div style={{ marginTop: "0.75rem" }}>
-                <button
-                  onClick={votar}
-                  style={{
-                    padding: "0.4rem 1rem",
-                    background: "#2980b9",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Votar
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Publicar comentario */}
           <div
             style={{
