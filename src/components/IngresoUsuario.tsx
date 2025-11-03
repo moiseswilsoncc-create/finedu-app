@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DatosUsuario } from "../types";
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient"; // Asegúrate de tenerlo configurado
+import { supabase } from "../supabaseClient";
 
 type Props = {
   setPais: (pais: string) => void;
@@ -23,12 +23,15 @@ function IngresoUsuario({ setPais }: Props) {
   const [correoValido, setCorreoValido] = useState(true);
   const [camposCompletos, setCamposCompletos] = useState(false);
   const [claveValida, setClaveValida] = useState(true);
+  const [mensaje, setMensaje] = useState("");
+  const [mensajeTipo, setMensajeTipo] = useState<"ok"|"error"|"warning"|"info">("info");
+  const [enviando, setEnviando] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const todosCompletos = Object.values(datos).every(valor => valor.trim() !== "");
+    const todosCompletos = Object.values(datos).every((valor) => valor.trim() !== "");
     setCamposCompletos(todosCompletos);
-    // 🔐 Ahora validamos mínimo 6 caracteres
+    // Validación alineada con Supabase Auth: mínimo 6 caracteres
     setClaveValida(datos.clave.length >= 6);
   }, [datos]);
 
@@ -41,7 +44,15 @@ function IngresoUsuario({ setPais }: Props) {
         .eq("correo", datos.correo)
         .single();
 
-      setCorreoValido(!!data && !error);
+      const esAutorizado = !!data && !error;
+      setCorreoValido(esAutorizado);
+
+      if (!esAutorizado) {
+        setMensaje("Este correo no está autorizado por Finedu. Verifica con tu institución.");
+        setMensajeTipo("warning");
+      } else {
+        setMensaje("");
+      }
     };
 
     validarCorreo();
@@ -49,58 +60,153 @@ function IngresoUsuario({ setPais }: Props) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setDatos({ ...datos, [name]: value });
+    setDatos((prev) => ({ ...prev, [name]: value }));
     if (name === "pais") setPais(value);
+  };
+
+  const limpiarFicha = () => {
+    setDatos({
+      nombre: "",
+      apellido: "",
+      fechaNacimiento: "",
+      pais: "",
+      ciudad: "",
+      comuna: "",
+      correo: "",
+      clave: ""
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!camposCompletos || !correoValido || !claveValida) return;
 
-    const response = await fetch("/api/hash-clave", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clave: datos.clave })
-    });
+    // Validaciones previas visibles
+    if (!camposCompletos) {
+      setMensaje("Por favor completa todos los campos antes de continuar.");
+      setMensajeTipo("warning");
+      return;
+    }
+    if (!correoValido) {
+      setMensaje("Este correo no está autorizado por Finedu. Verifica con tu institución.");
+      setMensajeTipo("warning");
+      return;
+    }
+    if (!claveValida) {
+      setMensaje("La clave debe tener al menos 6 caracteres.");
+      setMensajeTipo("warning");
+      return;
+    }
 
-    const { claveHasheada } = await response.json();
+    setEnviando(true);
+    setMensaje("");
+    setMensajeTipo("info");
 
-    const { error } = await supabase.from("usuarios").insert([
-      {
-        nombre: datos.nombre,
-        apellido: datos.apellido,
-        fechaNacimiento: datos.fechaNacimiento,
-        pais: datos.pais,
-        ciudad: datos.ciudad,
-        comuna: datos.comuna,
-        correo: datos.correo,
-        clave: claveHasheada,
-        fechaRegistro: new Date().toISOString()
+    // 1) Hash de la clave en backend propio
+    let claveHasheada: string | null = null;
+    try {
+      const resp = await fetch("/api/hash-clave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clave: datos.clave })
+      });
+
+      if (!resp.ok) {
+        const txt = await resp.text();
+        throw new Error(`Fallo al hashear clave: ${txt || resp.status}`);
       }
-    ]);
 
-    if (!error) {
+      const json = await resp.json();
+      claveHasheada = json?.claveHasheada;
+      if (!claveHasheada) throw new Error("No se recibió 'claveHasheada' del servidor.");
+    } catch (err: any) {
+      console.error("Error en hash-clave:", err);
+      setMensaje("Error al preparar tu registro. Intenta nuevamente en unos minutos.");
+      setMensajeTipo("error");
+      setEnviando(false);
+      return;
+    }
+
+    // 2) Insert en tabla usuarios (perfil extendido)
+    try {
+      const { data, error } = await supabase
+        .from("usuarios")
+        .insert([
+          {
+            nombre: datos.nombre,
+            apellido: datos.apellido,
+            fechaNacimiento: datos.fechaNacimiento,
+            pais: datos.pais,
+            ciudad: datos.ciudad,
+            comuna: datos.comuna,
+            correo: datos.correo,
+            clave: claveHasheada,
+            fechaRegistro: new Date().toISOString()
+          }
+        ])
+        .select();
+
+      if (error) {
+        console.error("Supabase insert error:", error);
+        setMensaje(
+          error.message?.toLowerCase().includes("duplicate")
+            ? "Este correo ya se encuentra registrado. Prueba con otro o recupera tu acceso."
+            : `No pudimos registrar tu usuario: ${error.message}`
+        );
+        setMensajeTipo("error");
+        setEnviando(false);
+        return;
+      }
+
+      // Éxito: limpiar ficha, persistir sesión mínima y redirigir inmediatamente
       setRegistrado(true);
+      setMensaje("¡Registro exitoso! Redirigiendo a tu panel…");
+      setMensajeTipo("ok");
+
+      // Limpia la ficha para evitar que queden datos visibles
+      limpiarFicha();
+
+      // Persistencia mínima
       localStorage.setItem("correoUsuario", datos.correo);
       localStorage.setItem("logueado", "true");
       localStorage.setItem("tipoUsuario", "usuario");
       localStorage.setItem("nombreUsuario", datos.nombre);
+
+      // Redirección inmediata al panel de usuario
       navigate("/panel-usuario");
-    } else {
-      console.error("Error al registrar usuario:", error.message);
+    } catch (err: any) {
+      console.error("Error inesperado registrando usuario:", err);
+      setMensaje("Error inesperado al registrar tu usuario. Intenta nuevamente.");
+      setMensajeTipo("error");
+    } finally {
+      setEnviando(false);
     }
   };
 
+  const colorMensaje =
+    mensajeTipo === "ok" ? "#2ecc71" :
+    mensajeTipo === "error" ? "#e74c3c" :
+    mensajeTipo === "warning" ? "#e67e22" :
+    "#2c3e50";
+
   return (
-    <div style={{
-      maxWidth: "600px",
-      margin: "3rem auto",
-      padding: "2rem",
-      backgroundColor: "#fefefe",
-      borderRadius: "12px",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-    }}>
+    <div
+      style={{
+        maxWidth: "600px",
+        margin: "3rem auto",
+        padding: "2rem",
+        backgroundColor: "#fefefe",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+      }}
+    >
       <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>🧍 Registro de usuario solicitante</h3>
+
+      {/* Mensaje global */}
+      {mensaje && (
+        <p style={{ color: colorMensaje, fontSize: "0.95rem", marginBottom: "1rem" }}>
+          {mensaje}
+        </p>
+      )}
 
       {!registrado ? (
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -125,39 +231,25 @@ function IngresoUsuario({ setPais }: Props) {
             onChange={handleChange}
           />
 
-          {!correoValido && (
-            <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
-              Este correo no está autorizado por Finedu. Verifica con tu institución.
-            </p>
-          )}
-
-          {!claveValida && (
-            <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>
-              La clave debe tener al menos 6 caracteres.
-            </p>
-          )}
-
-          {!camposCompletos && (
-            <p style={{ color: "#e67e22", fontSize: "0.95rem" }}>
-              Por favor completa todos los campos antes de continuar.
-            </p>
-          )}
-
-          <button type="submit" disabled={!camposCompletos || !correoValido || !claveValida} style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: (!camposCompletos || !correoValido || !claveValida) ? "#ccc" : "#2980b9",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: (!camposCompletos || !correoValido || !claveValida) ? "not-allowed" : "pointer"
-          }}>
-            Registrarse
+          <button
+            type="submit"
+            disabled={!camposCompletos || !correoValido || !claveValida || enviando}
+            style={{
+              padding: "0.6rem 1.2rem",
+              backgroundColor: (!camposCompletos || !correoValido || !claveValida || enviando) ? "#ccc" : "#2980b9",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: (!camposCompletos || !correoValido || !claveValida || enviando) ? "not-allowed" : "pointer"
+            }}
+          >
+            {enviando ? "Registrando..." : "Registrarse"}
           </button>
         </form>
       ) : (
         <div>
           <p style={{ fontSize: "1.1rem", color: "#2ecc71" }}>
-            ¡Gracias por registrarte, {datos.nombre} {datos.apellido}! Tu perfil ha sido creado para operar desde <strong>{datos.ciudad}, {datos.comuna}</strong>.
+            ¡Gracias por registrarte! Redirigiendo a tu panel…
           </p>
 
           <Link to="/editar-perfil">
