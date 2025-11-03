@@ -1,5 +1,6 @@
+// src/components/NuevaClave.tsx
 import React, { useState } from "react";
-import axios from "../axiosConfig";
+import { api } from "../axiosConfig"; // ✅ usamos el cliente configurado
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 function NuevaClave() {
@@ -34,7 +35,7 @@ function NuevaClave() {
     }
 
     try {
-      const response = await axios.post("/nueva-clave", {
+      const response = await api.post("/nueva-clave", { // ✅ usamos api
         token,
         correo,
         nuevaClave, // 🔐 pendiente: aplicar hashing en backend
@@ -66,19 +67,28 @@ function NuevaClave() {
   };
 
   return (
-    <div style={{
-      maxWidth: "500px",
-      margin: "3rem auto",
-      padding: "2rem",
-      backgroundColor: "#fefefe",
-      borderRadius: "12px",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-    }}>
-      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>🔒 Crear nueva contraseña</h3>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <div
+      style={{
+        maxWidth: "500px",
+        margin: "3rem auto",
+        padding: "2rem",
+        backgroundColor: "#fefefe",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+      }}
+    >
+      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
+        🔒 Crear nueva contraseña
+      </h3>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      >
         <input
           type="password"
-          placeholder={esColaborador ? "Mínimo 8 caracteres" : "Exactamente 4 dígitos"}
+          placeholder={
+            esColaborador ? "Mínimo 8 caracteres" : "Exactamente 4 dígitos"
+          }
           value={nuevaClave}
           onChange={(e) => setNuevaClave(e.target.value)}
           required
@@ -91,17 +101,24 @@ function NuevaClave() {
           required
         />
 
-        {mensaje && <p style={{ color: "#2ecc71", fontSize: "0.95rem" }}>{mensaje}</p>}
-        {error && <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>}
+        {mensaje && (
+          <p style={{ color: "#2ecc71", fontSize: "0.95rem" }}>{mensaje}</p>
+        )}
+        {error && (
+          <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>
+        )}
 
-        <button type="submit" style={{
-          padding: "0.6rem 1.2rem",
-          backgroundColor: "#3498db",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer"
-        }}>
+        <button
+          type="submit"
+          style={{
+            padding: "0.6rem 1.2rem",
+            backgroundColor: "#3498db",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer"
+          }}
+        >
           Actualizar contraseña
         </button>
       </form>
