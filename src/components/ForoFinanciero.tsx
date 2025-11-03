@@ -32,54 +32,60 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
   const [publicando, setPublicando] = useState<boolean>(false);
   const [msg, setMsg] = useState<string>("");
 
-  // Cargar comentarios vigentes y encuesta activa (fija mientras activa = true)
+  // Cargar comentarios vigentes y encuesta activa
   useEffect(() => {
     const cargarDatos = async () => {
       setCargando(true);
-      // Comentarios
-      const { data: comentariosData, error: errComentarios } = await supabase
-        .from("comentarios_foro")
-        .select("*")
-        .order("fecha", { ascending: false });
 
-      if (errComentarios) {
-        setMsg("No se pudieron cargar los comentarios.");
+      try {
+        // Comentarios
+        const { data: comentariosData, error: errComentarios } = await supabase
+          .from("comentarios_foro")
+          .select("*")
+          .order("fecha", { ascending: false })
+          .limit(50); // 🔒 límite para no saturar
+
+        if (errComentarios) {
+          setMsg("No se pudieron cargar los comentarios.");
+        }
+
+        const ahora = new Date();
+        const vigentes = (comentariosData || []).filter(
+          (c: Comentario) => new Date(c.expiracion) > ahora
+        );
+        setComentarios(vigentes);
+
+        // Encuesta activa
+        const { data: encuestaData, error: errEncuesta } = await supabase
+          .from("encuestas_foro")
+          .select("*")
+          .eq("activa", true)
+          .order("fecha", { ascending: false })
+          .limit(1);
+
+        if (!errEncuesta && encuestaData && encuestaData.length > 0) {
+          const e = encuestaData[0];
+          setEncuesta({
+            id: e.id,
+            pregunta: e.pregunta,
+            opciones: e.opciones,
+            votos: e.votos,
+            fecha: e.fecha,
+            activa: e.activa,
+          });
+        } else {
+          setEncuesta(null);
+        }
+      } catch (err: any) {
+        console.error("Error inesperado:", err);
+        setMsg("⚠️ Error inesperado al cargar datos.");
+      } finally {
+        setCargando(false);
       }
-
-      const ahora = new Date();
-      const vigentes = (comentariosData || []).filter(
-        (c: Comentario) => new Date(c.expiracion) > ahora
-      );
-      setComentarios(vigentes);
-
-      // Encuesta activa (fija)
-      const { data: encuestaData, error: errEncuesta } = await supabase
-        .from("encuestas_foro")
-        .select("*")
-        .eq("activa", true)
-        .order("fecha", { ascending: false })
-        .limit(1);
-
-      if (!errEncuesta && encuestaData && encuestaData.length > 0) {
-        const e = encuestaData[0];
-        setEncuesta({
-          id: e.id,
-          pregunta: e.pregunta,
-          opciones: e.opciones,
-          votos: e.votos,
-          fecha: e.fecha,
-          activa: e.activa,
-        });
-      } else {
-        setEncuesta(null);
-      }
-
-      setCargando(false);
     };
 
     cargarDatos();
   }, []);
-
   // Manejo de inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -89,68 +95,47 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
   // Publicar comentario (vigencia 15 días)
   const publicarComentario = async () => {
     const { autor, contenido, tema } = nuevoComentario;
-    if (!autor.trim() || !contenido.trim() || !tema.trim()) return;
+    if (!autor.trim() || !contenido.trim() || !tema.trim()) {
+      setMsg("Todos los campos son obligatorios.");
+      return;
+    }
+    if (contenido.length > 500) {
+      setMsg("El comentario no puede superar 500 caracteres.");
+      return;
+    }
 
     setPublicando(true);
     const ahora = new Date();
     const expiracion = new Date(ahora.getTime() + 15 * 24 * 60 * 60 * 1000);
 
-    const { data, error } = await supabase.from("comentarios_foro").insert([
-      {
-        autor,
-        contenido,
-        tema,
-        fecha: ahora.toISOString(),
-        expiracion: expiracion.toISOString(),
-      },
-    ]);
+    try {
+      const { data, error } = await supabase.from("comentarios_foro").insert([
+        {
+          autor,
+          contenido,
+          tema,
+          fecha: ahora.toISOString(),
+          expiracion: expiracion.toISOString(),
+        },
+      ]);
 
-    setPublicando(false);
+      if (error) {
+        setMsg("No se pudo publicar el comentario.");
+        return;
+      }
 
-    if (error) {
-      setMsg("No se pudo publicar el comentario.");
-      return;
-    }
-
-    setMsg("Comentario publicado.");
-    setNuevoComentario({ autor: "", contenido: "", tema: "" });
-    setComentarios([...(data || []), ...comentarios]);
-  };
-
-  // Crear encuesta (solo institucional, queda fija mientras activa = true)
-  const crearEncuesta = async (pregunta: string, opciones: string[]) => {
-    if (!usuarioInstitucional) return;
-
-    const { data, error } = await supabase.from("encuestas_foro").insert([
-      {
-        pregunta,
-        opciones,
-        votos: opciones.map(() => 0),
-        fecha: new Date().toISOString(),
-        activa: true,
-      },
-    ]);
-
-    if (error) {
-      setMsg("No se pudo crear la encuesta.");
-      return;
-    }
-
-    if (data && data.length > 0) {
-      const e = data[0];
-      setEncuesta({
-        id: e.id,
-        pregunta: e.pregunta,
-        opciones: e.opciones,
-        votos: e.votos,
-        fecha: e.fecha,
-        activa: e.activa,
-      });
-      setMsg("Encuesta creada y fijada en el foro.");
+      setMsg("✅ Comentario publicado.");
+      setNuevoComentario({ autor: "", contenido: "", tema: "" });
+      setComentarios([...(data || []), ...comentarios]);
+    } catch (err: any) {
+      console.error("Error inesperado:", err);
+      setMsg("⚠️ Error inesperado al publicar comentario.");
+    } finally {
+      setPublicando(false);
     }
   };
 
-  // Votar en encuesta
+  // Votar en encuesta (blindaje real se hará en Supabase)
   const votar = async () => {
     if (!encuesta || opcionSeleccionada === null) return;
 
@@ -168,80 +153,33 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
     }
 
     setEncuesta({ ...encuesta, votos: nuevosVotos });
-    setMsg("Tu voto fue registrado.");
-  };
-
-  // Desactivar encuesta (oculta, pero no se elimina; se puede reactivar luego)
-  const desactivarEncuesta = async () => {
-    if (!usuarioInstitucional || !encuesta) return;
-    const { error } = await supabase
-      .from("encuestas_foro")
-      .update({ activa: false })
-      .eq("id", encuesta.id);
-
-    if (error) {
-      setMsg("No se pudo desactivar la encuesta.");
-      return;
-    }
-
-    setEncuesta(null);
-    setMsg("Encuesta desactivada (puede reactivarse más adelante).");
-  };
-
-  // Reactivar una encuesta por id (ejemplo simple)
-  const reactivarEncuesta = async (id: string) => {
-    if (!usuarioInstitucional) return;
-    const { error } = await supabase
-      .from("encuestas_foro")
-      .update({ activa: true })
-      .eq("id", id);
-
-    if (error) {
-      setMsg("No se pudo reactivar la encuesta.");
-      return;
-    }
-
-    // Re-cargar encuesta activa
-    const { data: encuestaData } = await supabase
-      .from("encuestas_foro")
-      .select("*")
-      .eq("activa", true)
-      .order("fecha", { ascending: false })
-      .limit(1);
-
-    if (encuestaData && encuestaData.length > 0) {
-      const e = encuestaData[0];
-      setEncuesta({
-        id: e.id,
-        pregunta: e.pregunta,
-        opciones: e.opciones,
-        votos: e.votos,
-        fecha: e.fecha,
-        activa: e.activa,
-      });
-      setMsg("Encuesta reactivada y fijada en el foro.");
-    }
+    setMsg("✅ Tu voto fue registrado.");
   };
   return (
     <div style={{ maxWidth: "800px", margin: "2rem auto", padding: "1rem" }}>
       <h2>🗣️ Foro Financiero Comunitario</h2>
       <p>Comparte consejos, oportunidades y participa en encuestas institucionales.</p>
 
-      {msg && (
-        <div style={{ marginBottom: "0.75rem", color: "#2c3e50" }}>
-          {msg}
-        </div>
-      )}
+      {msg && <div style={{ marginBottom: "0.75rem", color: "#2c3e50" }}>{msg}</div>}
 
       {cargando ? (
         <p>Cargando datos…</p>
       ) : (
         <>
-          {/* Encuesta fija mientras activa = true */}
-          {encuesta ? (
-            <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
+          {/* Encuesta activa */}
+          {encuesta && (
+            <div
+              style={{
+                marginBottom: "2rem",
+                padding: "1rem",
+                border: "1px solid #ccc",
+                borderRadius: "8px",
+              }}
+            >
               <h3>📝 Encuesta</h3>
-              <p><strong>{encuesta.pregunta}</strong></p>
+              <p>
+                <strong>{encuesta.pregunta}</strong>
+              </p>
 
               {encuesta.opciones.map((op, idx) => (
                 <div key={idx} style={{ margin: "0.25rem 0" }}>
@@ -254,7 +192,10 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
                       onChange={() => setOpcionSeleccionada(idx)}
                       style={{ marginRight: "0.5rem" }}
                     />
-                    {op} <span style={{ color: "#7f8c8d" }}>({encuesta.votos[idx]} votos)</span>
+                    {op}{" "}
+                    <span style={{ color: "#7f8c8d" }}>
+                      ({encuesta.votos[idx] ?? 0} votos)
+                    </span>
                   </label>
                 </div>
               ))}
@@ -262,50 +203,30 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
               <div style={{ marginTop: "0.75rem" }}>
                 <button
                   onClick={votar}
-                  style={{ padding: "0.4rem 1rem", background: "#2980b9", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                  style={{
+                    padding: "0.4rem 1rem",
+                    background: "#2980b9",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
                 >
                   Votar
                 </button>
-
-                {usuarioInstitucional && (
-                  <>
-                    <button
-                      onClick={desactivarEncuesta}
-                      style={{ marginLeft: "0.5rem", padding: "0.4rem 1rem", background: "#e74c3c", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
-                    >
-                      Desactivar encuesta
-                    </button>
-
-                    {/* Ejemplo: reactivar por id manual (puedes reemplazar por selector) */}
-                    <button
-                      onClick={() => reactivarEncuesta(encuesta.id)}
-                      style={{ marginLeft: "0.5rem", padding: "0.4rem 1rem", background: "#27ae60", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
-                    >
-                      Reactivar encuesta
-                    </button>
-                  </>
-                )}
               </div>
             </div>
-          ) : (
-            usuarioInstitucional && (
-              <button
-                onClick={() =>
-                  crearEncuesta("¿Cuál es el mes más pesado del año en gastos?", [
-                    "Marzo",
-                    "Septiembre",
-                    "Diciembre",
-                  ])
-                }
-                style={{ marginBottom: "1rem", padding: "0.5rem 1rem", background: "#8e44ad", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
-              >
-                ➕ Crear encuesta de ejemplo
-              </button>
-            )
           )}
 
           {/* Publicar comentario */}
-          <div style={{ marginBottom: "2rem", background: "#f0f8ff", padding: "1rem", borderRadius: "8px" }}>
+          <div
+            style={{
+              marginBottom: "2rem",
+              background: "#f0f8ff",
+              padding: "1rem",
+              borderRadius: "8px",
+            }}
+          >
             <input
               type="text"
               name="autor"
@@ -333,12 +254,18 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
             <button
               onClick={publicarComentario}
               disabled={publicando}
-              style={{ padding: "0.5rem 1rem", backgroundColor: "#2ecc71", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+              style={{
+                padding: "0.5rem 1rem",
+                backgroundColor: "#2ecc71",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
             >
               {publicando ? "Publicando…" : "Publicar"}
             </button>
           </div>
-
           {/* Lista de comentarios */}
           {comentarios.length === 0 ? (
             <p>No hay comentarios vigentes. Sé el primero en compartir.</p>
