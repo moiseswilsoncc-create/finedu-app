@@ -1,6 +1,6 @@
 // Archivo: src/App.tsx
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 // 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
@@ -41,13 +41,19 @@ import Navbar from "./components/Navbar";
 
 console.log("🧼 App.tsx actualizado: mapa maestro con todas las rutas activas");
 
+// 🔒 Ruta protegida: solo permite acceso si hay usuario logueado
+const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const usuarioId = localStorage.getItem("usuarioId");
+  return usuarioId ? <>{children}</> : <Navigate to="/login-usuario" replace />;
+};
+
 const App: React.FC = () => {
   return (
     <>
       <Navbar />
       <MenuModulos />
       <Routes>
-        {/* Bienvenida */}
+        {/* Bienvenida siempre en la raíz */}
         <Route path="/" element={<Bienvenida />} />
 
         {/* Usuarios */}
@@ -55,12 +61,47 @@ const App: React.FC = () => {
         <Route path="/login-usuario" element={<LoginUsuario />} />
         <Route path="/panel-usuario" element={<PanelUsuario />} />
 
-        {/* Finanzas */}
-        <Route path="/finanzas" element={<Finanzas pais="Chile" />} />
-        <Route path="/finanzas/ingresos" element={<Ingresos />} />
-        <Route path="/finanzas/egresos" element={<Egresos />} />
-        <Route path="/finanzas/resumen" element={<ResumenFinanciero />} />
-        <Route path="/finanzas/creditos" element={<SimuladorCreditos />} />
+        {/* Finanzas (protegido) */}
+        <Route
+          path="/finanzas"
+          element={
+            <RutaProtegida>
+              <Finanzas pais="Chile" />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/finanzas/ingresos"
+          element={
+            <RutaProtegida>
+              <Ingresos />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/finanzas/egresos"
+          element={
+            <RutaProtegida>
+              <Egresos />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/finanzas/resumen"
+          element={
+            <RutaProtegida>
+              <ResumenFinanciero />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/finanzas/creditos"
+          element={
+            <RutaProtegida>
+              <SimuladorCreditos />
+            </RutaProtegida>
+          }
+        />
 
         {/* Otros módulos de usuario */}
         <Route path="/vista-grupal" element={<VistaGrupal />} />
