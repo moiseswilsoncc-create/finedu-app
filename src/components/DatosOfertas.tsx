@@ -1,10 +1,8 @@
+// src/components/DatosOfertas.tsx
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { OfertaColaborador } from "../types";
-import axios from "../axiosConfig";
-
-const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
-const supabaseKey = "TU_API_KEY";
+import { api } from "../axiosConfig"; // ✅ usamos el cliente configurado
 
 const DatosOfertas: React.FC = () => {
   const [oferta, setOferta] = useState<OfertaColaborador>({
@@ -24,7 +22,7 @@ const DatosOfertas: React.FC = () => {
   useEffect(() => {
     const registrarVisualizacion = async () => {
       if (correo) {
-        await axios.post("/guardar-visualizacion", {
+        await api.post("/guardar-visualizacion", {
           usuario_id: correo,
           modulo: "DatosOfertas"
         });
@@ -33,11 +31,20 @@ const DatosOfertas: React.FC = () => {
     registrarVisualizacion();
   }, [correo]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setOferta(prev => ({
+    setOferta((prev) => ({
       ...prev,
-      [name]: name === "tasaInteres" || name === "plazoMeses" || name === "montoMinimo" ? Number(value) : value
+      [name]:
+        name === "tasaInteres" ||
+        name === "plazoMeses" ||
+        name === "montoMinimo"
+          ? Number(value)
+          : value
     }));
   };
 
@@ -58,7 +65,9 @@ const DatosOfertas: React.FC = () => {
       visible: true
     };
 
-    const response = await supabase.from("ofertas_colaborador").insert([nuevaOferta]);
+    const response = await supabase
+      .from("ofertas_colaborador")
+      .insert([nuevaOferta]);
 
     if (response.error) {
       setMensaje("❌ Error al guardar la oferta.");
@@ -78,46 +87,117 @@ const DatosOfertas: React.FC = () => {
   };
 
   return (
-    <div style={{
-      maxWidth: "700px",
-      margin: "2rem auto",
-      padding: "2rem",
-      backgroundColor: "#fff",
-      borderRadius: "12px",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-    }}>
-      <h2 style={{ color: "#2c3e50", marginBottom: "1rem" }}>📢 Publicar datos y ofertas</h2>
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
-        <input type="text" name="titulo" value={oferta.titulo} onChange={handleChange} placeholder="Título de la oferta" required style={inputStyle} />
-        <textarea name="descripcion" value={oferta.descripcion} onChange={handleChange} placeholder="Descripción detallada" required style={{ ...inputStyle, height: "100px" }} />
-        <select name="tipo" value={oferta.tipo} onChange={handleChange} required style={inputStyle}>
+    <div
+      style={{
+        maxWidth: "700px",
+        margin: "2rem auto",
+        padding: "2rem",
+        backgroundColor: "#fff",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+      }}
+    >
+      <h2 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
+        📢 Publicar datos y ofertas
+      </h2>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "grid", gap: "1rem" }}
+      >
+        <input
+          type="text"
+          name="titulo"
+          value={oferta.titulo}
+          onChange={handleChange}
+          placeholder="Título de la oferta"
+          required
+          style={inputStyle}
+        />
+        <textarea
+          name="descripcion"
+          value={oferta.descripcion}
+          onChange={handleChange}
+          placeholder="Descripción detallada"
+          required
+          style={{ ...inputStyle, height: "100px" }}
+        />
+        <select
+          name="tipo"
+          value={oferta.tipo}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        >
           <option value="crédito">Crédito</option>
           <option value="inversión">Inversión</option>
           <option value="educación">Educación</option>
         </select>
-        <input type="number" name="tasaInteres" value={oferta.tasaInteres} onChange={handleChange} placeholder="Tasa de interés (%)" required style={inputStyle} />
-        <input type="number" name="plazoMeses" value={oferta.plazoMeses} onChange={handleChange} placeholder="Plazo en meses" required style={inputStyle} />
-        <input type="number" name="montoMinimo" value={oferta.montoMinimo} onChange={handleChange} placeholder="Monto mínimo ($)" required style={inputStyle} />
-        <input type="text" name="pais" value={oferta.pais} onChange={handleChange} placeholder="País" required style={inputStyle} />
-        <input type="date" value={fechaExpiracion} onChange={(e) => setFechaExpiracion(e.target.value)} required style={inputStyle} />
-        <button type="submit" style={{
-          padding: "0.8rem",
-          backgroundColor: "#27ae60",
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          fontSize: "1rem",
-          cursor: "pointer"
-        }}>
+        <input
+          type="number"
+          name="tasaInteres"
+          value={oferta.tasaInteres}
+          onChange={handleChange}
+          placeholder="Tasa de interés (%)"
+          required
+          style={inputStyle}
+        />
+        <input
+          type="number"
+          name="plazoMeses"
+          value={oferta.plazoMeses}
+          onChange={handleChange}
+          placeholder="Plazo en meses"
+          required
+          style={inputStyle}
+        />
+        <input
+          type="number"
+          name="montoMinimo"
+          value={oferta.montoMinimo}
+          onChange={handleChange}
+          placeholder="Monto mínimo ($)"
+          required
+          style={inputStyle}
+        />
+        <input
+          type="text"
+          name="pais"
+          value={oferta.pais}
+          onChange={handleChange}
+          placeholder="País"
+          required
+          style={inputStyle}
+        />
+        <input
+          type="date"
+          value={fechaExpiracion}
+          onChange={(e) => setFechaExpiracion(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <button
+          type="submit"
+          style={{
+            padding: "0.8rem",
+            backgroundColor: "#27ae60",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            cursor: "pointer"
+          }}
+        >
           ✅ Publicar oferta
         </button>
       </form>
       {mensaje && (
-        <p style={{
-          marginTop: "1rem",
-          textAlign: "center",
-          color: mensaje.includes("✅") ? "green" : "red"
-        }}>
+        <p
+          style={{
+            marginTop: "1rem",
+            textAlign: "center",
+            color: mensaje.includes("✅") ? "green" : "red"
+          }}
+        >
           {mensaje}
         </p>
       )}
