@@ -1,7 +1,7 @@
 // Archivo: src/components/MenuModulos.tsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../supabaseClient";
 import "../styles/MenuModulos.css";
 
 // ⚠️ Reemplaza TU_API_KEY por la clave pública de tu proyecto
