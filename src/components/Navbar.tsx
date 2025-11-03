@@ -7,8 +7,6 @@ interface Props {
   onCerrarSesion: () => void;
 }
 
-const supabase = createClient("https://ftsbnorudtcyrrubutt.supabase.co", "TU_API_KEY");
-
 const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
   const location = useLocation();
   const [enlacesPermitidos, setEnlacesPermitidos] = useState<string[]>([]);
