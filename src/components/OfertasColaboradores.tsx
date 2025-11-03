@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
 
-const OfertaColaboradores: React.FC = () => {
+const OfertasColaboradores: React.FC = () => {
   const navigate = useNavigate();
 
   const [tipo, setTipo] = useState("");
