@@ -3,7 +3,6 @@ import { supabase } from "../supabaseClient";
 
 const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
 const supabaseKey = "TU_API_KEY";
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const EditarIngresosEgresos: React.FC = () => {
   const [ingresos, setIngresos] = useState<number>(0);
