@@ -152,98 +152,102 @@ const ForoFinanciero: React.FC<{ usuarioInstitucional?: boolean; usuarioId?: str
       return;
     }
 
-    setEncuesta({ ...encuesta, votos: nuevosVotos });
-    setMsg("✅ Tu voto fue registrado.");
-  };
-          {/* Publicar comentario */}
-          <div
+      setEncuesta({ ...encuesta, votos: nuevosVotos });
+  setMsg("✅ Tu voto fue registrado.");
+};
+
+// -------------------- Publicar comentario --------------------
+<div
+  style={{
+    marginBottom: "2rem",
+    background: "#f0f8ff",
+    padding: "1rem",
+    borderRadius: "8px",
+  }}
+>
+  <input
+    type="text"
+    name="autor"
+    placeholder="Tu nombre"
+    value={nuevoComentario.autor}
+    onChange={handleChange}
+    style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
+  />
+  <input
+    type="text"
+    name="tema"
+    placeholder="Tema (ej. mejor banco, crédito en promoción)"
+    value={nuevoComentario.tema}
+    onChange={handleChange}
+    style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
+  />
+  <textarea
+    name="contenido"
+    placeholder="Escribe tu comentario..."
+    value={nuevoComentario.contenido}
+    onChange={handleChange}
+    rows={3}
+    style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
+  />
+  <button
+    onClick={publicarComentario}
+    disabled={publicando}
+    style={{
+      padding: "0.5rem 1rem",
+      backgroundColor: "#2ecc71",
+      color: "white",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer",
+    }}
+  >
+    {publicando ? "Publicando…" : "Publicar"}
+  </button>
+</div>
+
+{/* -------------------- Lista de comentarios -------------------- */}
+{comentarios.length === 0 ? (
+  <p>No hay comentarios vigentes. Sé el primero en compartir.</p>
+) : (
+  <ul style={{ listStyle: "none", padding: 0 }}>
+    {comentarios.map((c) => (
+      <li
+        key={c.id}
+        style={{
+          marginBottom: "1.5rem",
+          border: "1px solid #e0e0e0",
+          borderRadius: "8px",
+          padding: "1rem",
+          backgroundColor: "#fafafa",
+        }}
+      >
+        <div style={{ marginBottom: "0.5rem" }}>
+          <strong>{c.autor}</strong>{" "}
+          <span
             style={{
-              marginBottom: "2rem",
-              background: "#f0f8ff",
-              padding: "1rem",
-              borderRadius: "8px",
+              marginLeft: "0.5rem",
+              background: "#dfe6e9",
+              padding: "0.2rem 0.5rem",
+              borderRadius: "4px",
             }}
           >
-            <input
-              type="text"
-              name="autor"
-              placeholder="Tu nombre"
-              value={nuevoComentario.autor}
-              onChange={handleChange}
-              style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
-            />
-            <input
-              type="text"
-              name="tema"
-              placeholder="Tema (ej. mejor banco, crédito en promoción)"
-              value={nuevoComentario.tema}
-              onChange={handleChange}
-              style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
-            />
-            <textarea
-              name="contenido"
-              placeholder="Escribe tu comentario..."
-              value={nuevoComentario.contenido}
-              onChange={handleChange}
-              rows={3}
-              style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
-            />
-            <button
-              onClick={publicarComentario}
-              disabled={publicando}
-              style={{
-                padding: "0.5rem 1rem",
-                backgroundColor: "#2ecc71",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              {publicando ? "Publicando…" : "Publicar"}
-            </button>
-          </div>
-          {/* Lista de comentarios */}
-          {comentarios.length === 0 ? (
-            <p>No hay comentarios vigentes. Sé el primero en compartir.</p>
-          ) : (
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              {comentarios.map((c) => (
-                <li
-                  key={c.id}
-                  style={{
-                    marginBottom: "1.5rem",
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "8px",
-                    padding: "1rem",
-                    backgroundColor: "#fafafa",
-                  }}
-                >
-                  <div style={{ marginBottom: "0.5rem" }}>
-                    <strong>{c.autor}</strong>{" "}
-                    <span
-                      style={{
-                        marginLeft: "0.5rem",
-                        background: "#dfe6e9",
-                        padding: "0.2rem 0.5rem",
-                        borderRadius: "4px",
-                      }}
-                    >
-                      {c.tema}
-                    </span>
-                  </div>
-                  <p style={{ margin: "0.5rem 0" }}>{c.contenido}</p>
-                  <small style={{ color: "#636e72" }}>
-                    Publicado {new Date(c.fecha).toLocaleString()}
-                  </small>
-                </li>
-              ))}
-            </ul>
-          )}
+            {c.tema}
+          </span>
         </div>
-      )}
-    </div>
-  );
+        <p style={{ margin: "0.5rem 0" }}>{c.contenido}</p>
+        <small style={{ color: "#636e72" }}>
+          Publicado {new Date(c.fecha).toLocaleString()}
+        </small>
+      </li>
+    ))}
+  </ul>
+)}
+
+</div>   {/* cierre del bloque "no cargando" */}
+)}        {/* cierre del condicional cargando ? : */}
+</div>     {/* cierre del div principal */}
+);
 };
 
 export default ForoFinanciero;
+
