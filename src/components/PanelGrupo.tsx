@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../supabaseClient";
 import { Grupo } from "../types";
 
 const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
