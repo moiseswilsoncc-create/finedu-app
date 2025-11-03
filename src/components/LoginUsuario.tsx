@@ -5,65 +5,67 @@ import { supabase } from "../supabaseClient";
 const LoginUsuario: React.FC = () => {
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
-  const [intentosFallidos, setIntentosFallidos] = useState(0);
-  const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [mensajeTipo, setMensajeTipo] = useState<"ok"|"error"|"info">("info");
+  const [enviando, setEnviando] = useState(false);
   const navigate = useNavigate();
-
-  const enviarCorreoRecuperacion = async (correo: string) => {
-    try {
-      await fetch("/api/enviar-recuperacion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo })
-      });
-      console.log(`📩 Enviado correo de recuperación a ${correo}`);
-    } catch (err) {
-      console.error("Error al enviar correo de recuperación:", err);
-    }
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMensaje("");
 
-    // 🔐 Validación estricta: clave numérica de 6 dígitos
-    if (!/^\d{4}$/.test(clave)) {
-      setError("La clave debe ser numérica y de 6 dígitos.");
+    // 🔐 Validación estricta: mínimo 6 caracteres
+    if (clave.length < 6) {
+      setMensaje("La clave debe tener al menos 6 caracteres.");
+      setMensajeTipo("error");
       return;
     }
 
-    const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
-      email: correo,
-      password: clave
-    });
+    setEnviando(true);
 
-    if (supabaseError) {
-      const mensaje = supabaseError.message || "";
-      const nuevosIntentos = intentosFallidos + 1;
-      setIntentosFallidos(nuevosIntentos);
+    try {
+      const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
+        email: correo,
+        password: clave
+      });
 
-      if (nuevosIntentos >= 3) {
-        await enviarCorreoRecuperacion(correo);
-        setError("Hemos enviado un enlace de recuperación a tu correo registrado.");
-      } else if (mensaje.includes("Invalid login credentials")) {
-        setError("Correo o clave incorrectos. Intenta nuevamente.");
-      } else {
-        setError("Error inesperado: " + mensaje);
+      if (supabaseError) {
+        console.error("Error de login:", supabaseError.message);
+        if (supabaseError.message.includes("Invalid login credentials")) {
+          setMensaje("Correo o clave incorrectos. Intenta nuevamente.");
+        } else {
+          setMensaje("Error inesperado: " + supabaseError.message);
+        }
+        setMensajeTipo("error");
+        setEnviando(false);
+        return;
       }
 
-      return;
+      // ✅ Guardar sesión mínima en localStorage
+      localStorage.setItem("logueado", "true");
+      localStorage.setItem("tipoUsuario", "usuario");
+      localStorage.setItem("correoUsuario", correo);
+
+      const nombreExtraido = correo.split("@")[0];
+      localStorage.setItem("nombreUsuario", nombreExtraido);
+
+      // 🚀 Redirigir al panel de usuario
+      setMensaje("¡Bienvenido! Redirigiendo a tu panel…");
+      setMensajeTipo("ok");
+      navigate("/panel-usuario");
+    } catch (err: any) {
+      console.error("Error inesperado:", err);
+      setMensaje("Error inesperado al intentar iniciar sesión.");
+      setMensajeTipo("error");
+    } finally {
+      setEnviando(false);
     }
-
-    // ✅ Guardar sesión mínima en localStorage
-    localStorage.setItem("logueado", "true");
-    localStorage.setItem("tipoUsuario", "usuario");
-    localStorage.setItem("correoUsuario", correo);
-
-    const nombreExtraido = correo.split("@")[0];
-    localStorage.setItem("nombreUsuario", nombreExtraido);
-
-    // 🚀 Redirigir al panel de usuario
-    navigate("/panel-usuario");
   };
+
+  const colorMensaje =
+    mensajeTipo === "ok" ? "#2ecc71" :
+    mensajeTipo === "error" ? "#e74c3c" :
+    "#2c3e50";
 
   return (
     <div
@@ -79,6 +81,13 @@ const LoginUsuario: React.FC = () => {
       <h2 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
         🔐 Acceso para usuarios registrados
       </h2>
+
+      {mensaje && (
+        <p style={{ color: colorMensaje, fontSize: "0.95rem", marginBottom: "1rem" }}>
+          {mensaje}
+        </p>
+      )}
+
       <form
         onSubmit={handleLogin}
         style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
@@ -92,26 +101,25 @@ const LoginUsuario: React.FC = () => {
         />
         <input
           type="password"
-          placeholder="Clave personal (6 dígitos)"
+          placeholder="Clave personal (mínimo 6 caracteres)"
           value={clave}
           onChange={(e) => setClave(e.target.value)}
           required
         />
-        {error && (
-          <p style={{ color: "#e74c3c", fontSize: "0.95rem" }}>{error}</p>
-        )}
+
         <button
           type="submit"
+          disabled={enviando}
           style={{
             padding: "0.6rem 1.2rem",
-            backgroundColor: "#3498db",
+            backgroundColor: enviando ? "#ccc" : "#3498db",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: "pointer"
+            cursor: enviando ? "not-allowed" : "pointer"
           }}
         >
-          Ingresar
+          {enviando ? "Ingresando..." : "Ingresar"}
         </button>
       </form>
     </div>
