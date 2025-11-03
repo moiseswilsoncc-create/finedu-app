@@ -204,3 +204,4 @@ const kpiCard = {
 
 export default Finanza;
 
+
