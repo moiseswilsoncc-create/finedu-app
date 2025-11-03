@@ -5,7 +5,6 @@ import axios from "../axiosConfig";
 
 const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
 const supabaseKey = "TU_API_KEY";
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const DatosOfertas: React.FC = () => {
   const [oferta, setOferta] = useState<OfertaColaborador>({
