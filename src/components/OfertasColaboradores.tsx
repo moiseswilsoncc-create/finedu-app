@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
+import { supabase } from "../supabaseClient";
 
 const OfertasColaboradores: React.FC = () => {
   const navigate = useNavigate();
