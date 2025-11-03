@@ -23,7 +23,7 @@ const FormularioOferta: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/guardar-oferta`,
+       `${import.meta.env.VITE_API_URL}/guardar-oferta` 
         formulario
       );
       setMensaje("✅ Oferta registrada correctamente");
