@@ -167,4 +167,4 @@ const OfertaColaboradores: React.FC = () => {
   );
 };
 
-export default OfertaColaboradores;
+export default OfertasColaboradores;
