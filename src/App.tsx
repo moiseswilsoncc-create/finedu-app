@@ -9,7 +9,7 @@ import LoginUsuario from "./components/LoginUsuario";
 import PanelUsuario from "./components/PanelUsuario";
 
 // 🧩 Módulo Finanzas (corazón del sistema)
-import Finanza from "./components/Finanza";
+import Finanzas from "./components/Finanzas";
 import Ingresos from "./components/Ingresos";
 import Egresos from "./components/Egresos";
 import ResumenFinanciero from "./components/ResumenFinanciero";
@@ -55,7 +55,7 @@ const App: React.FC = () => {
         <Route path="/panel-usuario" element={<PanelUsuario />} />
 
         {/* Finanzas */}
-        <Route path="/finanzas" element={<Finanza pais="Chile" />} />
+        <Route path="/finanzas" element={<Finanzas pais="Chile" />} />
         <Route path="/finanzas/ingresos" element={<Ingresos />} />
         <Route path="/finanzas/egresos" element={<Egresos />} />
         <Route path="/finanzas/resumen" element={<ResumenFinanciero />} />
