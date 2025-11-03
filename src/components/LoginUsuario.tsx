@@ -6,8 +6,9 @@ const LoginUsuario: React.FC = () => {
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
   const [mensaje, setMensaje] = useState("");
-  const [mensajeTipo, setMensajeTipo] = useState<"ok"|"error"|"info">("info");
+  const [mensajeTipo, setMensajeTipo] = useState<"ok"|"error"|"warning"|"info">("info");
   const [enviando, setEnviando] = useState(false);
+  const [intentosFallidos, setIntentosFallidos] = useState(0);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -17,7 +18,7 @@ const LoginUsuario: React.FC = () => {
     // 🔐 Validación estricta: mínimo 6 caracteres
     if (clave.length < 6) {
       setMensaje("La clave debe tener al menos 6 caracteres.");
-      setMensajeTipo("error");
+      setMensajeTipo("warning");
       return;
     }
 
@@ -31,6 +32,21 @@ const LoginUsuario: React.FC = () => {
 
       if (supabaseError) {
         console.error("Error de login:", supabaseError.message);
+
+        const nuevosIntentos = intentosFallidos + 1;
+        setIntentosFallidos(nuevosIntentos);
+
+        if (nuevosIntentos >= 3) {
+          // 🔒 Bloqueo y envío de correo de recuperación
+          await supabase.auth.resetPasswordForEmail(correo, {
+            redirectTo: "https://tudominio.com/reset-clave"
+          });
+          setMensaje("Has superado el número de intentos. Te enviamos un correo para restablecer tu clave.");
+          setMensajeTipo("error");
+          setEnviando(false);
+          return;
+        }
+
         if (supabaseError.message.includes("Invalid login credentials")) {
           setMensaje("Correo o clave incorrectos. Intenta nuevamente.");
         } else {
@@ -65,6 +81,7 @@ const LoginUsuario: React.FC = () => {
   const colorMensaje =
     mensajeTipo === "ok" ? "#2ecc71" :
     mensajeTipo === "error" ? "#e74c3c" :
+    mensajeTipo === "warning" ? "#e67e22" :
     "#2c3e50";
 
   return (
