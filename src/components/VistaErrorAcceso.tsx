@@ -1,12 +1,10 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-type Props = {
-  mensaje?: string;
-};
-
-const VistaErrorAcceso: React.FC<Props> = ({ mensaje }) => {
+const VistaErrorAcceso: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const mensaje = (location.state as { mensaje?: string })?.mensaje;
 
   return (
     <div
@@ -22,9 +20,7 @@ const VistaErrorAcceso: React.FC<Props> = ({ mensaje }) => {
         boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
       }}
     >
-      <h2 style={{ color: "#e74c3c" }}>
-        ⚠️ Error en el acceso
-      </h2>
+      <h2 style={{ color: "#e74c3c" }}>⚠️ Error en el acceso</h2>
       <p style={{ fontSize: "1.1rem", marginTop: "1rem", color: "#c0392b" }}>
         {mensaje || "No pudimos validar tus credenciales o completar el registro."}
       </p>
@@ -34,7 +30,7 @@ const VistaErrorAcceso: React.FC<Props> = ({ mensaje }) => {
       </p>
       <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", justifyContent: "center" }}>
         <button
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/login-usuario")}
           style={{
             padding: "0.6rem 1.2rem",
             backgroundColor: "#3498db",
