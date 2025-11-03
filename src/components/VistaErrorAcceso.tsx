@@ -1,3 +1,4 @@
+// src/components/VistaErrorAcceso.tsx
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -30,9 +31,22 @@ const VistaErrorAcceso: React.FC = () => {
         Verifica tus datos e inténtalo nuevamente.
         {origen === "login" && " Si el problema persiste, utiliza la opción de recuperación de clave."}
       </p>
-      <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", justifyContent: "center" }}>
+      <div
+        style={{
+          marginTop: "2rem",
+          display: "flex",
+          gap: "1rem",
+          justifyContent: "center"
+        }}
+      >
         <button
-          onClick={() => navigate("/login-usuario")}
+          onClick={() => {
+            if (origen === "registro") {
+              navigate("/registro-usuario");
+            } else {
+              navigate("/login-usuario");
+            }
+          }}
           style={{
             padding: "0.6rem 1.2rem",
             backgroundColor: "#3498db",
