@@ -12,12 +12,6 @@ const LoginUsuario: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Detectar si viene con ?bienvenido=1
-    const params = new URLSearchParams(location.search);
-    if (params.get("bienvenido")) {
-      setBienvenido(true);
-    }
-
     // Detectar si viene de confirmación de Supabase (hash con type=signup)
     if (location.hash.includes("type=signup")) {
       setBienvenido(true);
