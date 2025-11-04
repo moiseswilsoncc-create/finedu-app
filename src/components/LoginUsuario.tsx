@@ -25,10 +25,13 @@ const LoginUsuario: React.FC = () => {
     setEnviando(true);
 
     try {
+      // 1. Intentar login en Supabase Auth
       const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
         email: correo,
         password: clave,
       });
+
+      console.log("Resultado login:", data, supabaseError);
 
       if (supabaseError || !data.user) {
         const nuevosIntentos = intentosFallidos + 1;
@@ -37,7 +40,7 @@ const LoginUsuario: React.FC = () => {
         if (nuevosIntentos >= 3) {
           // 🔒 Bloqueo y envío de correo de recuperación
           await supabase.auth.resetPasswordForEmail(correo, {
-            redirectTo: "https://finedu-app.vercel.app/reset-clave",
+            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://finedu-app-dxhr.vercel.app"}/nueva-clave`,
           });
           navigate("/error-acceso", {
             state: {
@@ -58,12 +61,25 @@ const LoginUsuario: React.FC = () => {
         return;
       }
 
-      // ✅ Traer datos adicionales desde la tabla usuarios
-      const { data: usuarioExtra } = await supabase
+      // 2. Validar si el correo está confirmado
+      if (!data.user.email_confirmed_at) {
+        navigate("/error-acceso", {
+          state: {
+            mensaje: "Tu cuenta aún no está confirmada. Revisa tu correo y confirma antes de ingresar.",
+            origen: "acceso",
+          },
+        });
+        return;
+      }
+
+      // 3. Traer datos adicionales desde la tabla usuarios
+      const { data: usuarioExtra, error: errorUsuarioExtra } = await supabase
         .from("usuarios")
         .select("nombre, apellido, rol, grupo_id")
         .eq("id", data.user.id)
         .single();
+
+      console.log("Datos extra usuario:", usuarioExtra, errorUsuarioExtra);
 
       if (usuarioExtra) {
         localStorage.setItem(
