@@ -41,16 +41,25 @@ const RegistroUsuario: React.FC = () => {
     if (!validarFormato()) return;
 
     try {
-      const grupoId = localStorage.getItem("grupoId") || null;
-
-      // 1. Crear usuario en Supabase Auth con redirección personalizada
+      // 1. Crear usuario en Supabase Auth con metadatos y redirección personalizada
       const { data: authData, error: errorAuth } = await supabase.auth.signUp(
         {
           email: correo,
           password: clave,
+          options: {
+            data: {
+              nombre,
+              apellido,
+              fechaNacimiento,
+              sexo,
+              pais,
+              ciudad,
+              comuna,
+            },
+          },
         },
         {
-          emailRedirectTo: "https://finedu-app-dxhr.vercel.app/login-usuario"
+          emailRedirectTo: "https://finedu-app-dxhr.vercel.app/login-usuario",
         }
       );
 
@@ -63,87 +72,13 @@ const RegistroUsuario: React.FC = () => {
         return;
       }
 
-      if (!authData.user) {
-        navigate("/error-acceso", {
-          state: { mensaje: "El usuario no se creó en Auth. Revisa tu correo para confirmar la cuenta.", origen: "registro" }
-        });
-        return;
-      }
-
-      const authUserId = authData.user.id;
-
-      // 2. Insertar en tabla usuarios
-      const { data: usuariosData, error: errorUsuarios } = await supabase
-        .from("usuarios")
-        .insert([
-          {
-            id: authUserId,
-            nombre,
-            apellido,
-            fechaNacimiento,
-            sexo,
-            pais,
-            ciudad,
-            comuna,
-            correo,
-            grupo_id: grupoId,
-            created_at: new Date().toISOString()
-          }
-        ])
-        .select();
-
-      console.log("Resultado inserción usuarios:", usuariosData, errorUsuarios);
-
-      if (errorUsuarios || !usuariosData || !usuariosData[0]?.id) {
-        navigate("/error-acceso", {
-          state: { mensaje: "No se pudo registrar el usuario en la tabla usuarios.", origen: "registro" }
-        });
-        return;
-      }
-
-      const nuevoUsuario = usuariosData[0];
-
-      // 3. Insertar en tabla usuarios_activos
-      const { error: errorActivos } = await supabase
-        .from("usuarios_activos")
-        .insert([
-          {
-            usuario_id: nuevoUsuario.id,
-            correo,
-            nombre: `${nombre} ${apellido}`,
-            rol: "usuario",
-            pais,
-            comuna,
-            grupo_id: grupoId,
-            esActivo: true,
-            fechaNacimiento
-          }
-        ]);
-
-      console.log("Resultado inserción usuarios_activos:", errorActivos);
-
-      if (errorActivos) {
-        navigate("/error-acceso", {
-          state: { mensaje: "Error al registrar la activación del usuario.", origen: "registro" }
-        });
-        return;
-      }
-
-      // Guardar en localStorage y redirigir
-      localStorage.setItem("nombreUsuario", `${nombre} ${apellido}`);
-      localStorage.setItem("logueado", "true");
-      localStorage.setItem("tipoUsuario", "usuario");
-      localStorage.setItem("correoUsuario", correo);
-      if (grupoId) localStorage.setItem("grupoId", grupoId);
-
-      // 🚀 Redirigir a pantalla de éxito o pendiente de confirmación
-      if (!authData.user.email_confirmed_at) {
-        navigate("/registro-pendiente", {
-          state: { mensaje: "✅ Te hemos enviado un correo de confirmación. Revisa tu bandeja y confirma tu cuenta antes de iniciar sesión." }
-        });
-      } else {
-        navigate("/registro-exitoso");
-      }
+      // 🚀 Siempre redirigir a pantalla de confirmación
+      navigate("/registro-pendiente", {
+        state: {
+          mensaje:
+            "✅ Te hemos enviado un correo de confirmación. Revisa tu bandeja y confirma tu cuenta antes de iniciar sesión.",
+        },
+      });
 
     } catch (err) {
       console.error("❌ Error general:", err);
