@@ -11,6 +11,7 @@ import VistaErrorAcceso from "./components/VistaErrorAcceso";         // ✅ Nue
 import RecuperarClave from "./components/RecuperarClave";             // ✅ Nuevo
 import NuevaClave from "./components/NuevaClave";                     // ✅ Nuevo
 import RegistroPendiente from "./components/RegistroPendiente";       // ✅ Nuevo agregado
+import RegistroExitoso from "./components/RegistroExitoso";           // ✅ Nuevo agregado
 
 // 🧩 Módulo Finanzas
 import Finanzas from "./components/Finanzas";
@@ -64,7 +65,7 @@ const App: React.FC = () => {
 
         {/* ✅ Flujo de acceso */}
         <Route path="/registro-pendiente" element={<RegistroPendiente />} /> {/* Nuevo */}
-        <Route path="/registro-exitoso" element={<VistaIngresoUsuario />} />
+        <Route path="/registro-exitoso" element={<RegistroExitoso />} />   {/* ✅ Actualizado */}
         <Route path="/error-acceso" element={<VistaErrorAcceso />} />
         <Route path="/recuperar-clave" element={<RecuperarClave />} />
         <Route path="/nueva-clave" element={<NuevaClave />} />
