@@ -21,11 +21,11 @@ const RegistroUsuario: React.FC = () => {
   const validarFormato = () => {
     const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
     if (!correoValido) {
-      navigate("/error-acceso", { state: { mensaje: "Este correo no es válido. Intenta de nuevo." } });
+      navigate("/error-acceso", { state: { mensaje: "Este correo no es válido. Intenta de nuevo.", origen: "registro" } });
       return false;
     }
     if (contraseña.length < 6) {
-      navigate("/error-acceso", { state: { mensaje: "La contraseña debe tener al menos 6 caracteres." } });
+      navigate("/error-acceso", { state: { mensaje: "La contraseña debe tener al menos 6 caracteres.", origen: "registro" } });
       return false;
     }
     return true;
@@ -44,12 +44,12 @@ const RegistroUsuario: React.FC = () => {
         .eq("correo", correo);
 
       if (errorBusqueda) {
-        navigate("/error-acceso", { state: { mensaje: "Error al verificar el correo. Intenta más tarde." } });
+        navigate("/error-acceso", { state: { mensaje: "Error al verificar el correo. Intenta más tarde.", origen: "registro" } });
         return;
       }
 
       if (Array.isArray(coincidencias) && coincidencias.length > 0) {
-        navigate("/error-acceso", { state: { mensaje: "Este correo ya está registrado." } });
+        navigate("/error-acceso", { state: { mensaje: "Este correo ya está registrado.", origen: "registro" } });
         return;
       }
 
@@ -76,7 +76,7 @@ const RegistroUsuario: React.FC = () => {
         .select();
 
       if (errorUsuarios || !usuariosData || !usuariosData[0]?.id) {
-        navigate("/error-acceso", { state: { mensaje: "No se pudo registrar el usuario. Intenta más tarde." } });
+        navigate("/error-acceso", { state: { mensaje: "No se pudo registrar el usuario. Intenta más tarde.", origen: "registro" } });
         return;
       }
 
@@ -94,14 +94,13 @@ const RegistroUsuario: React.FC = () => {
             pais,
             comuna,
             grupo_id: grupoId,
-            activo: true,
-            fechaNacimiento,
-            fecha_activacion: new Date().toISOString()
+            esActivo: true,          // corregido
+            fechaNacimiento          // corregido (sin fecha_activacion)
           }
         ]);
 
       if (errorActivos) {
-        navigate("/error-acceso", { state: { mensaje: "Error al registrar la activación del usuario." } });
+        navigate("/error-acceso", { state: { mensaje: "Error al registrar la activación del usuario.", origen: "registro" } });
         return;
       }
 
@@ -117,9 +116,10 @@ const RegistroUsuario: React.FC = () => {
 
     } catch (err) {
       console.error("❌ Error general:", err);
-      navigate("/error-acceso", { state: { mensaje: "Error de conexión con Supabase." } });
+      navigate("/error-acceso", { state: { mensaje: "Error de conexión con Supabase.", origen: "registro" } });
     }
   };
+
   return (
     <div style={{
       maxWidth: "600px",
