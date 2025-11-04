@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
 const LoginUsuario: React.FC = () => {
@@ -8,6 +8,11 @@ const LoginUsuario: React.FC = () => {
   const [intentosFallidos, setIntentosFallidos] = useState(0);
   const [enviando, setEnviando] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Detectar si viene con ?bienvenido=1
+  const params = new URLSearchParams(location.search);
+  const bienvenido = params.get("bienvenido");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,6 +168,22 @@ const LoginUsuario: React.FC = () => {
       }}
     >
       <h3 style={{ color: "#2c3e50" }}>🔐 Acceso de usuario</h3>
+
+      {bienvenido && (
+        <div
+          style={{
+            backgroundColor: "#eafaf1",
+            border: "1px solid #2ecc71",
+            padding: "0.8rem",
+            borderRadius: "6px",
+            color: "#27ae60",
+            fontSize: "0.95rem",
+          }}
+        >
+          🎉 Bienvenido/a, tu correo fue confirmado. Ingresa con tu correo y clave para acceder por primera vez.
+        </div>
+      )}
+
       <input
         type="email"
         placeholder="Correo electrónico"
