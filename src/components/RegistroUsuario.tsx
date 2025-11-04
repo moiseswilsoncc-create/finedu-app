@@ -11,7 +11,7 @@ const RegistroUsuario: React.FC = () => {
   const [ciudad, setCiudad] = useState("");
   const [comuna, setComuna] = useState("");
   const [correo, setCorreo] = useState("");
-  const [contraseña, setContraseña] = useState("");
+  const [clave, setClave] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,8 +24,8 @@ const RegistroUsuario: React.FC = () => {
       navigate("/error-acceso", { state: { mensaje: "Este correo no es válido. Intenta de nuevo.", origen: "registro" } });
       return false;
     }
-    if (contraseña.length < 6) {
-      navigate("/error-acceso", { state: { mensaje: "La contraseña debe tener al menos 6 caracteres.", origen: "registro" } });
+    if (clave.length < 6) {
+      navigate("/error-acceso", { state: { mensaje: "La clave debe tener al menos 6 caracteres.", origen: "registro" } });
       return false;
     }
     return true;
@@ -68,7 +68,7 @@ const RegistroUsuario: React.FC = () => {
             ciudad,
             comuna,
             correo,
-            contraseña,
+            clave,
             grupo_id: grupoId,
             created_at: new Date().toISOString()
           }
@@ -152,7 +152,7 @@ const RegistroUsuario: React.FC = () => {
           <div style={{ flex: 1 }}><label>🏘️ Comuna</label><input type="text" value={comuna} onChange={(e) => setComuna(e.target.value)} required style={inputStyle} /></div>
         </div>
         <div><label>📧 Correo electrónico</label><input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} /></div>
-        <div><label>🔒 Clave personal</label><input type="password" value={contraseña} onChange={(e) => setContraseña(e.target.value)} required style={inputStyle} /></div>
+        <div><label>🔒 Clave personal</label><input type="password" value={clave} onChange={(e) => setClave(e.target.value)} required style={inputStyle} /></div>
         <button type="submit" style={{
           padding: "0.8rem",
           backgroundColor: "#2ecc71",
