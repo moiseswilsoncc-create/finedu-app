@@ -1,24 +1,30 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
+interface ErrorState {
+  mensaje?: string;
+  origen?: "registro" | "acceso";
+}
+
 const VistaErrorAcceso: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { mensaje?: string; origen?: string };
-  const mensaje = state?.mensaje;
-  const origen = state?.origen; // "registro" o "acceso"
+  const state = (location.state as ErrorState) || {};
+  const mensaje = state.mensaje;
+  const origen = state.origen;
 
   const handleRetry = () => {
     if (origen === "registro") {
       navigate("/registro-usuario");
     } else {
-      navigate("/login"); // 🔑 corregido para apuntar al login oficial
+      navigate("/login"); // 🔑 apunta al login oficial
     }
   };
 
   return (
     <div
       role="alert"
+      aria-live="assertive"
       style={{
         maxWidth: "600px",
         margin: "3rem auto",
@@ -31,19 +37,24 @@ const VistaErrorAcceso: React.FC = () => {
       }}
     >
       <h2 style={{ color: "#e74c3c" }}>⚠️ Error en el acceso</h2>
+
       <p style={{ fontSize: "1.1rem", marginTop: "1rem", color: "#c0392b" }}>
         {mensaje || "No pudimos validar tus credenciales o completar el registro."}
       </p>
+
       <p style={{ marginTop: "1rem", color: "#7f8c8d" }}>
         Verifica tus datos e inténtalo nuevamente.
-        {origen === "acceso" && " Si el problema persiste, utiliza la opción de recuperación de clave."}
+        {origen === "acceso" &&
+          " Si el problema persiste, utiliza la opción de recuperación de clave."}
       </p>
+
       <div
         style={{
           marginTop: "2rem",
           display: "flex",
           gap: "1rem",
-          justifyContent: "center"
+          justifyContent: "center",
+          flexWrap: "wrap"
         }}
       >
         <button
@@ -75,6 +86,20 @@ const VistaErrorAcceso: React.FC = () => {
             Recuperar clave
           </button>
         )}
+
+        <button
+          onClick={() => navigate("/")}
+          style={{
+            padding: "0.6rem 1.2rem",
+            backgroundColor: "#7f8c8d",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer"
+          }}
+        >
+          Ir al inicio
+        </button>
       </div>
     </div>
   );
