@@ -1,4 +1,3 @@
-// src/components/VistaErrorAcceso.tsx
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -7,7 +6,15 @@ const VistaErrorAcceso: React.FC = () => {
   const location = useLocation();
   const state = location.state as { mensaje?: string; origen?: string };
   const mensaje = state?.mensaje;
-  const origen = state?.origen; // "registro" o "login"
+  const origen = state?.origen; // "registro" o "acceso"
+
+  const handleRetry = () => {
+    if (origen === "registro") {
+      navigate("/registro-usuario");
+    } else {
+      navigate("/acceso-usuarios");
+    }
+  };
 
   return (
     <div
@@ -29,7 +36,7 @@ const VistaErrorAcceso: React.FC = () => {
       </p>
       <p style={{ marginTop: "1rem", color: "#7f8c8d" }}>
         Verifica tus datos e inténtalo nuevamente.
-        {origen === "login" && " Si el problema persiste, utiliza la opción de recuperación de clave."}
+        {origen === "acceso" && " Si el problema persiste, utiliza la opción de recuperación de clave."}
       </p>
       <div
         style={{
@@ -40,13 +47,7 @@ const VistaErrorAcceso: React.FC = () => {
         }}
       >
         <button
-          onClick={() => {
-            if (origen === "registro") {
-              navigate("/registro-usuario");
-            } else {
-              navigate("/login-usuario");
-            }
-          }}
+          onClick={handleRetry}
           style={{
             padding: "0.6rem 1.2rem",
             backgroundColor: "#3498db",
@@ -59,7 +60,7 @@ const VistaErrorAcceso: React.FC = () => {
           Volver a intentar
         </button>
 
-        {origen === "login" && (
+        {origen === "acceso" && (
           <button
             onClick={() => navigate("/recuperar-clave")}
             style={{
