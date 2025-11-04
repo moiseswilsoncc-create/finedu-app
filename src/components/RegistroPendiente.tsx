@@ -1,4 +1,3 @@
-// src/components/RegistroPendiente.tsx
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -6,7 +5,9 @@ const RegistroPendiente: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as { mensaje?: string };
-  const mensaje = state?.mensaje || "✅ Tu cuenta fue creada. Revisa tu correo y confirma antes de iniciar sesión.";
+  const mensaje =
+    state?.mensaje ||
+    "✅ Tu cuenta fue creada. Revisa tu correo y confirma antes de iniciar sesión.";
 
   return (
     <div
@@ -17,7 +18,7 @@ const RegistroPendiente: React.FC = () => {
         borderRadius: "12px",
         backgroundColor: "#fefefe",
         boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-        textAlign: "center"
+        textAlign: "center",
       }}
     >
       <h2 style={{ color: "#27ae60" }}>Registro pendiente</h2>
@@ -36,7 +37,7 @@ const RegistroPendiente: React.FC = () => {
           color: "white",
           border: "none",
           borderRadius: "6px",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         Ir al login
