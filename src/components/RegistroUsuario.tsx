@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient"; // Ajusta la ruta si es necesario
+import { supabase } from "../supabaseClient";
 
 const RegistroUsuario: React.FC = () => {
   const [nombre, setNombre] = useState("");
@@ -21,11 +21,15 @@ const RegistroUsuario: React.FC = () => {
   const validarFormato = () => {
     const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
     if (!correoValido) {
-      navigate("/error-acceso", { state: { mensaje: "Este correo no es válido. Intenta de nuevo.", origen: "registro" } });
+      navigate("/error-acceso", {
+        state: { mensaje: "Este correo no es válido. Intenta de nuevo.", origen: "registro" }
+      });
       return false;
     }
     if (clave.length < 6) {
-      navigate("/error-acceso", { state: { mensaje: "La clave debe tener al menos 6 caracteres.", origen: "registro" } });
+      navigate("/error-acceso", {
+        state: { mensaje: "La clave debe tener al menos 6 caracteres.", origen: "registro" }
+      });
       return false;
     }
     return true;
@@ -45,8 +49,19 @@ const RegistroUsuario: React.FC = () => {
         password: clave,
       });
 
-      if (errorAuth || !authData.user) {
-        navigate("/error-acceso", { state: { mensaje: "Error al registrar en Auth: " + errorAuth?.message, origen: "registro" } });
+      console.log("Resultado signUp:", authData, errorAuth);
+
+      if (errorAuth) {
+        navigate("/error-acceso", {
+          state: { mensaje: "Error al registrar en Auth: " + errorAuth.message, origen: "registro" }
+        });
+        return;
+      }
+
+      if (!authData.user) {
+        navigate("/error-acceso", {
+          state: { mensaje: "El usuario no se creó en Auth. Revisa tu correo para confirmar la cuenta.", origen: "registro" }
+        });
         return;
       }
 
@@ -57,7 +72,7 @@ const RegistroUsuario: React.FC = () => {
         .from("usuarios")
         .insert([
           {
-            id: authUserId, // 🔑 enlazamos con el id de Auth
+            id: authUserId,
             nombre,
             apellido,
             fechaNacimiento,
@@ -72,8 +87,12 @@ const RegistroUsuario: React.FC = () => {
         ])
         .select();
 
+      console.log("Resultado inserción usuarios:", usuariosData, errorUsuarios);
+
       if (errorUsuarios || !usuariosData || !usuariosData[0]?.id) {
-        navigate("/error-acceso", { state: { mensaje: "No se pudo registrar el usuario en la tabla usuarios.", origen: "registro" } });
+        navigate("/error-acceso", {
+          state: { mensaje: "No se pudo registrar el usuario en la tabla usuarios.", origen: "registro" }
+        });
         return;
       }
 
@@ -96,8 +115,12 @@ const RegistroUsuario: React.FC = () => {
           }
         ]);
 
+      console.log("Resultado inserción usuarios_activos:", errorActivos);
+
       if (errorActivos) {
-        navigate("/error-acceso", { state: { mensaje: "Error al registrar la activación del usuario.", origen: "registro" } });
+        navigate("/error-acceso", {
+          state: { mensaje: "Error al registrar la activación del usuario.", origen: "registro" }
+        });
         return;
       }
 
@@ -108,12 +131,12 @@ const RegistroUsuario: React.FC = () => {
       localStorage.setItem("correoUsuario", correo);
       if (grupoId) localStorage.setItem("grupoId", grupoId);
 
-      // 🚀 Redirigir a pantalla de éxito
       navigate("/registro-exitoso");
-
     } catch (err) {
       console.error("❌ Error general:", err);
-      navigate("/error-acceso", { state: { mensaje: "Error de conexión con Supabase.", origen: "registro" } });
+      navigate("/error-acceso", {
+        state: { mensaje: "Error de conexión con Supabase.", origen: "registro" }
+      });
     }
   };
 
@@ -132,9 +155,18 @@ const RegistroUsuario: React.FC = () => {
       </p>
 
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
-        <div><label>👤 Nombre</label><input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required style={inputStyle} /></div>
-        <div><label>👤 Apellido</label><input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required style={inputStyle} /></div>
-        <div><label>📅 Fecha de nacimiento</label><input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} /></div>
+        <div>
+          <label>👤 Nombre</label>
+          <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required style={inputStyle} />
+        </div>
+        <div>
+          <label>👤 Apellido</label>
+          <input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required style={inputStyle} />
+        </div>
+        <div>
+          <label>📅 Fecha de nacimiento</label>
+          <input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} />
+        </div>
         <div>
           <label>Sexo</label>
           <select value={sexo} onChange={(e) => setSexo(e.target.value)} required style={inputStyle}>
@@ -143,28 +175,49 @@ const RegistroUsuario: React.FC = () => {
             <option value="Masculino">Masculino</option>
           </select>
         </div>
-        <div><label>🌎 País</label><input type="text" value={pais} onChange={(e) => setPais(e.target.value)} required style={inputStyle} /></div>
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <div style={{ flex: 1 }}><label>🏙️ Ciudad</label><input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required style={inputStyle} /></div>
-          <div style={{ flex: 1 }}><label>🏘️ Comuna</label><input type="text" value={comuna} onChange={(e) => setComuna(e.target.value)} required style={inputStyle} /></div>
+        <div>
+          <label>🌎 País</label>
+          <input type="text" value={pais} onChange={(e) => setPais(e.target.value)} required style={inputStyle} />
         </div>
-        <div><label>📧 Correo electrónico</label><input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} /></div>
-        <div><label>🔒 Clave personal</label><input type="password" value={clave} onChange={(e) => setClave(e.target.value)} required style={inputStyle} /></div>
-        <button type="submit" style={{
-          padding: "0.8rem",
-          backgroundColor: "#2ecc71",
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          fontSize: "1rem",
-          cursor: "pointer"
-        }}>✅ Registrarme ahora</button>
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <div style={{ flex: 1 }}>
+            <label>🏙️ Ciudad</label>
+            <input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required style={inputStyle} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label>🏘️ Comuna</label>
+            <input type="text" value={comuna} onChange={(e) => setComuna(e.target.value)} required style={inputStyle} />
+          </div>
+        </div>
+        <div>
+          <label>📧 Correo electrónico</label>
+          <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} />
+        </div>
+        <div>
+          <label>🔒 Clave personal</label>
+          <input type="password" value={clave} onChange={(e) => setClave(e.target.value)} required style={inputStyle} />
+        </div>
+
+        <button
+          type="submit"
+          style={{
+            padding: "0.8rem",
+            backgroundColor: "#2ecc71",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            cursor: "pointer"
+          }}
+        >
+          ✅ Registrarme ahora
+        </button>
       </form>
     </div>
   );
 };
 
-const inputStyle = {
+const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "0.6rem",
   borderRadius: "6px",
