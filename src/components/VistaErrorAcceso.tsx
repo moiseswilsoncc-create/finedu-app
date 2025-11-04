@@ -12,7 +12,7 @@ const VistaErrorAcceso: React.FC = () => {
     if (origen === "registro") {
       navigate("/registro-usuario");
     } else {
-      navigate("/acceso-usuarios");
+      navigate("/login"); // 🔑 corregido para apuntar al login oficial
     }
   };
 
