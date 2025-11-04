@@ -30,7 +30,7 @@ const RecuperarClave: React.FC = () => {
 
       // 2. Enviar correo de recuperación con Supabase Auth
       const { error } = await supabase.auth.resetPasswordForEmail(correo, {
-        redirectTo: "https://finedu-app.vercel.app/nueva-clave"
+        redirectTo: "https://finedu-app-dxhr.vercel.app/nueva-clave"
       });
 
       if (error) {
