@@ -1,7 +1,7 @@
 // src/components/NuevaClave.tsx
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { api } from "../axiosConfig"; // ✅ cliente axios configurado
+import { supabase } from "../supabaseClient";
 
 const NuevaClave: React.FC = () => {
   const [nuevaClave, setNuevaClave] = useState("");
@@ -11,7 +11,6 @@ const NuevaClave: React.FC = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
-  const token = params.get("token");
   const correo = params.get("correo");
   const esColaborador = correo?.includes("colaborador");
 
@@ -34,48 +33,45 @@ const NuevaClave: React.FC = () => {
     }
 
     if (nuevaClave !== confirmacion) {
-
       navigate("/error-acceso", {
         state: { mensaje: "Las contraseñas no coinciden.", origen: "login" }
       });
-
       return;
     }
 
     setEnviando(true);
 
     try {
-      const response = await api.post("/nueva-clave", {
-        token,
-        correo,
-        nuevaClave // 🔐 hashing en backend
+      // ✅ Actualizar clave directamente en Supabase Auth
+      const { error } = await supabase.auth.updateUser({
+        password: nuevaClave,
       });
 
-      if (response.data.success) {
-        setMensaje("✅ Clave actualizada correctamente.");
-
-        // Guardar sesión mínima
-        localStorage.setItem("logueado", "true");
-        localStorage.setItem("nombreUsuario", correo?.split("@")[0] || "Usuario Finedu");
-
-        if (esColaborador) {
-          localStorage.setItem("tipoUsuario", "colaborador");
-          setTimeout(() => navigate("/panel-colaborador"), 2000);
-        } else {
-          localStorage.setItem("tipoUsuario", "usuario");
-          setTimeout(() => navigate("/panel-usuario"), 2000);
-        }
-      } else {
-
+      if (error) {
         navigate("/error-acceso", {
-          state: { mensaje: "No se pudo actualizar la clave.", origen: "login" }
+          state: { mensaje: "No se pudo actualizar la clave: " + error.message, origen: "login" }
         });
-
+        return;
       }
+
+      setMensaje("✅ Clave actualizada correctamente.");
+
+      // Guardar sesión mínima
+      localStorage.setItem("logueado", "true");
+      localStorage.setItem("nombreUsuario", correo?.split("@")[0] || "Usuario Finedu");
+
+      if (esColaborador) {
+        localStorage.setItem("tipoUsuario", "colaborador");
+        setTimeout(() => navigate("/panel-colaborador"), 2000);
+      } else {
+        localStorage.setItem("tipoUsuario", "usuario");
+        setTimeout(() => navigate("/panel-usuario"), 2000);
+      }
+
     } catch (err) {
-      console.error("Error de conexión:", err);
+      console.error("Error inesperado:", err);
       navigate("/error-acceso", {
-        state: { mensaje: "No se pudo conectar con el servidor.", origen: "login" }
+        state: { mensaje: "Error inesperado al intentar actualizar la clave.", origen: "login" }
       });
     } finally {
       setEnviando(false);
@@ -132,9 +128,7 @@ const NuevaClave: React.FC = () => {
             cursor: enviando ? "not-allowed" : "pointer"
           }}
         >
-
           {enviando ? "Actualizando..." : "Actualizar clave"}
-
         </button>
       </form>
     </div>
