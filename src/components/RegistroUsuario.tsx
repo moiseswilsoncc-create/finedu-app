@@ -59,7 +59,8 @@ const RegistroUsuario: React.FC = () => {
           },
         },
         {
-          emailRedirectTo: "https://finedu-app-dxhr.vercel.app/login-usuario",
+          // 👇 Redirige al login con query param para mostrar bienvenida
+          emailRedirectTo: "https://finedu-app-dxhr.vercel.app/login-usuario?bienvenido=1",
         }
       );
 
