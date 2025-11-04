@@ -131,7 +131,15 @@ const RegistroUsuario: React.FC = () => {
       localStorage.setItem("correoUsuario", correo);
       if (grupoId) localStorage.setItem("grupoId", grupoId);
 
-      navigate("/registro-exitoso");
+      // 🚀 Redirigir a pantalla de éxito o pendiente de confirmación
+      if (!authData.user.email_confirmed_at) {
+        navigate("/registro-pendiente", {
+          state: { mensaje: "✅ Te hemos enviado un correo de confirmación. Revisa tu bandeja y confirma tu cuenta antes de iniciar sesión." }
+        });
+      } else {
+        navigate("/registro-exitoso");
+      }
+
     } catch (err) {
       console.error("❌ Error general:", err);
       navigate("/error-acceso", {
@@ -155,18 +163,9 @@ const RegistroUsuario: React.FC = () => {
       </p>
 
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
-        <div>
-          <label>👤 Nombre</label>
-          <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required style={inputStyle} />
-        </div>
-        <div>
-          <label>👤 Apellido</label>
-          <input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required style={inputStyle} />
-        </div>
-        <div>
-          <label>📅 Fecha de nacimiento</label>
-          <input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} />
-        </div>
+        <div><label>👤 Nombre</label><input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required style={inputStyle} /></div>
+        <div><label>👤 Apellido</label><input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required style={inputStyle} /></div>
+        <div><label>📅 Fecha de nacimiento</label><input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} /></div>
         <div>
           <label>Sexo</label>
           <select value={sexo} onChange={(e) => setSexo(e.target.value)} required style={inputStyle}>
@@ -175,43 +174,22 @@ const RegistroUsuario: React.FC = () => {
             <option value="Masculino">Masculino</option>
           </select>
         </div>
-        <div>
-          <label>🌎 País</label>
-          <input type="text" value={pais} onChange={(e) => setPais(e.target.value)} required style={inputStyle} />
-        </div>
+        <div><label>🌎 País</label><input type="text" value={pais} onChange={(e) => setPais(e.target.value)} required style={inputStyle} /></div>
         <div style={{ display: "flex", gap: "1rem" }}>
-          <div style={{ flex: 1 }}>
-            <label>🏙️ Ciudad</label>
-            <input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required style={inputStyle} />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label>🏘️ Comuna</label>
-            <input type="text" value={comuna} onChange={(e) => setComuna(e.target.value)} required style={inputStyle} />
-          </div>
+          <div style={{ flex: 1 }}><label>🏙️ Ciudad</label><input type="text" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required style={inputStyle} /></div>
+          <div style={{ flex: 1 }}><label>🏘️ Comuna</label><input type="text" value={comuna} onChange={(e) => setComuna(e.target.value)} required style={inputStyle} /></div>
         </div>
-        <div>
-          <label>📧 Correo electrónico</label>
-          <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} />
-        </div>
-        <div>
-          <label>🔒 Clave personal</label>
-          <input type="password" value={clave} onChange={(e) => setClave(e.target.value)} required style={inputStyle} />
-        </div>
-
-        <button
-          type="submit"
-          style={{
-            padding: "0.8rem",
-            backgroundColor: "#2ecc71",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            fontSize: "1rem",
-            cursor: "pointer"
-          }}
-        >
-          ✅ Registrarme ahora
-        </button>
+        <div><label>📧 Correo electrónico</label><input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} /></div>
+        <div><label>🔒 Clave personal</label><input type="password" value={clave} onChange={(e) => setClave(e.target.value)} required style={inputStyle} /></div>
+        <button type="submit" style={{
+          padding: "0.8rem",
+          backgroundColor: "#2ecc71",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          fontSize: "1rem",
+          cursor: "pointer"
+        }}>✅ Registrarme ahora</button>
       </form>
     </div>
   );
