@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
@@ -7,12 +7,22 @@ const LoginUsuario: React.FC = () => {
   const [clave, setClave] = useState("");
   const [intentosFallidos, setIntentosFallidos] = useState(0);
   const [enviando, setEnviando] = useState(false);
+  const [bienvenido, setBienvenido] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Detectar si viene con ?bienvenido=1
-  const params = new URLSearchParams(location.search);
-  const bienvenido = params.get("bienvenido");
+  useEffect(() => {
+    // Detectar si viene con ?bienvenido=1
+    const params = new URLSearchParams(location.search);
+    if (params.get("bienvenido")) {
+      setBienvenido(true);
+    }
+
+    // Detectar si viene de confirmación de Supabase (hash con type=signup)
+    if (location.hash.includes("type=signup")) {
+      setBienvenido(true);
+    }
+  }, [location]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
