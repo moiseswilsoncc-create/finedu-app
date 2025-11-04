@@ -72,32 +72,65 @@ const LoginUsuario: React.FC = () => {
         return;
       }
 
-      // 3. Traer datos adicionales desde la tabla usuarios
-      const { data: usuarioExtra, error: errorUsuarioExtra } = await supabase
+      const user = data.user;
+
+      // 3. Upsert en tabla usuarios (perfil básico)
+      const { error: errorUsuarios } = await supabase
         .from("usuarios")
-        .select("nombre, apellido, rol, grupo_id")
-        .eq("id", data.user.id)
-        .single();
-
-      console.log("Datos extra usuario:", usuarioExtra, errorUsuarioExtra);
-
-      if (usuarioExtra) {
-        localStorage.setItem(
-          "nombreUsuario",
-          `${usuarioExtra.nombre} ${usuarioExtra.apellido}`
+        .upsert(
+          {
+            id: user.id,
+            correo: user.email,
+            nombre: user.user_metadata?.nombre || "",
+            apellido: user.user_metadata?.apellido || "",
+            pais: user.user_metadata?.pais || "Chile",
+            comuna: user.user_metadata?.comuna || "",
+            fechaNacimiento: user.user_metadata?.fechaNacimiento || null,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "id" }
         );
-        localStorage.setItem("tipoUsuario", usuarioExtra.rol || "usuario");
-        if (usuarioExtra.grupo_id) {
-          localStorage.setItem("grupoId", usuarioExtra.grupo_id);
-        }
-      } else {
-        // fallback mínimo si no encuentra datos extra
-        localStorage.setItem("nombreUsuario", correo.split("@")[0]);
-        localStorage.setItem("tipoUsuario", "usuario");
+
+      if (errorUsuarios) {
+        console.error("❌ Error al registrar en usuarios:", errorUsuarios);
+        navigate("/error-acceso", {
+          state: { mensaje: "No se pudo registrar el perfil de usuario.", origen: "login" },
+        });
+        return;
       }
 
-      localStorage.setItem("logueado", "true");
+      // 4. Upsert en tabla usuarios_activos
+      const { error: errorActivos } = await supabase
+        .from("usuarios_activos")
+        .upsert(
+          {
+            usuario_id: user.id,
+            correo: user.email,
+            nombre: `${user.user_metadata?.nombre || ""} ${user.user_metadata?.apellido || ""}`,
+            rol: "usuario",
+            pais: user.user_metadata?.pais || "Chile",
+            comuna: user.user_metadata?.comuna || "",
+            esActivo: true,
+            fechaNacimiento: user.user_metadata?.fechaNacimiento || null,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "usuario_id" }
+        );
+
+      if (errorActivos) {
+        console.error("❌ Error al registrar en usuarios_activos:", errorActivos);
+        navigate("/error-acceso", {
+          state: { mensaje: "No se pudo activar el usuario.", origen: "login" },
+        });
+        return;
+      }
+
+      // 5. Guardar datos en localStorage
+      localStorage.setItem("usuarioId", user.id);
       localStorage.setItem("correoUsuario", correo);
+      localStorage.setItem("nombreUsuario", user.user_metadata?.nombre || correo.split("@")[0]);
+      localStorage.setItem("tipoUsuario", "usuario");
+      localStorage.setItem("logueado", "true");
 
       // 🚀 Redirigir al panel de usuario
       navigate("/panel-usuario");
