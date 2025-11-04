@@ -13,7 +13,7 @@ const LoginUsuario: React.FC = () => {
     e.preventDefault();
 
     if (clave.length < 6) {
-      navigate("/error-acceso", { state: { mensaje: "La clave debe tener al menos 6 caracteres." } });
+      navigate("/error-acceso", { state: { mensaje: "La clave debe tener al menos 6 caracteres.", origen: "acceso" } });
       return;
     }
 
@@ -35,12 +35,12 @@ const LoginUsuario: React.FC = () => {
             redirectTo: "https://finedu-app.vercel.app/reset-clave"
           });
           navigate("/error-acceso", {
-            state: { mensaje: "Has superado el número de intentos. Te enviamos un correo para restablecer tu clave." }
+            state: { mensaje: "Has superado el número de intentos. Te enviamos un correo para restablecer tu clave.", origen: "acceso" }
           });
           return;
         }
 
-        navigate("/error-acceso", { state: { mensaje: "Correo o clave incorrectos. Intenta nuevamente." } });
+        navigate("/error-acceso", { state: { mensaje: "Correo o clave incorrectos. Intenta nuevamente.", origen: "acceso" } });
         return;
       }
 
@@ -54,11 +54,12 @@ const LoginUsuario: React.FC = () => {
       navigate("/panel-usuario");
 
     } catch (err: any) {
-      navigate("/error-acceso", { state: { mensaje: "Error inesperado al intentar iniciar sesión." } });
+      navigate("/error-acceso", { state: { mensaje: "Error inesperado al intentar iniciar sesión.", origen: "acceso" } });
     } finally {
       setEnviando(false);
     }
   };
+
   return (
     <form
       onSubmit={handleLogin}
