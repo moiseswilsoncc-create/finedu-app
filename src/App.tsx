@@ -1,4 +1,3 @@
-// src/App.tsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -11,6 +10,7 @@ import VistaIngresoUsuario from "./components/VistaIngresoUsuario";   // ✅ Nue
 import VistaErrorAcceso from "./components/VistaErrorAcceso";         // ✅ Nuevo
 import RecuperarClave from "./components/RecuperarClave";             // ✅ Nuevo
 import NuevaClave from "./components/NuevaClave";                     // ✅ Nuevo
+import RegistroPendiente from "./components/RegistroPendiente";       // ✅ Nuevo agregado
 
 // 🧩 Módulo Finanzas
 import Finanzas from "./components/Finanzas";
@@ -63,6 +63,7 @@ const App: React.FC = () => {
         <Route path="/panel-usuario" element={<PanelUsuario />} />
 
         {/* ✅ Flujo de acceso */}
+        <Route path="/registro-pendiente" element={<RegistroPendiente />} /> {/* Nuevo */}
         <Route path="/registro-exitoso" element={<VistaIngresoUsuario />} />
         <Route path="/error-acceso" element={<VistaErrorAcceso />} />
         <Route path="/recuperar-clave" element={<RecuperarClave />} />
