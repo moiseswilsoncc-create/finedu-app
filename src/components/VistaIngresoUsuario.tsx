@@ -1,20 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 const VistaIngresoUsuario: React.FC = () => {
   const navigate = useNavigate();
   const [nombreUsuario, setNombreUsuario] = useState<string | null>(null);
 
   useEffect(() => {
-    const nombre = localStorage.getItem("nombreUsuario");
-    setNombreUsuario(nombre);
+    const validarSesion = async () => {
+      const { data, error } = await supabase.auth.getUser();
 
-    // Redirigir automáticamente al panel de usuario
-    const timer = setTimeout(() => {
-      navigate("/panel-usuario", { replace: true });
-    }, 2500);
+      if (error || !data.user) {
+        // 🚨 Si no hay sesión activa, redirigir al login
+        navigate("/login", { replace: true });
+        return;
+      }
 
-    return () => clearTimeout(timer);
+      // Intentar recuperar nombre desde tabla usuarios
+      const { data: usuarioExtra } = await supabase
+        .from("usuarios")
+        .select("nombre, apellido")
+        .eq("id", data.user.id)
+        .single();
+
+      if (usuarioExtra) {
+        setNombreUsuario(`${usuarioExtra.nombre} ${usuarioExtra.apellido}`);
+        localStorage.setItem("nombreUsuario", `${usuarioExtra.nombre} ${usuarioExtra.apellido}`);
+      } else {
+        // fallback: usar correo
+        setNombreUsuario(data.user.email?.split("@")[0] || "Usuario");
+      }
+
+      // Redirigir automáticamente al panel de usuario
+      const timer = setTimeout(() => {
+        navigate("/panel-usuario", { replace: true });
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    };
+
+    validarSesion();
   }, [navigate]);
 
   return (
