@@ -1,5 +1,5 @@
 // src/components/NuevaClave.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
@@ -13,6 +13,16 @@ const NuevaClave: React.FC = () => {
 
   const correo = params.get("correo");
   const esColaborador = correo?.includes("colaborador");
+
+  // 🔎 Validar que exista un access_token en la URL
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash.includes("access_token")) {
+      navigate("/error-acceso", {
+        state: { mensaje: "El enlace de recuperación no es válido o ha expirado.", origen: "login" }
+      });
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,9 +53,11 @@ const NuevaClave: React.FC = () => {
 
     try {
       // ✅ Actualizar clave directamente en Supabase Auth
-      const { error } = await supabase.auth.updateUser({
+      const { data, error } = await supabase.auth.updateUser({
         password: nuevaClave,
       });
+
+      console.log("Resultado updateUser:", data, error);
 
       if (error) {
         navigate("/error-acceso", {
@@ -54,7 +66,7 @@ const NuevaClave: React.FC = () => {
         return;
       }
 
-      setMensaje("✅ Clave actualizada correctamente.");
+      setMensaje("✅ Clave actualizada correctamente. Redirigiendo...");
 
       // Guardar sesión mínima
       localStorage.setItem("logueado", "true");
@@ -69,7 +81,7 @@ const NuevaClave: React.FC = () => {
       }
 
     } catch (err) {
-      console.error("Error inesperado:", err);
+      console.error("❌ Error inesperado:", err);
       navigate("/error-acceso", {
         state: { mensaje: "Error inesperado al intentar actualizar la clave.", origen: "login" }
       });
