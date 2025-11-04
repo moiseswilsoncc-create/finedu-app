@@ -15,7 +15,7 @@ const RegistroUsuario: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("✅ Componente RegistroUsuario montado");
+    console.log("Componente RegistroUsuario montado");
   }, []);
 
   const validarFormato = () => {
@@ -139,7 +139,7 @@ const RegistroUsuario: React.FC = () => {
         <div><label>👤 Apellido</label><input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required style={inputStyle} /></div>
         <div><label>📅 Fecha de nacimiento</label><input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} /></div>
         <div>
-          <label>⚧️ Sexo</label>
+          <label> Sexo</label>
           <select value={sexo} onChange={(e) => setSexo(e.target.value)} required style={inputStyle}>
             <option value="">Selecciona</option>
             <option value="Femenino">Femenino</option>
@@ -154,6 +154,7 @@ const RegistroUsuario: React.FC = () => {
         <div><label>📧 Correo electrónico</label><input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} /></div>
         <div><label>🔒 Clave personal</label><input type="password" value={clave} onChange={(e) => setClave(e.target.value)} required style={inputStyle} /></div>
         <button type="submit" style={{
+
           padding: "0.8rem",
           backgroundColor: "#2ecc71",
           color: "white",

@@ -12,7 +12,7 @@ const ActivarColaborador: React.FC = () => {
     correo: "",
     rol: "",
     pais: "Chile",
-    contraseña: ""
+    clave: ""
   });
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const ActivarColaborador: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { correo, rol, pais, contraseña } = formulario;
+    const { correo, rol, pais, clave } = formulario;
 
     const { error: updateError } = await supabase
       .from("colaboradores")
@@ -96,7 +96,7 @@ const ActivarColaborador: React.FC = () => {
           <option value="colaborador">Colaborador</option>
           <option value="institucional">Institucional</option>
         </select>
-        <input type="password" name="contraseña" value={formulario.contraseña} onChange={handleChange} placeholder="Crear contraseña" required style={inputStyle} />
+        <input type="password" name="clave" value={formulario.clave} onChange={handleChange} placeholder="Crear clave" required style={inputStyle} />
         <button type="submit" style={buttonStyle}>Activar cuenta</button>
       </form>
     </div>

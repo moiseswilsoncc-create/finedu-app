@@ -104,8 +104,14 @@ const RecuperarClave: React.FC = () => {
         </form>
       ) : (
         <p style={{ fontSize: "1.1rem", color: "#2ecc71" }}>
+<<<<<<< HEAD
           ✅ Hemos enviado un enlace temporal a <strong>{correo}</strong>.  
           Revisa tu bandeja de entrada y sigue las instrucciones para crear una nueva clave.
+=======
+          Hemos enviado un enlace temporal a <strong>{correo}</strong>. Revisa tu
+          bandeja de entrada y sigue las instrucciones para crear una nueva
+          clave.
+>>>>>>> Unificación de campo contraseña → clave en todos los módulos de usuario
         </p>
       )}
     </div>

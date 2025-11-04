@@ -4,7 +4,7 @@ import { supabase } from "../supabaseClient";
 const EditarPerfilUsuario: React.FC = () => {
   const correoGuardado = localStorage.getItem("correoUsuario");
   const [nombre, setNombre] = useState("");
-  const [contraseña, setContraseña] = useState("");
+  const [clave, setContraseña] = useState("");
   const [error, setError] = useState("");
   const [exito, setExito] = useState("");
 
@@ -15,7 +15,7 @@ const EditarPerfilUsuario: React.FC = () => {
       try {
         const { data, error } = await supabase
           .from("usuarios")
-          .select("nombre, contraseña")
+          .select("nombre, clave")
           .eq("correo", correoGuardado)
           .single();
 
@@ -27,7 +27,7 @@ const EditarPerfilUsuario: React.FC = () => {
 
         if (data) {
           setNombre(data.nombre);
-          setContraseña(data.contraseña);
+          setContraseña(data.clave);
         }
       } catch (err) {
         console.error("Error inesperado:", err);
@@ -44,7 +44,7 @@ const EditarPerfilUsuario: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from("usuarios")
-        .update({ nombre, contraseña })
+        .update({ nombre, clave })
         .eq("correo", correoGuardado)
         .select();
 
@@ -89,7 +89,7 @@ const EditarPerfilUsuario: React.FC = () => {
       <label>Contraseña:</label>
       <input
         type="password"
-        value={contraseña}
+        value={clave}
         onChange={(e) => setContraseña(e.target.value)}
         style={{ width: "100%", marginBottom: "1rem" }}
       />

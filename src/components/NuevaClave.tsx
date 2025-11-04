@@ -34,9 +34,11 @@ const NuevaClave: React.FC = () => {
     }
 
     if (nuevaClave !== confirmacion) {
+
       navigate("/error-acceso", {
         state: { mensaje: "Las contraseñas no coinciden.", origen: "login" }
       });
+
       return;
     }
 
@@ -64,9 +66,11 @@ const NuevaClave: React.FC = () => {
           setTimeout(() => navigate("/panel-usuario"), 2000);
         }
       } else {
+
         navigate("/error-acceso", {
-          state: { mensaje: "❌ No se pudo actualizar la clave.", origen: "login" }
+          state: { mensaje: "No se pudo actualizar la clave.", origen: "login" }
         });
+
       }
     } catch (err) {
       console.error("Error de conexión:", err);
@@ -128,7 +132,9 @@ const NuevaClave: React.FC = () => {
             cursor: enviando ? "not-allowed" : "pointer"
           }}
         >
+
           {enviando ? "Actualizando..." : "Actualizar clave"}
+
         </button>
       </form>
     </div>

@@ -20,7 +20,7 @@ export type DatosUsuario = {
   ciudad: string;
   comuna: string;
   correo: string;
-  contraseña: string;
+  clave: string;
 };
 
 // Datos de institución colaboradora
