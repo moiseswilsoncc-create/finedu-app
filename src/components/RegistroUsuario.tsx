@@ -43,11 +43,16 @@ const RegistroUsuario: React.FC = () => {
     try {
       const grupoId = localStorage.getItem("grupoId") || null;
 
-      // 1. Crear usuario en Supabase Auth
-      const { data: authData, error: errorAuth } = await supabase.auth.signUp({
-        email: correo,
-        password: clave,
-      });
+      // 1. Crear usuario en Supabase Auth con redirección personalizada
+      const { data: authData, error: errorAuth } = await supabase.auth.signUp(
+        {
+          email: correo,
+          password: clave,
+        },
+        {
+          emailRedirectTo: "https://finedu-app-dxhr.vercel.app/login-usuario"
+        }
+      );
 
       console.log("Resultado signUp:", authData, errorAuth);
 
