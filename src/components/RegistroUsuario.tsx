@@ -37,29 +37,27 @@ const RegistroUsuario: React.FC = () => {
     if (!validarFormato()) return;
 
     try {
-      // Validar si el correo ya existe
-      const { data: coincidencias, error: errorBusqueda } = await supabase
-        .from("usuarios")
-        .select("id")
-        .eq("correo", correo);
-
-      if (errorBusqueda) {
-        navigate("/error-acceso", { state: { mensaje: "Error al verificar el correo. Intenta más tarde.", origen: "registro" } });
-        return;
-      }
-
-      if (Array.isArray(coincidencias) && coincidencias.length > 0) {
-        navigate("/error-acceso", { state: { mensaje: "Este correo ya está registrado.", origen: "registro" } });
-        return;
-      }
-
       const grupoId = localStorage.getItem("grupoId") || null;
 
-      // 1. Insertar en tabla usuarios
+      // 1. Crear usuario en Supabase Auth
+      const { data: authData, error: errorAuth } = await supabase.auth.signUp({
+        email: correo,
+        password: clave,
+      });
+
+      if (errorAuth || !authData.user) {
+        navigate("/error-acceso", { state: { mensaje: "Error al registrar en Auth: " + errorAuth?.message, origen: "registro" } });
+        return;
+      }
+
+      const authUserId = authData.user.id;
+
+      // 2. Insertar en tabla usuarios
       const { data: usuariosData, error: errorUsuarios } = await supabase
         .from("usuarios")
         .insert([
           {
+            id: authUserId, // 🔑 enlazamos con el id de Auth
             nombre,
             apellido,
             fechaNacimiento,
@@ -68,7 +66,6 @@ const RegistroUsuario: React.FC = () => {
             ciudad,
             comuna,
             correo,
-            clave,
             grupo_id: grupoId,
             created_at: new Date().toISOString()
           }
@@ -76,13 +73,13 @@ const RegistroUsuario: React.FC = () => {
         .select();
 
       if (errorUsuarios || !usuariosData || !usuariosData[0]?.id) {
-        navigate("/error-acceso", { state: { mensaje: "No se pudo registrar el usuario. Intenta más tarde.", origen: "registro" } });
+        navigate("/error-acceso", { state: { mensaje: "No se pudo registrar el usuario en la tabla usuarios.", origen: "registro" } });
         return;
       }
 
       const nuevoUsuario = usuariosData[0];
 
-      // 2. Insertar en tabla usuarios_activos
+      // 3. Insertar en tabla usuarios_activos
       const { error: errorActivos } = await supabase
         .from("usuarios_activos")
         .insert([
@@ -94,8 +91,8 @@ const RegistroUsuario: React.FC = () => {
             pais,
             comuna,
             grupo_id: grupoId,
-            esActivo: true,          // corregido
-            fechaNacimiento          // corregido (sin fecha_activacion)
+            esActivo: true,
+            fechaNacimiento
           }
         ]);
 
@@ -139,7 +136,7 @@ const RegistroUsuario: React.FC = () => {
         <div><label>👤 Apellido</label><input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required style={inputStyle} /></div>
         <div><label>📅 Fecha de nacimiento</label><input type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required style={inputStyle} /></div>
         <div>
-          <label> Sexo</label>
+          <label>Sexo</label>
           <select value={sexo} onChange={(e) => setSexo(e.target.value)} required style={inputStyle}>
             <option value="">Selecciona</option>
             <option value="Femenino">Femenino</option>
@@ -154,7 +151,6 @@ const RegistroUsuario: React.FC = () => {
         <div><label>📧 Correo electrónico</label><input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} /></div>
         <div><label>🔒 Clave personal</label><input type="password" value={clave} onChange={(e) => setClave(e.target.value)} required style={inputStyle} /></div>
         <button type="submit" style={{
-
           padding: "0.8rem",
           backgroundColor: "#2ecc71",
           color: "white",
