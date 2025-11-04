@@ -14,12 +14,21 @@ const RecuperarClave: React.FC = () => {
     setEnviando(true);
 
     try {
-      // 1. (Opcional) Validar si el correo existe en la tabla usuarios
-      const { data: usuario } = await supabase
+      // 1. Validar si el correo existe en la tabla usuarios
+      const { data: usuario, error: errorUsuario } = await supabase
         .from("usuarios")
         .select("id")
         .eq("correo", correo)
         .maybeSingle();
+
+      console.log("Validación usuario:", usuario, errorUsuario);
+
+      if (errorUsuario) {
+        navigate("/error-acceso", {
+          state: { mensaje: "❌ Error al validar el correo en la base de datos.", origen: "acceso" }
+        });
+        return;
+      }
 
       if (!usuario) {
         navigate("/error-acceso", {
@@ -29,9 +38,12 @@ const RecuperarClave: React.FC = () => {
       }
 
       // 2. Enviar correo de recuperación con Supabase Auth
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://finedu-app-dxhr.vercel.app";
       const { error } = await supabase.auth.resetPasswordForEmail(correo, {
-        redirectTo: "https://finedu-app-dxhr.vercel.app/nueva-clave"
+        redirectTo: `${siteUrl}/nueva-clave`
       });
+
+      console.log("Resultado resetPasswordForEmail:", error);
 
       if (error) {
         navigate("/error-acceso", {
@@ -44,7 +56,7 @@ const RecuperarClave: React.FC = () => {
       setEnviado(true);
 
     } catch (err) {
-      console.error("Error inesperado:", err);
+      console.error("❌ Error inesperado en recuperación:", err);
       navigate("/error-acceso", {
         state: { mensaje: "❌ Error inesperado al intentar recuperar la clave.", origen: "acceso" }
       });
@@ -103,10 +115,25 @@ const RecuperarClave: React.FC = () => {
           </button>
         </form>
       ) : (
-        <p style={{ fontSize: "1.1rem", color: "#2ecc71" }}>
-          ✅ Hemos enviado un enlace temporal a <strong>{correo}</strong>.  
-          Revisa tu bandeja de entrada y sigue las instrucciones para crear una nueva clave.
-        </p>
+        <div>
+          <p style={{ fontSize: "1.1rem", color: "#2ecc71", marginBottom: "1rem" }}>
+            ✅ Hemos enviado un enlace temporal a <strong>{correo}</strong>.  
+            Revisa tu bandeja de entrada y sigue las instrucciones para crear una nueva clave.
+          </p>
+          <button
+            onClick={() => navigate("/login")}
+            style={{
+              padding: "0.6rem 1.2rem",
+              backgroundColor: "#2ecc71",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
+          >
+            Volver al login
+          </button>
+        </div>
       )}
     </div>
   );
