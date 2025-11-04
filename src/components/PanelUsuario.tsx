@@ -6,9 +6,8 @@ import { OfertaColaborador } from "../types";
 
 const PanelUsuario: React.FC = () => {
   const navigate = useNavigate();
-  const nombreUsuario = localStorage.getItem("nombreUsuario") || "Usuario";
-  const correo = localStorage.getItem("correoUsuario");
-
+  const [nombreUsuario, setNombreUsuario] = useState("Usuario");
+  const [correo, setCorreo] = useState<string | null>(null);
   const [ofertasFiltradas, setOfertasFiltradas] = useState<OfertaColaborador[]>([]);
 
   const modulos = [
@@ -22,6 +21,36 @@ const PanelUsuario: React.FC = () => {
     { nombre: "🗣️ Foro Financiero", ruta: "/foro-financiero", color: "#2c3e50" }
   ];
 
+  // ✅ Validar sesión con Supabase Auth
+  useEffect(() => {
+    const validarSesion = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        navigate("/login"); // si no hay sesión, redirigir
+        return;
+      }
+
+      setCorreo(data.user.email ?? null);
+
+      // Traer datos extra desde tabla usuarios
+      const { data: usuarioExtra } = await supabase
+        .from("usuarios")
+        .select("nombre, apellido")
+        .eq("id", data.user.id)
+        .single();
+
+      if (usuarioExtra) {
+        setNombreUsuario(`${usuarioExtra.nombre} ${usuarioExtra.apellido}`);
+        localStorage.setItem("nombreUsuario", `${usuarioExtra.nombre} ${usuarioExtra.apellido}`);
+      } else {
+        setNombreUsuario(data.user.email?.split("@")[0] || "Usuario");
+      }
+    };
+
+    validarSesion();
+  }, [navigate]);
+
+  // ✅ Obtener ofertas personalizadas
   useEffect(() => {
     const obtenerOfertas = async () => {
       if (!correo) return;
