@@ -1,4 +1,3 @@
-// src/components/RegistroExitoso.tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +13,7 @@ const RegistroExitoso: React.FC = () => {
         borderRadius: "12px",
         backgroundColor: "#fefefe",
         boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-        textAlign: "center"
+        textAlign: "center",
       }}
     >
       <h2 style={{ color: "#27ae60" }}>🎉 Registro exitoso</h2>
@@ -31,7 +30,7 @@ const RegistroExitoso: React.FC = () => {
           color: "white",
           border: "none",
           borderRadius: "6px",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         Ir al login
