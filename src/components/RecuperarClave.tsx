@@ -66,7 +66,7 @@ const RecuperarClave: React.FC = () => {
       }}
     >
       <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
-        🔁 Recuperar contraseña
+        🔁 Recuperar clave
       </h3>
 
       {!enviado ? (
@@ -105,7 +105,7 @@ const RecuperarClave: React.FC = () => {
       ) : (
         <p style={{ fontSize: "1.1rem", color: "#2ecc71" }}>
           ✅ Hemos enviado un enlace temporal a <strong>{correo}</strong>.  
-          Revisa tu bandeja de entrada y sigue las instrucciones para crear una nueva contraseña.
+          Revisa tu bandeja de entrada y sigue las instrucciones para crear una nueva clave.
         </p>
       )}
     </div>
