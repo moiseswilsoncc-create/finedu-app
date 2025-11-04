@@ -50,7 +50,7 @@ const NuevaClave: React.FC = () => {
       });
 
       if (response.data.success) {
-        setMensaje("✅ Contraseña actualizada correctamente.");
+        setMensaje("✅ Clave actualizada correctamente.");
 
         // Guardar sesión mínima
         localStorage.setItem("logueado", "true");
@@ -65,7 +65,7 @@ const NuevaClave: React.FC = () => {
         }
       } else {
         navigate("/error-acceso", {
-          state: { mensaje: "❌ No se pudo actualizar la contraseña.", origen: "login" }
+          state: { mensaje: "❌ No se pudo actualizar la clave.", origen: "login" }
         });
       }
     } catch (err) {
@@ -91,7 +91,7 @@ const NuevaClave: React.FC = () => {
       }}
     >
       <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
-        🔒 Crear nueva contraseña
+        🔒 Crear nueva clave
       </h3>
       <form
         onSubmit={handleSubmit}
@@ -106,7 +106,7 @@ const NuevaClave: React.FC = () => {
         />
         <input
           type="password"
-          placeholder="Confirmar contraseña"
+          placeholder="Confirmar clave"
           value={confirmacion}
           onChange={(e) => setConfirmacion(e.target.value)}
           required
@@ -128,7 +128,7 @@ const NuevaClave: React.FC = () => {
             cursor: enviando ? "not-allowed" : "pointer"
           }}
         >
-          {enviando ? "Actualizando..." : "Actualizar contraseña"}
+          {enviando ? "Actualizando..." : "Actualizar clave"}
         </button>
       </form>
     </div>
