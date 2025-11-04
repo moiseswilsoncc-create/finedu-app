@@ -1,7 +1,7 @@
 // src/components/RecuperarClave.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient"; // ✅ usamos Supabase directo
+import { supabase } from "../supabaseClient";
 
 const RecuperarClave: React.FC = () => {
   const [correo, setCorreo] = useState("");
@@ -14,16 +14,16 @@ const RecuperarClave: React.FC = () => {
     setEnviando(true);
 
     try {
-      // 1. Validar si el correo existe en la tabla usuarios
-      const { data: usuario, error: errorBusqueda } = await supabase
+      // 1. (Opcional) Validar si el correo existe en la tabla usuarios
+      const { data: usuario } = await supabase
         .from("usuarios")
         .select("id")
         .eq("correo", correo)
-        .single();
+        .maybeSingle();
 
-      if (errorBusqueda || !usuario) {
+      if (!usuario) {
         navigate("/error-acceso", {
-          state: { mensaje: "❌ Este correo no está registrado en Finedu.", origen: "login" }
+          state: { mensaje: "❌ Este correo no está registrado en Finedu.", origen: "acceso" }
         });
         return;
       }
@@ -35,7 +35,7 @@ const RecuperarClave: React.FC = () => {
 
       if (error) {
         navigate("/error-acceso", {
-          state: { mensaje: "❌ No se pudo enviar el correo de recuperación.", origen: "login" }
+          state: { mensaje: "❌ No se pudo enviar el correo de recuperación.", origen: "acceso" }
         });
         return;
       }
@@ -46,7 +46,7 @@ const RecuperarClave: React.FC = () => {
     } catch (err) {
       console.error("Error inesperado:", err);
       navigate("/error-acceso", {
-        state: { mensaje: "❌ Error inesperado al intentar recuperar la clave.", origen: "login" }
+        state: { mensaje: "❌ Error inesperado al intentar recuperar la clave.", origen: "acceso" }
       });
     } finally {
       setEnviando(false);
@@ -104,10 +104,8 @@ const RecuperarClave: React.FC = () => {
         </form>
       ) : (
         <p style={{ fontSize: "1.1rem", color: "#2ecc71" }}>
-
           ✅ Hemos enviado un enlace temporal a <strong>{correo}</strong>.  
           Revisa tu bandeja de entrada y sigue las instrucciones para crear una nueva clave.
-         
         </p>
       )}
     </div>
