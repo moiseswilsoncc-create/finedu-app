@@ -41,28 +41,23 @@ const RegistroUsuario: React.FC = () => {
     if (!validarFormato()) return;
 
     try {
-      // 1. Crear usuario en Supabase Auth con metadatos y redirección personalizada
-      const { data: authData, error: errorAuth } = await supabase.auth.signUp(
-        {
-          email: correo,
-          password: clave,
-          options: {
-            data: {
-              nombre,
-              apellido,
-              fechaNacimiento,
-              sexo,
-              pais,
-              ciudad,
-              comuna,
-            },
+      // ✅ Crear usuario en Supabase Auth con metadatos y redirección correcta
+      const { data: authData, error: errorAuth } = await supabase.auth.signUp({
+        email: correo,
+        password: clave,
+        options: {
+          emailRedirectTo: "https://finedu-app-dxhr.vercel.app/login-usuario",
+          data: {
+            nombre,
+            apellido,
+            fechaNacimiento,
+            sexo,
+            pais,
+            ciudad,
+            comuna,
           },
         },
-        {
-          // 👇 Redirige al login con query param para mostrar bienvenida
-          emailRedirectTo: "https://finedu-app-dxhr.vercel.app/login-usuario"
-        }
-      );
+      });
 
       console.log("Resultado signUp:", authData, errorAuth);
 
