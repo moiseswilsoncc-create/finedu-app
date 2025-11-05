@@ -1,28 +1,32 @@
-// src/institucional/DashboardInstitucional.tsx
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
+type AhorroRegion = {
+  region: string | null;
+  pais: string | null;       // 👈 usar sin tilde para evitar errores
+  monto_total: number | null;
+  fecha: string | null;
+};
+
 const DashboardInstitucional: React.FC = () => {
   const [estado, setEstado] = useState("⏳ Cargando...");
-  const [datos, setDatos] = useState<any[]>([]);
+  const [datos, setDatos] = useState<AhorroRegion[]>([]);
 
   useEffect(() => {
-    console.log("🧩 Componente montado");
-    console.log("🔍 Supabase URL:", import.meta.env.VITE_SUPABASE_URL);
-    console.log("🔍 Supabase KEY:", import.meta.env.VITE_SUPABASE_ANON_KEY);
-
     const cargarDatos = async () => {
       try {
-        const { data, error } = await supabase.from("ahorro_por_region").select("*");
-        console.log("📊 Supabase respuesta:", { data, error });
+        const { data, error } = await supabase
+          .from("ahorro_por_region")
+          .select("region, pais, monto_total, fecha"); // 👈 columnas explícitas
 
         if (error) {
+          console.error("❌ Error Supabase:", error.message);
           setEstado("❌ Error al obtener datos");
         } else if (!data || data.length === 0) {
           setEstado("⚠️ Sin datos disponibles");
         } else {
           setEstado("✅ Datos cargados correctamente");
-          setDatos(data);
+          setDatos(data as AhorroRegion[]);
         }
       } catch (err) {
         console.error("❌ Error inesperado:", err);
@@ -52,9 +56,9 @@ const DashboardInstitucional: React.FC = () => {
             {datos.map((fila, index) => (
               <tr key={index}>
                 <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{fila.region || "—"}</td>
-                <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{fila.país || "—"}</td>
+                <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>{fila.pais || "—"}</td>
                 <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>
-                  {fila.monto_total ? `$${fila.monto_total.toLocaleString("es-CL")}` : "—"}
+                  {fila.monto_total !== null ? `$${fila.monto_total.toLocaleString("es-CL")}` : "—"}
                 </td>
                 <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>
                   {fila.fecha ? new Date(fila.fecha).toLocaleDateString("es-CL") : "—"}
