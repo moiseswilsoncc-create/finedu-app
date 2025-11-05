@@ -15,15 +15,16 @@ const PanelUsuario: React.FC = () => {
   const [permisos, setPermisos] = useState<Permiso[] | null>(null);
 
   const modulos = [
-    { nombre: "💸 Ingresos y Egresos", ruta: "/resumen-financiero", color: "#f39c12" },
-    { nombre: "💰 Registro de Ahorro", ruta: "/registro-ahorro", color: "#27ae60" },
-    { nombre: "👥 Mi Grupo", ruta: "/vista-grupal", color: "#2980b9" },
-    { nombre: "📈 Simulador de Inversión", ruta: "/simulador-inversion", color: "#8e44ad" },
-    { nombre: "🏦 Simulador de Crédito", ruta: "/simulador-credito", color: "#c0392b" },
-    { nombre: "🧠 Test Financiero", ruta: "/test-financiero", color: "#16a085" },
-    { nombre: "📊 Mi Progreso", ruta: "/vista-etapa", color: "#34495e" },
-    { nombre: "🗣️ Foro Financiero", ruta: "/foro-financiero", color: "#2c3e50" }
-  ];
+  { nombre: "💸 Ingresos y Egresos", ruta: "/resumen-financiero", color: "#f39c12" },
+  { nombre: "💰 Registro de Ahorro", ruta: "/registro-ahorro", color: "#27ae60" },
+  { nombre: "👥 Mi Grupo", ruta: "/mi-grupo", color: "#2980b9" }, // si tienes un módulo distinto
+  { nombre: "🤝 Vista Grupal", ruta: "/vista-grupal", color: "#1abc9c" }, // 👈 nuevo módulo
+  { nombre: "📈 Simulador de Inversión", ruta: "/simulador-inversion", color: "#8e44ad" },
+  { nombre: "🏦 Simulador de Crédito", ruta: "/simulador-credito", color: "#c0392b" },
+  { nombre: "🧠 Test Financiero", ruta: "/test-financiero", color: "#16a085" },
+  { nombre: "📊 Mi Progreso", ruta: "/vista-etapa", color: "#34495e" },
+  { nombre: "🗣️ Foro Financiero", ruta: "/foro-financiero", color: "#2c3e50" }
+];
 
   // ✅ Validar sesión con Supabase Auth
   useEffect(() => {
