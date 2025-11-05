@@ -12,7 +12,6 @@ const LoginUsuario: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Detectar si viene de confirmación de Supabase (hash con type=signup)
     if (location.hash.includes("type=signup")) {
       setBienvenido(true);
     }
@@ -23,10 +22,7 @@ const LoginUsuario: React.FC = () => {
 
     if (clave.length < 6) {
       navigate("/error-acceso", {
-        state: {
-          mensaje: "La clave debe tener al menos 6 caracteres.",
-          origen: "acceso",
-        },
+        state: { mensaje: "La clave debe tener al menos 6 caracteres.", origen: "acceso" },
       });
       return;
     }
@@ -34,7 +30,6 @@ const LoginUsuario: React.FC = () => {
     setEnviando(true);
 
     try {
-      // 1. Intentar login en Supabase Auth
       const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
         email: correo,
         password: clave,
@@ -47,44 +42,32 @@ const LoginUsuario: React.FC = () => {
         setIntentosFallidos(nuevosIntentos);
 
         if (nuevosIntentos >= 3) {
-          // 🔒 Bloqueo y envío de correo de recuperación
           await supabase.auth.resetPasswordForEmail(correo, {
             redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://finedu-app-dxhr.vercel.app"}/nueva-clave`,
           });
           navigate("/error-acceso", {
-            state: {
-              mensaje:
-                "Has superado el número de intentos. Te enviamos un correo para restablecer tu clave.",
-              origen: "acceso",
-            },
+            state: { mensaje: "Has superado el número de intentos. Te enviamos un correo para restablecer tu clave.", origen: "acceso" },
           });
           return;
         }
 
         navigate("/error-acceso", {
-          state: {
-            mensaje: "Correo o clave incorrectos. Intenta nuevamente.",
-            origen: "acceso",
-          },
+          state: { mensaje: "Correo o clave incorrectos. Intenta nuevamente.", origen: "acceso" },
         });
         return;
       }
 
-      // 2. Validar si el correo está confirmado
       if (!data.user.email_confirmed_at) {
         navigate("/error-acceso", {
-          state: {
-            mensaje: "Tu cuenta aún no está confirmada. Revisa tu correo y confirma antes de ingresar.",
-            origen: "acceso",
-          },
+          state: { mensaje: "Tu cuenta aún no está confirmada. Revisa tu correo y confirma antes de ingresar.", origen: "acceso" },
         });
         return;
       }
 
       const user = data.user;
 
-      // 3. Upsert en tabla usuarios (perfil básico)
-      const { error: errorUsuarios } = await supabase
+      // Upsert en tabla usuarios
+      const { data: dataUsuarios, error: errorUsuarios } = await supabase
         .from("usuarios")
         .upsert(
           {
@@ -95,63 +78,67 @@ const LoginUsuario: React.FC = () => {
             pais: user.user_metadata?.pais || "Chile",
             ciudad: user.user_metadata?.ciudad || "",
             comuna: user.user_metadata?.comuna || "",
-            sexo: user.user_metadata?.sexo || "", // 👈 agregado
-            fechaNacimiento: user.user_metadata?.fechaNacimiento || null,
+            sexo: user.user_metadata?.sexo || "",
+            fechaNacimiento: user.user_metadata?.fechaNacimiento
+              ? new Date(user.user_metadata.fechaNacimiento).toISOString()
+              : null,
           },
           { onConflict: "id" }
-        );
+        )
+        .select();
+
+      console.log("Resultado usuarios:", { dataUsuarios, errorUsuarios });
 
       if (errorUsuarios) {
-        console.error("❌ Error al registrar en usuarios:", errorUsuarios.message, errorUsuarios.details);
         navigate("/error-acceso", {
           state: { mensaje: "No se pudo registrar el perfil de usuario.", origen: "login" },
         });
         return;
       }
 
-      // 4. Upsert en tabla usuarios_activos
-      const { error: errorActivos } = await supabase
+      // Upsert en tabla usuarios_activos
+      const { data: dataActivos, error: errorActivos } = await supabase
         .from("usuarios_activos")
         .upsert(
           {
-            id: user.id, // 👈 usar PK real
+            id: user.id,
             correo: user.email,
-            nombre: `${user.user_metadata?.nombre || ""} ${user.user_metadata?.apellido || ""}`,
+            nombre: user.user_metadata?.nombre || "",
+            apellido: user.user_metadata?.apellido || "",
             rol: "usuario",
             pais: user.user_metadata?.pais || "Chile",
             ciudad: user.user_metadata?.ciudad || "",
             comuna: user.user_metadata?.comuna || "",
-            sexo: user.user_metadata?.sexo || "", // 👈 agregado
+            sexo: user.user_metadata?.sexo || "",
             esActivo: true,
-            fechaNacimiento: user.user_metadata?.fechaNacimiento || null,
+            fechaNacimiento: user.user_metadata?.fechaNacimiento
+              ? new Date(user.user_metadata.fechaNacimiento).toISOString()
+              : null,
           },
           { onConflict: "id" }
-        );
+        )
+        .select();
+
+      console.log("Resultado usuarios_activos:", { dataActivos, errorActivos });
 
       if (errorActivos) {
-        console.error("❌ Error al registrar en usuarios_activos:", errorActivos.message, errorActivos.details);
         navigate("/error-acceso", {
           state: { mensaje: "No se pudo activar el usuario.", origen: "login" },
         });
         return;
       }
 
-      // 5. Guardar datos en localStorage
       localStorage.setItem("usuarioId", user.id);
       localStorage.setItem("correoUsuario", correo);
       localStorage.setItem("nombreUsuario", user.user_metadata?.nombre || correo.split("@")[0]);
       localStorage.setItem("tipoUsuario", "usuario");
       localStorage.setItem("logueado", "true");
 
-      // 🚀 Redirigir al panel de usuario
       navigate("/panel-usuario");
     } catch (err: any) {
       console.error("❌ Error inesperado en login:", err);
       navigate("/error-acceso", {
-        state: {
-          mensaje: "Error inesperado al intentar iniciar sesión.",
-          origen: "acceso",
-        },
+        state: { mensaje: "Error inesperado al intentar iniciar sesión.", origen: "acceso" },
       });
     } finally {
       setEnviando(false);
@@ -159,63 +146,16 @@ const LoginUsuario: React.FC = () => {
   };
 
   return (
-    <form
-      onSubmit={handleLogin}
-      style={{
-        maxWidth: "400px",
-        margin: "3rem auto",
-        padding: "2rem",
-        backgroundColor: "#fefefe",
-        borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1rem",
-      }}
-    >
+    <form onSubmit={handleLogin} style={{ maxWidth: "400px", margin: "3rem auto", padding: "2rem", backgroundColor: "#fefefe", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column", gap: "1rem" }}>
       <h3 style={{ color: "#2c3e50" }}>🔐 Acceso de usuario</h3>
-
       {bienvenido && (
-        <div
-          style={{
-            backgroundColor: "#eafaf1",
-            border: "1px solid #2ecc71",
-            padding: "0.8rem",
-            borderRadius: "6px",
-            color: "#27ae60",
-            fontSize: "0.95rem",
-          }}
-        >
+        <div style={{ backgroundColor: "#eafaf1", border: "1px solid #2ecc71", padding: "0.8rem", borderRadius: "6px", color: "#27ae60", fontSize: "0.95rem" }}>
           🎉 Bienvenido/a, tu correo fue confirmado. Ingresa con tu correo y clave para acceder por primera vez.
         </div>
       )}
-
-      <input
-        type="email"
-        placeholder="Correo electrónico"
-        value={correo}
-        onChange={(e) => setCorreo(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Clave personal (mínimo 6 caracteres)"
-        value={clave}
-        onChange={(e) => setClave(e.target.value)}
-        required
-      />
-      <button
-        type="submit"
-        disabled={enviando}
-        style={{
-          padding: "0.6rem 1.2rem",
-          backgroundColor: enviando ? "#ccc" : "#3498db",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          cursor: enviando ? "not-allowed" : "pointer",
-        }}
-      >
+      <input type="email" placeholder="Correo electrónico" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
+      <input type="password" placeholder="Clave personal (mínimo 6 caracteres)" value={clave} onChange={(e) => setClave(e.target.value)} required />
+      <button type="submit" disabled={enviando} style={{ padding: "0.6rem 1.2rem", backgroundColor: enviando ? "#ccc" : "#3498db", color: "white", border: "none", borderRadius: "6px", cursor: enviando ? "not-allowed" : "pointer" }}>
         {enviando ? "Ingresando..." : "Ingresar"}
       </button>
     </form>
