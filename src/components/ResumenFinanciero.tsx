@@ -10,6 +10,11 @@ type Proyeccion = {
   mensaje: string;
 };
 
+type Credito = {
+  cuota_mensual: number | null;
+  fecha_fin: string;
+};
+
 const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
   const [ingresos, setIngresos] = useState(0);
   const [egresos, setEgresos] = useState(0);
@@ -30,51 +35,74 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
       const hoy = new Date();
       const primerDiaMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
       const ultimoDiaMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
+
       // Ingresos actuales
-      const { data: ingresosData } = await supabase.from("ingresos").select("monto").eq("usuario_id", usuarioId);
-      const { data: ahorrosPersonales } = await supabase.from("ahorros_personales").select("monto").eq("usuario_id", usuarioId);
-      const { data: inversiones } = await supabase.from("inversiones").select("monto").eq("usuario_id", usuarioId);
+      const { data: ingresosData } = await supabase
+        .from("ingresos")
+        .select("monto")
+        .eq("usuario_id", usuarioId);
+
+      const { data: ahorrosPersonales } = await supabase
+        .from("ahorros_personales")
+        .select("monto")
+        .eq("usuario_id", usuarioId);
+
+      const { data: inversiones } = await supabase
+        .from("inversiones")
+        .select("monto")
+        .eq("usuario_id", usuarioId);
 
       const totalIngresos =
-        (ingresosData?.reduce((sum, i) => sum + i.monto, 0) || 0) +
-        (ahorrosPersonales?.reduce((sum, a) => sum + a.monto, 0) || 0) +
-        (inversiones?.reduce((sum, inv) => sum + inv.monto, 0) || 0);
+        (ingresosData?.reduce((sum, i) => sum + (i.monto ?? 0), 0) || 0) +
+        (ahorrosPersonales?.reduce((sum, a) => sum + (a.monto ?? 0), 0) || 0) +
+        (inversiones?.reduce((sum, inv) => sum + (inv.monto ?? 0), 0) || 0);
       setIngresos(totalIngresos);
 
       // Egresos actuales
-      const { data: egresosData } = await supabase.from("egresos").select("monto").eq("usuario_id", usuarioId);
-      const { data: ahorrosGrupales } = await supabase.from("ahorros_grupales").select("monto_mensual").eq("usuario_id", usuarioId).eq("activo", true);
+      const { data: egresosData } = await supabase
+        .from("egresos")
+        .select("monto")
+        .eq("usuario_id", usuarioId);
+
+      const { data: ahorrosGrupales } = await supabase
+        .from("ahorros_grupales")
+        .select("monto_mensual")
+        .eq("usuario_id", usuarioId)
+        .eq("activo", true);
 
       const totalEgresos =
-        (egresosData?.reduce((sum, e) => sum + e.monto, 0) || 0) +
-        (ahorrosGrupales?.reduce((sum, ag) => sum + ag.monto_mensual, 0) || 0);
+        (egresosData?.reduce((sum, e) => sum + (e.monto ?? 0), 0) || 0) +
+        (ahorrosGrupales?.reduce((sum, ag) => sum + (ag.monto_mensual ?? 0), 0) || 0);
       setEgresos(totalEgresos);
 
-      // Créditos
+      // Créditos activos
       const { data: creditosData } = await supabase
         .from("creditos")
         .select("cuota_mensual, fecha_fin")
         .eq("usuario_id", usuarioId)
         .eq("activo", true);
 
-      const listaCreditos = (creditosData || []).map((c: any) => ({
-        cuota: c.cuota_mensual,
+      const listaCreditos = (creditosData || []).map((c: Credito) => ({
+        cuota: c.cuota_mensual ?? 0,
         fin: c.fecha_fin,
       }));
       setCreditos(listaCreditos);
 
-      // Saldo actual
+      // Saldo actual (ingresos - egresos - cuotas)
       const cuotasActivas = listaCreditos.reduce((sum, c) => sum + c.cuota, 0);
       const saldoMesActual = totalIngresos - (totalEgresos + cuotasActivas);
       setSaldoActual(saldoMesActual);
-      // Comparativos con mes anterior
+
+      // Comparativos con mes anterior (ingresos y egresos)
       const { data: ingresosPrev } = await supabase
         .from("ingresos")
         .select("monto, fecha")
         .eq("usuario_id", usuarioId)
         .gte("fecha", primerDiaMesAnterior.toISOString())
         .lte("fecha", ultimoDiaMesAnterior.toISOString());
-      const totalIngresosPrev = ingresosPrev?.reduce((sum, i) => sum + i.monto, 0) || 0;
+
+      const totalIngresosPrev =
+        ingresosPrev?.reduce((sum, i) => sum + (i.monto ?? 0), 0) || 0;
 
       const { data: egresosPrev } = await supabase
         .from("egresos")
@@ -82,7 +110,9 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
         .eq("usuario_id", usuarioId)
         .gte("fecha", primerDiaMesAnterior.toISOString())
         .lte("fecha", ultimoDiaMesAnterior.toISOString());
-      const totalEgresosPrev = egresosPrev?.reduce((sum, e) => sum + e.monto, 0) || 0;
+
+      const totalEgresosPrev =
+        egresosPrev?.reduce((sum, e) => sum + (e.monto ?? 0), 0) || 0;
 
       const saldoPrev = totalIngresosPrev - totalEgresosPrev;
 
@@ -90,7 +120,7 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
       setDiffEgresos(totalEgresos - totalEgresosPrev);
       setDiffSaldo(saldoMesActual - saldoPrev);
 
-      // Proyección 6 meses
+      // Proyección 6 meses (replicando lógica de saldo con créditos según fecha_fin)
       const proy: Proyeccion[] = [];
       for (let i = 0; i < 6; i++) {
         const fecha = new Date(hoy);
@@ -126,7 +156,8 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
     };
 
     cargarDatos();
-  }, []);
+  }, [pais]);
+
   return (
     <div style={{ padding: "2rem" }}>
       <h2>🩺 Mi Salud Financiera</h2>
@@ -134,12 +165,43 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
 
       <h3>📌 Resumen mes actual</h3>
       <ul>
-        <li>Ingresos: {formatearMoneda(ingresos, pais)} {diffIngresos > 0 ? "🔼" : diffIngresos < 0 ? "🔽" : "➡️"}</li>
-        <li>Egresos: {formatearMoneda(egresos, pais)} {diffEgresos > 0 ? "🔼" : diffEgresos < 0 ? "🔽" : "➡️"}</li>
-        <li>Saldo disponible: {formatearMoneda(saldoActual, pais)} {diffSaldo > 0 ? "🔼" : diffSaldo < 0 ? "🔽" : "➡️"}</li>
+        <li>
+          <strong>Ingresos:</strong> {formatearMoneda(ingresos, pais)}{" "}
+          {diffIngresos > 0 ? "🔼" : diffIngresos < 0 ? "🔽" : "➡️"}
+        </li>
+        <li>
+          <strong>Egresos:</strong> {formatearMoneda(egresos, pais)}{" "}
+          {diffEgresos > 0 ? "🔼" : diffEgresos < 0 ? "🔽" : "➡️"}
+        </li>
+        <li>
+          <strong>Saldo disponible:</strong> {formatearMoneda(saldoActual, pais)}{" "}
+          {diffSaldo > 0 ? "🔼" : diffSaldo < 0 ? "🔽" : "➡️"}
+        </li>
       </ul>
 
-      <h3>📊 Proyección próximos 6 meses</h3>
+      <h3>📊 Créditos activos</h3>
+      {creditos.length === 0 ? (
+        <p>Sin créditos activos.</p>
+      ) : (
+        <table border={1} cellPadding={8} style={{ borderCollapse: "collapse", width: "100%" }}>
+          <thead>
+            <tr>
+              <th>Cuota mensual</th>
+              <th>Fecha fin</th>
+            </tr>
+          </thead>
+          <tbody>
+            {creditos.map((c, i) => (
+              <tr key={i}>
+                <td>{formatearMoneda(c.cuota, pais)}</td>
+                <td>{new Date(c.fin).toLocaleDateString("es-CL")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      <h3 style={{ marginTop: "1.5rem" }}>📊 Proyección próximos 6 meses</h3>
       <table border={1} cellPadding={8} style={{ borderCollapse: "collapse", width: "100%" }}>
         <thead>
           <tr>
@@ -161,11 +223,12 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
         </tbody>
       </table>
 
-      <h3>📌 Estado final de salud financiera</h3>
+      <h3 style={{ marginTop: "1.5rem" }}>📌 Estado final de salud financiera</h3>
       {proyeccion.length > 0 && (
         <p style={{ fontWeight: "bold" }}>
           {proyeccion[0].icono} Estado actual: {proyeccion[0].mensaje} <br />
-          {proyeccion[proyeccion.length - 1].icono} Estado proyectado a 6 meses: {proyeccion[proyeccion.length - 1].mensaje}
+          {proyeccion[proyeccion.length - 1].icono} Estado proyectado a 6 meses:{" "}
+          {proyeccion[proyeccion.length - 1].mensaje}
         </p>
       )}
     </div>
