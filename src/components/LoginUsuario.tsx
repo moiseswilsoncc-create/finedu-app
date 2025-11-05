@@ -93,6 +93,7 @@ const LoginUsuario: React.FC = () => {
             nombre: user.user_metadata?.nombre || "",
             apellido: user.user_metadata?.apellido || "",
             pais: user.user_metadata?.pais || "Chile",
+            ciudad: user.user_metadata?.ciudad || "",
             comuna: user.user_metadata?.comuna || "",
             fechaNacimiento: user.user_metadata?.fechaNacimiento || null,
           },
@@ -112,16 +113,17 @@ const LoginUsuario: React.FC = () => {
         .from("usuarios_activos")
         .upsert(
           {
-            usuario_id: user.id,
+            id: user.id, // 👈 usar PK real
             correo: user.email,
             nombre: `${user.user_metadata?.nombre || ""} ${user.user_metadata?.apellido || ""}`,
             rol: "usuario",
             pais: user.user_metadata?.pais || "Chile",
+            ciudad: user.user_metadata?.ciudad || "", // 👈 nueva columna
             comuna: user.user_metadata?.comuna || "",
             esActivo: true,
             fechaNacimiento: user.user_metadata?.fechaNacimiento || null,
           },
-          { onConflict: "usuario_id" }
+          { onConflict: "id" } // 👈 usar PK real
         );
 
       if (errorActivos) {
