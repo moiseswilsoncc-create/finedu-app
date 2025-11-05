@@ -1,32 +1,132 @@
-import React from "react";
+// src/components/Egresos.tsx
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Egresos: React.FC = () => {
+  // Categorías fijas base
+  const categoriasBase = [
+    { slug: "hogar", label: "🏠 Gasto de Hogar" },
+    { slug: "abarrotes", label: "🛒 Abarrotes" },
+    { slug: "aseo", label: "🧼 Aseo" },
+    { slug: "cuidado-personal", label: "🧴 Cuidado Personal" },
+    { slug: "vestuario", label: "👕 Vestuario" },
+    { slug: "frutas-verduras", label: "🍎 Frutas y Verduras" },
+    { slug: "carnes", label: "🍖 Carnes" },
+    { slug: "auto", label: "🚗 Auto" },
+    { slug: "mascota", label: "🐶 Mascota" },
+    { slug: "salud", label: "🏥 Salud" },
+    { slug: "viajes", label: "✈️ Viajes" },
+    { slug: "educacion", label: "🎓 Educación" },
+    { slug: "entretenimiento", label: "🎉 Entretenimiento" },
+    { slug: "seguros", label: "🛡️ Seguros" },
+    { slug: "regalos", label: "🎁 Regalos y Donaciones" },
+    { slug: "mantenimiento", label: "🛠️ Mantenimiento" },
+    { slug: "tecnologia", label: "📡 Tecnología" },
+    { slug: "creditos", label: "💳 Créditos y Deudas" },
+  ];
+
+  // Categorías personalizadas del usuario
+  const [categoriasUsuario, setCategoriasUsuario] = useState<{ slug: string; label: string }[]>([]);
+  const [nuevoNombre, setNuevoNombre] = useState("");
+
+  // Cargar categorías personalizadas desde localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("categoriasEgresosUsuario");
+    if (saved) {
+      try {
+        setCategoriasUsuario(JSON.parse(saved));
+      } catch {
+        // ignorar errores de parseo
+      }
+    }
+  }, []);
+
+  // Guardar categorías personalizadas en localStorage
+  useEffect(() => {
+    localStorage.setItem("categoriasEgresosUsuario", JSON.stringify(categoriasUsuario));
+  }, [categoriasUsuario]);
+
+  // Función para generar un slug limpio
+  const slugify = (text: string) =>
+    text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  // Agregar nueva categoría
+  const handleAgregarCategoria = () => {
+    const nombre = nuevoNombre.trim();
+    if (!nombre) return;
+
+    const slug = slugify(nombre);
+    const existeBase = categoriasBase.some((c) => c.slug === slug);
+    const existeUsuario = categoriasUsuario.some((c) => c.slug === slug);
+
+    if (existeBase || existeUsuario) {
+      alert("⚠️ Esta categoría ya existe.");
+      return;
+    }
+
+    const nueva = { slug, label: `➕ ${nombre}` };
+    setCategoriasUsuario([...categoriasUsuario, nueva]);
+    setNuevoNombre("");
+  };
+
   return (
     <div style={{ padding: "2rem" }}>
       <h2>📉 Egresos</h2>
-      <p>Selecciona una categoría de gastos para registrar tus egresos.</p>
+      <p>Selecciona una categoría para registrar tus egresos, o crea una nueva.</p>
 
+      {/* Crear nueva categoría */}
+      <div style={{ display: "flex", gap: "0.75rem", margin: "1rem 0" }}>
+        <input
+          type="text"
+          placeholder="Nueva categoría (ej: Propina, Café)"
+          value={nuevoNombre}
+          onChange={(e) => setNuevoNombre(e.target.value)}
+          style={{ flex: 1, padding: "0.5rem" }}
+        />
+        <button
+          type="button"
+          onClick={handleAgregarCategoria}
+          style={{
+            padding: "0.5rem 1rem",
+            backgroundColor: "#16a085",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer"
+          }}
+        >
+          Agregar
+        </button>
+      </div>
+
+      {/* Categorías base */}
+      <h3>Categorías principales</h3>
       <ul style={{ listStyle: "none", padding: 0, lineHeight: "2rem" }}>
-        <li><Link to="/egresos/hogar">🏠 Gasto de Hogar</Link></li>
-        <li><Link to="/egresos/abarrotes">🛒 Abarrotes</Link></li>
-        <li><Link to="/egresos/aseo">🧼 Aseo</Link></li>
-        <li><Link to="/egresos/cuidado-personal">🧴 Cuidado Personal</Link></li>
-        <li><Link to="/egresos/vestuario">👕 Vestuario</Link></li>
-        <li><Link to="/egresos/frutas-verduras">🍎 Frutas y Verduras</Link></li>
-        <li><Link to="/egresos/carnes">🍖 Carnes</Link></li>
-        <li><Link to="/egresos/auto">🚗 Auto</Link></li>
-        <li><Link to="/egresos/mascota">🐶 Mascota</Link></li>
-        <li><Link to="/egresos/salud">🏥 Salud</Link></li>
-        <li><Link to="/egresos/viajes">✈️ Viajes</Link></li>
-        <li><Link to="/egresos/educacion">🎓 Educación</Link></li>
-        <li><Link to="/egresos/entretenimiento">🎉 Entretenimiento</Link></li>
-        <li><Link to="/egresos/seguros">🛡️ Seguros</Link></li>
-        <li><Link to="/egresos/regalos">🎁 Regalos y Donaciones</Link></li>
-        <li><Link to="/egresos/mantenimiento">🛠️ Mantenimiento</Link></li>
-        <li><Link to="/egresos/tecnologia">📡 Tecnología</Link></li>
-        <li><Link to="/egresos/creditos">💳 Créditos y Deudas</Link></li>
+        {categoriasBase.map((c) => (
+          <li key={c.slug}>
+            <Link to={`/egresos/${c.slug}`}>{c.label}</Link>
+          </li>
+        ))}
       </ul>
+
+      {/* Categorías personalizadas */}
+      {categoriasUsuario.length > 0 && (
+        <>
+          <h3 style={{ marginTop: "1.5rem" }}>Tus categorías</h3>
+          <ul style={{ listStyle: "none", padding: 0, lineHeight: "2rem" }}>
+            {categoriasUsuario.map((c) => (
+              <li key={c.slug}>
+                <Link to={`/egresos/${c.slug}`}>{c.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 };
