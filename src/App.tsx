@@ -18,6 +18,7 @@ import Ingresos from "./components/Ingresos";
 import Egresos from "./components/Egresos";
 import EgresosCategoria from "./components/EgresosCategoria"; // 👈 nuevo import
 import ResumenFinanciero from "./components/ResumenFinanciero";
+import ResumenEgresos from "./components/ResumenEgresos";
 import SimuladorCreditos from "./components/SimuladorCreditos";
 import ForoFinanciero from "./components/ForoFinanciero";
 
@@ -132,6 +133,7 @@ const App: React.FC = () => {
         <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
         <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} /> {/* 👈 nueva ruta */}
         <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
+        <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
         <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
         <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
 
