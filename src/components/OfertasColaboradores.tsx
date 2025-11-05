@@ -1,4 +1,3 @@
-// src/components/OfertasColaboradores.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -48,14 +47,14 @@ const OfertasColaboradores: React.FC = () => {
 
     try {
       const { data, error: supaError } = await supabase
-        .from("ofertas_colaborador")
+        .from("ofertas_colaboradores") // ✅ nombre correcto de la tabla
         .insert([
           {
             correo: colaborador,
-            institucion: titulo, // puedes mapear a otro campo si prefieres
+            institucion: titulo, // usamos el campo "titulo" del form como "institucion"
             rol: tipo,
             fecha_invitacion: new Date().toISOString(),
-            expira: fechaExpiracion,
+            expira: new Date(fechaExpiracion).toISOString(),
           },
         ]);
 
