@@ -4,11 +4,14 @@ import AsistenteFinanciero from "./AsistenteFinanciero";
 import { supabase } from "../supabaseClient";
 import { OfertaColaborador } from "../types";
 
+type Permiso = { modulo: string; permiso: string };
+
 const PanelUsuario: React.FC = () => {
   const navigate = useNavigate();
   const [nombreUsuario, setNombreUsuario] = useState("Usuario");
   const [correo, setCorreo] = useState<string | null>(null);
   const [ofertasFiltradas, setOfertasFiltradas] = useState<OfertaColaborador[]>([]);
+  const [permisos, setPermisos] = useState<Permiso[] | null>(null);
 
   const modulos = [
     { nombre: "💸 Ingresos y Egresos", ruta: "/resumen-financiero", color: "#f39c12" },
@@ -45,6 +48,20 @@ const PanelUsuario: React.FC = () => {
       } else {
         setNombreUsuario(data.user.email?.split("@")[0] || "Usuario");
       }
+
+      // ✅ Cargar permisos del usuario
+      const { data: permisosData, error: permisosError } = await supabase
+        .from("permisos_usuario")
+        .select("modulo, permiso")
+        .eq("usuario_id", data.user.id)
+        .eq("permiso", "acceso");
+
+      if (permisosError) {
+        console.error("❌ Error al cargar permisos:", permisosError.message);
+        setPermisos([]);
+      } else {
+        setPermisos(permisosData || []);
+      }
     };
 
     validarSesion();
@@ -55,24 +72,14 @@ const PanelUsuario: React.FC = () => {
     const obtenerOfertas = async () => {
       if (!correo) return;
 
-      const { data: visualizacion } = await supabase
-        .from("registro_visualizacion")
-        .select("fecha_vista")
-        .eq("usuario_id", correo)
-        .eq("modulo", "DatosOfertas")
-        .single();
-
+      // ⚠️ Aquí ajustaremos en el siguiente paso (registro_visualizacion)
       const { data: ofertas } = await supabase
         .from("ofertas_colaborador")
         .select("*")
         .eq("visible", true)
         .gt("fecha_expiracion", new Date().toISOString());
 
-      const nuevas = visualizacion
-        ? ofertas.filter(o => new Date(o.fecha_publicacion) > new Date(visualizacion.fecha_vista))
-        : ofertas;
-
-      setOfertasFiltradas(nuevas);
+      setOfertasFiltradas(ofertas || []);
     };
 
     obtenerOfertas();
@@ -100,9 +107,9 @@ const PanelUsuario: React.FC = () => {
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       <h1 style={{ color: "#3498db", marginBottom: "1rem" }}>👋 Bienvenido, {nombreUsuario}</h1>
-      <p style={{ fontSize: "1.05rem", color: "#555", marginBottom: "2rem" }}>
-        Este es tu espacio personalizado dentro de Finedu. Aquí puedes revisar tu progreso, acceder a tus herramientas y recibir recomendaciones inteligentes.
-      </p>
+
+      {permisos === null && <p>⏳ Cargando permisos…</p>}
+      {permisos && permisos.length === 0 && <p>⚠️ No tienes módulos habilitados aún.</p>}
 
       <section style={{ marginBottom: "2rem", textAlign: "center" }}>
         <h3>📊 Estado financiero actual</h3>
@@ -135,23 +142,6 @@ const PanelUsuario: React.FC = () => {
               {modulo.nombre}
             </button>
           ))}
-        </div>
-
-        <div style={{ marginTop: "2rem", textAlign: "center" }}>
-          <button
-            onClick={() => navigate("/crear-grupo")}
-            style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#7f8c8d",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              fontSize: "1rem",
-              cursor: "pointer"
-            }}
-          >
-            🛠️ Crear grupo
-          </button>
         </div>
       </section>
 
