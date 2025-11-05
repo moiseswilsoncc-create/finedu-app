@@ -1,0 +1,38 @@
+# 📑 Bitácora de avances — Últimos dos días
+
+## 🗓 Día 1
+- **Validación de tablas principales**
+  - Se confirmó que la tabla `usuarios` ya carga completa, incluyendo el nuevo campo `sexo`.
+  - Se ejecutaron consultas `JOIN` para comprobar la relación con `usuarios_activos`.
+  - Resultado: `usuarios` poblada correctamente, `usuarios_activos` aún vacía.
+
+- **Diagnóstico de error en `usuarios_activos`**
+  - Se detectó que el `upsert` fallaba por ausencia de la columna `sexo`.
+  - Se revisó el log de red (400 Bad Request) que arrojaba: *“Could not find the 'sexo' column of 'usuarios_activos'”*.
+  - Se concluyó que el problema era de esquema, no de código.
+
+---
+
+## 🗓 Día 2
+- **Corrección de esquema**
+  - Se agregó la columna `sexo` a la tabla `usuarios_activos`.
+  - Se validó que el `INSERT` manual en SQL funciona correctamente, confirmando que Supabase acepta datos y que las políticas RLS no bloquean.
+
+- **Prueba de inserción manual**
+  - Se insertó un usuario de prueba con datos completos (`id`, `correo`, `nombre`, `rol`, `pais`, `ciudad`, `comuna`, `sexo`, `esActivo`, `fechaNacimiento`).
+  - Resultado: fila creada con éxito en `usuarios_activos`.
+
+- **Verificación de relación entre tablas**
+  - Se ejecutó consulta `JOIN` para comparar `usuarios` y `usuarios_activos`.
+  - Resultado: `usuarios` con datos completos, `usuarios_activos` aún no poblada automáticamente desde el flujo de login.
+  - Conclusión: el problema actual está en el bloque de código (`LoginUsuario.tsx`) que no ejecuta o completa el `upsert`.
+
+---
+
+## 📌 Estado actual
+- **Base de datos**: ✅ lista, esquema corregido, inserción manual validada.
+- **Código**: ⚠️ pendiente ajustar el `upsert` en `LoginUsuario.tsx` para que inserte en `usuarios_activos`.
+- **Próximo paso**:
+  1. Revisar el bloque de `upsert` en login.
+  2. Loguear `dataActivos` y `errorActivos` para capturar la causa exacta.
+  3. Confirmar que después del login se inserte automáticamente la fila en `usuarios_activos`.
