@@ -95,13 +95,12 @@ const LoginUsuario: React.FC = () => {
             pais: user.user_metadata?.pais || "Chile",
             comuna: user.user_metadata?.comuna || "",
             fechaNacimiento: user.user_metadata?.fechaNacimiento || null,
-            updated_at: new Date().toISOString(),
           },
           { onConflict: "id" }
         );
 
       if (errorUsuarios) {
-        console.error("❌ Error al registrar en usuarios:", errorUsuarios);
+        console.error("❌ Error al registrar en usuarios:", errorUsuarios.message, errorUsuarios.details);
         navigate("/error-acceso", {
           state: { mensaje: "No se pudo registrar el perfil de usuario.", origen: "login" },
         });
@@ -121,13 +120,12 @@ const LoginUsuario: React.FC = () => {
             comuna: user.user_metadata?.comuna || "",
             esActivo: true,
             fechaNacimiento: user.user_metadata?.fechaNacimiento || null,
-            updated_at: new Date().toISOString(),
           },
           { onConflict: "usuario_id" }
         );
 
       if (errorActivos) {
-        console.error("❌ Error al registrar en usuarios_activos:", errorActivos);
+        console.error("❌ Error al registrar en usuarios_activos:", errorActivos.message, errorActivos.details);
         navigate("/error-acceso", {
           state: { mensaje: "No se pudo activar el usuario.", origen: "login" },
         });
