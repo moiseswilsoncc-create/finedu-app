@@ -1,6 +1,6 @@
 // Archivo: src/components/MenuModulos.tsx
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import "../styles/MenuModulos.css";
 
@@ -21,7 +21,10 @@ const todosLosModulos = [
   { ruta: "/registro-ahorro", label: "💰 Registro de Ahorro" },
   { ruta: "/simulador-inversion", label: "📈 Simulador de Inversión" },
   { ruta: "/test-financiero", label: "🧠 Test Financiero" },
+
+  // 🔹 Nuevo módulo oficial de Vista Grupal
   { ruta: "/vista-grupal", label: "👨‍👩‍👧‍👦 Vista Grupal" },
+
   { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
   { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
 
@@ -31,10 +34,8 @@ const todosLosModulos = [
 ];
 
 const MenuModulos = () => {
-  const navigate = useNavigate();
-  const logueado = localStorage.getItem("logueado") === "true";
-  const tipoUsuario = localStorage.getItem("tipoUsuario");
   const correo = localStorage.getItem("correoUsuario");
+  const tipoUsuario = localStorage.getItem("tipoUsuario");
   const [nuevasOfertas, setNuevasOfertas] = useState(0);
   const [modulosPermitidos, setModulosPermitidos] = useState<string[]>([]);
 
