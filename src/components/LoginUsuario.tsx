@@ -108,33 +108,33 @@ const LoginUsuario: React.FC = () => {
         return;
       }
 
-      // 4. Upsert en tabla usuarios_activos
-      const { error: errorActivos } = await supabase
-        .from("usuarios_activos")
-        .upsert(
-          {
-            id: user.id, // 👈 usar PK real
-            correo: user.email,
-            nombre: `${user.user_metadata?.nombre || ""} ${user.user_metadata?.apellido || ""}`,
-            rol: "usuario",
-            pais: user.user_metadata?.pais || "Chile",
-            ciudad: user.user_metadata?.ciudad || "", // 👈 nueva columna
-            comuna: user.user_metadata?.comuna || "",
-            esActivo: true,
-            fechaNacimiento: user.user_metadata?.fechaNacimiento || null,
-          },
-          { onConflict: "id" } // 👈 usar PK real
-        );
+   // 4. Upsert en tabla usuarios_activos
+const { error: errorActivos } = await supabase
+  .from("usuarios_activos")
+  .upsert(
+    {
+      id: user.id, // 👈 usar PK real
+      correo: user.email,
+      nombre: `${user.user_metadata?.nombre || ""} ${user.user_metadata?.apellido || ""}`,
+      rol: "usuario",
+      pais: user.user_metadata?.pais || "Chile",
+      ciudad: user.user_metadata?.ciudad || "", // 👈 nueva columna
+      comuna: user.user_metadata?.comuna || "",
+      esActivo: true,
+      fechaNacimiento: user.user_metadata?.fechaNacimiento || null,
+    },
+    { onConflict: "id" } // 👈 clave de conflicto correcta
+  );
 
-      if (errorActivos) {
-        console.error("❌ Error al registrar en usuarios_activos:", errorActivos.message, errorActivos.details);
-        navigate("/error-acceso", {
-          state: { mensaje: "No se pudo activar el usuario.", origen: "login" },
-        });
-        return;
-      }
+if (errorActivos) {
+  console.error("❌ Error al registrar en usuarios_activos:", errorActivos.message, errorActivos.details);
+  navigate("/error-acceso", {
+    state: { mensaje: "No se pudo activar el usuario.", origen: "login" },
+  });
+  return;
+}
 
-      // 5. Guardar datos en localStorage
+        // 5. Guardar datos en localStorage
       localStorage.setItem("usuarioId", user.id);
       localStorage.setItem("correoUsuario", correo);
       localStorage.setItem("nombreUsuario", user.user_metadata?.nombre || correo.split("@")[0]);
