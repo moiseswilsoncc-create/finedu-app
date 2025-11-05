@@ -19,14 +19,14 @@ const VistaGrupal: React.FC<Props> = ({ nombreGrupoMeta, metaGrupal, participant
     );
   }
 
-  const totalAhorro = participants.reduce(
+  const totalAhorro = participantes.reduce(
     (acc, p) => acc + (p.ingresos - p.egresos),
     0
   );
 
   const progreso = Math.min((totalAhorro / metaGrupal) * 100, 100);
 
-  const participantesOrdenados = [...participants].sort(
+  const participantesOrdenados = [...participantes].sort(
     (a, b) => (b.ingresos - b.egresos) - (a.ingresos - a.egresos)
   );
 
