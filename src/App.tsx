@@ -40,6 +40,9 @@ import TestInstitucional from "./institucional/TestInstitucional";
 import MenuModulos from "./components/MenuModulos";
 import Navbar from "./components/Navbar";
 
+// 🧩 Nuevo módulo de usuario
+import VistaGrupal from "./components/VistaGrupal";
+
 console.log("🧼 App.tsx actualizado: rutas oficiales consolidadas");
 
 // 🔒 Ruta protegida para usuarios
@@ -94,7 +97,11 @@ const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ c
 
 const App: React.FC = () => {
   const location = useLocation();
-  const rutasPublicas = ["/", "/login-usuario", "/registro-usuario", "/registro-pendiente", "/error-acceso", "/recuperar-clave", "/nueva-clave", "/login-colaborador", "/registro-colaborador", "/ingreso-colaborador"];
+  const rutasPublicas = [
+    "/", "/login-usuario", "/registro-usuario", "/registro-pendiente",
+    "/error-acceso", "/recuperar-clave", "/nueva-clave",
+    "/login-colaborador", "/registro-colaborador", "/ingreso-colaborador"
+  ];
 
   const mostrarNavbar = !rutasPublicas.includes(location.pathname);
 
@@ -125,6 +132,9 @@ const App: React.FC = () => {
         <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
         <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
         <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
+
+        {/* Vista Grupal (nuevo módulo protegido) */}
+        <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} /></RutaProtegida>} />
 
         {/* Colaboradores */}
         <Route path="/registro-colaborador" element={<RegistroColaborador />} />
