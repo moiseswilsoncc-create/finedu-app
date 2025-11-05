@@ -10,6 +10,7 @@ const PanelUsuario: React.FC = () => {
   const navigate = useNavigate();
   const [nombreUsuario, setNombreUsuario] = useState("Usuario");
   const [correo, setCorreo] = useState<string | null>(null);
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
   const [ofertasFiltradas, setOfertasFiltradas] = useState<OfertaColaborador[]>([]);
   const [permisos, setPermisos] = useState<Permiso[] | null>(null);
 
@@ -34,6 +35,7 @@ const PanelUsuario: React.FC = () => {
       }
 
       setCorreo(data.user.email ?? null);
+      setUsuarioId(data.user.id);
 
       // Traer datos extra desde tabla usuarios
       const { data: usuarioExtra } = await supabase
@@ -67,23 +69,46 @@ const PanelUsuario: React.FC = () => {
     validarSesion();
   }, [navigate]);
 
-  // ✅ Obtener ofertas personalizadas
+  // ✅ Obtener ofertas personalizadas (con registro_visualizacion corregido)
   useEffect(() => {
     const obtenerOfertas = async () => {
-      if (!correo) return;
+      if (!usuarioId) return;
 
-      // ⚠️ Aquí ajustaremos en el siguiente paso (registro_visualizacion)
-      const { data: ofertas } = await supabase
+      // Buscar última visualización del usuario en el módulo DatosOfertas
+      const { data: visualizacion, error: visError } = await supabase
+        .from("registro_visualizacion")
+        .select("fecha_vista")
+        .eq("usuario_id", usuarioId)
+        .eq("modulo", "DatosOfertas")
+        .maybeSingle(); // evita romper si no hay registros
+
+      if (visError && visError.code !== "PGRST116") {
+        console.error("❌ Error cargando registro_visualizacion:", visError.message);
+      }
+
+      // Traer ofertas vigentes
+      const { data: ofertas, error: ofertasError } = await supabase
         .from("ofertas_colaborador")
         .select("*")
         .eq("visible", true)
         .gt("fecha_expiracion", new Date().toISOString());
 
-      setOfertasFiltradas(ofertas || []);
+      if (ofertasError) {
+        console.error("❌ Error cargando ofertas:", ofertasError.message);
+        setOfertasFiltradas([]);
+        return;
+      }
+
+      // Filtrar según última visualización
+      const nuevas = visualizacion
+        ? ofertas.filter(o => new Date(o.fecha_publicacion) > new Date(visualizacion.fecha_vista))
+        : ofertas;
+
+      setOfertasFiltradas(nuevas || []);
     };
 
     obtenerOfertas();
-  }, [correo]);
+  }, [usuarioId]);
 
   const evaluarSaludFinanciera = () => {
     const ahorro = parseInt(localStorage.getItem("ahorro") || "0");
@@ -169,7 +194,7 @@ const PanelUsuario: React.FC = () => {
         </section>
       )}
 
-      <section>
+           <section>
         <Link to="/modulos" style={{
           display: "inline-block",
           padding: "0.75rem 1.5rem",
