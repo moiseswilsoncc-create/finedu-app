@@ -1,6 +1,14 @@
 // src/components/Egresos.tsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "../supabaseClient";
+
+interface Categoria {
+  id: string;
+  usuario_id: string;
+  nombre: string;
+  slug: string;
+}
 
 const Egresos: React.FC = () => {
   // Categorías fijas base
@@ -25,28 +33,40 @@ const Egresos: React.FC = () => {
     { slug: "creditos", label: "💳 Créditos y Deudas" },
   ];
 
-  // Categorías personalizadas del usuario
-  const [categoriasUsuario, setCategoriasUsuario] = useState<{ slug: string; label: string }[]>([]);
+  const [categoriasUsuario, setCategoriasUsuario] = useState<Categoria[]>([]);
   const [nuevoNombre, setNuevoNombre] = useState("");
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
 
-  // Cargar categorías personalizadas desde localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("categoriasEgresosUsuario");
-    if (saved) {
-      try {
-        setCategoriasUsuario(JSON.parse(saved));
-      } catch {
-        // ignorar errores de parseo
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        setError("⚠️ No hay sesión activa.");
+        return;
       }
-    }
+      setUsuarioId(data.user.id);
+      cargarCategorias(data.user.id);
+    };
+    getUser();
   }, []);
 
-  // Guardar categorías personalizadas en localStorage
-  useEffect(() => {
-    localStorage.setItem("categoriasEgresosUsuario", JSON.stringify(categoriasUsuario));
-  }, [categoriasUsuario]);
+  const cargarCategorias = async (uid: string) => {
+    const { data, error } = await supabase
+      .from("categorias_egresos_usuario")
+      .select("*")
+      .eq("usuario_id", uid)
+      .order("created_at", { ascending: true });
 
-  // Función para generar un slug limpio
+    if (error) {
+      console.error("Error cargando categorías:", error.message);
+      setError("No se pudieron cargar tus categorías personalizadas.");
+    } else {
+      setCategoriasUsuario(data || []);
+    }
+  };
+
   const slugify = (text: string) =>
     text
       .toLowerCase()
@@ -55,23 +75,39 @@ const Egresos: React.FC = () => {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
-  // Agregar nueva categoría
-  const handleAgregarCategoria = () => {
+  const handleAgregarCategoria = async () => {
+    if (!usuarioId) {
+      setError("⚠️ No hay sesión activa.");
+      return;
+    }
+
     const nombre = nuevoNombre.trim();
     if (!nombre) return;
 
     const slug = slugify(nombre);
+
+    // Verificar duplicados
     const existeBase = categoriasBase.some((c) => c.slug === slug);
     const existeUsuario = categoriasUsuario.some((c) => c.slug === slug);
 
     if (existeBase || existeUsuario) {
-      alert("⚠️ Esta categoría ya existe.");
+      setError("⚠️ Esta categoría ya existe.");
       return;
     }
 
-    const nueva = { slug, label: `➕ ${nombre}` };
-    setCategoriasUsuario([...categoriasUsuario, nueva]);
-    setNuevoNombre("");
+    const { data, error } = await supabase
+      .from("categorias_egresos_usuario")
+      .insert([{ usuario_id: usuarioId, nombre, slug }])
+      .select();
+
+    if (error) {
+      console.error("Error insertando categoría:", error.message);
+      setError("No se pudo guardar la categoría.");
+    } else {
+      setMensaje("✅ Categoría agregada correctamente.");
+      setCategoriasUsuario([...(data || []), ...categoriasUsuario]);
+      setNuevoNombre("");
+    }
   };
 
   return (
@@ -104,6 +140,9 @@ const Egresos: React.FC = () => {
         </button>
       </div>
 
+      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
       {/* Categorías base */}
       <h3>Categorías principales</h3>
       <ul style={{ listStyle: "none", padding: 0, lineHeight: "2rem" }}>
@@ -120,8 +159,8 @@ const Egresos: React.FC = () => {
           <h3 style={{ marginTop: "1.5rem" }}>Tus categorías</h3>
           <ul style={{ listStyle: "none", padding: 0, lineHeight: "2rem" }}>
             {categoriasUsuario.map((c) => (
-              <li key={c.slug}>
-                <Link to={`/egresos/${c.slug}`}>{c.label}</Link>
+              <li key={c.id}>
+                <Link to={`/egresos/${c.slug}`}>➕ {c.nombre}</Link>
               </li>
             ))}
           </ul>
