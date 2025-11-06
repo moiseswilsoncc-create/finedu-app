@@ -45,12 +45,13 @@ const MenuModulos = () => {
 
       if (error) {
         console.error("Error al cargar permisos:", error.message);
-        setModulosPermitidos([]); 
+        setModulosPermitidos([]);
         return;
       }
 
-      // Si no hay registros, habilitar todos los módulos
-      const rutasPermitidas = data?.map((p) => p.modulo) || todosLosModulos.map(m => m.ruta);
+      // Si no hay registros, habilitar todos los módulos de usuario
+      const rutasPermitidas =
+        data?.map((p) => p.modulo) || todosLosModulos.map((m) => m.ruta);
       setModulosPermitidos(rutasPermitidas);
     };
 
@@ -65,7 +66,10 @@ const MenuModulos = () => {
         .maybeSingle(); // ✅ evita error 406
 
       if (visError && visError.code !== "PGRST116") {
-        console.error("Error cargando registro_visualizacion:", visError.message);
+        console.error(
+          "Error cargando registro_visualizacion:",
+          visError.message
+        );
       }
 
       const { data: ofertas, error: ofertasError } = await supabase
