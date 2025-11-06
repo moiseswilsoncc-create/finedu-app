@@ -7,8 +7,7 @@ import "../styles/MenuModulos.css";
 const todosLosModulos = [
   { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
 
-  // Módulo central de finanzas
-  { ruta: "/finanzas", label: "💵 Finanzas" },
+  // Finanzas: botones separados
   { ruta: "/finanzas/ingresos", label: "💰 Ingresos" },
   { ruta: "/finanzas/egresos", label: "💸 Egresos" },
   { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
@@ -66,7 +65,7 @@ const MenuModulos = () => {
         .single();
 
       const { data: ofertas } = await supabase
-        .from("ofertas_colaboradores") // 👈 nombre correcto de la tabla
+        .from("ofertas_colaboradores")
         .select("id, fecha_invitacion")
         .eq("visibilidad", true)
         .gt("expira", new Date().toISOString());
