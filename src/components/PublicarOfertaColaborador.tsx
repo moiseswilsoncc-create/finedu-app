@@ -1,47 +1,22 @@
-// src/components/PublicarOfertaColaborador.tsx
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
-import { api } from "../axiosConfig"; // ✅ usamos el cliente configurado
-import { OfertaColaborador } from "../types"; // ✅ corregido el import
+import { api } from "../axiosConfig";
 
 const PublicarOfertaColaborador: React.FC = () => {
-  const [oferta, setOferta] = useState<OfertaColaborador>({
-    titulo: "",
-    descripcion: "",
-    tipo: "crédito",
-    tasaInteres: 0,
-    plazoMeses: 0,
-    montoMinimo: 0,
-    ciudad: "Santiago",
-    pais: "Chile"
-  });
-
+  const [titulo, setTitulo] = useState("");
+  const [rol, setRol] = useState("crédito");
   const [fechaExpiracion, setFechaExpiracion] = useState("");
   const [mensaje, setMensaje] = useState("");
   const correo = localStorage.getItem("correoColaborador");
 
   useEffect(() => {
     if (correo) {
-      api.post("/guardar-visualizacion", { // ✅ usamos api
+      api.post("/guardar-visualizacion", {
         usuario_id: correo,
         modulo: "PublicarOfertaColaborador"
       });
     }
   }, [correo]);
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setOferta((prev) => ({
-      ...prev,
-      [name]: ["tasaInteres", "plazoMeses", "montoMinimo"].includes(name)
-        ? Number(value)
-        : value
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,64 +29,45 @@ const PublicarOfertaColaborador: React.FC = () => {
 
     const hoy = new Date();
     const fechaExp = new Date(fechaExpiracion);
-    const visibilidad = fechaExp > hoy;
 
     const nuevaOferta = {
-      ...oferta,
-      fecha_expiracion: fechaExp.toISOString().split("T")[0],
-      colaborador: correo,
-      fecha_publicacion: hoy.toISOString(),
-      visibilidad
+      correo,                          // 👈 columna correo
+      institucion: titulo,             // 👈 usamos título como institución
+      rol,                             // 👈 tipo de oferta
+      fecha_invitacion: hoy.toISOString(), // 👈 fecha actual
+      expira: fechaExp.toISOString()   // 👈 fecha de expiración
     };
 
-    const response = await supabase
-      .from("ofertas_colaborador")
+    const { error } = await supabase
+      .from("ofertas_colaboradores")   // 👈 nombre correcto de la tabla
       .insert([nuevaOferta]);
 
-    if (response.error) {
-      console.error("❌ Error al guardar oferta:", response.error.message);
+    if (error) {
+      console.error("❌ Error al guardar oferta:", error.message);
       setMensaje("❌ Error al guardar la oferta.");
     } else {
       setMensaje("✅ Oferta publicada correctamente.");
-      setOferta({
-        titulo: "",
-        descripcion: "",
-        tipo: "crédito",
-        tasaInteres: 0,
-        plazoMeses: 0,
-        montoMinimo: 0,
-        ciudad: "Santiago",
-        pais: "Chile"
-      });
+      setTitulo("");
+      setRol("crédito");
       setFechaExpiracion("");
     }
   };
 
   return (
     <div style={containerStyle}>
-      <h2 style={titleStyle}>📢 Publicar datos y ofertas institucionales</h2>
+      <h2 style={titleStyle}>📢 Publicar oferta institucional</h2>
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
         <input
           type="text"
-          name="titulo"
-          value={oferta.titulo}
-          onChange={handleChange}
-          placeholder="Título de la oferta"
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
+          placeholder="Nombre de la institución / título"
           required
           style={inputStyle}
         />
-        <textarea
-          name="descripcion"
-          value={oferta.descripcion}
-          onChange={handleChange}
-          placeholder="Descripción detallada"
-          required
-          style={{ ...inputStyle, height: "100px" }}
-        />
         <select
-          name="tipo"
-          value={oferta.tipo}
-          onChange={handleChange}
+          value={rol}
+          onChange={(e) => setRol(e.target.value)}
           required
           style={inputStyle}
         >
@@ -119,51 +75,6 @@ const PublicarOfertaColaborador: React.FC = () => {
           <option value="inversión">Inversión</option>
           <option value="educación">Educación</option>
         </select>
-        <input
-          type="number"
-          name="tasaInteres"
-          value={oferta.tasaInteres}
-          onChange={handleChange}
-          placeholder="Tasa de interés (%)"
-          required
-          style={inputStyle}
-        />
-        <input
-          type="number"
-          name="plazoMeses"
-          value={oferta.plazoMeses}
-          onChange={handleChange}
-          placeholder="Plazo en meses"
-          required
-          style={inputStyle}
-        />
-        <input
-          type="number"
-          name="montoMinimo"
-          value={oferta.montoMinimo}
-          onChange={handleChange}
-          placeholder="Monto mínimo ($)"
-          required
-          style={inputStyle}
-        />
-        <input
-          type="text"
-          name="ciudad"
-          value={oferta.ciudad}
-          onChange={handleChange}
-          placeholder="Ciudad"
-          required
-          style={inputStyle}
-        />
-        <input
-          type="text"
-          name="pais"
-          value={oferta.pais}
-          onChange={handleChange}
-          placeholder="País"
-          required
-          style={inputStyle}
-        />
         <input
           type="date"
           value={fechaExpiracion}
@@ -191,7 +102,7 @@ const PublicarOfertaColaborador: React.FC = () => {
 };
 
 const containerStyle = {
-  maxWidth: "700px",
+  maxWidth: "600px",
   margin: "2rem auto",
   padding: "2rem",
   backgroundColor: "#fff",
