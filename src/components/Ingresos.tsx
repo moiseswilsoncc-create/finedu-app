@@ -73,15 +73,25 @@ const Ingresos: React.FC = () => {
     setError("");
     setMensaje("");
 
-    if (!usuarioId || !tipo || !monto || !fecha) {
-      setError("Todos los campos son obligatorios.");
+    if (!usuarioId) {
+      setError("No hay usuario válido.");
       return;
     }
 
     if (editando) {
+      // Actualizar solo campos modificados
+      const cambios: any = {};
+      if (monto !== "" && monto !== editando.monto) cambios.monto = Number(monto);
+      if (fecha && fecha !== editando.fecha) cambios.fecha = fecha;
+
+      if (Object.keys(cambios).length === 0) {
+        setMensaje("⚠️ No se detectaron cambios.");
+        return;
+      }
+
       const { error } = await supabase
         .from("ingresos")
-        .update({ tipo, monto: Number(monto), fecha })
+        .update(cambios)
         .eq("id", editando.id);
 
       if (error) {
@@ -90,7 +100,7 @@ const Ingresos: React.FC = () => {
         setMensaje("✏️ Ingreso actualizado correctamente.");
         setIngresos(
           ingresos.map((i) =>
-            i.id === editando.id ? { ...i, tipo, monto: Number(monto), fecha } : i
+            i.id === editando.id ? { ...i, ...cambios } : i
           )
         );
         setEditando(null);
@@ -99,6 +109,11 @@ const Ingresos: React.FC = () => {
         setFecha("");
       }
     } else {
+      if (!tipo || !monto || !fecha) {
+        setError("Todos los campos son obligatorios.");
+        return;
+      }
+
       const { data, error } = await supabase
         .from("ingresos")
         .insert([{ usuario_id: usuarioId, tipo, monto: Number(monto), fecha }])
@@ -167,20 +182,8 @@ const Ingresos: React.FC = () => {
 
       {/* Formulario */}
       <form onSubmit={handleGuardarIngreso} style={{ marginBottom: "1.5rem" }}>
-        <div>
-          <label>Tipo de ingreso: </label>
-          <select value={tipo} onChange={(e) => setTipo(e.target.value)} required>
-            <option value="">-- Selecciona --</option>
-            {tiposDisponibles.map((t, index) => (
-              <option key={index} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Campo para agregar un nuevo tipo */}
-        <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
+        {/* Campo para agregar un nuevo tipo (arriba del selector) */}
+        <div style={{ display: "flex", gap: "1rem", marginBottom: "0.5rem" }}>
           <input
             type="text"
             placeholder="Agregar nuevo tipo (ej: Propina)"
@@ -204,6 +207,24 @@ const Ingresos: React.FC = () => {
           </button>
         </div>
 
+        {/* Selector de ingreso */}
+        <div>
+          <label>Elige tu ingreso: </label>
+          <select
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            required
+            disabled={!!editando} // bloqueado si estamos editando
+          >
+            <option value="">-- Selecciona --</option>
+            {tiposDisponibles.map((t, index) => (
+              <option key={index} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div>
           <label>Monto: </label>
           <input
@@ -211,7 +232,6 @@ const Ingresos: React.FC = () => {
             value={monto}
             onChange={(e) => setMonto(Number(e.target.value))}
             placeholder="Ej: 50000"
-            required
           />
         </div>
 
@@ -221,7 +241,6 @@ const Ingresos: React.FC = () => {
             type="date"
             value={fecha}
             onChange={(e) => setFecha(e.target.value)}
-            required
           />
         </div>
 
