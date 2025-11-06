@@ -22,7 +22,6 @@ const Egresos: React.FC = () => {
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
 
-  // useEffect inicial
   useEffect(() => {
     const getUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -37,16 +36,17 @@ const Egresos: React.FC = () => {
     getUser();
   }, []);
 
-  // Cargar categorías
+  // Cargar categorías (todas del usuario)
   const cargarCategorias = async () => {
     const { data, error } = await supabase
       .from("categorias_egresos")
       .select("id, categoria")
+      .eq("usuario_id", usuarioId)
       .order("categoria", { ascending: true });
     if (!error && data) setCategorias(data);
   };
 
-  // Cargar egresos
+  // Cargar egresos (para lista y edición)
   const cargarEgresos = async (uid: string) => {
     const { data, error } = await supabase
       .from("egresos")
@@ -56,237 +56,93 @@ const Egresos: React.FC = () => {
     if (!error && data) setEgresos(data);
   };
 
-  // Cargar ítems de una categoría
+  // Cargar ítems de una categoría para el selector
   const cargarItemsCategoria = async (cat: string) => {
-    if (!usuarioId) return;
+    if (!usuarioId || !cat) {
+      setItemsCategoria([]);
+      return;
+    }
     const { data, error } = await supabase
       .from("items_egresos")
-      .select("*")
+      .select("id, item, categoria")
       .eq("usuario_id", usuarioId)
-      .eq("categoria", cat);
+      .eq("categoria", cat)
+      .order("item", { ascending: true });
     if (!error && data) setItemsCategoria(data);
   };
 
-  // Agregar categoría
+  // Agregar categoría (evita duplicados y actualiza selector)
   const handleAgregarCategoria = async () => {
-    if (!usuarioId || !nuevaCategoria.trim()) return;
-    const { data: existente } = await supabase
-      .from("categorias_egresos")
-      .select("*")
-      .eq("usuario_id", usuarioId)
-      .eq("categoria", nuevaCategoria.trim());
+    setMensaje(""); setError("");
+    if (!usuarioId) { setError("⚠️ Sesión no válida."); return; }
+    const nombre = nuevaCategoria.trim();
+    if (!nombre) { setError("Ingresa un nombre de categoría."); return; }
 
+    const { data: existente, error: errSel } = await supabase
+      .from("categorias_egresos")
+      .select("id")
+      .eq("usuario_id", usuarioId)
+      .eq("categoria", nombre);
+
+    if (errSel) { setError("Error verificando categoría."); return; }
     if (existente && existente.length > 0) {
-      setError("⚠️ Esta categoría ya existe.");
+      setError("Categoría ya creada.");
       return;
     }
 
     const { data, error } = await supabase
       .from("categorias_egresos")
-      .insert([{ usuario_id: usuarioId, categoria: nuevaCategoria.trim() }])
-      .select();
-
-    if (!error && data) {
-      setCategorias([...(data as any[]), ...categorias]);
-      setNuevaCategoria("");
-      setMensaje("✅ Categoría agregada correctamente.");
-    } else {
-      setError("No se pudo agregar la categoría.");
-    }
-  };
-
-  // Agregar ítem
-  const handleAgregarItem = async () => {
-    if (!usuarioId || !categoria || !nuevoItem.trim()) return;
-    const { data: existente } = await supabase
-      .from("items_egresos")
-      .select("*")
-      .eq("usuario_id", usuarioId)
-      .eq("categoria", categoria)
-      .eq("item", nuevoItem.trim());
-
-    if (existente && existente.length > 0) {
-      setError("⚠️ Este ítem ya existe.");
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("items_egresos")
-      .insert([{ usuario_id: usuarioId, categoria, item: nuevoItem.trim() }])
-      .select();
-
-    if (!error && data) {
-      setItemsCategoria([...(data as any[]), ...itemsCategoria]);
-      setNuevoItem("");
-      setMensaje("✅ Ítem agregado correctamente.");
-    } else {
-      setError("No se pudo agregar el ítem.");
-    }
-  };
-  // Guardar egreso (nuevo o edición)
-  const handleGuardarEgreso = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setMensaje("");
-
-    if (!usuarioId) return;
-
-    if (editando) {
-      const cambios: any = {};
-      if (monto !== "" && monto !== editando.monto) cambios.monto = Number(monto);
-      if (fecha && fecha !== editando.fecha) cambios.fecha = fecha;
-      if (descripcion && descripcion !== editando.descripcion) cambios.descripcion = descripcion;
-      if (item && item !== editando.item) cambios.item = item;
-
-      if (Object.keys(cambios).length === 0) {
-        setMensaje("⚠️ No se detectaron cambios.");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("egresos")
-        .update(cambios)
-        .eq("id", editando.id);
-
-      if (error) {
-        setError("No se pudo actualizar el egreso.");
-      } else {
-        setMensaje("✏️ Egreso actualizado correctamente.");
-        setEgresos(
-          egresos.map((i) =>
-            i.id === editando.id ? { ...i, ...cambios } : i
-          )
-        );
-        setEditando(null);
-        setCategoria("");
-        setItem("");
-        setMonto("");
-        setFecha("");
-        setDescripcion("");
-        setSeleccionados([]);
-      }
-    } else {
-      if (!categoria || !item || !monto || !fecha) {
-        setError("Todos los campos son obligatorios.");
-        return;
-      }
-
-      const { data: existente } = await supabase
-        .from("egresos")
-        .select("*")
-        .eq("usuario_id", usuarioId)
-        .eq("categoria", categoria)
-        .eq("item", item)
-        .eq("fecha", fecha);
-
-      if (existente && existente.length > 0) {
-        setError("⚠️ Este egreso ya existe.");
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("egresos")
-        .insert([{ usuario_id: usuarioId, categoria, item, monto: Number(monto), fecha, descripcion }])
-        .select();
-
-      if (error) {
-        setError("No se pudo guardar el egreso.");
-      } else {
-        setMensaje("✅ Egreso agregado correctamente.");
-        setEgresos([...(data || []), ...egresos]);
-        setCategoria("");
-        setItem("");
-        setMonto("");
-        setFecha("");
-        setDescripcion("");
-      }
-    }
-  };
-
-  // Selección múltiple
-  const toggleSeleccion = (id: string) => {
-    if (seleccionados.includes(id)) {
-      setSeleccionados(seleccionados.filter((s) => s !== id));
-    } else {
-      setSeleccionados([...seleccionados, id]);
-    }
-  };
-
-  // Editar seleccionado
-  const handleEditarSeleccionado = () => {
-    if (seleccionados.length === 1) {
-      const egreso = egresos.find((i) => i.id === seleccionados[0]);
-      if (egreso) {
-        setEditando(egreso);
-        setCategoria(egreso.categoria);
-        setItem(egreso.item);
-        setMonto(egreso.monto);
-        setFecha(egreso.fecha);
-        setDescripcion(egreso.descripcion || "");
-        setMensaje("✏️ Editando egreso seleccionado.");
-      }
-    } else {
-      setError("Debes seleccionar exactamente un egreso para editar.");
-    }
-  };
-
-  // Eliminar seleccionados
-  const handleEliminarSeleccionados = async () => {
-    if (seleccionados.length === 0) {
-      setError("Debes seleccionar al menos un egreso para eliminar.");
-      return;
-    }
-
-    const { error } = await supabase
-      .from("egresos")
-      .delete()
-      .in("id", seleccionados);
+      .insert([{ usuario_id: usuarioId, categoria: nombre }])
+      .select("id, categoria");
 
     if (error) {
-      setError("No se pudieron eliminar los egresos seleccionados.");
-    } else {
-      setEgresos(egresos.filter((i) => !seleccionados.includes(i.id)));
-      setSeleccionados([]);
-      setMensaje("🗑️ Egresos eliminados correctamente.");
+      setError("No se pudo crear la categoría.");
+      return;
     }
+
+    // Persistir y reflejar en UI
+    const nueva = (data || [])[0];
+    setCategorias([nueva, ...categorias]);
+    setCategoria(nueva.categoria);           // dejar seleccionada
+    setNuevaCategoria("");
+    setMensaje("✅ Categoría agregada.");
+    await cargarItemsCategoria(nueva.categoria); // preparar selector de ítems
   };
 
-  return (
-    <div style={{ padding: "2rem" }}>
-      <h2>📉 Egresos</h2>
-      <FormularioEgreso
-        categorias={categorias}
-        itemsCategoria={itemsCategoria}
-        categoria={categoria}
-        item={item}
-        monto={monto}
-        fecha={fecha}
-        nuevoItem={nuevoItem}
-        nuevaCategoria={nuevaCategoria}
-        editando={editando}
-        mensaje={mensaje}
-        error={error}
-        onAgregarCategoria={handleAgregarCategoria}
-        onAgregarItem={handleAgregarItem}
-        onGuardar={handleGuardarEgreso}
-        setCategoria={setCategoria}
-        setItem={setItem}
-        setMonto={setMonto}
-        setFecha={setFecha}
-        setDescripcion={setDescripcion}
-        setNuevoItem={setNuevoItem}
-        setNuevaCategoria={setNuevaCategoria}
-        cargarItemsCategoria={cargarItemsCategoria}
-      />
-      <ListaEgresos
-        egresos={egresos}
-        seleccionados={seleccionados}
-        toggleSeleccion={toggleSeleccion}
-        handleEditarSeleccionado={handleEditarSeleccionado}
-        handleEliminarSeleccionados={handleEliminarSeleccionados}
-      />
-    </div>
-  );
-};
+  // Agregar ítem (evita duplicados y actualiza selector)
+  const handleAgregarItem = async () => {
+    setMensaje(""); setError("");
+    if (!usuarioId) { setError("⚠️ Sesión no válida."); return; }
+    if (!categoria) { setError("Selecciona una categoría primero."); return; }
+    const nombreItem = nuevoItem.trim();
+    if (!nombreItem) { setError("Ingresa un nombre de ítem."); return; }
 
-export default Egresos;
+    const { data: existente, error: errSel } = await supabase
+      .from("items_egresos")
+      .select("id")
+      .eq("usuario_id", usuarioId)
+      .eq("categoria", categoria)
+      .eq("item", nombreItem);
+
+    if (errSel) { setError("Error verificando ítem."); return; }
+    if (existente && existente.length > 0) {
+      setError("Ítem ya creado.");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("items_egresos")
+      .insert([{ usuario_id: usuarioId, categoria, item: nombreItem }])
+      .select("id, item, categoria");
+
+    if (error) {
+      setError("No se pudo crear el ítem.");
+      return;
+    }
+
+    const nuevo = (data || [])[0];
+    setItemsCategoria([nuevo, ...itemsCategoria]);
+    setItem(nuevo.item);       // dejar seleccionado
+    setNuevoItem("");
+    setMensaje("✅ Ítem agregado.");
+  };
