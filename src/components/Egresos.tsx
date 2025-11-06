@@ -5,7 +5,6 @@ import FormularioEgreso from "./FormularioEgreso";
 import ListaEgresos from "./ListaEgresos";
 
 const Egresos: React.FC = () => {
-  // Estados principales
   const [egresos, setEgresos] = useState<any[]>([]);
   const [categorias, setCategorias] = useState<any[]>([]);
   const [itemsCategoria, setItemsCategoria] = useState<any[]>([]);
@@ -30,23 +29,23 @@ const Egresos: React.FC = () => {
         return;
       }
       setUsuarioId(data.user.id);
-      cargarCategorias();
-      cargarEgresos(data.user.id);
+      await cargarCategorias(data.user.id);
+      await cargarEgresos(data.user.id);
     };
     getUser();
   }, []);
 
-  // Cargar categorías (todas del usuario)
-  const cargarCategorias = async () => {
+  const cargarCategorias = async (uid?: string) => {
+    const id = uid || usuarioId;
+    if (!id) return;
     const { data, error } = await supabase
       .from("categorias_egresos")
       .select("id, categoria")
-      .eq("usuario_id", usuarioId)
+      .eq("usuario_id", id)
       .order("categoria", { ascending: true });
     if (!error && data) setCategorias(data);
   };
 
-  // Cargar egresos (para lista y edición)
   const cargarEgresos = async (uid: string) => {
     const { data, error } = await supabase
       .from("egresos")
@@ -56,7 +55,6 @@ const Egresos: React.FC = () => {
     if (!error && data) setEgresos(data);
   };
 
-  // Cargar ítems de una categoría para el selector
   const cargarItemsCategoria = async (cat: string) => {
     if (!usuarioId || !cat) {
       setItemsCategoria([]);
@@ -64,14 +62,13 @@ const Egresos: React.FC = () => {
     }
     const { data, error } = await supabase
       .from("items_egresos")
-      .select("id, item, categoria")
+      .select("id, item")
       .eq("usuario_id", usuarioId)
       .eq("categoria", cat)
       .order("item", { ascending: true });
     if (!error && data) setItemsCategoria(data);
   };
 
-  // Agregar categoría (evita duplicados y actualiza selector)
   const handleAgregarCategoria = async () => {
     setMensaje(""); setError("");
     if (!usuarioId) { setError("⚠️ Sesión no válida."); return; }
@@ -95,21 +92,16 @@ const Egresos: React.FC = () => {
       .insert([{ usuario_id: usuarioId, categoria: nombre }])
       .select("id, categoria");
 
-    if (error) {
-      setError("No se pudo crear la categoría.");
-      return;
-    }
+    if (error) { setError("No se pudo crear la categoría."); return; }
 
-    // Persistir y reflejar en UI
     const nueva = (data || [])[0];
     setCategorias([nueva, ...categorias]);
-    setCategoria(nueva.categoria);           // dejar seleccionada
+    setCategoria(nueva.categoria);               // dejar seleccionada
     setNuevaCategoria("");
     setMensaje("✅ Categoría agregada.");
     await cargarItemsCategoria(nueva.categoria); // preparar selector de ítems
   };
 
-  // Agregar ítem (evita duplicados y actualiza selector)
   const handleAgregarItem = async () => {
     setMensaje(""); setError("");
     if (!usuarioId) { setError("⚠️ Sesión no válida."); return; }
@@ -133,71 +125,21 @@ const Egresos: React.FC = () => {
     const { data, error } = await supabase
       .from("items_egresos")
       .insert([{ usuario_id: usuarioId, categoria, item: nombreItem }])
-      .select("id, item, categoria");
+      .select("id, item");
 
-    if (error) {
-      setError("No se pudo crear el ítem.");
-      return;
-    }
+    if (error) { setError("No se pudo crear el ítem."); return; }
 
     const nuevo = (data || [])[0];
     setItemsCategoria([nuevo, ...itemsCategoria]);
-    setItem(nuevo.item);       // dejar seleccionado
+    setItem(nuevo.item);   // dejar seleccionado
     setNuevoItem("");
     setMensaje("✅ Ítem agregado.");
   };
-  // Guardar egreso (por ahora deshabilitado según tu instrucción)
+
   const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("Por ahora, el guardado de egresos está deshabilitado.");
     setMensaje("");
-  };
-
-  // Selección múltiple (para ListaEgresos)
-  const toggleSeleccion = (id: string) => {
-    if (seleccionados.includes(id)) {
-      setSeleccionados(seleccionados.filter((s) => s !== id));
-    } else {
-      setSeleccionados([...seleccionados, id]);
-    }
-  };
-
-  // Editar seleccionado (carga estados)
-  const handleEditarSeleccionado = () => {
-    if (seleccionados.length === 1) {
-      const egreso = egresos.find((i) => i.id === seleccionados[0]);
-      if (egreso) {
-        setEditando(egreso);
-        setCategoria(egreso.categoria);
-        setItem(egreso.item);
-        setMonto(egreso.monto);
-        setFecha(egreso.fecha);
-        setDescripcion(egreso.descripcion || "");
-        setMensaje("✏️ Editando egreso seleccionado.");
-        cargarItemsCategoria(egreso.categoria);
-      }
-    } else {
-      setError("Selecciona exactamente un egreso para editar.");
-    }
-  };
-
-  // Eliminar seleccionados
-  const handleEliminarSeleccionados = async () => {
-    if (seleccionados.length === 0) {
-      setError("Selecciona al menos un egreso para eliminar.");
-      return;
-    }
-    const { error } = await supabase
-      .from("egresos")
-      .delete()
-      .in("id", seleccionados);
-    if (error) {
-      setError("No se pudieron eliminar.");
-    } else {
-      setEgresos(egresos.filter((i) => !seleccionados.includes(i.id)));
-      setSeleccionados([]);
-      setMensaje("🗑️ Egresos eliminados.");
-    }
+    setError("Por ahora, el guardado de egresos está deshabilitado.");
   };
 
   return (
@@ -220,7 +162,7 @@ const Egresos: React.FC = () => {
         onGuardar={handleGuardarEgreso}
         setCategoria={(val) => {
           setCategoria(val);
-          cargarItemsCategoria(val); // conexión selector categoría → ítems
+          cargarItemsCategoria(val); // conecta selector categoría → ítems
         }}
         setItem={setItem}
         setMonto={setMonto}
@@ -233,9 +175,13 @@ const Egresos: React.FC = () => {
       <ListaEgresos
         egresos={egresos}
         seleccionados={seleccionados}
-        toggleSeleccion={toggleSeleccion}
-        handleEditarSeleccionado={handleEditarSeleccionado}
-        handleEliminarSeleccionados={handleEliminarSeleccionados}
+        toggleSeleccion={(id) =>
+          setSeleccionados((prev) =>
+            prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+          )
+        }
+        handleEditarSeleccionado={() => {}}
+        handleEliminarSeleccionados={() => {}}
       />
     </div>
   );
