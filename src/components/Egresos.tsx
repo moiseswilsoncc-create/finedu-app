@@ -59,8 +59,8 @@ const Egresos: React.FC = () => {
 
   const cargarCategorias = async () => {
     const { data, error } = await supabase
-      .from("categoria_egreso")
-      .select("*")
+      .from("categorias_egresos") // corregido: nombre real de la tabla
+      .select("id, categoria")
       .order("categoria", { ascending: true });
 
     if (!error && data) setCategorias(data);
@@ -253,7 +253,7 @@ const Egresos: React.FC = () => {
       <form onSubmit={handleGuardarEgreso} style={{ marginBottom: "1.5rem" }}>
         {/* Selector de categoría */}
         <div>
-          <label>Elige tu egreso: </label>
+          <label>Elige tu categoría de egreso: </label>
           <select
             value={categoria}
             onChange={(e) => {
