@@ -15,6 +15,7 @@ const Egresos: React.FC = () => {
   const [fecha, setFecha] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [nuevoItem, setNuevoItem] = useState("");
+  const [nuevaCategoria, setNuevaCategoria] = useState("");
   const [editando, setEditando] = useState<any>(null);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
@@ -66,6 +67,34 @@ const Egresos: React.FC = () => {
     if (!error && data) setItemsCategoria(data);
   };
 
+  // Agregar categoría
+  const handleAgregarCategoria = async () => {
+    if (!usuarioId || !nuevaCategoria.trim()) return;
+    const { data: existente } = await supabase
+      .from("categorias_egresos")
+      .select("*")
+      .eq("usuario_id", usuarioId)
+      .eq("categoria", nuevaCategoria.trim());
+
+    if (existente && existente.length > 0) {
+      setError("⚠️ Esta categoría ya existe.");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("categorias_egresos")
+      .insert([{ usuario_id: usuarioId, categoria: nuevaCategoria.trim() }])
+      .select();
+
+    if (!error && data) {
+      setCategorias([...(data as any[]), ...categorias]);
+      setNuevaCategoria("");
+      setMensaje("✅ Categoría agregada correctamente.");
+    } else {
+      setError("No se pudo agregar la categoría.");
+    }
+  };
+
   // Agregar ítem
   const handleAgregarItem = async () => {
     if (!usuarioId || !categoria || !nuevoItem.trim()) return;
@@ -75,21 +104,25 @@ const Egresos: React.FC = () => {
       .eq("usuario_id", usuarioId)
       .eq("categoria", categoria)
       .eq("item", nuevoItem.trim());
+
     if (existente && existente.length > 0) {
       setError("⚠️ Este ítem ya existe.");
       return;
     }
+
     const { data, error } = await supabase
       .from("items_egresos")
       .insert([{ usuario_id: usuarioId, categoria, item: nuevoItem.trim() }])
       .select();
+
     if (!error && data) {
       setItemsCategoria([...(data as any[]), ...itemsCategoria]);
       setNuevoItem("");
       setMensaje("✅ Ítem agregado correctamente.");
+    } else {
+      setError("No se pudo agregar el ítem.");
     }
   };
-
   // Guardar egreso (nuevo o edición)
   const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,16 +257,16 @@ const Egresos: React.FC = () => {
       <FormularioEgreso
         categorias={categorias}
         itemsCategoria={itemsCategoria}
-        egresos={egresos}
         categoria={categoria}
         item={item}
         monto={monto}
         fecha={fecha}
-        descripcion={descripcion}
         nuevoItem={nuevoItem}
+        nuevaCategoria={nuevaCategoria}
         editando={editando}
         mensaje={mensaje}
         error={error}
+        onAgregarCategoria={handleAgregarCategoria}
         onAgregarItem={handleAgregarItem}
         onGuardar={handleGuardarEgreso}
         setCategoria={setCategoria}
@@ -242,6 +275,7 @@ const Egresos: React.FC = () => {
         setFecha={setFecha}
         setDescripcion={setDescripcion}
         setNuevoItem={setNuevoItem}
+        setNuevaCategoria={setNuevaCategoria}
         cargarItemsCategoria={cargarItemsCategoria}
       />
       <ListaEgresos
@@ -250,10 +284,9 @@ const Egresos: React.FC = () => {
         toggleSeleccion={toggleSeleccion}
         handleEditarSeleccionado={handleEditarSeleccionado}
         handleEliminarSeleccionados={handleEliminarSeleccionados}
-     />
+      />
     </div>
-  );   
-};      
+  );
+};
 
 export default Egresos;
-    
