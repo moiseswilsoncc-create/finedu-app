@@ -33,49 +33,73 @@ const MenuModulos = () => {
   const usuarioId = localStorage.getItem("usuarioId"); // UUID del usuario autenticado
   const tipoUsuario = localStorage.getItem("tipoUsuario");
   const [nuevasOfertas, setNuevasOfertas] = useState(0);
-  const [modulosPermitidos, setModulosPermitidos] = useState<string[]>([]);
+  const [modulosPermitidos, setModulosPermitidos] = useState<string[] | null>(null);
 
   useEffect(() => {
     const verificarPermisos = async () => {
-      if (!usuarioId) return;
+      try {
+        if (!usuarioId) {
+          // Fallback: mostrar todos los módulos si no hay usuarioId
+          setModulosPermitidos(todosLosModulos.map(m => m.ruta));
+          return;
+        }
 
-      const { data, error } = await supabase
-        .from("permisos_usuario")
-        .select("modulo")
-        .eq("usuario_id", usuarioId)   // 👈 columna correcta
-        .eq("permiso", "true");        // 👈 usar 'permiso' en vez de 'acceso'
+        const { data, error } = await supabase
+          .from("permisos_usuario")
+          .select("modulo, permiso")
+          .eq("usuario_id", usuarioId);
 
-      if (error) {
-        console.error("Error al cargar permisos:", error.message);
-        setModulosPermitidos([]); // evitar pantalla en blanco
-        return;
+        if (error) {
+          console.error("Error al cargar permisos:", error.message);
+          // Fallback seguro: mostrar todos los módulos
+          setModulosPermitidos(todosLosModulos.map(m => m.ruta));
+          return;
+        }
+
+        const rutasHabilitadas = (data || [])
+          .filter((p: any) => String(p.permiso).toLowerCase() === "true")
+          .map((p: any) => p.modulo);
+
+        setModulosPermitidos(
+          rutasHabilitadas.length > 0 ? rutasHabilitadas : todosLosModulos.map(m => m.ruta)
+        );
+      } catch (e: any) {
+        console.error("Excepción verificando permisos:", e?.message || e);
+        setModulosPermitidos(todosLosModulos.map(m => m.ruta));
       }
-
-      const rutasPermitidas = data?.map((p) => p.modulo) || [];
-      setModulosPermitidos(rutasPermitidas);
     };
 
     const verificarNovedades = async () => {
-      if (!usuarioId || tipoUsuario !== "usuario") return;
+      try {
+        if (!usuarioId || tipoUsuario !== "usuario") {
+          setNuevasOfertas(0);
+          return;
+        }
 
-      const { data: vista } = await supabase
-        .from("registro_visualizacion")
-        .select("fecha_vista")
-        .eq("usuario_id", usuarioId)
-        .eq("modulo", "DatosOfertas")
-        .single();
+        const { data: vista } = await supabase
+          .from("registro_visualizacion")
+          .select("fecha_vista")
+          .eq("usuario_id", usuarioId)
+          .eq("modulo", "DatosOfertas")
+          .maybeSingle(); // evita error 406 si no hay registros
 
-      const { data: ofertas } = await supabase
-        .from("ofertas_colaborador")
-        .select("id, fecha_publicacion")
-        .eq("visibilidad", true)
-        .gt("fecha_expiracion", new Date().toISOString());
+        const { data: ofertas } = await supabase
+          .from("ofertas_colaborador")
+          .select("id, fecha_publicacion")
+          .eq("visibilidad", true)
+          .gt("fecha_expiracion", new Date().toISOString());
 
-      if (vista && ofertas) {
-        const nuevas = ofertas.filter(
-          (o) => new Date(o.fecha_publicacion) > new Date(vista.fecha_vista)
-        );
-        setNuevasOfertas(nuevas.length);
+        if (vista && ofertas) {
+          const nuevas = ofertas.filter(
+            (o: any) => new Date(o.fecha_publicacion) > new Date(vista.fecha_vista)
+          );
+          setNuevasOfertas(nuevas.length);
+        } else {
+          setNuevasOfertas(0);
+        }
+      } catch (e: any) {
+        console.warn("Aviso novedades:", e?.message || e);
+        setNuevasOfertas(0);
       }
     };
 
@@ -83,23 +107,37 @@ const MenuModulos = () => {
     verificarNovedades();
   }, [usuarioId, tipoUsuario]);
 
-  const modulosFiltrados = todosLosModulos.filter((modulo) =>
-    modulosPermitidos.includes(modulo.ruta)
-  );
+  if (modulosPermitidos === null) {
+    return (
+      <div className="menu-modulos-container">
+        <h2>📂 Accede a tus módulos</h2>
+        <p>Cargando módulos...</p>
+      </div>
+    );
+  }
+
+  const modulosFiltrados =
+    modulosPermitidos.length > 0
+      ? todosLosModulos.filter((modulo) => modulosPermitidos.includes(modulo.ruta))
+      : [];
 
   return (
     <div className="menu-modulos-container">
       <h2>📂 Accede a tus módulos</h2>
-      <div className="modulo-grid">
-        {modulosFiltrados.map((modulo, index) => (
-          <Link key={index} to={modulo.ruta} className="btn-modulo">
-            {modulo.label}
-            {modulo.ruta === "/panel-ofertas" && nuevasOfertas > 0 && (
-              <span className="badge-campana">{nuevasOfertas}</span>
-            )}
-          </Link>
-        ))}
-      </div>
+      {modulosFiltrados.length === 0 ? (
+        <p>⚠️ No tienes módulos habilitados aún.</p>
+      ) : (
+        <div className="modulo-grid">
+          {modulosFiltrados.map((modulo, index) => (
+            <Link key={index} to={modulo.ruta} className="btn-modulo">
+              {modulo.label}
+              {modulo.ruta === "/panel-ofertas" && nuevasOfertas > 0 && (
+                <span className="badge-campana">{nuevasOfertas}</span>
+              )}
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
