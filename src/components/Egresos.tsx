@@ -13,6 +13,11 @@ interface Egreso {
   descripcion?: string;
 }
 
+interface Categoria {
+  id: string;
+  nombre: string;
+}
+
 interface ItemCategoria {
   id: string;
   usuario_id: string;
@@ -21,28 +26,12 @@ interface ItemCategoria {
 }
 
 const Egresos: React.FC = () => {
-  const categoriasBase = [
-    "Alimentación",
-    "Transporte",
-    "Servicios básicos",
-    "Crédito de consumo",
-    "Tarjeta bancaria",
-    "Tarjeta comercial",
-    "Hipotecario",
-    "Automotriz",
-    "Personal (familiar, amigos)",
-    "Entretenimiento",
-    "Educación",
-    "Salud"
-  ];
-
   const [egresos, setEgresos] = useState<Egreso[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [categoria, setCategoria] = useState("");
   const [item, setItem] = useState("");
   const [itemsCategoria, setItemsCategoria] = useState<ItemCategoria[]>([]);
   const [nuevoItem, setNuevoItem] = useState("");
-  const [nuevoTipo, setNuevoTipo] = useState("");
-  const [categoriasUsuario, setCategoriasUsuario] = useState<string[]>([]);
   const [monto, setMonto] = useState<number | "">("");
   const [fecha, setFecha] = useState("");
   const [descripcion, setDescripcion] = useState("");
@@ -62,11 +51,20 @@ const Egresos: React.FC = () => {
         return;
       }
       setUsuarioId(data.user.id);
+      cargarCategorias();
       cargarEgresos(data.user.id);
-      cargarCategoriasUsuario(data.user.id);
     };
     getUser();
   }, []);
+
+  const cargarCategorias = async () => {
+    const { data, error } = await supabase
+      .from("categoria_egreso")
+      .select("*")
+      .order("nombre", { ascending: true });
+
+    if (!error && data) setCategorias(data);
+  };
 
   const cargarEgresos = async (uid: string) => {
     const { data, error } = await supabase
@@ -76,17 +74,6 @@ const Egresos: React.FC = () => {
       .order("fecha", { ascending: false });
 
     if (!error && data) setEgresos(data);
-  };
-
-  const cargarCategoriasUsuario = async (uid: string) => {
-    const { data, error } = await supabase
-      .from("categorias_egresos_usuario")
-      .select("nombre")
-      .eq("usuario_id", uid);
-
-    if (!error && data) {
-      setCategoriasUsuario(data.map((c: any) => c.nombre));
-    }
   };
 
   const cargarItemsCategoria = async (cat: string) => {
@@ -116,72 +103,6 @@ const Egresos: React.FC = () => {
       setItemsCategoria([...(data as ItemCategoria[]), ...itemsCategoria]);
       setNuevoItem("");
       setMensaje("✅ Ítem agregado correctamente.");
-    }
-  };
-
-  const handleGuardarEgreso = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setMensaje("");
-
-    if (!usuarioId) return;
-
-    if (editando) {
-      const cambios: any = {};
-      if (monto !== "" && monto !== editando.monto) cambios.monto = Number(monto);
-      if (fecha && fecha !== editando.fecha) cambios.fecha = fecha;
-      if (descripcion && descripcion !== editando.descripcion) cambios.descripcion = descripcion;
-      if (item && item !== editando.item) cambios.item = item;
-
-      if (Object.keys(cambios).length === 0) {
-        setMensaje("⚠️ No se detectaron cambios.");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("egresos")
-        .update(cambios)
-        .eq("id", editando.id);
-
-      if (error) {
-        setError("No se pudo actualizar el egreso.");
-      } else {
-        setMensaje("✏️ Egreso actualizado correctamente.");
-        setEgresos(
-          egresos.map((i) =>
-            i.id === editando.id ? { ...i, ...cambios } : i
-          )
-        );
-        setEditando(null);
-        setCategoria("");
-        setItem("");
-        setMonto("");
-        setFecha("");
-        setDescripcion("");
-        setSeleccionados([]);
-      }
-    } else {
-      if (!categoria || !item || !monto || !fecha) {
-        setError("Todos los campos son obligatorios.");
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("egresos")
-        .insert([{ usuario_id: usuarioId, categoria, item, monto: Number(monto), fecha, descripcion }])
-        .select();
-
-      if (error) {
-        setError("No se pudo guardar el egreso.");
-      } else {
-        setMensaje("✅ Egreso agregado correctamente.");
-        setEgresos([...(data || []), ...egresos]);
-        setCategoria("");
-        setItem("");
-        setMonto("");
-        setFecha("");
-        setDescripcion("");
-      }
     }
   };
   const toggleSeleccion = (id: string) => {
@@ -236,31 +157,6 @@ const Egresos: React.FC = () => {
       <h2>📉 Egresos</h2>
       <p>Registra y visualiza tus egresos con categorías e ítems.</p>
 
-      {/* Crear nueva categoría */}
-      <div style={{ display: "flex", gap: "0.75rem", margin: "1rem 0" }}>
-        <input
-          type="text"
-          placeholder="Nueva categoría (ej: Propina, Café)"
-          value={nuevoTipo}
-          onChange={(e) => setNuevoTipo(e.target.value)}
-          style={{ flex: 1, padding: "0.5rem" }}
-        />
-        <button
-          type="button"
-          onClick={handleAgregarCategoria}
-          style={{
-            padding: "0.5rem 1rem",
-            backgroundColor: "#16a085",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
-        >
-          Agregar
-        </button>
-      </div>
-
       {/* Formulario de egreso */}
       <form onSubmit={handleGuardarEgreso} style={{ marginBottom: "1.5rem" }}>
         {/* Selector de categoría */}
@@ -276,8 +172,8 @@ const Egresos: React.FC = () => {
             disabled={!!editando}
           >
             <option value="">-- Selecciona --</option>
-            {[...categoriasBase, ...categoriasUsuario].map((c, i) => (
-              <option key={i} value={c}>{c}</option>
+            {categorias.map((c) => (
+              <option key={c.id} value={c.nombre}>{c.nombre}</option>
             ))}
           </select>
         </div>
