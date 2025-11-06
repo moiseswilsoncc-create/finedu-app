@@ -1,3 +1,4 @@
+// src/components/Navbar.tsx
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -45,21 +46,27 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
 
   const todosLosEnlaces: Record<string, { ruta: string; label: string }[]> = {
     usuario: [
-      { ruta: "/usuario", label: "👤 Usuario" },
+      { ruta: "/panel-usuario", label: "👤 Panel Usuario" },
+      { ruta: "/finanzas/ingresos", label: "💵 Ingresos" },
+      { ruta: "/finanzas/egresos", label: "📉 Egresos" },
+      { ruta: "/finanzas/egresos/categoria", label: "📂 Egresos por Categoría" },
+      { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
+      { ruta: "/finanzas/creditos", label: "🏦 Créditos" },
+      { ruta: "/finanzas/foro", label: "💬 Foro" },
       { ruta: "/vista-grupal", label: "👥 Grupo" },
-      { ruta: "/panel-ofertas", label: "📢 Ofertas" },
-      { ruta: "/resumen", label: "📊 Resumen" }
+      { ruta: "/panel-ofertas", label: "📢 Ofertas" }
     ],
     colaborador: [
-      { ruta: "/panel-colaborador", label: "🤝 Panel colaborador" },
-      { ruta: "/datos-ofertas", label: "📢 Publicar oferta" },
-      { ruta: "/registro-colaborador", label: "🧑‍💼 Registro colaborador" }
+      { ruta: "/panel-colaboradores", label: "🤝 Panel Colaboradores" },
+      { ruta: "/ofertas-colaboradores", label: "📢 Ofertas Colaboradores" },
+      { ruta: "/publicar-oferta-colaborador", label: "📝 Publicar Oferta" }
     ],
     institucional: [
-      { ruta: "/institucional", label: "🏛️ Dashboard institucional" },
-      { ruta: "/informe-institucional", label: "📄 Informe" },
-      { ruta: "/panel-colaboradores", label: "🧑‍💼 Colaboradores" },
-      { ruta: "/validacion-pre-vercel", label: "✅ Validación final" }
+      { ruta: "/dashboard-institucional", label: "🏛️ Dashboard" },
+      { ruta: "/editor-estado", label: "📄 Estado Archivos" },
+      { ruta: "/editor-trazabilidad", label: "🔍 Trazabilidad" },
+      { ruta: "/metrica-supabase", label: "📊 Métricas Supabase" },
+      { ruta: "/test-institucional", label: "🧪 Test Institucional" }
     ]
   };
 
@@ -101,22 +108,6 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
             {enlace.label}
           </Link>
         ))}
-
-        {/* 🔑 Botón fijo solo para pruebas */}
-        <Link
-          to="/invitacion-colaboradores"
-          style={{
-            color:
-              location.pathname === "/invitacion-colaboradores"
-                ? "#f1c40f"
-                : "white",
-            marginRight: "1rem",
-            textDecoration: "none",
-            fontWeight: "bold"
-          }}
-        >
-          📨 Invitación (test)
-        </Link>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
