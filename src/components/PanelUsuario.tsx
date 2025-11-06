@@ -1,3 +1,4 @@
+// src/components/PanelUsuario.tsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import AsistenteFinanciero from "./AsistenteFinanciero";
@@ -14,24 +15,25 @@ const PanelUsuario: React.FC = () => {
   const [ofertasFiltradas, setOfertasFiltradas] = useState<OfertaColaborador[]>([]);
   const [permisos, setPermisos] = useState<Permiso[] | null>(null);
 
+  // 📌 Módulos disponibles para el usuario
   const modulos = [
-  { nombre: "💸 Ingresos y Egresos", ruta: "/finanzas", color: "#f39c12" },
-  { nombre: "💰 Registro de Ahorro", ruta: "/registro-ahorro", color: "#27ae60" },
-  { nombre: "👥 Mi Grupo", ruta: "/mi-grupo", color: "#2980b9" }, // si tienes un módulo distinto
-  { nombre: "🤝 Vista Grupal", ruta: "/vista-grupal", color: "#1abc9c" }, // 👈 nuevo módulo
-  { nombre: "📈 Simulador de Inversión", ruta: "/simulador-inversion", color: "#8e44ad" },
-  { nombre: "🏦 Simulador de Crédito", ruta: "/simulador-credito", color: "#c0392b" },
-  { nombre: "🧠 Test Financiero", ruta: "/test-financiero", color: "#16a085" },
-  { nombre: "📊 Mi Progreso", ruta: "/vista-etapa", color: "#34495e" },
-  { nombre: "🗣️ Foro Financiero", ruta: "/foro-financiero", color: "#2c3e50" }
-];
+    { nombre: "💸 Ingresos y Egresos", ruta: "/finanzas", color: "#f39c12" },
+    { nombre: "💰 Registro de Ahorro", ruta: "/registro-ahorro", color: "#27ae60" },
+    { nombre: "👥 Mi Grupo", ruta: "/mi-grupo", color: "#2980b9" },
+    { nombre: "🤝 Vista Grupal", ruta: "/vista-grupal", color: "#1abc9c" },
+    { nombre: "📈 Simulador de Inversión", ruta: "/simulador-inversion", color: "#8e44ad" },
+    { nombre: "🏦 Simulador de Crédito", ruta: "/finanzas/creditos", color: "#c0392b" }, // ✅ corregido
+    { nombre: "🧠 Test Financiero", ruta: "/test-financiero", color: "#16a085" },
+    { nombre: "📊 Mi Progreso", ruta: "/vista-etapa", color: "#34495e" },
+    { nombre: "🗣️ Foro Financiero", ruta: "/finanzas/foro", color: "#2c3e50" } // ✅ corregido
+  ];
 
   // ✅ Validar sesión con Supabase Auth
   useEffect(() => {
     const validarSesion = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error || !data.user) {
-        navigate("/login"); // si no hay sesión, redirigir
+        navigate("/login-usuario"); // ruta oficial
         return;
       }
 
@@ -69,25 +71,22 @@ const PanelUsuario: React.FC = () => {
 
     validarSesion();
   }, [navigate]);
-
-  // ✅ Obtener ofertas personalizadas (con registro_visualizacion corregido)
+  // ✅ Obtener ofertas personalizadas
   useEffect(() => {
     const obtenerOfertas = async () => {
       if (!usuarioId) return;
 
-      // Buscar última visualización del usuario en el módulo DatosOfertas
       const { data: visualizacion, error: visError } = await supabase
         .from("registro_visualizacion")
         .select("fecha_vista")
         .eq("usuario_id", usuarioId)
         .eq("modulo", "DatosOfertas")
-        .maybeSingle(); // evita romper si no hay registros
+        .maybeSingle();
 
       if (visError && visError.code !== "PGRST116") {
         console.error("❌ Error cargando registro_visualizacion:", visError.message);
       }
 
-      // Traer ofertas vigentes
       const { data: ofertas, error: ofertasError } = await supabase
         .from("ofertas_colaborador")
         .select("*")
@@ -100,7 +99,6 @@ const PanelUsuario: React.FC = () => {
         return;
       }
 
-      // Filtrar según última visualización
       const nuevas = visualizacion
         ? ofertas.filter(o => new Date(o.fecha_publicacion) > new Date(visualizacion.fecha_vista))
         : ofertas;
@@ -195,7 +193,7 @@ const PanelUsuario: React.FC = () => {
         </section>
       )}
 
-           <section>
+      <section>
         <Link to="/modulos" style={{
           display: "inline-block",
           padding: "0.75rem 1.5rem",
