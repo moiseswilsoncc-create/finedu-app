@@ -1,4 +1,3 @@
-// src/components/FormularioEgreso.tsx
 import React from "react";
 
 interface Props {
@@ -19,16 +18,24 @@ interface Props {
 }
 
 const FormularioEgreso: React.FC<Props> = ({
-  categorias, itemsCategoria,
-  categoria, item,
-  nuevaCategoria, nuevoItem,
-  mensaje, error,
-  onAgregarCategoria, onAgregarItem,
-  setCategoria, setItem, setNuevaCategoria, setNuevoItem
+  categorias,
+  itemsCategoria,
+  categoria,
+  item,
+  nuevaCategoria,
+  nuevoItem,
+  mensaje,
+  error,
+  onAgregarCategoria,
+  onAgregarItem,
+  setCategoria,
+  setItem,
+  setNuevaCategoria,
+  setNuevoItem,
 }) => {
   return (
     <div style={{ marginBottom: "1.5rem" }}>
-      {/* Botones arriba */}
+      {/* Botones para agregar categoría e ítem */}
       <div style={{ marginBottom: "1rem", display: "flex", gap: "1rem" }}>
         <input
           type="text"
@@ -36,7 +43,9 @@ const FormularioEgreso: React.FC<Props> = ({
           value={nuevaCategoria}
           onChange={(e) => setNuevaCategoria(e.target.value)}
         />
-        <button type="button" onClick={onAgregarCategoria}>➕ Agregar categoría</button>
+        <button type="button" onClick={onAgregarCategoria}>
+          ➕ Agregar categoría
+        </button>
 
         <input
           type="text"
@@ -44,11 +53,13 @@ const FormularioEgreso: React.FC<Props> = ({
           value={nuevoItem}
           onChange={(e) => setNuevoItem(e.target.value)}
         />
-        <button type="button" onClick={onAgregarItem}>➕ Agregar ítem</button>
+        <button type="button" onClick={onAgregarItem}>
+          ➕ Agregar ítem
+        </button>
       </div>
 
       {/* Selector de categoría */}
-      <div>
+      <div style={{ marginBottom: "1rem" }}>
         <label>Categoría: </label>
         <select
           value={categoria}
@@ -57,13 +68,15 @@ const FormularioEgreso: React.FC<Props> = ({
         >
           <option value="">-- Selecciona --</option>
           {categorias.map((c) => (
-            <option key={c.id} value={c.categoria}>{c.categoria}</option>
+            <option key={c.id} value={c.categoria}>
+              {c.categoria}
+            </option>
           ))}
         </select>
       </div>
 
       {/* Selector de ítems */}
-      <div>
+      <div style={{ marginBottom: "1rem" }}>
         <label>Ítem: </label>
         <select
           value={item}
@@ -72,11 +85,14 @@ const FormularioEgreso: React.FC<Props> = ({
         >
           <option value="">-- Selecciona --</option>
           {itemsCategoria.map((it) => (
-            <option key={it.id} value={it.item}>{it.item}</option>
+            <option key={it.id} value={it.item}>
+              {it.item}
+            </option>
           ))}
         </select>
       </div>
 
+      {/* Mensajes */}
       {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
