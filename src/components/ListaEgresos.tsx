@@ -1,8 +1,17 @@
 // src/components/ListaEgresos.tsx
 import React from "react";
 
+interface Egreso {
+  id: string;
+  categoria: string;
+  item: string;
+  monto: number;
+  fecha: string;
+  descripcion?: string;
+}
+
 interface Props {
-  egresos: any[];
+  egresos: Egreso[];
   seleccionados: string[];
   toggleSeleccion: (id: string) => void;
   handleEditarSeleccionado: () => void;
@@ -21,15 +30,15 @@ const ListaEgresos: React.FC<Props> = ({
       {egresos.length === 0 ? (
         <p>No hay egresos registrados aún.</p>
       ) : (
-        <table border={1} cellPadding={8}>
+        <table border={1} cellPadding={8} style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th>✔️</th>
-              <th>Categoría</th>
-              <th>Ítem</th>
-              <th>Monto</th>
-              <th>Fecha</th>
-              <th>Descripción</th>
+              <th scope="col">✔️</th>
+              <th scope="col">Categoría</th>
+              <th scope="col">Ítem</th>
+              <th scope="col">Monto</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Descripción</th>
             </tr>
           </thead>
           <tbody>
@@ -40,12 +49,13 @@ const ListaEgresos: React.FC<Props> = ({
                     type="checkbox"
                     checked={seleccionados.includes(e.id)}
                     onChange={() => toggleSeleccion(e.id)}
+                    aria-label={`Seleccionar egreso ${e.item}`}
                   />
                 </td>
                 <td>{e.categoria}</td>
                 <td>{e.item}</td>
                 <td>${e.monto.toLocaleString("es-CL")}</td>
-                <td>{e.fecha}</td>
+                <td>{new Date(e.fecha).toLocaleDateString("es-CL")}</td>
                 <td>{e.descripcion}</td>
               </tr>
             ))}
