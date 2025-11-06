@@ -8,7 +8,7 @@ import "../styles/MenuModulos.css";
 const todosLosModulos = [
   { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
 
-  // Finanzas: accesos directos (sin duplicar el menú combinado)
+  // Finanzas: accesos directos
   { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
   { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" },
   { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
@@ -41,37 +41,47 @@ const MenuModulos = () => {
         .from("permisos_usuario")
         .select("modulo")
         .eq("usuario_id", usuarioId)
-        .eq("permiso", "true");
+        .eq("permiso", "acceso"); // ✅ valor textual
 
       if (error) {
         console.error("Error al cargar permisos:", error.message);
-        setModulosPermitidos([]); // evitar pantalla en blanco
+        setModulosPermitidos([]); 
         return;
       }
 
-      const rutasPermitidas = data?.map((p) => p.modulo) || [];
+      // Si no hay registros, habilitar todos los módulos
+      const rutasPermitidas = data?.map((p) => p.modulo) || todosLosModulos.map(m => m.ruta);
       setModulosPermitidos(rutasPermitidas);
     };
 
     const verificarNovedades = async () => {
       if (!usuarioId || tipoUsuario !== "usuario") return;
 
-      const { data: vista } = await supabase
+      const { data: vista, error: visError } = await supabase
         .from("registro_visualizacion")
         .select("fecha_vista")
         .eq("usuario_id", usuarioId)
         .eq("modulo", "DatosOfertas")
-        .single();
+        .maybeSingle(); // ✅ evita error 406
 
-      const { data: ofertas } = await supabase
-        .from("ofertas_colaborador")
-        .select("id, fecha_publicacion")
-        .eq("visibilidad", true)
-        .gt("fecha_expiracion", new Date().toISOString());
+      if (visError && visError.code !== "PGRST116") {
+        console.error("Error cargando registro_visualizacion:", visError.message);
+      }
+
+      const { data: ofertas, error: ofertasError } = await supabase
+        .from("ofertas_colaboradores") // ✅ nombre correcto
+        .select("id, fecha_invitacion, expira")
+        .gt("expira", new Date().toISOString());
+
+      if (ofertasError) {
+        console.error("Error cargando ofertas:", ofertasError.message);
+        setNuevasOfertas(0);
+        return;
+      }
 
       if (vista && ofertas) {
         const nuevas = ofertas.filter(
-          (o) => new Date(o.fecha_publicacion) > new Date(vista.fecha_vista)
+          (o) => new Date(o.fecha_invitacion) > new Date(vista.fecha_vista)
         );
         setNuevasOfertas(nuevas.length);
       }
