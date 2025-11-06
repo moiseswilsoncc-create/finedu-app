@@ -9,9 +9,11 @@ interface Props {
   monto: number | "";
   fecha: string;
   nuevoItem: string;
+  nuevaCategoria: string;
   editando: any;
   mensaje: string;
   error: string;
+  onAgregarCategoria: () => void;
   onAgregarItem: () => void;
   onGuardar: (e: React.FormEvent) => void;
   setCategoria: (val: string) => void;
@@ -19,19 +21,45 @@ interface Props {
   setMonto: (val: number) => void;
   setFecha: (val: string) => void;
   setNuevoItem: (val: string) => void;
+  setNuevaCategoria: (val: string) => void;
   cargarItemsCategoria: (cat: string) => void;
 }
 
 const FormularioEgreso: React.FC<Props> = ({
   categorias, itemsCategoria,
-  categoria, item, monto, fecha, nuevoItem,
+  categoria, item, monto, fecha,
+  nuevoItem, nuevaCategoria,
   editando, mensaje, error,
-  onAgregarItem, onGuardar,
-  setCategoria, setItem, setMonto, setFecha, setNuevoItem,
+  onAgregarCategoria, onAgregarItem, onGuardar,
+  setCategoria, setItem, setMonto, setFecha,
+  setNuevoItem, setNuevaCategoria,
   cargarItemsCategoria
 }) => {
   return (
     <form onSubmit={onGuardar} style={{ marginBottom: "1.5rem" }}>
+      {/* Botones arriba */}
+      <div style={{ marginBottom: "1rem", display: "flex", gap: "1rem" }}>
+        <input
+          type="text"
+          placeholder="Nueva categoría"
+          value={nuevaCategoria}
+          onChange={(e) => setNuevaCategoria(e.target.value)}
+        />
+        <button type="button" onClick={onAgregarCategoria}>
+          ➕ Agregar categoría
+        </button>
+
+        <input
+          type="text"
+          placeholder="Nuevo ítem"
+          value={nuevoItem}
+          onChange={(e) => setNuevoItem(e.target.value)}
+        />
+        <button type="button" onClick={onAgregarItem}>
+          ➕ Agregar ítem
+        </button>
+      </div>
+
       {/* Selector de categoría */}
       <div>
         <label>Categoría: </label>
@@ -39,7 +67,7 @@ const FormularioEgreso: React.FC<Props> = ({
           value={categoria}
           onChange={(e) => {
             setCategoria(e.target.value);
-            cargarItemsCategoria(e.target.value);
+            cargarItemsCategoria(e.target.value); // conecta categoría con ítems
           }}
           required
         >
@@ -53,19 +81,16 @@ const FormularioEgreso: React.FC<Props> = ({
       {/* Selector de ítems */}
       <div>
         <label>Ítem: </label>
-        <select value={item} onChange={(e) => setItem(e.target.value)} required>
+        <select
+          value={item}
+          onChange={(e) => setItem(e.target.value)} // conecta ítem con estado
+          required
+        >
           <option value="">-- Selecciona --</option>
           {itemsCategoria.map((it) => (
             <option key={it.id} value={it.item}>{it.item}</option>
           ))}
         </select>
-        <input
-          type="text"
-          placeholder="Nuevo ítem"
-          value={nuevoItem}
-          onChange={(e) => setNuevoItem(e.target.value)}
-        />
-        <button type="button" onClick={onAgregarItem}>➕ Agregar ítem</button>
       </div>
 
       {/* Monto */}
