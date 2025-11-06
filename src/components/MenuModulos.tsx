@@ -1,4 +1,3 @@
-// Archivo: src/components/MenuModulos.tsx
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -14,6 +13,7 @@ const todosLosModulos = [
   { ruta: "/finanzas/ingresos", label: "💰 Ingresos" },
   { ruta: "/finanzas/egresos", label: "💸 Egresos" },
   { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
+  { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" }, // 👈 Nuevo acceso
   { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
   { ruta: "/finanzas/foro", label: "💬 Foro Financiero" }, // 🔹 Nuevo módulo integrado
 
