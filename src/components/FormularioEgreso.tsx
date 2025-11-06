@@ -3,7 +3,7 @@ import React from "react";
 
 interface Props {
   categorias: { id: string; categoria: string }[];
-  itemsCategoria: { id: string; item: string }[];
+  itemsCategoria: { id: string; item: string; categoria?: string }[];
   categoria: string;
   item: string;
   monto: number | "";
@@ -20,6 +20,7 @@ interface Props {
   setItem: (val: string) => void;
   setMonto: (val: number) => void;
   setFecha: (val: string) => void;
+  setDescripcion: (val: string) => void;
   setNuevoItem: (val: string) => void;
   setNuevaCategoria: (val: string) => void;
   cargarItemsCategoria: (cat: string) => void;
@@ -31,33 +32,29 @@ const FormularioEgreso: React.FC<Props> = ({
   nuevoItem, nuevaCategoria,
   editando, mensaje, error,
   onAgregarCategoria, onAgregarItem, onGuardar,
-  setCategoria, setItem, setMonto, setFecha,
+  setCategoria, setItem, setMonto, setFecha, setDescripcion,
   setNuevoItem, setNuevaCategoria,
   cargarItemsCategoria
 }) => {
   return (
     <form onSubmit={onGuardar} style={{ marginBottom: "1.5rem" }}>
-      {/* Botones arriba */}
-      <div style={{ marginBottom: "1rem", display: "flex", gap: "1rem" }}>
+      {/* Botones arriba para agregar categoría e ítem */}
+      <div style={{ marginBottom: "1rem", display: "flex", gap: "1rem", alignItems: "center" }}>
         <input
           type="text"
           placeholder="Nueva categoría"
           value={nuevaCategoria}
           onChange={(e) => setNuevaCategoria(e.target.value)}
         />
-        <button type="button" onClick={onAgregarCategoria}>
-          ➕ Agregar categoría
-        </button>
+        <button type="button" onClick={onAgregarCategoria}>➕ Agregar categoría</button>
 
         <input
           type="text"
-          placeholder="Nuevo ítem"
+          placeholder="Nuevo ítem (requiere categoría seleccionada)"
           value={nuevoItem}
           onChange={(e) => setNuevoItem(e.target.value)}
         />
-        <button type="button" onClick={onAgregarItem}>
-          ➕ Agregar ítem
-        </button>
+        <button type="button" onClick={onAgregarItem}>➕ Agregar ítem</button>
       </div>
 
       {/* Selector de categoría */}
@@ -66,8 +63,9 @@ const FormularioEgreso: React.FC<Props> = ({
         <select
           value={categoria}
           onChange={(e) => {
-            setCategoria(e.target.value);
-            cargarItemsCategoria(e.target.value); // conecta categoría con ítems
+            const val = e.target.value;
+            setCategoria(val);
+            cargarItemsCategoria(val); // conecta categoría → ítems
           }}
           required
         >
@@ -83,7 +81,7 @@ const FormularioEgreso: React.FC<Props> = ({
         <label>Ítem: </label>
         <select
           value={item}
-          onChange={(e) => setItem(e.target.value)} // conecta ítem con estado
+          onChange={(e) => setItem(e.target.value)}
           required
         >
           <option value="">-- Selecciona --</option>
@@ -93,30 +91,29 @@ const FormularioEgreso: React.FC<Props> = ({
         </select>
       </div>
 
-      {/* Monto */}
-      <div>
-        <label>Monto: </label>
-        <input
-          type="number"
-          value={monto}
-          onChange={(e) => setMonto(Number(e.target.value))}
-          min={0}
-          required
-        />
+      {/* Monto y fecha (si en el futuro habilitas guardar egreso) */}
+      <div style={{ display: "flex", gap: "1rem", marginTop: "0.75rem" }}>
+        <div>
+          <label>Monto: </label>
+          <input
+            type="number"
+            value={monto}
+            onChange={(e) => setMonto(Number(e.target.value))}
+            min={0}
+          />
+        </div>
+        <div>
+          <label>Fecha: </label>
+          <input
+            type="date"
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+          />
+        </div>
       </div>
 
-      {/* Fecha */}
-      <div>
-        <label>Fecha: </label>
-        <input
-          type="date"
-          value={fecha}
-          onChange={(e) => setFecha(e.target.value)}
-          required
-        />
-      </div>
-
-      <button type="submit">
+      {/* Botón submit deshabilitado funcionalmente por ahora */}
+      <button type="submit" style={{ marginTop: "0.75rem" }}>
         {editando ? "✏️ Guardar Cambios" : "➕ Agregar Egreso"}
       </button>
 
