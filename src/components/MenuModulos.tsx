@@ -11,6 +11,9 @@ const todosLosModulos = [
   // Finanzas: accesos directos
   { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
   { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" },
+  { ruta: "/finanzas/ingresos", label: "💵 Ingresos" },
+  { ruta: "/finanzas/egresos", label: "📉 Egresos" },
+  { ruta: "/finanzas/egresos/categoria", label: "📂 Egresos por Categoría" }, // 👈 nuevo acceso
   { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
   { ruta: "/finanzas/foro", label: "💬 Foro Financiero" },
 
@@ -66,10 +69,7 @@ const MenuModulos = () => {
         .maybeSingle(); // ✅ evita error 406
 
       if (visError && visError.code !== "PGRST116") {
-        console.error(
-          "Error cargando registro_visualizacion:",
-          visError.message
-        );
+        console.error("Error cargando registro_visualizacion:", visError.message);
       }
 
       const { data: ofertas, error: ofertasError } = await supabase
