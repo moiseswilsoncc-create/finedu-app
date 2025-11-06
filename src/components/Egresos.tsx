@@ -146,3 +146,99 @@ const Egresos: React.FC = () => {
     setNuevoItem("");
     setMensaje("✅ Ítem agregado.");
   };
+  // Guardar egreso (por ahora deshabilitado según tu instrucción)
+  const handleGuardarEgreso = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("Por ahora, el guardado de egresos está deshabilitado.");
+    setMensaje("");
+  };
+
+  // Selección múltiple (para ListaEgresos)
+  const toggleSeleccion = (id: string) => {
+    if (seleccionados.includes(id)) {
+      setSeleccionados(seleccionados.filter((s) => s !== id));
+    } else {
+      setSeleccionados([...seleccionados, id]);
+    }
+  };
+
+  // Editar seleccionado (carga estados)
+  const handleEditarSeleccionado = () => {
+    if (seleccionados.length === 1) {
+      const egreso = egresos.find((i) => i.id === seleccionados[0]);
+      if (egreso) {
+        setEditando(egreso);
+        setCategoria(egreso.categoria);
+        setItem(egreso.item);
+        setMonto(egreso.monto);
+        setFecha(egreso.fecha);
+        setDescripcion(egreso.descripcion || "");
+        setMensaje("✏️ Editando egreso seleccionado.");
+        cargarItemsCategoria(egreso.categoria);
+      }
+    } else {
+      setError("Selecciona exactamente un egreso para editar.");
+    }
+  };
+
+  // Eliminar seleccionados
+  const handleEliminarSeleccionados = async () => {
+    if (seleccionados.length === 0) {
+      setError("Selecciona al menos un egreso para eliminar.");
+      return;
+    }
+    const { error } = await supabase
+      .from("egresos")
+      .delete()
+      .in("id", seleccionados);
+    if (error) {
+      setError("No se pudieron eliminar.");
+    } else {
+      setEgresos(egresos.filter((i) => !seleccionados.includes(i.id)));
+      setSeleccionados([]);
+      setMensaje("🗑️ Egresos eliminados.");
+    }
+  };
+
+  return (
+    <div style={{ padding: "2rem" }}>
+      <h2>📉 Egresos</h2>
+      <FormularioEgreso
+        categorias={categorias}
+        itemsCategoria={itemsCategoria}
+        categoria={categoria}
+        item={item}
+        monto={monto}
+        fecha={fecha}
+        nuevoItem={nuevoItem}
+        nuevaCategoria={nuevaCategoria}
+        editando={editando}
+        mensaje={mensaje}
+        error={error}
+        onAgregarCategoria={handleAgregarCategoria}
+        onAgregarItem={handleAgregarItem}
+        onGuardar={handleGuardarEgreso}
+        setCategoria={(val) => {
+          setCategoria(val);
+          cargarItemsCategoria(val); // conexión selector categoría → ítems
+        }}
+        setItem={setItem}
+        setMonto={setMonto}
+        setFecha={setFecha}
+        setDescripcion={setDescripcion}
+        setNuevoItem={setNuevoItem}
+        setNuevaCategoria={setNuevaCategoria}
+        cargarItemsCategoria={cargarItemsCategoria}
+      />
+      <ListaEgresos
+        egresos={egresos}
+        seleccionados={seleccionados}
+        toggleSeleccion={toggleSeleccion}
+        handleEditarSeleccionado={handleEditarSeleccionado}
+        handleEliminarSeleccionados={handleEliminarSeleccionados}
+      />
+    </div>
+  );
+};
+
+export default Egresos;
