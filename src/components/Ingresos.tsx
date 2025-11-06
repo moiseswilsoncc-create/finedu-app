@@ -29,6 +29,7 @@ const Ingresos: React.FC = () => {
   const [mensaje, setMensaje] = useState("");
 
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
+  const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [editando, setEditando] = useState<Ingreso | null>(null);
 
   useEffect(() => {
@@ -78,7 +79,6 @@ const Ingresos: React.FC = () => {
     }
 
     if (editando) {
-      // Actualizar ingreso existente
       const { error } = await supabase
         .from("ingresos")
         .update({ tipo, monto: Number(monto), fecha })
@@ -99,7 +99,6 @@ const Ingresos: React.FC = () => {
         setFecha("");
       }
     } else {
-      // Insertar nuevo ingreso
       const { data, error } = await supabase
         .from("ingresos")
         .insert([{ usuario_id: usuarioId, tipo, monto: Number(monto), fecha }])
@@ -116,21 +115,46 @@ const Ingresos: React.FC = () => {
       }
     }
   };
-
-  const handleEditarIngreso = (ingreso: Ingreso) => {
-    setEditando(ingreso);
-    setTipo(ingreso.tipo);
-    setMonto(ingreso.monto);
-    setFecha(ingreso.fecha);
+  const toggleSeleccion = (id: string) => {
+    if (seleccionados.includes(id)) {
+      setSeleccionados(seleccionados.filter((s) => s !== id));
+    } else {
+      setSeleccionados([...seleccionados, id]);
+    }
   };
 
-  const handleEliminarIngreso = async (id: string) => {
-    const { error } = await supabase.from("ingresos").delete().eq("id", id);
-    if (error) {
-      setError("No se pudo eliminar el ingreso.");
+  const handleEditarSeleccionado = () => {
+    if (seleccionados.length === 1) {
+      const ingreso = ingresos.find((i) => i.id === seleccionados[0]);
+      if (ingreso) {
+        setEditando(ingreso);
+        setTipo(ingreso.tipo);
+        setMonto(ingreso.monto);
+        setFecha(ingreso.fecha);
+        setMensaje("✏️ Editando ingreso seleccionado.");
+      }
     } else {
-      setIngresos(ingresos.filter((i) => i.id !== id));
-      setMensaje("🗑️ Ingreso eliminado correctamente.");
+      setError("Debes seleccionar exactamente un ingreso para editar.");
+    }
+  };
+
+  const handleEliminarSeleccionados = async () => {
+    if (seleccionados.length === 0) {
+      setError("Debes seleccionar al menos un ingreso para eliminar.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("ingresos")
+      .delete()
+      .in("id", seleccionados);
+
+    if (error) {
+      setError("No se pudieron eliminar los ingresos seleccionados.");
+    } else {
+      setIngresos(ingresos.filter((i) => !seleccionados.includes(i.id)));
+      setSeleccionados([]);
+      setMensaje("🗑️ Ingresos eliminados correctamente.");
     }
   };
 
@@ -217,27 +241,36 @@ const Ingresos: React.FC = () => {
         <table border={1} cellPadding={8}>
           <thead>
             <tr>
+              <th>✔️</th>
               <th>Tipo</th>
               <th>Monto</th>
               <th>Fecha</th>
-              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {ingresos.map((ingreso) => (
               <tr key={ingreso.id}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={seleccionados.includes(ingreso.id)}
+                    onChange={() => toggleSeleccion(ingreso.id)}
+                  />
+                </td>
                 <td>{ingreso.tipo}</td>
                 <td>${ingreso.monto.toLocaleString("es-CL")}</td>
                 <td>{ingreso.fecha}</td>
-                <td>
-                  <button onClick={() => handleEditarIngreso(ingreso)}>✏️ Editar</button>
-                  <button onClick={() => handleEliminarIngreso(ingreso.id)}>🗑️ Eliminar</button>
-                </td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
+
+      {/* Acciones globales */}
+      <div style={{ marginTop: "1rem", display: "flex", gap: "1rem" }}>
+        <button onClick={handleEditarSeleccionado}>✏️ Editar seleccionado</button>
+        <button onClick={handleEliminarSeleccionados}>🗑️ Eliminar seleccionados</button>
+      </div>
 
       {/* Total */}
       <h4 style={{ marginTop: "1rem" }}>
