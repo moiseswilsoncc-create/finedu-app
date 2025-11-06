@@ -1,190 +1,160 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { supabase } from "./supabaseClient";
 
-const OfertasColaboradores: React.FC = () => {
-  const navigate = useNavigate();
+// 🧠 Pantalla raíz y flujo de ingreso
+import Bienvenida from "./components/Bienvenida";
+import RegistroUsuario from "./components/RegistroUsuario";
+import LoginUsuario from "./components/LoginUsuario";
+import PanelUsuario from "./components/PanelUsuario";
+import VistaErrorAcceso from "./components/VistaErrorAcceso";
+import RecuperarClave from "./components/RecuperarClave";
+import NuevaClave from "./components/NuevaClave";
+import RegistroPendiente from "./components/RegistroPendiente";
 
-  const [tipo, setTipo] = useState("");
-  const [tiposDisponibles, setTiposDisponibles] = useState<string[]>([
-    "crédito", "curso", "beneficio", "tasa"
-  ]);
-  const [nuevoTipo, setNuevoTipo] = useState("");
+// 🧩 Módulo Finanzas
+import Finanzas from "./components/Finanzas";
+import Ingresos from "./components/Ingresos";
+import Egresos from "./components/Egresos";
+import EgresosCategoria from "./components/EgresosCategoria";
+import ResumenFinanciero from "./components/ResumenFinanciero";
+import ResumenEgresos from "./components/ResumenEgresos";
+import SimuladorCreditos from "./components/SimuladorCreditos";
+import ForoFinanciero from "./components/ForoFinanciero";
 
-  const [titulo, setTitulo] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [pais, setPais] = useState("Chile");
-  const [ciudad, setCiudad] = useState("Santiago");
-  const [fechaExpiracion, setFechaExpiracion] = useState("");
-  const [mensaje, setMensaje] = useState("");
-  const [error, setError] = useState("");
+// 🧩 Colaboradores
+import RegistroColaborador from "./components/RegistroColaborador";
+import IngresoColaborador from "./components/IngresoColaborador";
+import LoginColaborador from "./components/LoginColaborador";
+import PanelColaboradores from "./components/PanelColaboradores";
+import InvitacionColaboradores from "./components/InvitacionColaboradores";
+import OfertasColaboradores from "./components/OfertasColaboradores";
+import PublicarOfertaColaborador from "./components/PublicarOfertaColaborador";
 
-  const handleAgregarTipo = () => {
-    if (nuevoTipo && !tiposDisponibles.includes(nuevoTipo)) {
-      setTiposDisponibles([...tiposDisponibles, nuevoTipo]);
-      setTipo(nuevoTipo);
-      setNuevoTipo("");
-    }
-  };
+// 🧩 Institucional
+import DashboardInstitucional from "./institucional/DashboardInstitucional";
+import EditorEstadoArchivos from "./institucional/EditorEstadoArchivos";
+import EditorTrazabilidad from "./institucional/EditorTrazabilidad";
+import MetricaSupabase from "./institucional/MetricaSupabase";
+import TestInstitucional from "./institucional/TestInstitucional";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMensaje("");
-    setError("");
+// 🧩 Navegación
+import MenuModulos from "./components/MenuModulos";
+import Navbar from "./components/Navbar";
 
-    if (!tipo || !titulo || !descripcion || !fechaExpiracion || !pais || !ciudad) {
-      setError("Todos los campos son obligatorios.");
-      return;
-    }
+// 🧩 Nuevo módulo de usuario
+import VistaGrupal from "./components/VistaGrupal";
 
-    const colaborador =
-      localStorage.getItem("correoColaborador") || "desconocido@finedu.cl";
+console.log("🧼 App.tsx actualizado: rutas oficiales consolidadas");
 
-    if (!/\S+@\S+\.\S+/.test(colaborador)) {
-      setError("Correo del colaborador no válido.");
-      return;
-    }
+// 🔒 Rutas protegidas
+const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [autenticado, setAutenticado] = useState<boolean | null>(null);
+  useEffect(() => {
+    const validarSesion = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      setAutenticado(!!data.user && !error);
+    };
+    validarSesion();
+  }, []);
+  if (autenticado === null) return null;
+  return autenticado ? <>{children}</> : <Navigate to="/login-usuario" replace />;
+};
 
-    try {
-      const { data, error: supaError } = await supabase
-        .from("ofertas_colaboradores") // ✅ nombre correcto de la tabla
-        .insert([
-          {
-            correo: colaborador,
-            institucion: titulo, // usamos el campo "titulo" del form como "institucion"
-            rol: tipo,
-            fecha_invitacion: new Date().toISOString(),
-            expira: new Date(fechaExpiracion).toISOString(),
-          },
-        ]);
+const RutaProtegidaColaborador: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [autenticado, setAutenticado] = useState<boolean | null>(null);
+  useEffect(() => {
+    const validarSesion = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      const rol = data.user?.user_metadata?.rol;
+      setAutenticado(!!data.user && rol === "colaborador" && !error);
+    };
+    validarSesion();
+  }, []);
+  if (autenticado === null) return null;
+  return autenticado ? <>{children}</> : <Navigate to="/login-colaborador" replace />;
+};
 
-      if (supaError) {
-        console.error("Error Supabase:", supaError.message);
-        setError("❌ No se pudo guardar la oferta. Intenta nuevamente.");
-        return;
-      }
+const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [autenticado, setAutenticado] = useState<boolean | null>(null);
+  useEffect(() => {
+    const validarSesion = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      const rol = data.user?.user_metadata?.rol;
+      setAutenticado(!!data.user && rol === "admin" && !error);
+    };
+    validarSesion();
+  }, []);
+  if (autenticado === null) return null;
+  return autenticado ? <>{children}</> : <Navigate to="/" replace />;
+};
 
-      console.log("Oferta guardada:", data);
-      setMensaje("✅ Oferta publicada correctamente.");
-      setError("");
-
-      // Limpiar formulario
-      setTipo("");
-      setTitulo("");
-      setDescripcion("");
-      setPais("Chile");
-      setCiudad("Santiago");
-      setFechaExpiracion("");
-
-      // Redirigir al panel tras 2s
-      setTimeout(() => navigate("/panel-colaboradores"), 2000);
-
-    } catch (err: any) {
-      console.error("Error inesperado:", err);
-      setError("⚠️ Error inesperado al guardar la oferta.");
-    }
-  };
+const App: React.FC = () => {
+  const location = useLocation();
+  const rutasPublicas = [
+    "/", "/login-usuario", "/registro-usuario", "/registro-pendiente",
+    "/error-acceso", "/recuperar-clave", "/nueva-clave",
+    "/login-colaborador", "/registro-colaborador", "/ingreso-colaborador"
+  ];
+  const mostrarNavbar = !rutasPublicas.includes(location.pathname);
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "700px", margin: "0 auto" }}>
-      <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
-        📢 Publicar datos y ofertas institucionales
-      </h3>
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-      >
-        <select value={tipo} onChange={(e) => setTipo(e.target.value)} required>
-          <option value="">Selecciona tipo de publicación</option>
-          {tiposDisponibles.map((t, index) => (
-            <option key={index} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
+    <>
+      {mostrarNavbar && <Navbar />}
 
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <input
-            type="text"
-            placeholder="Agregar nuevo tipo"
-            value={nuevoTipo}
-            onChange={(e) => setNuevoTipo(e.target.value)}
-            style={{ flex: 1 }}
-          />
-          <button
-            type="button"
-            onClick={handleAgregarTipo}
-            style={{
-              padding: "0.5rem 1rem",
-              backgroundColor: "#16a085",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
-          >
-            ➕ Tipo
-          </button>
-        </div>
+      <Routes>
+        {/* Bienvenida */}
+        <Route path="/" element={<Bienvenida />} />
 
-        <input
-          type="text"
-          placeholder="Título de la oferta"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-          required
-        />
+        {/* Usuarios */}
+        <Route path="/registro-usuario" element={<RegistroUsuario />} />
+        <Route path="/login-usuario" element={<LoginUsuario />} />
+        <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
 
-        <textarea
-          placeholder="Descripción detallada"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          rows={5}
-          required
-        />
+        {/* Flujo de acceso */}
+        <Route path="/registro-pendiente" element={<RegistroPendiente />} />
+        <Route path="/error-acceso" element={<VistaErrorAcceso />} />
+        <Route path="/recuperar-clave" element={<RecuperarClave />} />
+        <Route path="/nueva-clave" element={<NuevaClave />} />
 
-        <input
-          type="text"
-          placeholder="Ciudad"
-          value={ciudad}
-          onChange={(e) => setCiudad(e.target.value)}
-          required
-        />
+        {/* Finanzas */}
+        <Route path="/finanzas" element={<RutaProtegida><Finanzas pais="Chile" /></RutaProtegida>} />
+        <Route path="/finanzas/ingresos" element={<RutaProtegida><Ingresos /></RutaProtegida>} />
+        <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
+        <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} />
+        <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
+        <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
+        <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
+        <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
 
-        <input
-          type="text"
-          placeholder="País (ej: Chile, Perú, México)"
-          value={pais}
-          onChange={(e) => setPais(e.target.value)}
-          required
-        />
+        {/* Vista Grupal */}
+        <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} /></RutaProtegida>} />
 
-        <input
-          type="date"
-          value={fechaExpiracion}
-          onChange={(e) => setFechaExpiracion(e.target.value)}
-          required
-        />
+        {/* Colaboradores */}
+        <Route path="/registro-colaborador" element={<RegistroColaborador />} />
+        <Route path="/ingreso-colaborador" element={<IngresoColaborador />} />
+        <Route path="/login-colaborador" element={<LoginColaborador />} />
+        <Route path="/panel-colaboradores" element={<RutaProtegidaColaborador><PanelColaboradores /></RutaProtegidaColaborador>} />
+        <Route path="/invitacion-colaboradores" element={<RutaProtegidaColaborador><InvitacionColaboradores /></RutaProtegidaColaborador>} />
+        <Route path="/ofertas-colaboradores" element={<RutaProtegidaColaborador><OfertasColaboradores /></RutaProtegidaColaborador>} />
+        <Route path="/publicar-oferta-colaborador" element={<RutaProtegidaColaborador><PublicarOfertaColaborador /></RutaProtegidaColaborador>} />
+        <Route path="/datos-ofertas" element={<RutaProtegidaColaborador><PublicarOfertaColaborador /></RutaProtegidaColaborador>} />
 
-        {mensaje && <p style={{ color: "#2ecc71" }}>{mensaje}</p>}
-        {error && <p style={{ color: "#e74c3c" }}>{error}</p>}
+        {/* Institucional */}
+        <Route path="/dashboard-institucional" element={<RutaProtegidaInstitucional><DashboardInstitucional /></RutaProtegidaInstitucional>} />
+        <Route path="/editor-estado" element={<RutaProtegidaInstitucional><EditorEstadoArchivos /></RutaProtegidaInstitucional>} />
+        <Route path="/editor-trazabilidad" element={<RutaProtegidaInstitucional><EditorTrazabilidad /></RutaProtegidaInstitucional>} />
+        <Route path="/metrica-supabase" element={<RutaProtegidaInstitucional><MetricaSupabase /></RutaProtegidaInstitucional>} />
+        <Route path="/test-institucional" element={<RutaProtegidaInstitucional><TestInstitucional /></RutaProtegidaInstitucional>} />
 
-        <button
-          type="submit"
-          style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: "#3498db",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
-        >
-          Publicar oferta
-        </button>
-      </form>
-    </div>
+        {/* Menú de módulos */}
+        <Route path="/menu-modulos" element={<MenuModulos />} />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 };
 
-export default OfertasColaboradores;
+export default App;
