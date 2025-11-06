@@ -250,5 +250,10 @@ const Egresos: React.FC = () => {
         toggleSeleccion={toggleSeleccion}
         handleEditarSeleccionado={handleEditarSeleccionado}
         handleEliminarSeleccionados={handleEliminarSeleccionados}
-      />
+     />
     </div>
+  );   
+};      
+
+export default Egresos;
+    
