@@ -1,5 +1,40 @@
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { supabase } from "../supabaseClient";
+import "../styles/MenuModulos.css";
+
+// 📌 Lista única de módulos visibles para USUARIOS
+const todosLosModulos = [
+  { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
+
+  // Finanzas
+  { ruta: "/finanzas", label: "💵 Flujo Financiero" },
+  { ruta: "/finanzas/ingresos", label: "💰 Ingresos" },
+  { ruta: "/finanzas/egresos", label: "💸 Egresos" },
+  { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
+  { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" },
+  { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
+  { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
+  { ruta: "/finanzas/foro", label: "💬 Foro Financiero" },
+
+  // Ahorro e inversión
+  { ruta: "/registro-ahorro", label: "💰 Registro de Ahorro" },
+  { ruta: "/simulador-inversion", label: "📈 Simulador de Inversión" },
+
+  // Social
+  { ruta: "/vista-grupal", label: "👨‍👩‍👧‍👦 Vista Grupal" },
+  { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
+
+  // Ofertas
+  { ruta: "/panel-ofertas", label: "📢 Ofertas activas" },
+  { ruta: "/datos-ofertas", label: "📢 Publicar oferta" },
+
+  // Test
+  { ruta: "/test-financiero", label: "🧠 Test Financiero" },
+];
+
 const MenuModulos = () => {
-  const usuarioId = localStorage.getItem("usuarioId");
+  const usuarioId = localStorage.getItem("usuarioId"); // UUID del usuario autenticado
   const tipoUsuario = localStorage.getItem("tipoUsuario");
 
   const [nuevasOfertas, setNuevasOfertas] = useState(0);
@@ -9,7 +44,7 @@ const MenuModulos = () => {
     const verificarPermisos = async () => {
       try {
         if (!usuarioId) {
-          // Fallback: todos los módulos
+          // Fallback: mostrar todos los módulos
           setModulosPermitidos(todosLosModulos.map(m => m.ruta));
           return;
         }
@@ -29,9 +64,9 @@ const MenuModulos = () => {
           .filter((p: any) => String(p.permiso).toLowerCase() === "true")
           .map((p: any) => p.modulo);
 
-        // Si no hay registros, fallback a todos
+        const dedup = Array.from(new Set(rutasHabilitadas));
         setModulosPermitidos(
-          rutasHabilitadas.length > 0 ? rutasHabilitadas : todosLosModulos.map(m => m.ruta)
+          dedup.length > 0 ? dedup : todosLosModulos.map(m => m.ruta)
         );
       } catch (e: any) {
         console.error("Excepción verificando permisos:", e?.message || e);
@@ -39,7 +74,42 @@ const MenuModulos = () => {
       }
     };
 
+    const verificarNovedades = async () => {
+      try {
+        if (!usuarioId || tipoUsuario !== "usuario") {
+          setNuevasOfertas(0);
+          return;
+        }
+
+        const { data: vista } = await supabase
+          .from("registro_visualizacion")
+          .select("fecha_vista")
+          .eq("usuario_id", usuarioId)
+          .eq("modulo", "DatosOfertas")
+          .maybeSingle();
+
+        const { data: ofertas } = await supabase
+          .from("ofertas_colaborador")
+          .select("id, fecha_publicacion")
+          .eq("visibilidad", true)
+          .gt("fecha_expiracion", new Date().toISOString());
+
+        if (vista && ofertas) {
+          const nuevas = ofertas.filter(
+            (o: any) => new Date(o.fecha_publicacion) > new Date(vista.fecha_vista)
+          );
+          setNuevasOfertas(nuevas.length);
+        } else {
+          setNuevasOfertas(0);
+        }
+      } catch (e: any) {
+        console.warn("Aviso novedades:", e?.message || e);
+        setNuevasOfertas(0);
+      }
+    };
+
     verificarPermisos();
+    verificarNovedades();
   }, [usuarioId, tipoUsuario]);
 
   if (modulosPermitidos === null) {
@@ -74,3 +144,5 @@ const MenuModulos = () => {
     </div>
   );
 };
+
+export default MenuModulos;
