@@ -3,108 +3,79 @@ import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import "../styles/MenuModulos.css";
 
-// 📌 Lista única de módulos visibles para USUARIOS
+// 📌 Lista de módulos visibles para USUARIOS
 const todosLosModulos = [
   { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
 
-  // Finanzas
-  { ruta: "/finanzas", label: "💵 Flujo Financiero" },
+  // Módulo central de finanzas
+  { ruta: "/finanzas", label: "💵 Finanzas" },
   { ruta: "/finanzas/ingresos", label: "💰 Ingresos" },
   { ruta: "/finanzas/egresos", label: "💸 Egresos" },
   { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
   { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" },
   { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
-  { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
   { ruta: "/finanzas/foro", label: "💬 Foro Financiero" },
 
-  // Ahorro e inversión
+  // Otros módulos disponibles para usuarios
   { ruta: "/registro-ahorro", label: "💰 Registro de Ahorro" },
   { ruta: "/simulador-inversion", label: "📈 Simulador de Inversión" },
+  { ruta: "/test-financiero", label: "🧠 Test Financiero" },
 
-  // Social
   { ruta: "/vista-grupal", label: "👨‍👩‍👧‍👦 Vista Grupal" },
   { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
+  { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
 
-  // Ofertas
   { ruta: "/panel-ofertas", label: "📢 Ofertas activas" },
-  { ruta: "/datos-ofertas", label: "📢 Publicar oferta" },
-
-  // Test
-  { ruta: "/test-financiero", label: "🧠 Test Financiero" },
+  { ruta: "/datos-ofertas", label: "📢 Publicar oferta" }
 ];
 
 const MenuModulos = () => {
   const usuarioId = localStorage.getItem("usuarioId"); // UUID del usuario autenticado
   const tipoUsuario = localStorage.getItem("tipoUsuario");
-
   const [nuevasOfertas, setNuevasOfertas] = useState(0);
-  const [modulosPermitidos, setModulosPermitidos] = useState<string[] | null>(null);
+  const [modulosPermitidos, setModulosPermitidos] = useState<string[]>([]);
 
   useEffect(() => {
     const verificarPermisos = async () => {
-      try {
-        if (!usuarioId) {
-          // Fallback: mostrar todos los módulos
-          setModulosPermitidos(todosLosModulos.map(m => m.ruta));
-          return;
-        }
+      if (!usuarioId) return;
 
-        const { data, error } = await supabase
-          .from("permisos_usuario")
-          .select("modulo, permiso")
-          .eq("usuario_id", usuarioId);
+      const { data, error } = await supabase
+        .from("permisos_usuario")
+        .select("modulo")
+        .eq("usuario_id", usuarioId)   // 👈 columna correcta
+        .eq("permiso", "true");        // 👈 usar 'permiso' en vez de 'acceso'
 
-        if (error) {
-          console.error("Error al cargar permisos:", error.message);
-          setModulosPermitidos(todosLosModulos.map(m => m.ruta));
-          return;
-        }
-
-        const rutasHabilitadas = (data || [])
-          .filter((p: any) => String(p.permiso).toLowerCase() === "true")
-          .map((p: any) => p.modulo);
-
-        const dedup = Array.from(new Set(rutasHabilitadas));
-        setModulosPermitidos(
-          dedup.length > 0 ? dedup : todosLosModulos.map(m => m.ruta)
-        );
-      } catch (e: any) {
-        console.error("Excepción verificando permisos:", e?.message || e);
-        setModulosPermitidos(todosLosModulos.map(m => m.ruta));
+      if (error) {
+        console.error("Error al cargar permisos:", error.message);
+        setModulosPermitidos([]); // evitar pantalla en blanco
+        return;
       }
+
+      const rutasPermitidas = data?.map((p) => p.modulo) || [];
+      setModulosPermitidos(rutasPermitidas);
     };
 
     const verificarNovedades = async () => {
-      try {
-        if (!usuarioId || tipoUsuario !== "usuario") {
-          setNuevasOfertas(0);
-          return;
-        }
+      if (!usuarioId || tipoUsuario !== "usuario") return;
 
-        const { data: vista } = await supabase
-          .from("registro_visualizacion")
-          .select("fecha_vista")
-          .eq("usuario_id", usuarioId)
-          .eq("modulo", "DatosOfertas")
-          .maybeSingle();
+      const { data: vista } = await supabase
+        .from("registro_visualizacion")
+        .select("fecha_vista")
+        .eq("usuario_id", usuarioId)
+        .eq("modulo", "DatosOfertas")
+        .single();
 
-        const { data: ofertas } = await supabase
-          .from("ofertas_colaborador")
-          .select("id, fecha_publicacion")
-          .eq("visibilidad", true)
-          .gt("fecha_expiracion", new Date().toISOString());
+      const { data: ofertas } = await supabase
+        .from("ofertas_colaborador")
+        .select("id, fecha_publicacion")
+        .eq("visibilidad", true)
+        .gt("fecha_expiracion", new Date().toISOString());
 
-        if (vista && ofertas) {
-          const nuevas = ofertas.filter(
-            (o: any) => new Date(o.fecha_publicacion) > new Date(vista.fecha_vista)
-          );
-          setNuevasOfertas(nuevas.length);
-        } else {
-          setNuevasOfertas(0);
-        }
-      } catch (e: any) {
-        console.warn("Aviso novedades:", e?.message || e);
-        setNuevasOfertas(0);
+      if (vista && ofertas) {
+        const nuevas = ofertas.filter(
+          (o) => new Date(o.fecha_publicacion) > new Date(vista.fecha_vista)
+        );
+        setNuevasOfertas(nuevas.length);
       }
     };
 
@@ -112,35 +83,23 @@ const MenuModulos = () => {
     verificarNovedades();
   }, [usuarioId, tipoUsuario]);
 
-  if (modulosPermitidos === null) {
-    return (
-      <div className="menu-modulos-container">
-        <h2>📂 Accede a tus módulos</h2>
-        <p>Cargando módulos...</p>
-      </div>
-    );
-  }
-
-  const permitidosSet = new Set(modulosPermitidos);
-  const modulosFiltrados = todosLosModulos.filter(m => permitidosSet.has(m.ruta));
+  const modulosFiltrados = todosLosModulos.filter((modulo) =>
+    modulosPermitidos.includes(modulo.ruta)
+  );
 
   return (
     <div className="menu-modulos-container">
       <h2>📂 Accede a tus módulos</h2>
-      {modulosFiltrados.length === 0 ? (
-        <p>⚠️ No tienes módulos habilitados aún.</p>
-      ) : (
-        <div className="modulo-grid">
-          {modulosFiltrados.map((modulo, index) => (
-            <Link key={index} to={modulo.ruta} className="btn-modulo">
-              {modulo.label}
-              {modulo.ruta === "/panel-ofertas" && nuevasOfertas > 0 && (
-                <span className="badge-campana">{nuevasOfertas}</span>
-              )}
-            </Link>
-          ))}
-        </div>
-      )}
+      <div className="modulo-grid">
+        {modulosFiltrados.map((modulo, index) => (
+          <Link key={index} to={modulo.ruta} className="btn-modulo">
+            {modulo.label}
+            {modulo.ruta === "/panel-ofertas" && nuevasOfertas > 0 && (
+              <span className="badge-campana">{nuevasOfertas}</span>
+            )}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 };
