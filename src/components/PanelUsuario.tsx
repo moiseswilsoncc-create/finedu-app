@@ -15,7 +15,7 @@ const PanelUsuario: React.FC = () => {
   const [permisos, setPermisos] = useState<Permiso[] | null>(null);
 
   const modulos = [
-  { nombre: "💸 Ingresos y Egresos", ruta: "/resumen-financiero", color: "#f39c12" },
+  { nombre: "💸 Ingresos y Egresos", ruta: "/finanzas", color: "#f39c12" },
   { nombre: "💰 Registro de Ahorro", ruta: "/registro-ahorro", color: "#27ae60" },
   { nombre: "👥 Mi Grupo", ruta: "/mi-grupo", color: "#2980b9" }, // si tienes un módulo distinto
   { nombre: "🤝 Vista Grupal", ruta: "/vista-grupal", color: "#1abc9c" }, // 👈 nuevo módulo
