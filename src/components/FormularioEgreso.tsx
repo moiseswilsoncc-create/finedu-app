@@ -3,7 +3,7 @@ import React from "react";
 
 interface Props {
   categorias: { id: string; categoria: string }[];
-  itemsCategoria: { id: string; item: string; categoria?: string }[];
+  itemsCategoria: { id: string; item: string }[];
   categoria: string;
   item: string;
   monto: number | "";
@@ -65,7 +65,7 @@ const FormularioEgreso: React.FC<Props> = ({
           onChange={(e) => {
             const val = e.target.value;
             setCategoria(val);
-            cargarItemsCategoria(val); // conecta categoría → ítems
+            cargarItemsCategoria(val); // conexión categoría → ítems
           }}
           required
         >
@@ -91,7 +91,7 @@ const FormularioEgreso: React.FC<Props> = ({
         </select>
       </div>
 
-      {/* Monto y fecha (si en el futuro habilitas guardar egreso) */}
+      {/* Monto y fecha (guardado de egreso deshabilitado por ahora) */}
       <div style={{ display: "flex", gap: "1rem", marginTop: "0.75rem" }}>
         <div>
           <label>Monto: </label>
@@ -112,7 +112,6 @@ const FormularioEgreso: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Botón submit deshabilitado funcionalmente por ahora */}
       <button type="submit" style={{ marginTop: "0.75rem" }}>
         {editando ? "✏️ Guardar Cambios" : "➕ Agregar Egreso"}
       </button>
