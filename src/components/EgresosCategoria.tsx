@@ -1,3 +1,4 @@
+// src/components/EgresosCategoria.tsx
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -109,11 +110,13 @@ const EgresosCategoria: React.FC = () => {
       return;
     }
 
+    const itemSeleccionado = items.find((i) => i.id === Number(itemId));
+
     const { error: insertError } = await supabase.from("egresos").insert([
       {
         usuario_id: userData.user.id,
-        categoria_id: categoria?.id,
-        item_id: Number(itemId),
+        categoria: categoria?.nombre,
+        item: itemSeleccionado?.nombre,
         monto: Number(monto),
         fecha,
       },
@@ -162,6 +165,7 @@ const EgresosCategoria: React.FC = () => {
             value={monto}
             onChange={(e) => setMonto(Number(e.target.value))}
             required
+            min={0}
           />
         </div>
 
