@@ -42,8 +42,8 @@ const MenuModulos = () => {
       const { data, error } = await supabase
         .from("permisos_usuario")
         .select("modulo")
-        .eq("usuario_id", usuarioId)   // 👈 columna correcta
-        .eq("permiso", "true");        // 👈 usar 'permiso' en vez de 'acceso'
+        .eq("usuario_id", usuarioId)
+        .eq("permiso", "true");
 
       if (error) {
         console.error("Error al cargar permisos:", error.message);
@@ -66,14 +66,14 @@ const MenuModulos = () => {
         .single();
 
       const { data: ofertas } = await supabase
-        .from("ofertas_colaborador")
-        .select("id, fecha_publicacion")
+        .from("ofertas_colaboradores") // 👈 nombre correcto de la tabla
+        .select("id, fecha_invitacion")
         .eq("visibilidad", true)
-        .gt("fecha_expiracion", new Date().toISOString());
+        .gt("expira", new Date().toISOString());
 
       if (vista && ofertas) {
         const nuevas = ofertas.filter(
-          (o) => new Date(o.fecha_publicacion) > new Date(vista.fecha_vista)
+          (o) => new Date(o.fecha_invitacion) > new Date(vista.fecha_vista)
         );
         setNuevasOfertas(nuevas.length);
       }
@@ -83,9 +83,13 @@ const MenuModulos = () => {
     verificarNovedades();
   }, [usuarioId, tipoUsuario]);
 
-  const modulosFiltrados = todosLosModulos.filter((modulo) =>
-    modulosPermitidos.includes(modulo.ruta)
-  );
+  // 🔑 Ajuste: Ingresos y Egresos siempre visibles
+  const modulosFiltrados = todosLosModulos.filter((modulo) => {
+    if (modulo.ruta === "/finanzas/ingresos" || modulo.ruta === "/finanzas/egresos") {
+      return true; // siempre mostrar estos dos
+    }
+    return modulosPermitidos.includes(modulo.ruta);
+  });
 
   return (
     <div className="menu-modulos-container">
