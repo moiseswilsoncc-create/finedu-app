@@ -22,10 +22,10 @@ const PanelUsuario: React.FC = () => {
     { nombre: "👥 Mi Grupo", ruta: "/mi-grupo", color: "#2980b9" },
     { nombre: "🤝 Vista Grupal", ruta: "/vista-grupal", color: "#1abc9c" },
     { nombre: "📈 Simulador de Inversión", ruta: "/simulador-inversion", color: "#8e44ad" },
-    { nombre: "🏦 Simulador de Crédito", ruta: "/finanzas/creditos", color: "#c0392b" }, // ✅ corregido
+    { nombre: "🏦 Simulador de Crédito", ruta: "/finanzas/creditos", color: "#c0392b" },
     { nombre: "🧠 Test Financiero", ruta: "/test-financiero", color: "#16a085" },
     { nombre: "📊 Mi Progreso", ruta: "/vista-etapa", color: "#34495e" },
-    { nombre: "🗣️ Foro Financiero", ruta: "/finanzas/foro", color: "#2c3e50" } // ✅ corregido
+    { nombre: "🗣️ Foro Financiero", ruta: "/finanzas/foro", color: "#2c3e50" }
   ];
 
   // ✅ Validar sesión con Supabase Auth
@@ -33,7 +33,7 @@ const PanelUsuario: React.FC = () => {
     const validarSesion = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error || !data.user) {
-        navigate("/login-usuario"); // ruta oficial
+        navigate("/login-usuario");
         return;
       }
 
@@ -58,14 +58,17 @@ const PanelUsuario: React.FC = () => {
       const { data: permisosData, error: permisosError } = await supabase
         .from("permisos_usuario")
         .select("modulo, permiso")
-        .eq("usuario_id", data.user.id)
-        .eq("permiso", "acceso");
+        .eq("usuario_id", data.user.id);
 
       if (permisosError) {
         console.error("❌ Error al cargar permisos:", permisosError.message);
         setPermisos([]);
       } else {
-        setPermisos(permisosData || []);
+        // Si no hay registros, asumimos que el usuario tiene acceso a todos los módulos
+        setPermisos(permisosData && permisosData.length > 0
+          ? permisosData
+          : modulos.map(m => ({ modulo: m.ruta, permiso: "acceso" }))
+        );
       }
     };
 
@@ -88,10 +91,10 @@ const PanelUsuario: React.FC = () => {
       }
 
       const { data: ofertas, error: ofertasError } = await supabase
-        .from("ofertas_colaborador")
+        .from("ofertas_colaboradores") // ✅ nombre correcto de la tabla
         .select("*")
         .eq("visible", true)
-        .gt("fecha_expiracion", new Date().toISOString());
+        .gt("expira", new Date().toISOString());
 
       if (ofertasError) {
         console.error("❌ Error cargando ofertas:", ofertasError.message);
@@ -100,7 +103,7 @@ const PanelUsuario: React.FC = () => {
       }
 
       const nuevas = visualizacion
-        ? ofertas.filter(o => new Date(o.fecha_publicacion) > new Date(visualizacion.fecha_vista))
+        ? ofertas.filter(o => new Date(o.fecha_invitacion) > new Date(visualizacion.fecha_vista))
         : ofertas;
 
       setOfertasFiltradas(nuevas || []);
@@ -133,7 +136,6 @@ const PanelUsuario: React.FC = () => {
       <h1 style={{ color: "#3498db", marginBottom: "1rem" }}>👋 Bienvenido, {nombreUsuario}</h1>
 
       {permisos === null && <p>⏳ Cargando permisos…</p>}
-      {permisos && permisos.length === 0 && <p>⚠️ No tienes módulos habilitados aún.</p>}
 
       <section style={{ marginBottom: "2rem", textAlign: "center" }}>
         <h3>📊 Estado financiero actual</h3>
@@ -185,9 +187,9 @@ const PanelUsuario: React.FC = () => {
               borderRadius: "8px",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
             }}>
-              <strong>{oferta.titulo}</strong> — {oferta.tipo} ({oferta.pais})
-              <p>{oferta.descripcion}</p>
-              <small>Válido hasta: {oferta.fecha_expiracion}</small>
+              <strong>{oferta.institucion}</strong> — {oferta.rol}
+              <p>{oferta.correo}</p>
+              <small>Invitación: {oferta.fecha_invitacion} | Expira: {oferta.expira}</small>
             </div>
           ))}
         </section>
