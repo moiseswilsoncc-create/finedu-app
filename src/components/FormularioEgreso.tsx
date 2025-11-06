@@ -6,40 +6,30 @@ interface Props {
   itemsCategoria: { id: string; item: string }[];
   categoria: string;
   item: string;
-  monto: number | "";
-  fecha: string;
-  nuevoItem: string;
   nuevaCategoria: string;
-  editando: any;
+  nuevoItem: string;
   mensaje: string;
   error: string;
   onAgregarCategoria: () => void;
   onAgregarItem: () => void;
-  onGuardar: (e: React.FormEvent) => void;
   setCategoria: (val: string) => void;
   setItem: (val: string) => void;
-  setMonto: (val: number) => void;
-  setFecha: (val: string) => void;
-  setDescripcion: (val: string) => void;
-  setNuevoItem: (val: string) => void;
   setNuevaCategoria: (val: string) => void;
-  cargarItemsCategoria: (cat: string) => void;
+  setNuevoItem: (val: string) => void;
 }
 
 const FormularioEgreso: React.FC<Props> = ({
   categorias, itemsCategoria,
-  categoria, item, monto, fecha,
-  nuevoItem, nuevaCategoria,
-  editando, mensaje, error,
-  onAgregarCategoria, onAgregarItem, onGuardar,
-  setCategoria, setItem, setMonto, setFecha, setDescripcion,
-  setNuevoItem, setNuevaCategoria,
-  cargarItemsCategoria
+  categoria, item,
+  nuevaCategoria, nuevoItem,
+  mensaje, error,
+  onAgregarCategoria, onAgregarItem,
+  setCategoria, setItem, setNuevaCategoria, setNuevoItem
 }) => {
   return (
-    <form onSubmit={onGuardar} style={{ marginBottom: "1.5rem" }}>
-      {/* Botones arriba para agregar categoría e ítem */}
-      <div style={{ marginBottom: "1rem", display: "flex", gap: "1rem", alignItems: "center" }}>
+    <div style={{ marginBottom: "1.5rem" }}>
+      {/* Botones arriba */}
+      <div style={{ marginBottom: "1rem", display: "flex", gap: "1rem" }}>
         <input
           type="text"
           placeholder="Nueva categoría"
@@ -50,7 +40,7 @@ const FormularioEgreso: React.FC<Props> = ({
 
         <input
           type="text"
-          placeholder="Nuevo ítem (requiere categoría seleccionada)"
+          placeholder="Nuevo ítem"
           value={nuevoItem}
           onChange={(e) => setNuevoItem(e.target.value)}
         />
@@ -62,11 +52,7 @@ const FormularioEgreso: React.FC<Props> = ({
         <label>Categoría: </label>
         <select
           value={categoria}
-          onChange={(e) => {
-            const val = e.target.value;
-            setCategoria(val);
-            cargarItemsCategoria(val); // conexión categoría → ítems
-          }}
+          onChange={(e) => setCategoria(e.target.value)}
           required
         >
           <option value="">-- Selecciona --</option>
@@ -91,34 +77,9 @@ const FormularioEgreso: React.FC<Props> = ({
         </select>
       </div>
 
-      {/* Monto y fecha (guardado de egreso deshabilitado por ahora) */}
-      <div style={{ display: "flex", gap: "1rem", marginTop: "0.75rem" }}>
-        <div>
-          <label>Monto: </label>
-          <input
-            type="number"
-            value={monto}
-            onChange={(e) => setMonto(Number(e.target.value))}
-            min={0}
-          />
-        </div>
-        <div>
-          <label>Fecha: </label>
-          <input
-            type="date"
-            value={fecha}
-            onChange={(e) => setFecha(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <button type="submit" style={{ marginTop: "0.75rem" }}>
-        {editando ? "✏️ Guardar Cambios" : "➕ Agregar Egreso"}
-      </button>
-
       {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-    </form>
+    </div>
   );
 };
 
