@@ -52,7 +52,19 @@ const FormularioEgreso: React.FC<Props> = ({
       {/* Selector de egresos registrados */}
       <div>
         <label>Selecciona egreso registrado: </label>
-        <select value={editando ? editando.id : ""}>
+        <select
+          value={editando ? editando.id : ""}
+          onChange={(e) => {
+            const egresoSel = egresos.find((eg) => eg.id === e.target.value);
+            if (egresoSel) {
+              setCategoria(egresoSel.categoria);
+              setItem(egresoSel.item);
+              setMonto(egresoSel.monto);
+              setFecha(egresoSel.fecha);
+              setDescripcion(egresoSel.descripcion || "");
+            }
+          }}
+        >
           <option value="">-- Selecciona --</option>
           {egresos.map((eg) => (
             <option key={eg.id} value={eg.id}>
@@ -97,10 +109,36 @@ const FormularioEgreso: React.FC<Props> = ({
         <button type="button" onClick={onAgregarItem}>➕ Agregar ítem</button>
       </div>
 
-      {/* Monto, fecha, descripción */}
-      <input type="number" value={monto} onChange={(e) => setMonto(Number(e.target.value))} />
-      <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
-      <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+      {/* Monto */}
+      <div>
+        <label>Monto: </label>
+        <input
+          type="number"
+          value={monto}
+          onChange={(e) => setMonto(Number(e.target.value))}
+          min={0}
+        />
+      </div>
+
+      {/* Fecha */}
+      <div>
+        <label>Fecha: </label>
+        <input
+          type="date"
+          value={fecha}
+          onChange={(e) => setFecha(e.target.value)}
+        />
+      </div>
+
+      {/* Descripción */}
+      <div>
+        <label>Descripción: </label>
+        <input
+          type="text"
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+        />
+      </div>
 
       <button type="submit">
         {editando ? "✏️ Guardar Cambios" : "➕ Agregar Egreso"}
