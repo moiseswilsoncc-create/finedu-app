@@ -107,6 +107,7 @@ const Ingresos: React.FC = () => {
         setTipo("");
         setMonto("");
         setFecha("");
+        setSeleccionados([]); // 👈 limpia los checkboxes al guardar
       }
     } else {
       if (!tipo || !monto || !fecha) {
