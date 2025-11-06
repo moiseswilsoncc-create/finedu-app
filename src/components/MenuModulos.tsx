@@ -4,7 +4,6 @@ import { supabase } from "../supabaseClient";
 import "../styles/MenuModulos.css";
 
 // 📌 Lista de módulos visibles para USUARIOS
-// 🔹 Se eliminaron módulos de colaboradores, institucionales y validación técnica
 const todosLosModulos = [
   { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
 
@@ -13,44 +12,42 @@ const todosLosModulos = [
   { ruta: "/finanzas/ingresos", label: "💰 Ingresos" },
   { ruta: "/finanzas/egresos", label: "💸 Egresos" },
   { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
-  { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" }, // 👈 Nuevo acceso
+  { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" },
   { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
-  { ruta: "/finanzas/foro", label: "💬 Foro Financiero" }, // 🔹 Nuevo módulo integrado
+  { ruta: "/finanzas/foro", label: "💬 Foro Financiero" },
 
   // Otros módulos disponibles para usuarios
   { ruta: "/registro-ahorro", label: "💰 Registro de Ahorro" },
   { ruta: "/simulador-inversion", label: "📈 Simulador de Inversión" },
   { ruta: "/test-financiero", label: "🧠 Test Financiero" },
 
-  // 🔹 Nuevo módulo oficial de Vista Grupal
   { ruta: "/vista-grupal", label: "👨‍👩‍👧‍👦 Vista Grupal" },
-
   { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
   { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
 
-  // 🔹 Usuarios sí pueden ver ofertas de colaboradores
   { ruta: "/panel-ofertas", label: "📢 Ofertas activas" },
   { ruta: "/datos-ofertas", label: "📢 Publicar oferta" }
 ];
 
 const MenuModulos = () => {
-  const correo = localStorage.getItem("correoUsuario");
+  const usuarioId = localStorage.getItem("usuarioId"); // UUID del usuario autenticado
   const tipoUsuario = localStorage.getItem("tipoUsuario");
   const [nuevasOfertas, setNuevasOfertas] = useState(0);
   const [modulosPermitidos, setModulosPermitidos] = useState<string[]>([]);
 
   useEffect(() => {
     const verificarPermisos = async () => {
-      if (!correo) return;
+      if (!usuarioId) return;
 
       const { data, error } = await supabase
         .from("permisos_usuario")
         .select("modulo")
-        .eq("usuario", correo)
-        .eq("acceso", true);
+        .eq("usuario_id", usuarioId)   // 👈 columna correcta
+        .eq("permiso", "true");        // 👈 usar 'permiso' en vez de 'acceso'
 
       if (error) {
         console.error("Error al cargar permisos:", error.message);
+        setModulosPermitidos([]); // evitar pantalla en blanco
         return;
       }
 
@@ -59,12 +56,12 @@ const MenuModulos = () => {
     };
 
     const verificarNovedades = async () => {
-      if (!correo || tipoUsuario !== "usuario") return;
+      if (!usuarioId || tipoUsuario !== "usuario") return;
 
       const { data: vista } = await supabase
         .from("registro_visualizacion")
         .select("fecha_vista")
-        .eq("usuario_id", correo)
+        .eq("usuario_id", usuarioId)
         .eq("modulo", "DatosOfertas")
         .single();
 
@@ -84,7 +81,7 @@ const MenuModulos = () => {
 
     verificarPermisos();
     verificarNovedades();
-  }, [correo, tipoUsuario]);
+  }, [usuarioId, tipoUsuario]);
 
   const modulosFiltrados = todosLosModulos.filter((modulo) =>
     modulosPermitidos.includes(modulo.ruta)
