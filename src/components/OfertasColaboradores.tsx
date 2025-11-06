@@ -1,21 +1,44 @@
-// src/components/OfertasColaboradores.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-@@ -48,144 +47,144 @@
+
+const OfertasColaboradores: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [tipo, setTipo] = useState("");
+  const [titulo, setTitulo] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [pais, setPais] = useState("Chile");
+  const [ciudad, setCiudad] = useState("Santiago");
+  const [fechaExpiracion, setFechaExpiracion] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
+
+  const [tiposDisponibles, setTiposDisponibles] = useState<string[]>(["Oferta", "Invitación"]);
+  const [nuevoTipo, setNuevoTipo] = useState("");
+
+  const handleAgregarTipo = () => {
+    if (nuevoTipo && !tiposDisponibles.includes(nuevoTipo)) {
+      setTiposDisponibles([...tiposDisponibles, nuevoTipo]);
+      setNuevoTipo("");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     try {
       const { data, error: supaError } = await supabase
-        .from("ofertas_colaborador")
-        .from("ofertas_colaboradores") // ✅ nombre correcto de la tabla
+        .from("ofertas_colaboradores") // 👈 nombre correcto de la tabla
         .insert([
           {
-            correo: colaborador,
-            institucion: titulo, // puedes mapear a otro campo si prefieres
-            institucion: titulo, // usamos el campo "titulo" del form como "institucion"
+            correo: "colaborador@test.com", // ajusta según tu lógica
+            institucion: titulo,
             rol: tipo,
+            descripcion,
+            pais,
+            ciudad,
             fecha_invitacion: new Date().toISOString(),
-            expira: fechaExpiracion,
             expira: new Date(fechaExpiracion).toISOString(),
           },
         ]);
@@ -52,16 +75,11 @@ import { supabase } from "../supabaseClient";
       <h3 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
         📢 Publicar datos y ofertas institucionales
       </h3>
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-      >
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <select value={tipo} onChange={(e) => setTipo(e.target.value)} required>
           <option value="">Selecciona tipo de publicación</option>
           {tiposDisponibles.map((t, index) => (
-            <option key={index} value={t}>
-              {t}
-            </option>
+            <option key={index} value={t}>{t}</option>
           ))}
         </select>
 
@@ -73,75 +91,21 @@ import { supabase } from "../supabaseClient";
             onChange={(e) => setNuevoTipo(e.target.value)}
             style={{ flex: 1 }}
           />
-          <button
-            type="button"
-            onClick={handleAgregarTipo}
-            style={{
-              padding: "0.5rem 1rem",
-              backgroundColor: "#16a085",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
-          >
+          <button type="button" onClick={handleAgregarTipo} style={{ padding: "0.5rem 1rem", backgroundColor: "#16a085", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
             ➕ Tipo
           </button>
         </div>
 
-        <input
-          type="text"
-          placeholder="Título de la oferta"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-          required
-        />
-
-        <textarea
-          placeholder="Descripción detallada"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          rows={5}
-          required
-        />
-
-        <input
-          type="text"
-          placeholder="Ciudad"
-          value={ciudad}
-          onChange={(e) => setCiudad(e.target.value)}
-          required
-        />
-
-        <input
-          type="text"
-          placeholder="País (ej: Chile, Perú, México)"
-          value={pais}
-          onChange={(e) => setPais(e.target.value)}
-          required
-        />
-
-        <input
-          type="date"
-          value={fechaExpiracion}
-          onChange={(e) => setFechaExpiracion(e.target.value)}
-          required
-        />
+        <input type="text" placeholder="Título de la oferta" value={titulo} onChange={(e) => setTitulo(e.target.value)} required />
+        <textarea placeholder="Descripción detallada" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} rows={5} required />
+        <input type="text" placeholder="Ciudad" value={ciudad} onChange={(e) => setCiudad(e.target.value)} required />
+        <input type="text" placeholder="País (ej: Chile, Perú, México)" value={pais} onChange={(e) => setPais(e.target.value)} required />
+        <input type="date" value={fechaExpiracion} onChange={(e) => setFechaExpiracion(e.target.value)} required />
 
         {mensaje && <p style={{ color: "#2ecc71" }}>{mensaje}</p>}
         {error && <p style={{ color: "#e74c3c" }}>{error}</p>}
 
-        <button
-          type="submit"
-          style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: "#3498db",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
-        >
+        <button type="submit" style={{ padding: "0.6rem 1.2rem", backgroundColor: "#3498db", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
           Publicar oferta
         </button>
       </form>
