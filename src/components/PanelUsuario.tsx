@@ -58,13 +58,13 @@ const PanelUsuario: React.FC = () => {
       const { data: permisosData, error: permisosError } = await supabase
         .from("permisos_usuario")
         .select("modulo, permiso")
-        .eq("usuario_id", data.user.id);
+        .eq("usuario_id", data.user.id)
+        .eq("permiso", "acceso"); // ✅ solo permisos válidos
 
       if (permisosError) {
         console.error("❌ Error al cargar permisos:", permisosError.message);
         setPermisos([]);
       } else {
-        // Si no hay registros, asumimos que el usuario tiene acceso a todos los módulos
         setPermisos(permisosData && permisosData.length > 0
           ? permisosData
           : modulos.map(m => ({ modulo: m.ruta, permiso: "acceso" }))
@@ -131,6 +131,11 @@ const PanelUsuario: React.FC = () => {
 
   const estadoFinanciero = evaluarSaludFinanciera();
 
+  // ✅ Filtrar módulos según permisos
+  const modulosFiltrados = permisos
+    ? modulos.filter(m => permisos.some(p => p.modulo === m.ruta && p.permiso === "acceso"))
+    : [];
+
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       <h1 style={{ color: "#3498db", marginBottom: "1rem" }}>👋 Bienvenido, {nombreUsuario}</h1>
@@ -151,7 +156,7 @@ const PanelUsuario: React.FC = () => {
           gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
           gap: "1rem"
         }}>
-          {modulos.map((modulo, index) => (
+          {modulosFiltrados.map((modulo, index) => (
             <button
               key={index}
               onClick={() => navigate(modulo.ruta)}
