@@ -59,7 +59,7 @@ const Egresos: React.FC = () => {
 
   const cargarCategorias = async () => {
     const { data, error } = await supabase
-      .from("categorias_egresos") // corregido: nombre real de la tabla
+      .from("categorias_egresos")
       .select("id, categoria")
       .order("categoria", { ascending: true });
 
@@ -94,7 +94,6 @@ const Egresos: React.FC = () => {
   const handleAgregarItem = async () => {
     if (!usuarioId || !categoria || !nuevoItem.trim()) return;
 
-    // Validar existencia
     const { data: existente } = await supabase
       .from("items_egresos")
       .select("*")
@@ -165,7 +164,6 @@ const Egresos: React.FC = () => {
         return;
       }
 
-      // Validar existencia
       const { data: existente } = await supabase
         .from("egresos")
         .select("*")
@@ -249,7 +247,67 @@ const Egresos: React.FC = () => {
       <h2>📉 Egresos</h2>
       <p>Registra y visualiza tus egresos con categorías e ítems.</p>
 
-      {/* Formulario de egreso */}
+      {/* Botones de acción inicial */}
+      <div style={{ marginBottom: "1rem", display: "flex", gap: "1rem" }}>
+        <button
+          type="button"
+          onClick={() => {
+            setEditando(null);
+            setCategoria("");
+            setItem("");
+            setMonto("");
+            setFecha("");
+            setDescripcion("");
+            setMensaje("➕ Preparado para agregar un egreso nuevo.");
+          }}
+        >
+          ➕ Agregar nuevo egreso
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            if (!categoria) {
+              setError("Selecciona una categoría antes de agregar ítem.");
+              return;
+            }
+            setMensaje("➕ Agrega un ítem nuevo en la categoría seleccionada.");
+          }}
+        >
+          ➕ Agregar nuevo ítem
+        </button>
+      </div>
+
+      {/* Selector de egresos registrados (para cargar uno y editar) */}
+      <div style={{ marginBottom: "1rem" }}>
+        <label>Selecciona egreso registrado: </label>
+        <select
+          value={editando ? editando.id : ""}
+          onChange={(e) => {
+            const egresoSel = egresos.find((eg) => eg.id === e.target.value);
+            if (egresoSel) {
+              setEditando(egresoSel);
+              setCategoria(egresoSel.categoria);
+              setItem(egresoSel.item);
+              setMonto(egresoSel.monto);
+              setFecha(egresoSel.fecha);
+              setDescripcion(egresoSel.descripcion || "");
+              setMensaje("✏️ Egreso cargado para edición.");
+            } else {
+              setEditando(null);
+            }
+          }}
+        >
+          <option value="">-- Selecciona --</option>
+          {egresos.map((eg) => (
+            <option key={eg.id} value={eg.id}>
+              {eg.categoria} — {eg.item} — ${eg.monto.toLocaleString("es-CL")}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Formulario de egreso (flujo ordenado) */}
       <form onSubmit={handleGuardarEgreso} style={{ marginBottom: "1.5rem" }}>
         {/* Selector de categoría */}
         <div>
@@ -259,9 +317,9 @@ const Egresos: React.FC = () => {
             onChange={(e) => {
               setCategoria(e.target.value);
               cargarItemsCategoria(e.target.value);
+              setItem("");
             }}
             required
-            disabled={!!editando}
           >
             <option value="">-- Selecciona --</option>
             {categorias && categorias.map((c) => (
@@ -270,11 +328,11 @@ const Egresos: React.FC = () => {
           </select>
         </div>
 
-        {/* Ítems dentro de la categoría */}
+        {/* Selector global de ítems registrados dentro de la categoría */}
         {categoria && (
           <div style={{ marginTop: "1rem" }}>
             <label>Selecciona ítem dentro de {categoria}: </label>
-            <select value={item} onChange={(e) => setItem(e.target.value)}>
+            <select value={item} onChange={(e) => setItem(e.target.value)} required>
               <option value="">-- Selecciona --</option>
               {itemsCategoria && itemsCategoria.map((it) => (
                 <option key={it.id} value={it.item}>{it.item}</option>
@@ -303,6 +361,7 @@ const Egresos: React.FC = () => {
             onChange={(e) => setMonto(Number(e.target.value))}
             placeholder="Ej: 50000"
             required
+            min={0}
           />
         </div>
 
@@ -335,13 +394,12 @@ const Egresos: React.FC = () => {
 
       {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-
       {/* Lista de egresos */}
       <h3>📋 Lista de Egresos</h3>
       {egresos.length === 0 ? (
         <p>No hay egresos registrados aún.</p>
       ) : (
-        <table border={1} cellPadding={8}>
+        <table border={1} cellPadding={8} style={{ width: "100%" }}>
           <thead>
             <tr>
               <th>✔️</th>
