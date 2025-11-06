@@ -36,7 +36,7 @@ const Egresos: React.FC = () => {
     getUser();
   }, []);
 
-  // Funciones de carga
+  // Cargar categorías
   const cargarCategorias = async () => {
     const { data, error } = await supabase
       .from("categorias_egresos")
@@ -45,6 +45,7 @@ const Egresos: React.FC = () => {
     if (!error && data) setCategorias(data);
   };
 
+  // Cargar egresos
   const cargarEgresos = async (uid: string) => {
     const { data, error } = await supabase
       .from("egresos")
@@ -54,6 +55,7 @@ const Egresos: React.FC = () => {
     if (!error && data) setEgresos(data);
   };
 
+  // Cargar ítems de una categoría
   const cargarItemsCategoria = async (cat: string) => {
     if (!usuarioId) return;
     const { data, error } = await supabase
@@ -64,7 +66,7 @@ const Egresos: React.FC = () => {
     if (!error && data) setItemsCategoria(data);
   };
 
-  // Handlers
+  // Agregar ítem
   const handleAgregarItem = async () => {
     if (!usuarioId || !categoria || !nuevoItem.trim()) return;
     const { data: existente } = await supabase
@@ -88,11 +90,87 @@ const Egresos: React.FC = () => {
     }
   };
 
+  // Guardar egreso (nuevo o edición)
   const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
-    // … aquí va la lógica de guardar/editar egreso igual que antes
+    setError("");
+    setMensaje("");
+
+    if (!usuarioId) return;
+
+    if (editando) {
+      const cambios: any = {};
+      if (monto !== "" && monto !== editando.monto) cambios.monto = Number(monto);
+      if (fecha && fecha !== editando.fecha) cambios.fecha = fecha;
+      if (descripcion && descripcion !== editando.descripcion) cambios.descripcion = descripcion;
+      if (item && item !== editando.item) cambios.item = item;
+
+      if (Object.keys(cambios).length === 0) {
+        setMensaje("⚠️ No se detectaron cambios.");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("egresos")
+        .update(cambios)
+        .eq("id", editando.id);
+
+      if (error) {
+        setError("No se pudo actualizar el egreso.");
+      } else {
+        setMensaje("✏️ Egreso actualizado correctamente.");
+        setEgresos(
+          egresos.map((i) =>
+            i.id === editando.id ? { ...i, ...cambios } : i
+          )
+        );
+        setEditando(null);
+        setCategoria("");
+        setItem("");
+        setMonto("");
+        setFecha("");
+        setDescripcion("");
+        setSeleccionados([]);
+      }
+    } else {
+      if (!categoria || !item || !monto || !fecha) {
+        setError("Todos los campos son obligatorios.");
+        return;
+      }
+
+      const { data: existente } = await supabase
+        .from("egresos")
+        .select("*")
+        .eq("usuario_id", usuarioId)
+        .eq("categoria", categoria)
+        .eq("item", item)
+        .eq("fecha", fecha);
+
+      if (existente && existente.length > 0) {
+        setError("⚠️ Este egreso ya existe.");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("egresos")
+        .insert([{ usuario_id: usuarioId, categoria, item, monto: Number(monto), fecha, descripcion }])
+        .select();
+
+      if (error) {
+        setError("No se pudo guardar el egreso.");
+      } else {
+        setMensaje("✅ Egreso agregado correctamente.");
+        setEgresos([...(data || []), ...egresos]);
+        setCategoria("");
+        setItem("");
+        setMonto("");
+        setFecha("");
+        setDescripcion("");
+      }
+    }
   };
 
+  // Selección múltiple
   const toggleSeleccion = (id: string) => {
     if (seleccionados.includes(id)) {
       setSeleccionados(seleccionados.filter((s) => s !== id));
@@ -101,12 +179,43 @@ const Egresos: React.FC = () => {
     }
   };
 
+  // Editar seleccionado
   const handleEditarSeleccionado = () => {
-    // … lógica de edición
+    if (seleccionados.length === 1) {
+      const egreso = egresos.find((i) => i.id === seleccionados[0]);
+      if (egreso) {
+        setEditando(egreso);
+        setCategoria(egreso.categoria);
+        setItem(egreso.item);
+        setMonto(egreso.monto);
+        setFecha(egreso.fecha);
+        setDescripcion(egreso.descripcion || "");
+        setMensaje("✏️ Editando egreso seleccionado.");
+      }
+    } else {
+      setError("Debes seleccionar exactamente un egreso para editar.");
+    }
   };
 
+  // Eliminar seleccionados
   const handleEliminarSeleccionados = async () => {
-    // … lógica de eliminación
+    if (seleccionados.length === 0) {
+      setError("Debes seleccionar al menos un egreso para eliminar.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("egresos")
+      .delete()
+      .in("id", seleccionados);
+
+    if (error) {
+      setError("No se pudieron eliminar los egresos seleccionados.");
+    } else {
+      setEgresos(egresos.filter((i) => !seleccionados.includes(i.id)));
+      setSeleccionados([]);
+      setMensaje("🗑️ Egresos eliminados correctamente.");
+    }
   };
 
   return (
@@ -143,7 +252,3 @@ const Egresos: React.FC = () => {
         handleEliminarSeleccionados={handleEliminarSeleccionados}
       />
     </div>
-  );
-};
-
-export default Egresos;
