@@ -3,43 +3,48 @@ import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import "../styles/MenuModulos.css";
 
-// 📌 Lista de módulos visibles para USUARIOS
+// 📌 Fuente única de módulos para evitar desorden y repetición
 const todosLosModulos = [
   { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
 
-  // Módulo central de finanzas
-  { ruta: "/finanzas", label: "💵 Finanzas" },
+  // Finanzas
+  { ruta: "/finanzas", label: "💵 Flujo Financiero" },
   { ruta: "/finanzas/ingresos", label: "💰 Ingresos" },
   { ruta: "/finanzas/egresos", label: "💸 Egresos" },
   { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
   { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" },
   { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
+  { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
   { ruta: "/finanzas/foro", label: "💬 Foro Financiero" },
 
-  // Otros módulos disponibles para usuarios
+  // Ahorro e inversión
   { ruta: "/registro-ahorro", label: "💰 Registro de Ahorro" },
   { ruta: "/simulador-inversion", label: "📈 Simulador de Inversión" },
-  { ruta: "/test-financiero", label: "🧠 Test Financiero" },
 
+  // Social
   { ruta: "/vista-grupal", label: "👨‍👩‍👧‍👦 Vista Grupal" },
   { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
-  { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
 
+  // Ofertas
   { ruta: "/panel-ofertas", label: "📢 Ofertas activas" },
-  { ruta: "/datos-ofertas", label: "📢 Publicar oferta" }
+  { ruta: "/datos-ofertas", label: "📢 Publicar oferta" },
+
+  // Test y progreso
+  { ruta: "/test-financiero", label: "🧠 Test Financiero" },
 ];
 
 const MenuModulos = () => {
   const usuarioId = localStorage.getItem("usuarioId"); // UUID del usuario autenticado
   const tipoUsuario = localStorage.getItem("tipoUsuario");
+
   const [nuevasOfertas, setNuevasOfertas] = useState(0);
   const [modulosPermitidos, setModulosPermitidos] = useState<string[] | null>(null);
 
   useEffect(() => {
     const verificarPermisos = async () => {
       try {
+        // Fallback: si no hay usuarioId, mostrar todo para evitar bloqueos
         if (!usuarioId) {
-          // Fallback: mostrar todos los módulos si no hay usuarioId
           setModulosPermitidos(todosLosModulos.map(m => m.ruta));
           return;
         }
@@ -51,7 +56,6 @@ const MenuModulos = () => {
 
         if (error) {
           console.error("Error al cargar permisos:", error.message);
-          // Fallback seguro: mostrar todos los módulos
           setModulosPermitidos(todosLosModulos.map(m => m.ruta));
           return;
         }
@@ -60,8 +64,10 @@ const MenuModulos = () => {
           .filter((p: any) => String(p.permiso).toLowerCase() === "true")
           .map((p: any) => p.modulo);
 
+        // Dedupe + fallback
+        const dedup = Array.from(new Set(rutasHabilitadas));
         setModulosPermitidos(
-          rutasHabilitadas.length > 0 ? rutasHabilitadas : todosLosModulos.map(m => m.ruta)
+          dedup.length > 0 ? dedup : todosLosModulos.map(m => m.ruta)
         );
       } catch (e: any) {
         console.error("Excepción verificando permisos:", e?.message || e);
@@ -81,7 +87,7 @@ const MenuModulos = () => {
           .select("fecha_vista")
           .eq("usuario_id", usuarioId)
           .eq("modulo", "DatosOfertas")
-          .maybeSingle(); // evita error 406 si no hay registros
+          .maybeSingle();
 
         const { data: ofertas } = await supabase
           .from("ofertas_colaborador")
@@ -116,14 +122,14 @@ const MenuModulos = () => {
     );
   }
 
-  const modulosFiltrados =
-    modulosPermitidos.length > 0
-      ? todosLosModulos.filter((modulo) => modulosPermitidos.includes(modulo.ruta))
-      : [];
+  // Filtrado único y ordenado por la lista base
+  const permitidosSet = new Set(modulosPermitidos);
+  const modulosFiltrados = todosLosModulos.filter(m => permitidosSet.has(m.ruta));
 
   return (
     <div className="menu-modulos-container">
       <h2>📂 Accede a tus módulos</h2>
+
       {modulosFiltrados.length === 0 ? (
         <p>⚠️ No tienes módulos habilitados aún.</p>
       ) : (
