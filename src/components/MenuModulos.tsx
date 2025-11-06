@@ -7,10 +7,8 @@ import "../styles/MenuModulos.css";
 const todosLosModulos = [
   { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
 
-  // Módulo central de finanzas
-  { ruta: "/finanzas", label: "💵 Finanzas" },
-  { ruta: "/finanzas/ingresos", label: "💰 Ingresos" },
-  { ruta: "/finanzas/egresos", label: "💸 Egresos" },
+  // Finanzas: botón combinado
+  { ruta: "/finanzas", label: "💵 Ingresos y Egresos" },
   { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
   { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" },
   { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
@@ -42,8 +40,8 @@ const MenuModulos = () => {
       const { data, error } = await supabase
         .from("permisos_usuario")
         .select("modulo")
-        .eq("usuario_id", usuarioId)   // 👈 columna correcta
-        .eq("permiso", "true");        // 👈 usar 'permiso' en vez de 'acceso'
+        .eq("usuario_id", usuarioId)
+        .eq("permiso", "true");
 
       if (error) {
         console.error("Error al cargar permisos:", error.message);
