@@ -1,15 +1,93 @@
-.badge-campana {
-  background-color: red;
-  color: white;
-  font-weight: bold;
-  border-radius: 50%;
-  padding: 0.3rem 0.6rem;
-  margin-left: 0.5rem;
-  animation: pulse 1.5s infinite;
+.menu-modulos-container {
+  padding: 2rem;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+.menu-modulos-container h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+  color: #333;
+}
+
+.modulo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+}
+
+.btn-modulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 🎨 Colores diferenciados por módulo */
+.btn-modulo[href="/finanzas/ingresos"] {
+  background: linear-gradient(135deg, #4caf50, #2e7d32); /* verde */
+}
+
+.btn-modulo[href="/finanzas/egresos"] {
+  background: linear-gradient(135deg, #f44336, #c62828); /* rojo */
+}
+
+.btn-modulo[href="/finanzas/resumen"],
+.btn-modulo[href="/finanzas/resumen-egresos"] {
+  background: linear-gradient(135deg, #2196f3, #1565c0); /* azul */
+}
+
+.btn-modulo[href="/finanzas/creditos"] {
+  background: linear-gradient(135deg, #9c27b0, #6a1b9a); /* púrpura */
+}
+
+.btn-modulo[href="/finanzas/foro"] {
+  background: linear-gradient(135deg, #ff9800, #ef6c00); /* naranja */
+}
+
+.btn-modulo[href="/registro-ahorro"] {
+  background: linear-gradient(135deg, #00bcd4, #00838f); /* celeste */
+}
+
+.btn-modulo[href="/simulador-inversion"] {
+  background: linear-gradient(135deg, #8bc34a, #558b2f); /* verde lima */
+}
+
+.btn-modulo[href="/test-financiero"] {
+  background: linear-gradient(135deg, #607d8b, #37474f); /* gris azulado */
+}
+
+.btn-modulo[href="/vista-grupal"],
+.btn-modulo[href="/admin-grupo"] {
+  background: linear-gradient(135deg, #795548, #4e342e); /* café */
+}
+
+.btn-modulo[href="/evaluador-credito"] {
+  background: linear-gradient(135deg, #673ab7, #4527a0); /* violeta */
+}
+
+.btn-modulo[href="/panel-ofertas"],
+.btn-modulo[href="/datos-ofertas"] {
+  background: linear-gradient(135deg, #e91e63, #ad1457); /* rosado */
+}
+
+/* ✨ Efecto hover */
+.btn-modulo:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+/* 🔔 Badge para nuevas ofertas */
+.badge-campana {
+  margin-left: 0.5rem;
+  background: #ffeb3b;
+  color: #000;
+  border-radius: 50%;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
