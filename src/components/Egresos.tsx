@@ -15,14 +15,14 @@ interface Egreso {
 
 interface Categoria {
   id: string;
-  nombre: string;
+  categoria: string; // columna real en tu tabla categoria_egreso
 }
 
 interface ItemCategoria {
   id: string;
   usuario_id: string;
   categoria: string;
-  nombre_item: string;
+  item: string; // columna real en tu tabla items_egresos
 }
 
 const Egresos: React.FC = () => {
@@ -61,7 +61,7 @@ const Egresos: React.FC = () => {
     const { data, error } = await supabase
       .from("categoria_egreso")
       .select("*")
-      .order("nombre", { ascending: true });
+      .order("categoria", { ascending: true });
 
     if (!error && data) setCategorias(data);
   };
@@ -96,13 +96,79 @@ const Egresos: React.FC = () => {
 
     const { data, error } = await supabase
       .from("items_egresos")
-      .insert([{ usuario_id: usuarioId, categoria, nombre_item: nuevoItem.trim() }])
+      .insert([{ usuario_id: usuarioId, categoria, item: nuevoItem.trim() }])
       .select();
 
     if (!error && data) {
       setItemsCategoria([...(data as ItemCategoria[]), ...itemsCategoria]);
       setNuevoItem("");
       setMensaje("✅ Ítem agregado correctamente.");
+    }
+  };
+
+  const handleGuardarEgreso = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setMensaje("");
+
+    if (!usuarioId) return;
+
+    if (editando) {
+      const cambios: any = {};
+      if (monto !== "" && monto !== editando.monto) cambios.monto = Number(monto);
+      if (fecha && fecha !== editando.fecha) cambios.fecha = fecha;
+      if (descripcion && descripcion !== editando.descripcion) cambios.descripcion = descripcion;
+      if (item && item !== editando.item) cambios.item = item;
+
+      if (Object.keys(cambios).length === 0) {
+        setMensaje("⚠️ No se detectaron cambios.");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("egresos")
+        .update(cambios)
+        .eq("id", editando.id);
+
+      if (error) {
+        setError("No se pudo actualizar el egreso.");
+      } else {
+        setMensaje("✏️ Egreso actualizado correctamente.");
+        setEgresos(
+          egresos.map((i) =>
+            i.id === editando.id ? { ...i, ...cambios } : i
+          )
+        );
+        setEditando(null);
+        setCategoria("");
+        setItem("");
+        setMonto("");
+        setFecha("");
+        setDescripcion("");
+        setSeleccionados([]);
+      }
+    } else {
+      if (!categoria || !item || !monto || !fecha) {
+        setError("Todos los campos son obligatorios.");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("egresos")
+        .insert([{ usuario_id: usuarioId, categoria, item, monto: Number(monto), fecha, descripcion }])
+        .select();
+
+      if (error) {
+        setError("No se pudo guardar el egreso.");
+      } else {
+        setMensaje("✅ Egreso agregado correctamente.");
+        setEgresos([...(data || []), ...egresos]);
+        setCategoria("");
+        setItem("");
+        setMonto("");
+        setFecha("");
+        setDescripcion("");
+      }
     }
   };
   const toggleSeleccion = (id: string) => {
@@ -172,8 +238,8 @@ const Egresos: React.FC = () => {
             disabled={!!editando}
           >
             <option value="">-- Selecciona --</option>
-            {categorias.map((c) => (
-              <option key={c.id} value={c.nombre}>{c.nombre}</option>
+            {categorias && categorias.map((c) => (
+              <option key={c.id} value={c.categoria}>{c.categoria}</option>
             ))}
           </select>
         </div>
@@ -184,8 +250,8 @@ const Egresos: React.FC = () => {
             <label>Selecciona ítem dentro de {categoria}: </label>
             <select value={item} onChange={(e) => setItem(e.target.value)}>
               <option value="">-- Selecciona --</option>
-              {itemsCategoria.map((it) => (
-                <option key={it.id} value={it.nombre_item}>{it.nombre_item}</option>
+              {itemsCategoria && itemsCategoria.map((it) => (
+                <option key={it.id} value={it.item}>{it.item}</option>
               ))}
             </select>
 
