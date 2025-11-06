@@ -4,12 +4,10 @@ import React from "react";
 interface Props {
   categorias: { id: string; categoria: string }[];
   itemsCategoria: { id: string; item: string }[];
-  egresos: any[];
   categoria: string;
   item: string;
   monto: number | "";
   fecha: string;
-  descripcion: string;
   nuevoItem: string;
   editando: any;
   mensaje: string;
@@ -20,60 +18,20 @@ interface Props {
   setItem: (val: string) => void;
   setMonto: (val: number) => void;
   setFecha: (val: string) => void;
-  setDescripcion: (val: string) => void;
   setNuevoItem: (val: string) => void;
   cargarItemsCategoria: (cat: string) => void;
 }
 
 const FormularioEgreso: React.FC<Props> = ({
-  categorias, itemsCategoria, egresos,
-  categoria, item, monto, fecha, descripcion, nuevoItem,
+  categorias, itemsCategoria,
+  categoria, item, monto, fecha, nuevoItem,
   editando, mensaje, error,
   onAgregarItem, onGuardar,
-  setCategoria, setItem, setMonto, setFecha, setDescripcion, setNuevoItem,
+  setCategoria, setItem, setMonto, setFecha, setNuevoItem,
   cargarItemsCategoria
 }) => {
   return (
     <form onSubmit={onGuardar} style={{ marginBottom: "1.5rem" }}>
-      {/* Botones iniciales */}
-      <div style={{ marginBottom: "1rem", display: "flex", gap: "1rem" }}>
-        <button type="button" onClick={() => {
-          setCategoria(""); setItem(""); setMonto(0); setFecha(""); setDescripcion(""); setNuevoItem("");
-        }}>
-          ➕ Agregar nuevo egreso
-        </button>
-        <button type="button" onClick={() => {
-          if (!categoria) alert("Selecciona una categoría antes de agregar ítem.");
-        }}>
-          ➕ Agregar nuevo ítem
-        </button>
-      </div>
-
-      {/* Selector de egresos registrados */}
-      <div>
-        <label>Selecciona egreso registrado: </label>
-        <select
-          value={editando ? editando.id : ""}
-          onChange={(e) => {
-            const egresoSel = egresos.find((eg) => eg.id === e.target.value);
-            if (egresoSel) {
-              setCategoria(egresoSel.categoria);
-              setItem(egresoSel.item);
-              setMonto(egresoSel.monto);
-              setFecha(egresoSel.fecha);
-              setDescripcion(egresoSel.descripcion || "");
-            }
-          }}
-        >
-          <option value="">-- Selecciona --</option>
-          {egresos.map((eg) => (
-            <option key={eg.id} value={eg.id}>
-              {eg.categoria} — {eg.item} — ${eg.monto}
-            </option>
-          ))}
-        </select>
-      </div>
-
       {/* Selector de categoría */}
       <div>
         <label>Categoría: </label>
@@ -83,6 +41,7 @@ const FormularioEgreso: React.FC<Props> = ({
             setCategoria(e.target.value);
             cargarItemsCategoria(e.target.value);
           }}
+          required
         >
           <option value="">-- Selecciona --</option>
           {categorias.map((c) => (
@@ -94,7 +53,7 @@ const FormularioEgreso: React.FC<Props> = ({
       {/* Selector de ítems */}
       <div>
         <label>Ítem: </label>
-        <select value={item} onChange={(e) => setItem(e.target.value)}>
+        <select value={item} onChange={(e) => setItem(e.target.value)} required>
           <option value="">-- Selecciona --</option>
           {itemsCategoria.map((it) => (
             <option key={it.id} value={it.item}>{it.item}</option>
@@ -117,6 +76,7 @@ const FormularioEgreso: React.FC<Props> = ({
           value={monto}
           onChange={(e) => setMonto(Number(e.target.value))}
           min={0}
+          required
         />
       </div>
 
@@ -127,16 +87,7 @@ const FormularioEgreso: React.FC<Props> = ({
           type="date"
           value={fecha}
           onChange={(e) => setFecha(e.target.value)}
-        />
-      </div>
-
-      {/* Descripción */}
-      <div>
-        <label>Descripción: </label>
-        <input
-          type="text"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
+          required
         />
       </div>
 
