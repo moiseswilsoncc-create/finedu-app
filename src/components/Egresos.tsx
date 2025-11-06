@@ -15,14 +15,14 @@ interface Egreso {
 
 interface Categoria {
   id: string;
-  categoria: string; // columna real en tu tabla categoria_egreso
+  categoria: string;
 }
 
 interface ItemCategoria {
   id: string;
   usuario_id: string;
   categoria: string;
-  item: string; // columna real en tu tabla items_egresos
+  item: string;
 }
 
 const Egresos: React.FC = () => {
@@ -94,6 +94,19 @@ const Egresos: React.FC = () => {
   const handleAgregarItem = async () => {
     if (!usuarioId || !categoria || !nuevoItem.trim()) return;
 
+    // Validar existencia
+    const { data: existente } = await supabase
+      .from("items_egresos")
+      .select("*")
+      .eq("usuario_id", usuarioId)
+      .eq("categoria", categoria)
+      .eq("item", nuevoItem.trim());
+
+    if (existente && existente.length > 0) {
+      setError("⚠️ Este ítem ya existe.");
+      return;
+    }
+
     const { data, error } = await supabase
       .from("items_egresos")
       .insert([{ usuario_id: usuarioId, categoria, item: nuevoItem.trim() }])
@@ -105,7 +118,6 @@ const Egresos: React.FC = () => {
       setMensaje("✅ Ítem agregado correctamente.");
     }
   };
-
   const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -153,6 +165,20 @@ const Egresos: React.FC = () => {
         return;
       }
 
+      // Validar existencia
+      const { data: existente } = await supabase
+        .from("egresos")
+        .select("*")
+        .eq("usuario_id", usuarioId)
+        .eq("categoria", categoria)
+        .eq("item", item)
+        .eq("fecha", fecha);
+
+      if (existente && existente.length > 0) {
+        setError("⚠️ Este egreso ya existe.");
+        return;
+      }
+
       const { data, error } = await supabase
         .from("egresos")
         .insert([{ usuario_id: usuarioId, categoria, item, monto: Number(monto), fecha, descripcion }])
@@ -171,6 +197,7 @@ const Egresos: React.FC = () => {
       }
     }
   };
+
   const toggleSeleccion = (id: string) => {
     if (seleccionados.includes(id)) {
       setSeleccionados(seleccionados.filter((s) => s !== id));
@@ -215,7 +242,6 @@ const Egresos: React.FC = () => {
       setMensaje("🗑️ Egresos eliminados correctamente.");
     }
   };
-
   const total = egresos.reduce((acc, e) => acc + e.monto, 0);
 
   return (
@@ -268,6 +294,7 @@ const Egresos: React.FC = () => {
           </div>
         )}
 
+        {/* Monto */}
         <div>
           <label>Monto: </label>
           <input
@@ -275,18 +302,22 @@ const Egresos: React.FC = () => {
             value={monto}
             onChange={(e) => setMonto(Number(e.target.value))}
             placeholder="Ej: 50000"
+            required
           />
         </div>
 
+        {/* Fecha */}
         <div>
           <label>Fecha: </label>
           <input
             type="date"
             value={fecha}
             onChange={(e) => setFecha(e.target.value)}
+            required
           />
         </div>
 
+        {/* Descripción */}
         <div>
           <label>Descripción: </label>
           <input
