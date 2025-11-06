@@ -1,3 +1,4 @@
+// src/components/MenuModulos.tsx
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -7,8 +8,7 @@ import "../styles/MenuModulos.css";
 const todosLosModulos = [
   { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
 
-  // Finanzas: botón combinado
-  { ruta: "/finanzas", label: "💵 Ingresos y Egresos" },
+  // Finanzas: accesos directos (sin duplicar el menú combinado)
   { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
   { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" },
   { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
