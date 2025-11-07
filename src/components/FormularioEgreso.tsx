@@ -50,103 +50,80 @@ const FormularioEgreso: React.FC<Props> = ({
   onGuardar,
 }) => {
   return (
-    <form onSubmit={onGuardar} style={{ marginBottom: "1.5rem" }}>
-      {/* Campo para agregar nueva categoría */}
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "0.5rem" }}>
-        <input
-          type="text"
-          placeholder="Agregar nueva categoría"
-          value={nuevoCategoria}
-          onChange={(e) => setNuevoCategoria(e.target.value)}
-        />
-        <button type="button" onClick={onAgregarCategoria}>➕ Categoría</button>
-      </div>
+    <form onSubmit={onGuardar} style={{ marginBottom: "2rem" }}>
+      <h3>{editando ? "✏️ Editar egreso" : "➕ Nuevo egreso"}</h3>
 
-      {/* Campo para agregar nuevo ítem */}
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "0.5rem" }}>
-        <input
-          type="text"
-          placeholder="Agregar nuevo ítem"
-          value={nuevoItem}
-          onChange={(e) => setNuevoItem(e.target.value)}
-        />
-        <button type="button" onClick={onAgregarItem}>➕ Ítem</button>
-      </div>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
 
-      {/* Selector de categoría */}
       <div>
-        <label>Categoría: </label>
+        <label>Categoría:</label>
         <select
           value={categoria}
           onChange={(e) => setCategoria(e.target.value)}
-          required
-          disabled={!!editando}
         >
           <option value="">-- Selecciona --</option>
-          {categoriasDisponibles.map((c, index) => (
-            <option key={index} value={c}>{c}</option>
+          {categoriasDisponibles.map((c) => (
+            <option key={c} value={c}>{c}</option>
           ))}
         </select>
+        <input
+          type="text"
+          placeholder="Nueva categoría"
+          value={nuevoCategoria}
+          onChange={(e) => setNuevoCategoria(e.target.value)}
+        />
+        <button type="button" onClick={onAgregarCategoria}>Agregar categoría</button>
       </div>
 
-      {/* Selector de ítem */}
       <div>
-        <label>Ítem: </label>
+        <label>Ítem:</label>
         <select
           value={item}
           onChange={(e) => setItem(e.target.value)}
-          required
         >
           <option value="">-- Selecciona --</option>
-          {itemsDisponibles.map((i, index) => (
-            <option key={index} value={i}>{i}</option>
+          {itemsDisponibles.map((i) => (
+            <option key={i} value={i}>{i}</option>
           ))}
         </select>
+        <input
+          type="text"
+          placeholder="Nuevo ítem"
+          value={nuevoItem}
+          onChange={(e) => setNuevoItem(e.target.value)}
+        />
+        <button type="button" onClick={onAgregarItem}>Agregar ítem</button>
       </div>
 
-      {/* Monto */}
       <div>
-        <label>Monto: </label>
+        <label>Monto:</label>
         <input
           type="number"
           value={monto}
-          onChange={(e) => {
-            const v = e.target.value;
-            setMonto(v === "" ? "" : Number(v));
-          }}
-          placeholder="Ej: 50000"
-          required
+          onChange={(e) => setMonto(Number(e.target.value))}
         />
       </div>
 
-      {/* Fecha */}
       <div>
-        <label>Fecha: </label>
+        <label>Fecha:</label>
         <input
           type="date"
           value={fecha}
           onChange={(e) => setFecha(e.target.value)}
-          required
         />
       </div>
 
-      {/* Descripción */}
       <div>
-        <label>Descripción: </label>
+        <label>Descripción:</label>
         <input
           type="text"
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
-          placeholder="Opcional"
         />
       </div>
 
-      <button type="submit">
-        {editando ? "✏️ Guardar Cambios" : "➕ Agregar Egreso"}
-      </button>
-
-      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      <button type="submit">{editando ? "Actualizar" : "Guardar"}</button>
     </form>
   );
 };
