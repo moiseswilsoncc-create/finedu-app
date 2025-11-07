@@ -27,49 +27,25 @@ const ListaEgresos: React.FC<Props> = ({
   handleEliminarSeleccionados,
   total,
 }) => {
-  // 🔹 Filtros
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [filtroItem, setFiltroItem] = useState("");
   const [filtroMontoMin, setFiltroMontoMin] = useState("");
   const [filtroMontoMax, setFiltroMontoMax] = useState("");
-  const [filtroFecha, setFiltroFecha] = useState("");
   const [filtroMes, setFiltroMes] = useState("");
   const [filtroAnio, setFiltroAnio] = useState("");
 
-  // 🔹 Aplicar filtros
   const egresosFiltrados = egresos.filter((e) => {
     const fechaObj = new Date(e.fecha);
     const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
     const anio = String(fechaObj.getFullYear());
 
-    const cumpleCategoria =
-      filtroCategoria === "" ||
-      e.categoria_nombre.toLowerCase().includes(filtroCategoria.toLowerCase());
-
-    const cumpleItem =
-      filtroItem === "" ||
-      e.item_nombre.toLowerCase().includes(filtroItem.toLowerCase());
-
-    const cumpleMontoMin =
-      filtroMontoMin === "" || e.monto >= Number(filtroMontoMin);
-
-    const cumpleMontoMax =
-      filtroMontoMax === "" || e.monto <= Number(filtroMontoMax);
-
-    const cumpleFecha =
-      filtroFecha === "" || e.fecha.startsWith(filtroFecha);
-
-    const cumpleMes = filtroMes === "" || mes === filtroMes;
-    const cumpleAnio = filtroAnio === "" || anio === filtroAnio;
-
     return (
-      cumpleCategoria &&
-      cumpleItem &&
-      cumpleMontoMin &&
-      cumpleMontoMax &&
-      cumpleFecha &&
-      cumpleMes &&
-      cumpleAnio
+      (filtroCategoria === "" || e.categoria_nombre.toLowerCase().includes(filtroCategoria.toLowerCase())) &&
+      (filtroItem === "" || e.item_nombre.toLowerCase().includes(filtroItem.toLowerCase())) &&
+      (filtroMontoMin === "" || e.monto >= Number(filtroMontoMin)) &&
+      (filtroMontoMax === "" || e.monto <= Number(filtroMontoMax)) &&
+      (filtroMes === "" || mes === filtroMes) &&
+      (filtroAnio === "" || anio === filtroAnio)
     );
   });
 
@@ -77,17 +53,40 @@ const ListaEgresos: React.FC<Props> = ({
     <div>
       <h3>📋 Lista de Egresos</h3>
 
-      {/* 🔹 Bloque de filtros */}
+      {/* 🔹 Bloque de filtros en la misma línea */}
       <div style={{ marginBottom: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+        <select value={filtroMes} onChange={(e) => setFiltroMes(e.target.value)}>
+          <option value="">Mes</option>
+          <option value="01">Enero</option>
+          <option value="02">Febrero</option>
+          <option value="03">Marzo</option>
+          <option value="04">Abril</option>
+          <option value="05">Mayo</option>
+          <option value="06">Junio</option>
+          <option value="07">Julio</option>
+          <option value="08">Agosto</option>
+          <option value="09">Septiembre</option>
+          <option value="10">Octubre</option>
+          <option value="11">Noviembre</option>
+          <option value="12">Diciembre</option>
+        </select>
+
+        <select value={filtroAnio} onChange={(e) => setFiltroAnio(e.target.value)}>
+          <option value="">Año</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+        </select>
+
         <input
           type="text"
-          placeholder="Filtrar por categoría"
+          placeholder="Categoría"
           value={filtroCategoria}
           onChange={(e) => setFiltroCategoria(e.target.value)}
         />
         <input
           type="text"
-          placeholder="Filtrar por ítem"
+          placeholder="Ítem"
           value={filtroItem}
           onChange={(e) => setFiltroItem(e.target.value)}
         />
@@ -105,35 +104,6 @@ const ListaEgresos: React.FC<Props> = ({
           onChange={(e) => setFiltroMontoMax(e.target.value)}
           style={{ width: "6rem" }}
         />
-        <input
-          type="date"
-          value={filtroFecha}
-          onChange={(e) => setFiltroFecha(e.target.value)}
-        />
-        <select value={filtroMes} onChange={(e) => setFiltroMes(e.target.value)}>
-          <option value="">Mes</option>
-          <option value="01">Enero</option>
-          <option value="02">Febrero</option>
-          <option value="03">Marzo</option>
-          <option value="04">Abril</option>
-          <option value="05">Mayo</option>
-          <option value="06">Junio</option>
-          <option value="07">Julio</option>
-          <option value="08">Agosto</option>
-          <option value="09">Septiembre</option>
-          <option value="10">Octubre</option>
-          <option value="11">Noviembre</option>
-          <option value="12">Diciembre</option>
-        </select>
-        <select
-          value={filtroAnio}
-          onChange={(e) => setFiltroAnio(e.target.value)}
-        >
-          <option value="">Año</option>
-          <option value="2023">2023</option>
-          <option value="2024">2024</option>
-          <option value="2025">2025</option>
-        </select>
       </div>
 
       {/* 🔹 Tabla */}
