@@ -78,14 +78,7 @@ const ListaEgresos: React.FC<Props> = ({
       <h3>📋 Lista de Egresos</h3>
 
       {/* 🔹 Bloque de filtros */}
-      <div
-        style={{
-          marginBottom: "1rem",
-          display: "flex",
-          gap: "0.5rem",
-          flexWrap: "wrap",
-        }}
-      >
+      <div style={{ marginBottom: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
         <input
           type="text"
           placeholder="Filtrar por categoría"
@@ -144,11 +137,7 @@ const ListaEgresos: React.FC<Props> = ({
       </div>
 
       {/* 🔹 Tabla */}
-      <table
-        border={1}
-        cellPadding={5}
-        style={{ width: "100%", marginBottom: "1rem" }}
-      >
+      <table border={1} cellPadding={5} style={{ width: "100%", marginBottom: "1rem" }}>
         <thead>
           <tr>
             <th>✔</th>
@@ -179,18 +168,12 @@ const ListaEgresos: React.FC<Props> = ({
         </tbody>
       </table>
 
-      <p>
-        <strong>Total:</strong> {total}
-      </p>
+      <p><strong>Total:</strong> {total}</p>
 
       {/* 🔹 Botones de acción sobre egresos seleccionados */}
       <div style={{ display: "flex", gap: "1rem" }}>
-        <button type="button" onClick={handleEditarSeleccionado}>
-          ✏️ Editar
-        </button>
-        <button type="button" onClick={handleEliminarSeleccionados}>
-          🗑️ Eliminar
-        </button>
+        <button type="button" onClick={handleEditarSeleccionado}>✏️ Editar</button>
+        <button type="button" onClick={handleEliminarSeleccionados}>🗑️ Eliminar</button>
       </div>
     </div>
   );
