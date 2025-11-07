@@ -55,7 +55,7 @@ const ListaEgresos: React.FC<Props> = ({
   usuarioId,
   cargarEgresos,
 }) => {
-  // 🔹 Filtros aplicados en la tabla
+  // 🔹 Aplicar filtros
   const egresosFiltrados = egresos.filter((e) => {
     return (
       (mesFiltro === "" || e.fecha.slice(5, 7) === mesFiltro) &&
@@ -72,12 +72,20 @@ const ListaEgresos: React.FC<Props> = ({
       <h3>📋 Lista de Egresos</h3>
 
       {/* 🔹 Bloque de filtros en una sola línea */}
-      <div style={{ marginBottom: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "flex-end" }}>
+      <div
+        style={{
+          marginBottom: "1rem",
+          display: "flex",
+          gap: "0.5rem",
+          flexWrap: "wrap",
+          alignItems: "flex-end",
+        }}
+      >
         <div>
           <label>Mes</label>
           <select value={mesFiltro} onChange={(e) => setMesFiltro(e.target.value)}>
             <option value="">Todos</option>
-            {["01","02","03","04","05","06","07","08","09","10","11","12"].map(m => (
+            {["01","02","03","04","05","06","07","08","09","10","11","12"].map((m) => (
               <option key={m} value={m}>{m}</option>
             ))}
           </select>
@@ -132,7 +140,9 @@ const ListaEgresos: React.FC<Props> = ({
           />
         </div>
 
-        <button type="button" onClick={() => usuarioId && cargarEgresos(usuarioId)}>🔍 Filtrar</button>
+        <button type="button" onClick={() => usuarioId && cargarEgresos(usuarioId)}>
+          🔍 Filtrar
+        </button>
       </div>
 
       {/* 🔹 Tabla de egresos */}
@@ -169,7 +179,7 @@ const ListaEgresos: React.FC<Props> = ({
 
       <p><strong>Total:</strong> {total}</p>
 
-      {/* 🔹 Botones de acción sobre egresos seleccionados */}
+      {/* 🔹 Botones de acción */}
       <div style={{ display: "flex", gap: "1rem" }}>
         <button type="button" onClick={handleEditarSeleccionado}>✏️ Editar</button>
         <button type="button" onClick={handleEliminarSeleccionados}>🗑️ Eliminar</button>
