@@ -9,27 +9,25 @@ interface Props {
   nuevoItem: string;
   monto: number | "";
   fecha: string;
-  descripcion: string; // Forma de Pago
+  descripcion: string;
   editando: any;
   mensaje: string;
   error: string;
-  setCategoria: (c: string) => void;
-  setNuevoCategoria: (c: string) => void;
-  setItem: (i: string) => void;
-  setNuevoItem: (i: string) => void;
-  setMonto: (m: number | "") => void;
-  setFecha: (f: string) => void;
-  setDescripcion: (d: string) => void;
+  setCategoria: (val: string) => void;
+  setNuevoCategoria: (val: string) => void;
+  setItem: (val: string) => void;
+  setNuevoItem: (val: string) => void;
+  setMonto: (val: number | "") => void;
+  setFecha: (val: string) => void;
+  setDescripcion: (val: string) => void;
   onAgregarCategoria: () => void;
   onAgregarItem: () => void;
   onGuardar: (e: React.FormEvent) => void;
-  onSeleccionarCategoria: (c: string) => void;
-
-  // 🔹 nuevas props para editar/borrar
-  onEditarCategoria?: (nombre: string) => void;
-  onEliminarCategoria?: (nombre: string) => void;
-  onEditarItem?: (nombre: string) => void;
-  onEliminarItem?: (nombre: string) => void;
+  onSeleccionarCategoria: (cat: string) => void;
+  onEditarCategoria: (nombre: string) => void;
+  onEliminarCategoria: (nombre: string) => void;
+  onEditarItem: (nombre: string) => void;
+  onEliminarItem: (nombre: string) => void;
 }
 
 const FormularioEgreso: React.FC<Props> = ({
@@ -63,62 +61,52 @@ const FormularioEgreso: React.FC<Props> = ({
 }) => {
   return (
     <form onSubmit={onGuardar} style={{ marginBottom: "2rem" }}>
-      {/* Selección de categoría */}
-      <div style={{ marginBottom: "1rem" }}>
+      <h3>{editando ? "✏️ Editar Egreso" : "➕ Nuevo Egreso"}</h3>
+
+      <div>
         <label>Categoría:</label>
         <select
           value={categoria}
           onChange={(e) => {
-            const nuevaCategoria = e.target.value;
-            setCategoria(nuevaCategoria);
-            onSeleccionarCategoria(nuevaCategoria);
+            setCategoria(e.target.value);
+            onSeleccionarCategoria(e.target.value);
           }}
         >
-          <option value="">Seleccione categoría</option>
+          <option value="">Seleccione</option>
           {categoriasDisponibles.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
       </div>
 
-      {/* Selección de ítem */}
-      <div style={{ marginBottom: "1rem" }}>
+      <div>
         <label>Ítem:</label>
-        <select
-          value={item}
-          onChange={(e) => setItem(e.target.value)}
-        >
-          <option value="">Seleccione ítem</option>
+        <select value={item} onChange={(e) => setItem(e.target.value)}>
+          <option value="">Seleccione</option>
           {itemsDisponibles.map((i) => (
             <option key={i} value={i}>{i}</option>
           ))}
         </select>
       </div>
-
-      {/* Bloque independiente con los 4 botones */}
-      <div style={{ margin: "1rem 0", padding: "0.5rem", border: "1px solid #ccc", borderRadius: "6px" }}>
-        <h4>Acciones de Categoría/Ítem</h4>
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-          <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
-          <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
-          {categoria && <button type="button" onClick={() => onEditarCategoria?.(categoria)}>✏️ Editar Categoría</button>}
-          {categoria && <button type="button" onClick={() => onEliminarCategoria?.(categoria)}>🗑️ Eliminar Categoría</button>}
-          {item && <button type="button" onClick={() => onEditarItem?.(item)}>✏️ Editar Ítem</button>}
-          {item && <button type="button" onClick={() => onEliminarItem?.(item)}>🗑️ Eliminar Ítem</button>}
-        </div>
+      {/* 🔹 Bloque independiente de acciones */}
+      <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+        <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
+        <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
+        <button type="button" onClick={() => categoria && onEditarCategoria(categoria)}>✏️ Editar Categoría</button>
+        <button type="button" onClick={() => categoria && onEliminarCategoria(categoria)}>🗑️ Eliminar Categoría</button>
+        <button type="button" onClick={() => item && onEditarItem(item)}>✏️ Editar Ítem</button>
+        <button type="button" onClick={() => item && onEliminarItem(item)}>🗑️ Eliminar Ítem</button>
       </div>
 
-      {/* Monto */}
       <div>
         <label>Monto:</label>
         <input
           type="number"
           value={monto}
-          onChange={(e) => setMonto(Number(e.target.value))}
+          onChange={(e) => setMonto(e.target.value === "" ? "" : Number(e.target.value))}
         />
       </div>
 
-      {/* Fecha */}
       <div>
         <label>Fecha:</label>
         <input
@@ -128,23 +116,16 @@ const FormularioEgreso: React.FC<Props> = ({
         />
       </div>
 
-      {/* Forma de pago */}
       <div>
-        <label>Forma de Pago:</label>
-        <select
+        <label>Descripción:</label>
+        <input
+          type="text"
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
-        >
-          <option value="">Seleccione forma de pago</option>
-          <option value="efectivo">Efectivo</option>
-          <option value="debito">Débito</option>
-          <option value="credito">Crédito</option>
-          <option value="transferencia">Transferencia</option>
-          <option value="cheque">Cheque</option>
-        </select>
+        />
       </div>
 
-      <button type="submit">{editando ? "✏️ Actualizar" : "💾 Guardar"}</button>
+      <button type="submit">{editando ? "Guardar cambios" : "Guardar egreso"}</button>
 
       {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
