@@ -5,7 +5,7 @@ interface Egreso {
   usuario_id: string;
   monto: number;
   fecha: string;
-  forma_pago?: string; // reemplaza descripción
+  forma_pago?: string;
   item_nombre: string;
   categoria_nombre: string;
 }
@@ -55,19 +55,35 @@ const ListaEgresos: React.FC<Props> = ({
   usuarioId,
   cargarEgresos,
 }) => {
-  // 🔹 Aplicar filtros robustos
+  // Normaliza fecha (soporta YYYY-MM-DD y timestamps ISO)
+  const parseFecha = (fecha: string) => {
+    const d = new Date(fecha);
+    const mes = String(d.getMonth() + 1).padStart(2, "0");
+    const anio = String(d.getFullYear());
+    return { mes, anio };
+  };
+
   const egresosFiltrados = egresos.filter((e) => {
-    const fechaObj = new Date(e.fecha);
-    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
-    const anio = String(fechaObj.getFullYear());
+    const { mes, anio } = parseFecha(e.fecha);
+    const cat = (e.categoria_nombre || "").toLowerCase();
+    const itm = (e.item_nombre || "").toLowerCase();
+    const catFiltro = categoriaFiltro.trim().toLowerCase();
+    const itmFiltro = itemFiltro.trim().toLowerCase();
+
+    const pasaMes = mesFiltro === "" || mes === mesFiltro;
+    const pasaAnio = anioFiltro === "" || anio === anioFiltro;
+    const pasaCategoria = catFiltro === "" || cat.includes(catFiltro);
+    const pasaItem = itmFiltro === "" || itm.includes(itmFiltro);
+    const pasaMontoMin = montoMin === "" || e.monto >= Number(montoMin);
+    const pasaMontoMax = montoMax === "" || e.monto <= Number(montoMax);
 
     return (
-      (mesFiltro === "" || mes === mesFiltro) &&
-      (anioFiltro === "" || anio === anioFiltro) &&
-      (categoriaFiltro === "" || (e.categoria_nombre || "").toLowerCase().includes(categoriaFiltro.toLowerCase())) &&
-      (itemFiltro === "" || (e.item_nombre || "").toLowerCase().includes(itemFiltro.toLowerCase())) &&
-      (montoMin === "" || e.monto >= Number(montoMin)) &&
-      (montoMax === "" || e.monto <= Number(montoMax))
+      pasaMes &&
+      pasaAnio &&
+      pasaCategoria &&
+      pasaItem &&
+      pasaMontoMin &&
+      pasaMontoMax
     );
   });
 
@@ -75,7 +91,7 @@ const ListaEgresos: React.FC<Props> = ({
     <div>
       <h3>📋 Lista de Egresos</h3>
 
-      {/* 🔹 Bloque de filtros en una sola línea */}
+      {/* Filtros en una sola línea */}
       <div
         style={{
           marginBottom: "1rem",
@@ -132,24 +148,30 @@ const ListaEgresos: React.FC<Props> = ({
             type="number"
             placeholder="mín"
             value={montoMin}
-            onChange={(e) => setMontoMin(e.target.value === "" ? "" : Number(e.target.value))}
+            onChange={(e) =>
+              setMontoMin(e.target.value === "" ? "" : Number(e.target.value))
+            }
             style={{ width: "6rem" }}
           />
           <input
             type="number"
             placeholder="máx"
             value={montoMax}
-            onChange={(e) => setMontoMax(e.target.value === "" ? "" : Number(e.target.value))}
+            onChange={(e) =>
+              setMontoMax(e.target.value === "" ? "" : Number(e.target.value))
+            }
             style={{ width: "6rem", marginLeft: "0.5rem" }}
           />
         </div>
 
+        {/* El botón puede recargar datos del servidor si lo necesitas,
+            pero el filtrado local ya se aplica en tiempo real */}
         <button type="button" onClick={() => usuarioId && cargarEgresos(usuarioId)}>
           🔍 Filtrar
         </button>
       </div>
 
-      {/* 🔹 Tabla de egresos */}
+      {/* Tabla */}
       <table border={1} cellPadding={5} style={{ width: "100%", marginBottom: "1rem" }}>
         <thead>
           <tr>
@@ -183,7 +205,7 @@ const ListaEgresos: React.FC<Props> = ({
 
       <p><strong>Total:</strong> {total}</p>
 
-      {/* 🔹 Botones de acción */}
+      {/* Acciones */}
       <div style={{ display: "flex", gap: "1rem" }}>
         <button type="button" onClick={handleEditarSeleccionado}>✏️ Editar</button>
         <button type="button" onClick={handleEliminarSeleccionados}>🗑️ Eliminar</button>
