@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient"; // ajusta la ruta según tu proyecto
 
-export default function Items() {
+function Items() {
   const [items, setItems] = useState<any[]>([]);
   const [nombre, setNombre] = useState("");
   const [user, setUser] = useState<any>(null);
@@ -108,3 +108,5 @@ export default function Items() {
     </div>
   );
 }
+
+export default Items;
