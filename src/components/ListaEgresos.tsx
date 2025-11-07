@@ -27,25 +27,49 @@ const ListaEgresos: React.FC<Props> = ({
   handleEliminarSeleccionados,
   total,
 }) => {
+  // 🔹 Filtros
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [filtroItem, setFiltroItem] = useState("");
-  const [filtroMonto, setFiltroMonto] = useState("");
+  const [filtroMontoMin, setFiltroMontoMin] = useState("");
+  const [filtroMontoMax, setFiltroMontoMax] = useState("");
   const [filtroFecha, setFiltroFecha] = useState("");
   const [filtroMes, setFiltroMes] = useState("");
   const [filtroAnio, setFiltroAnio] = useState("");
 
+  // 🔹 Aplicar filtros
   const egresosFiltrados = egresos.filter((e) => {
     const fechaObj = new Date(e.fecha);
     const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
     const anio = String(fechaObj.getFullYear());
 
+    const cumpleCategoria =
+      filtroCategoria === "" ||
+      e.categoria_nombre.toLowerCase().includes(filtroCategoria.toLowerCase());
+
+    const cumpleItem =
+      filtroItem === "" ||
+      e.item_nombre.toLowerCase().includes(filtroItem.toLowerCase());
+
+    const cumpleMontoMin =
+      filtroMontoMin === "" || e.monto >= Number(filtroMontoMin);
+
+    const cumpleMontoMax =
+      filtroMontoMax === "" || e.monto <= Number(filtroMontoMax);
+
+    const cumpleFecha =
+      filtroFecha === "" || e.fecha.startsWith(filtroFecha);
+
+    const cumpleMes = filtroMes === "" || mes === filtroMes;
+    const cumpleAnio = filtroAnio === "" || anio === filtroAnio;
+
     return (
-      (filtroCategoria === "" || e.categoria_nombre.toLowerCase().includes(filtroCategoria.toLowerCase())) &&
-      (filtroItem === "" || e.item_nombre.toLowerCase().includes(filtroItem.toLowerCase())) &&
-      (filtroMonto === "" || e.monto === Number(filtroMonto)) &&
-      (filtroFecha === "" || e.fecha.startsWith(filtroFecha)) &&
-      (filtroMes === "" || mes === filtroMes) &&
-      (filtroAnio === "" || anio === filtroAnio)
+      cumpleCategoria &&
+      cumpleItem &&
+      cumpleMontoMin &&
+      cumpleMontoMax &&
+      cumpleFecha &&
+      cumpleMes &&
+      cumpleAnio
     );
   });
 
@@ -53,7 +77,15 @@ const ListaEgresos: React.FC<Props> = ({
     <div>
       <h3>📋 Lista de Egresos</h3>
 
-      <div style={{ marginBottom: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+      {/* 🔹 Bloque de filtros */}
+      <div
+        style={{
+          marginBottom: "1rem",
+          display: "flex",
+          gap: "0.5rem",
+          flexWrap: "wrap",
+        }}
+      >
         <input
           type="text"
           placeholder="Filtrar por categoría"
@@ -68,9 +100,17 @@ const ListaEgresos: React.FC<Props> = ({
         />
         <input
           type="number"
-          placeholder="Filtrar por monto"
-          value={filtroMonto}
-          onChange={(e) => setFiltroMonto(e.target.value)}
+          placeholder="Monto mín"
+          value={filtroMontoMin}
+          onChange={(e) => setFiltroMontoMin(e.target.value)}
+          style={{ width: "6rem" }}
+        />
+        <input
+          type="number"
+          placeholder="Monto máx"
+          value={filtroMontoMax}
+          onChange={(e) => setFiltroMontoMax(e.target.value)}
+          style={{ width: "6rem" }}
         />
         <input
           type="date"
@@ -92,7 +132,10 @@ const ListaEgresos: React.FC<Props> = ({
           <option value="11">Noviembre</option>
           <option value="12">Diciembre</option>
         </select>
-        <select value={filtroAnio} onChange={(e) => setFiltroAnio(e.target.value)}>
+        <select
+          value={filtroAnio}
+          onChange={(e) => setFiltroAnio(e.target.value)}
+        >
           <option value="">Año</option>
           <option value="2023">2023</option>
           <option value="2024">2024</option>
@@ -100,8 +143,13 @@ const ListaEgresos: React.FC<Props> = ({
         </select>
       </div>
 
-      <table border={1} cellPadding={5} style={{ width: "100%", marginBottom: "1rem" }}>
-                <thead>
+      {/* 🔹 Tabla */}
+      <table
+        border={1}
+        cellPadding={5}
+        style={{ width: "100%", marginBottom: "1rem" }}
+      >
+        <thead>
           <tr>
             <th>✔</th>
             <th>Categoría</th>
@@ -131,11 +179,18 @@ const ListaEgresos: React.FC<Props> = ({
         </tbody>
       </table>
 
-      <p><strong>Total:</strong> {total}</p>
+      <p>
+        <strong>Total:</strong> {total}
+      </p>
 
+      {/* 🔹 Botones de acción sobre egresos seleccionados */}
       <div style={{ display: "flex", gap: "1rem" }}>
-        <button type="button" onClick={handleEditarSeleccionado}>✏️ Editar</button>
-        <button type="button" onClick={handleEliminarSeleccionados}>🗑️ Eliminar</button>
+        <button type="button" onClick={handleEditarSeleccionado}>
+          ✏️ Editar
+        </button>
+        <button type="button" onClick={handleEliminarSeleccionados}>
+          🗑️ Eliminar
+        </button>
       </div>
     </div>
   );
