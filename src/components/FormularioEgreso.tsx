@@ -9,22 +9,21 @@ interface Props {
   nuevoItem: string;
   monto: number | "";
   fecha: string;
-  descripcion: string;
+  descripcion: string; // ahora representa Forma de Pago
   editando: any;
   mensaje: string;
   error: string;
-  setCategoria: (val: string) => void;
-  setNuevoCategoria: (val: string) => void;
-  setItem: (val: string) => void;
-  setNuevoItem: (val: string) => void;
-  setMonto: (val: number | "") => void;
-  setFecha: (val: string) => void;
-  setDescripcion: (val: string) => void;
+  setCategoria: (c: string) => void;
+  setNuevoCategoria: (c: string) => void;
+  setItem: (i: string) => void;
+  setNuevoItem: (i: string) => void;
+  setMonto: (m: number | "") => void;
+  setFecha: (f: string) => void;
+  setDescripcion: (d: string) => void;
   onAgregarCategoria: () => void;
   onAgregarItem: () => void;
   onGuardar: (e: React.FormEvent) => void;
-  /** 🔑 Nueva prop: función para cargar ítems al seleccionar categoría */
-  onSeleccionarCategoria: (categoria: string) => void;
+  onSeleccionarCategoria: (c: string) => void;
 }
 
 const FormularioEgreso: React.FC<Props> = ({
@@ -54,11 +53,6 @@ const FormularioEgreso: React.FC<Props> = ({
 }) => {
   return (
     <form onSubmit={onGuardar} style={{ marginBottom: "2rem" }}>
-      <h3>{editando ? "✏️ Editar egreso" : "➕ Nuevo egreso"}</h3>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
-
       <div>
         <label>Categoría:</label>
         <select
@@ -66,10 +60,10 @@ const FormularioEgreso: React.FC<Props> = ({
           onChange={(e) => {
             const nuevaCategoria = e.target.value;
             setCategoria(nuevaCategoria);
-            onSeleccionarCategoria(nuevaCategoria); // 🔑 dispara carga de ítems
+            onSeleccionarCategoria(nuevaCategoria);
           }}
         >
-          <option value="">-- Selecciona --</option>
+          <option value="">Seleccione categoría</option>
           {categoriasDisponibles.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
@@ -80,7 +74,7 @@ const FormularioEgreso: React.FC<Props> = ({
           value={nuevoCategoria}
           onChange={(e) => setNuevoCategoria(e.target.value)}
         />
-        <button type="button" onClick={onAgregarCategoria}>Agregar categoría</button>
+        <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
       </div>
 
       <div>
@@ -89,7 +83,7 @@ const FormularioEgreso: React.FC<Props> = ({
           value={item}
           onChange={(e) => setItem(e.target.value)}
         >
-          <option value="">-- Selecciona --</option>
+          <option value="">Seleccione ítem</option>
           {itemsDisponibles.map((i) => (
             <option key={i} value={i}>{i}</option>
           ))}
@@ -100,7 +94,7 @@ const FormularioEgreso: React.FC<Props> = ({
           value={nuevoItem}
           onChange={(e) => setNuevoItem(e.target.value)}
         />
-        <button type="button" onClick={onAgregarItem}>Agregar ítem</button>
+        <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
       </div>
 
       <div>
@@ -122,15 +116,24 @@ const FormularioEgreso: React.FC<Props> = ({
       </div>
 
       <div>
-        <label>Descripción:</label>
-        <input
-          type="text"
+        <label>Forma de Pago:</label>
+        <select
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
-        />
+        >
+          <option value="">Seleccione forma de pago</option>
+          <option value="efectivo">Efectivo</option>
+          <option value="debito">Débito</option>
+          <option value="credito">Crédito</option>
+          <option value="transferencia">Transferencia</option>
+          <option value="cheque">Cheque</option>
+        </select>
       </div>
 
-      <button type="submit">{editando ? "Actualizar" : "Guardar"}</button>
+      <button type="submit">{editando ? "✏️ Actualizar" : "💾 Guardar"}</button>
+
+      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
   );
 };
