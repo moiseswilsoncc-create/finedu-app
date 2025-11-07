@@ -52,7 +52,7 @@ const Egresos: React.FC = () => {
   const cargarCategorias = async () => {
     const { data, error } = await supabase
       .from("categorias_egresos")
-      .select("nombre"); // globales
+      .select("nombre");
 
     if (error) {
       setError(error.message);
@@ -77,7 +77,7 @@ const Egresos: React.FC = () => {
     const { data, error } = await supabase
       .from("items_egresos")
       .select("nombre")
-      .eq("categoria_id", categoriaId); // globales
+      .eq("categoria_id", categoriaId);
 
     if (error) {
       setError(error.message);
@@ -100,7 +100,7 @@ const Egresos: React.FC = () => {
           categorias_egresos (nombre)
         )
       `)
-      .eq("usuario_id", uid) // personales
+      .eq("usuario_id", uid)
       .order("fecha", { ascending: false });
 
     if (error) {
@@ -120,17 +120,20 @@ const Egresos: React.FC = () => {
 
     setEgresos(egresosConNombres);
   };
-
   const handleAgregarCategoria = async () => {
     const nombre = nuevoCategoria.trim();
     if (!nombre) return;
 
     const { error } = await supabase.from("categorias_egresos").insert([
-      { nombre }
+      { nombre, usuario_id: usuarioId }
     ]);
 
     if (error) {
-      setError(error.message);
+      if (error.code === "23505") {
+        setError("⚠️ Esa categoría ya existe para tu usuario.");
+      } else {
+        setError(error.message);
+      }
       return;
     }
 
@@ -156,11 +159,15 @@ const Egresos: React.FC = () => {
     if (!nombreItem) return;
 
     const { error } = await supabase.from("items_egresos").insert([
-      { categoria_id: categoriaId, nombre: nombreItem }
+      { categoria_id: categoriaId, nombre: nombreItem, usuario_id: usuarioId }
     ]);
 
     if (error) {
-      setError(error.message);
+      if (error.code === "23505") {
+        setError("⚠️ Ese ítem ya existe para tu usuario.");
+      } else {
+        setError(error.message);
+      }
       return;
     }
 
@@ -169,7 +176,6 @@ const Egresos: React.FC = () => {
     setNuevoItem("");
     setMensaje("✅ Ítem agregado.");
   };
-
   const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usuarioId || !categoria || !item || !monto || !fecha) return;
@@ -208,6 +214,7 @@ const Egresos: React.FC = () => {
       await cargarEgresos(usuarioId);
     }
   };
+
   const limpiarFormulario = () => {
     setCategoria("");
     setItem("");
@@ -275,7 +282,7 @@ const Egresos: React.FC = () => {
         onAgregarItem={handleAgregarItem}
         onGuardar={handleGuardarEgreso}
         onSeleccionarCategoria={(cat) => {
-          cargarItems(cat); // 🔑 carga ítems globales al seleccionar categoría
+          cargarItems(cat); // 🔑 carga ítems al seleccionar categoría
         }}
       />
 
