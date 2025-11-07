@@ -1,14 +1,14 @@
-// src/components/ListaEgresos.tsx
 import React from "react";
 
-interface Egreso {
+type Egreso = {
   id: string;
+  usuario_id: string;
   categoria: string;
   item: string;
   monto: number;
   fecha: string;
   descripcion?: string;
-}
+};
 
 interface Props {
   egresos: Egreso[];
@@ -19,59 +19,65 @@ interface Props {
 }
 
 const ListaEgresos: React.FC<Props> = ({
-  egresos, seleccionados, toggleSeleccion,
-  handleEditarSeleccionado, handleEliminarSeleccionados
+  egresos,
+  seleccionados,
+  toggleSeleccion,
+  handleEditarSeleccionado,
+  handleEliminarSeleccionados,
 }) => {
-  const total = egresos.reduce((acc, e) => acc + e.monto, 0);
+  const total = egresos.reduce((acc, e) => acc + (Number(e.monto) || 0), 0);
 
   return (
-    <>
-      <h3>📋 Lista de Egresos</h3>
-      {egresos.length === 0 ? (
-        <p>No hay egresos registrados aún.</p>
-      ) : (
-        <table border={1} cellPadding={8} style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th scope="col">✔️</th>
-              <th scope="col">Categoría</th>
-              <th scope="col">Ítem</th>
-              <th scope="col">Monto</th>
-              <th scope="col">Fecha</th>
-              <th scope="col">Descripción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {egresos.map((e) => (
-              <tr key={e.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={seleccionados.includes(e.id)}
-                    onChange={() => toggleSeleccion(e.id)}
-                    aria-label={`Seleccionar egreso ${e.item}`}
-                  />
-                </td>
-                <td>{e.categoria}</td>
-                <td>{e.item}</td>
-                <td>${e.monto.toLocaleString("es-CL")}</td>
-                <td>{new Date(e.fecha).toLocaleDateString("es-CL")}</td>
-                <td>{e.descripcion}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <div>
+      <h3>Lista de Egresos</h3>
 
-      <div style={{ marginTop: "1rem", display: "flex", gap: "1rem" }}>
-        <button onClick={handleEditarSeleccionado}>✏️ Editar seleccionado</button>
-        <button onClick={handleEliminarSeleccionados}>🗑️ Eliminar seleccionados</button>
+      <div style={{ marginBottom: "0.75rem", display: "flex", gap: "0.75rem" }}>
+        <button type="button" onClick={handleEditarSeleccionado}>✏️ Editar seleccionados</button>
+        <button type="button" onClick={handleEliminarSeleccionados}>🗑️ Eliminar seleccionados</button>
       </div>
 
-      <h4 style={{ marginTop: "1rem" }}>
-        💵 Total: ${total.toLocaleString("es-CL")}
-      </h4>
-    </>
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Categoría</th>
+            <th>Ítem</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {egresos.map((e) => (
+            <tr key={e.id}>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={seleccionados.includes(e.id)}
+                  onChange={() => toggleSeleccion(e.id)}
+                />
+              </td>
+              <td>{e.categoria}</td>
+              <td>{e.item}</td>
+              <td>${Number(e.monto).toLocaleString("es-CL")}</td>
+              <td>{e.fecha}</td>
+              <td>{e.descripcion || ""}</td>
+            </tr>
+          ))}
+          {egresos.length === 0 && (
+            <tr>
+              <td colSpan={6} style={{ textAlign: "center", padding: "0.75rem" }}>
+                Sin egresos registrados.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <p style={{ marginTop: "0.75rem", fontWeight: 600 }}>
+        Total: ${total.toLocaleString("es-CL")}
+      </p>
+    </div>
   );
 };
 
