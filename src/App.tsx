@@ -24,8 +24,8 @@ import SimuladorCreditos from "./components/SimuladorCreditos";
 import ForoFinanciero from "./components/ForoFinanciero";
 
 // 🧩 Nuevos módulos Finanzas
-import Categorias from "./Categorias";
-import Items from "./Items";
+import Categorias from "./components/Categorias";
+import Items from "./components/Items";
 
 // 🧩 Colaboradores
 import RegistroColaborador from "./components/RegistroColaborador";
