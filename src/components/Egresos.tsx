@@ -37,11 +37,12 @@ const Egresos: React.FC = () => {
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [editando, setEditando] = useState<Egreso | null>(null);
 
-  // 🔹 Filtros adicionales
+  // 🔹 Filtros adicionales (se pasarán a ListaEgresos)
   const [categoriaFiltro, setCategoriaFiltro] = useState("");
   const [itemFiltro, setItemFiltro] = useState("");
   const [montoMin, setMontoMin] = useState<number | "">("");
   const [montoMax, setMontoMax] = useState<number | "">("");
+
   useEffect(() => {
     const getUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -92,6 +93,7 @@ const Egresos: React.FC = () => {
     }
     setItemsDisponibles(data?.map((i: any) => i.nombre) || []);
   };
+
   const handleAgregarCategoria = async () => {
     const nombre = nuevoCategoria.trim();
     if (!nombre) return;
@@ -142,7 +144,6 @@ const Egresos: React.FC = () => {
       cargarCategorias();
     }
   };
-
   const handleAgregarItem = async () => {
     if (!categoria) return;
 
@@ -202,6 +203,7 @@ const Egresos: React.FC = () => {
       cargarItems(categoria);
     }
   };
+
   const cargarEgresos = async (uid: string) => {
     let query = supabase
       .from("egresos")
@@ -282,6 +284,7 @@ const Egresos: React.FC = () => {
       await cargarEgresos(usuarioId);
     }
   };
+
   const limpiarFormulario = () => {
     setCategoria("");
     setItem("");
@@ -297,7 +300,6 @@ const Egresos: React.FC = () => {
       setSeleccionados([...seleccionados, id]);
     }
   };
-
   const handleEditarSeleccionado = () => {
     if (seleccionados.length === 1) {
       const egreso = egresos.find((e) => e.id === seleccionados[0]);
@@ -375,7 +377,6 @@ const Egresos: React.FC = () => {
           🔍 Filtrar
         </button>
       </div>
-
       {/* Formulario con acciones */}
       <FormularioEgreso
         categoria={categoria}
@@ -416,7 +417,6 @@ const Egresos: React.FC = () => {
         handleEliminarSeleccionados={handleEliminarSeleccionados}
         total={total}
       />
-
       <Link
         to="/panel-usuario"
         style={{
