@@ -9,7 +9,7 @@ interface Props {
   nuevoItem: string;
   monto: number | "";
   fecha: string;
-  descripcion: string; // ahora representa Forma de Pago
+  descripcion: string; // Forma de Pago
   editando: any;
   mensaje: string;
   error: string;
@@ -79,6 +79,7 @@ const FormularioEgreso: React.FC<Props> = ({
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
+
         <input
           type="text"
           placeholder="Nueva categoría"
@@ -87,16 +88,13 @@ const FormularioEgreso: React.FC<Props> = ({
         />
         <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
 
-        {/* Lista con botones de acción */}
-        <ul>
-          {categoriasDisponibles.map((c) => (
-            <li key={c} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-              <span>{c}</span>
-              <button type="button" onClick={() => onEditarCategoria?.(c)}>✏️</button>
-              <button type="button" onClick={() => onEliminarCategoria?.(c)}>🗑️</button>
-            </li>
-          ))}
-        </ul>
+        {/* 🔹 Botones únicos para la categoría seleccionada */}
+        {categoria && (
+          <div style={{ marginTop: "0.5rem" }}>
+            <button type="button" onClick={() => onEditarCategoria?.(categoria)}>✏️ Editar</button>
+            <button type="button" onClick={() => onEliminarCategoria?.(categoria)}>🗑️ Eliminar</button>
+          </div>
+        )}
       </div>
 
       {/* Ítems */}
@@ -111,6 +109,7 @@ const FormularioEgreso: React.FC<Props> = ({
             <option key={i} value={i}>{i}</option>
           ))}
         </select>
+
         <input
           type="text"
           placeholder="Nuevo ítem"
@@ -119,16 +118,13 @@ const FormularioEgreso: React.FC<Props> = ({
         />
         <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
 
-        {/* Lista con botones de acción */}
-        <ul>
-          {itemsDisponibles.map((i) => (
-            <li key={i} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-              <span>{i}</span>
-              <button type="button" onClick={() => onEditarItem?.(i)}>✏️</button>
-              <button type="button" onClick={() => onEliminarItem?.(i)}>🗑️</button>
-            </li>
-          ))}
-        </ul>
+        {/* 🔹 Botones únicos para el ítem seleccionado */}
+        {item && (
+          <div style={{ marginTop: "0.5rem" }}>
+            <button type="button" onClick={() => onEditarItem?.(item)}>✏️ Editar</button>
+            <button type="button" onClick={() => onEliminarItem?.(item)}>🗑️ Eliminar</button>
+          </div>
+        )}
       </div>
 
       {/* Monto */}
