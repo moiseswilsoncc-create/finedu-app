@@ -17,6 +17,16 @@ interface Props {
   handleEditarSeleccionado: () => void;
   handleEliminarSeleccionados: () => void;
   total: number;
+  categoriaFiltro: string;
+  itemFiltro: string;
+  montoMin: number | "";
+  montoMax: number | "";
+  setCategoriaFiltro: (val: string) => void;
+  setItemFiltro: (val: string) => void;
+  setMontoMin: (val: number | "") => void;
+  setMontoMax: (val: number | "") => void;
+  usuarioId: string | null;
+  cargarEgresos: (uid: string) => Promise<void>;
 }
 
 const ListaEgresos: React.FC<Props> = ({
@@ -26,26 +36,24 @@ const ListaEgresos: React.FC<Props> = ({
   handleEditarSeleccionado,
   handleEliminarSeleccionados,
   total,
+  categoriaFiltro,
+  itemFiltro,
+  montoMin,
+  montoMax,
+  setCategoriaFiltro,
+  setItemFiltro,
+  setMontoMin,
+  setMontoMax,
+  usuarioId,
+  cargarEgresos,
 }) => {
-  const [filtroCategoria, setFiltroCategoria] = useState("");
-  const [filtroItem, setFiltroItem] = useState("");
-  const [filtroMontoMin, setFiltroMontoMin] = useState("");
-  const [filtroMontoMax, setFiltroMontoMax] = useState("");
-  const [filtroMes, setFiltroMes] = useState("");
-  const [filtroAnio, setFiltroAnio] = useState("");
-
+  // 🔹 Filtros aplicados en la tabla
   const egresosFiltrados = egresos.filter((e) => {
-    const fechaObj = new Date(e.fecha);
-    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
-    const anio = String(fechaObj.getFullYear());
-
     return (
-      (filtroCategoria === "" || e.categoria_nombre.toLowerCase().includes(filtroCategoria.toLowerCase())) &&
-      (filtroItem === "" || e.item_nombre.toLowerCase().includes(filtroItem.toLowerCase())) &&
-      (filtroMontoMin === "" || e.monto >= Number(filtroMontoMin)) &&
-      (filtroMontoMax === "" || e.monto <= Number(filtroMontoMax)) &&
-      (filtroMes === "" || mes === filtroMes) &&
-      (filtroAnio === "" || anio === filtroAnio)
+      (categoriaFiltro === "" || e.categoria_nombre.toLowerCase().includes(categoriaFiltro.toLowerCase())) &&
+      (itemFiltro === "" || e.item_nombre.toLowerCase().includes(itemFiltro.toLowerCase())) &&
+      (montoMin === "" || e.monto >= Number(montoMin)) &&
+      (montoMax === "" || e.monto <= Number(montoMax))
     );
   });
 
@@ -53,60 +61,42 @@ const ListaEgresos: React.FC<Props> = ({
     <div>
       <h3>📋 Lista de Egresos</h3>
 
-      {/* 🔹 Bloque de filtros en la misma línea */}
+      {/* 🔹 Bloque de filtros */}
       <div style={{ marginBottom: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-        <select value={filtroMes} onChange={(e) => setFiltroMes(e.target.value)}>
-          <option value="">Mes</option>
-          <option value="01">Enero</option>
-          <option value="02">Febrero</option>
-          <option value="03">Marzo</option>
-          <option value="04">Abril</option>
-          <option value="05">Mayo</option>
-          <option value="06">Junio</option>
-          <option value="07">Julio</option>
-          <option value="08">Agosto</option>
-          <option value="09">Septiembre</option>
-          <option value="10">Octubre</option>
-          <option value="11">Noviembre</option>
-          <option value="12">Diciembre</option>
-        </select>
-
-        <select value={filtroAnio} onChange={(e) => setFiltroAnio(e.target.value)}>
-          <option value="">Año</option>
-          <option value="2023">2023</option>
-          <option value="2024">2024</option>
-          <option value="2025">2025</option>
-        </select>
-
         <input
           type="text"
           placeholder="Categoría"
-          value={filtroCategoria}
-          onChange={(e) => setFiltroCategoria(e.target.value)}
+          value={categoriaFiltro}
+          onChange={(e) => setCategoriaFiltro(e.target.value)}
         />
         <input
           type="text"
           placeholder="Ítem"
-          value={filtroItem}
-          onChange={(e) => setFiltroItem(e.target.value)}
+          value={itemFiltro}
+          onChange={(e) => setItemFiltro(e.target.value)}
         />
         <input
           type="number"
           placeholder="Monto mín"
-          value={filtroMontoMin}
-          onChange={(e) => setFiltroMontoMin(e.target.value)}
+          value={montoMin}
+          onChange={(e) => setMontoMin(e.target.value === "" ? "" : Number(e.target.value))}
           style={{ width: "6rem" }}
         />
         <input
           type="number"
           placeholder="Monto máx"
-          value={filtroMontoMax}
-          onChange={(e) => setFiltroMontoMax(e.target.value)}
+          value={montoMax}
+          onChange={(e) => setMontoMax(e.target.value === "" ? "" : Number(e.target.value))}
           style={{ width: "6rem" }}
         />
+        <button
+          type="button"
+          onClick={() => usuarioId && cargarEgresos(usuarioId)}
+        >
+          🔍 Filtrar
+        </button>
       </div>
-
-      {/* 🔹 Tabla */}
+      {/* 🔹 Tabla de egresos */}
       <table border={1} cellPadding={5} style={{ width: "100%", marginBottom: "1rem" }}>
         <thead>
           <tr>
@@ -137,7 +127,6 @@ const ListaEgresos: React.FC<Props> = ({
           ))}
         </tbody>
       </table>
-
       <p><strong>Total:</strong> {total}</p>
 
       {/* 🔹 Botones de acción sobre egresos seleccionados */}
@@ -148,5 +137,4 @@ const ListaEgresos: React.FC<Props> = ({
     </div>
   );
 };
-
 export default ListaEgresos;
