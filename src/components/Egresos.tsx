@@ -257,30 +257,36 @@ const Egresos: React.FC = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <h2>📉 Egresos</h2>
-      <FormularioEgreso
-        categoria={categoria}
-        categoriasDisponibles={categoriasDisponibles}
-        nuevoCategoria={nuevoCategoria}
-        item={item}
-        itemsDisponibles={itemsDisponibles}
-        nuevoItem={nuevoItem}
-        monto={monto}
-        fecha={fecha}
-        descripcion={descripcion}
-        editando={editando}
-        mensaje={mensaje}
-        error={error}
-        setCategoria={setCategoria}
-        setNuevoCategoria={setNuevoCategoria}
-        setItem={setItem}
-        setNuevoItem={setNuevoItem}
-        setMonto={setMonto}
-        setFecha={setFecha}
-        setDescripcion={setDescripcion}
-        onAgregarCategoria={handleAgregarCategoria}
-        onAgregarItem={handleAgregarItem}
-        onGuardar={handleGuardarEgreso}
-      />
+     <FormularioEgreso
+  categoria={categoria}
+  categoriasDisponibles={categoriasDisponibles}
+  nuevoCategoria={nuevoCategoria}
+  item={item}
+  itemsDisponibles={itemsDisponibles}
+  nuevoItem={nuevoItem}
+  monto={monto}
+  fecha={fecha}
+  descripcion={descripcion}
+  editando={editando}
+  mensaje={mensaje}
+  error={error}
+  setCategoria={setCategoria}
+  setNuevoCategoria={setNuevoCategoria}
+  setItem={setItem}
+  setNuevoItem={setNuevoItem}
+  setMonto={setMonto}
+  setFecha={setFecha}
+  setDescripcion={setDescripcion}
+  onAgregarCategoria={handleAgregarCategoria}
+  onAgregarItem={handleAgregarItem}
+  onGuardar={handleGuardarEgreso}
+  /** 🔑 Nueva prop: carga ítems al seleccionar categoría */
+  onSeleccionarCategoria={(cat) => {
+    if (usuarioId) {
+      cargarItems(usuarioId, cat);
+    }
+  }}
+/>
 
       <ListaEgresos
         egresos={egresos}
