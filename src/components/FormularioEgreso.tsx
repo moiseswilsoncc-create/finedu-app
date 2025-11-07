@@ -33,10 +33,8 @@ interface Props {
 const FormularioEgreso: React.FC<Props> = ({
   categoria,
   categoriasDisponibles,
-  nuevoCategoria,
   item,
   itemsDisponibles,
-  nuevoItem,
   monto,
   fecha,
   descripcion,
@@ -44,9 +42,7 @@ const FormularioEgreso: React.FC<Props> = ({
   mensaje,
   error,
   setCategoria,
-  setNuevoCategoria,
   setItem,
-  setNuevoItem,
   setMonto,
   setFecha,
   setDescripcion,
@@ -63,6 +59,7 @@ const FormularioEgreso: React.FC<Props> = ({
     <form onSubmit={onGuardar} style={{ marginBottom: "2rem" }}>
       <h3>{editando ? "✏️ Editar Egreso" : "➕ Nuevo Egreso"}</h3>
 
+      {/* Bloque 1: campos del egreso */}
       <div>
         <label>Categoría:</label>
         <select
@@ -87,16 +84,6 @@ const FormularioEgreso: React.FC<Props> = ({
             <option key={i} value={i}>{i}</option>
           ))}
         </select>
-      </div>
-
-      {/* 🔹 Bloque independiente de acciones */}
-      <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-        <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
-        <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
-        <button type="button" onClick={() => categoria && onEditarCategoria(categoria)}>✏️ Editar Categoría</button>
-        <button type="button" onClick={() => categoria && onEliminarCategoria(categoria)}>🗑️ Eliminar Categoría</button>
-        <button type="button" onClick={() => item && onEditarItem(item)}>✏️ Editar Ítem</button>
-        <button type="button" onClick={() => item && onEliminarItem(item)}>🗑️ Eliminar Ítem</button>
       </div>
 
       <div>
@@ -128,8 +115,18 @@ const FormularioEgreso: React.FC<Props> = ({
 
       <button type="submit">{editando ? "Guardar cambios" : "Guardar egreso"}</button>
 
-      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {/* Bloque 2: acciones de catálogo */}
+      <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+        <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
+        <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
+        <button type="button" onClick={() => categoria && onEditarCategoria(categoria)}>✏️ Editar Categoría</button>
+        <button type="button" onClick={() => categoria && onEliminarCategoria(categoria)}>🗑️ Eliminar Categoría</button>
+        <button type="button" onClick={() => item && onEditarItem(item)}>✏️ Editar Ítem</button>
+        <button type="button" onClick={() => item && onEliminarItem(item)}>🗑️ Eliminar Ítem</button>
+      </div>
+
+      {mensaje && <p style={{ color: "green", marginTop: "0.5rem" }}>{mensaje}</p>}
+      {error && <p style={{ color: "red", marginTop: "0.5rem" }}>{error}</p>}
     </form>
   );
 };
