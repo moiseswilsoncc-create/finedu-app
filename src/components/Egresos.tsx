@@ -93,7 +93,6 @@ const Egresos: React.FC = () => {
     }
     setItemsDisponibles(data?.map((i: any) => i.nombre) || []);
   };
-
   const handleAgregarCategoria = async () => {
     const nombre = nuevoCategoria.trim();
     if (!nombre) return;
@@ -144,6 +143,7 @@ const Egresos: React.FC = () => {
       cargarCategorias();
     }
   };
+
   const handleAgregarItem = async () => {
     if (!categoria) return;
 
@@ -172,7 +172,6 @@ const Egresos: React.FC = () => {
     setNuevoItem("");
     setMensaje("✅ Ítem agregado.");
   };
-
   const handleEditarItem = async (nombre: string) => {
     const nuevoNombre = prompt("Nuevo nombre del ítem:", nombre);
     if (!nuevoNombre) return;
@@ -245,7 +244,6 @@ const Egresos: React.FC = () => {
 
     setEgresos(egresosConNombres);
   };
-
   const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usuarioId || !categoria || !item || !monto || !fecha) return;
@@ -300,6 +298,7 @@ const Egresos: React.FC = () => {
       setSeleccionados([...seleccionados, id]);
     }
   };
+
   const handleEditarSeleccionado = () => {
     if (seleccionados.length === 1) {
       const egreso = egresos.find((e) => e.id === seleccionados[0]);
@@ -328,55 +327,6 @@ const Egresos: React.FC = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <h2>📉 Egresos</h2>
-
-      {/* 🔹 Filtros adicionales para la tabla */}
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-        <div>
-          <label>Categoría:</label>
-          <select value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)}>
-            <option value="">Todas</option>
-            {categoriasDisponibles.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label>Ítem:</label>
-          <select value={itemFiltro} onChange={(e) => setItemFiltro(e.target.value)}>
-            <option value="">Todos</option>
-            {itemsDisponibles.map((i) => (
-              <option key={i} value={i}>{i}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label>Monto entre:</label>
-          <input
-            type="number"
-            placeholder="mín"
-            value={montoMin}
-            onChange={(e) => setMontoMin(Number(e.target.value))}
-            style={{ width: "6rem" }}
-          />
-          <input
-            type="number"
-            placeholder="máx"
-            value={montoMax}
-            onChange={(e) => setMontoMax(Number(e.target.value))}
-            style={{ width: "6rem", marginLeft: "0.5rem" }}
-          />
-        </div>
-
-        <button
-          type="button"
-          onClick={() => usuarioId && cargarEgresos(usuarioId)}
-          style={{ alignSelf: "flex-end" }}
-        >
-          🔍 Filtrar
-        </button>
-      </div>
       {/* Formulario con acciones */}
       <FormularioEgreso
         categoria={categoria}
@@ -408,7 +358,7 @@ const Egresos: React.FC = () => {
         onEliminarItem={handleEliminarItem}
       />
 
-      {/* Lista de egresos */}
+      {/* Lista de egresos con filtros integrados */}
       <ListaEgresos
         egresos={egresos}
         seleccionados={seleccionados}
@@ -416,7 +366,18 @@ const Egresos: React.FC = () => {
         handleEditarSeleccionado={handleEditarSeleccionado}
         handleEliminarSeleccionados={handleEliminarSeleccionados}
         total={total}
+        categoriaFiltro={categoriaFiltro}
+        itemFiltro={itemFiltro}
+        montoMin={montoMin}
+        montoMax={montoMax}
+        setCategoriaFiltro={setCategoriaFiltro}
+        setItemFiltro={setItemFiltro}
+        setMontoMin={setMontoMin}
+        setMontoMax={setMontoMax}
+        usuarioId={usuarioId}
+        cargarEgresos={cargarEgresos}
       />
+
       <Link
         to="/panel-usuario"
         style={{
