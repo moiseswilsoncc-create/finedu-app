@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient"; // ajusta la ruta según tu proyecto
 
-export default function Categorias() {
+function Categorias() {
   const [categorias, setCategorias] = useState<any[]>([]);
   const [nombre, setNombre] = useState("");
   const [user, setUser] = useState<any>(null);
@@ -108,3 +108,5 @@ export default function Categorias() {
     </div>
   );
 }
+
+export default Categorias;
