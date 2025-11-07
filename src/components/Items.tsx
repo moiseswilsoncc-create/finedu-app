@@ -12,26 +12,37 @@ function Items() {
       setUser(data.user);
     };
     fetchUser();
-    cargarItems();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      cargarItems();
+    }
+  }, [user]);
 
   const cargarItems = async () => {
     const { data, error } = await supabase
       .from("items_egresos")
       .select("*")
+      .or(`usuario_id.eq.${user.id},usuario_id.is.null`)
       .order("nombre", { ascending: true });
 
     if (!error) setItems(data || []);
   };
 
   const crearItem = async () => {
+    if (!user) {
+      alert("Usuario no autenticado");
+      return;
+    }
+
     const { error } = await supabase
       .from("items_egresos")
-      .insert([{ nombre }]);
+      .insert([{ nombre, usuario_id: user.id }]);
 
     if (error) {
       if (error.code === "23505") {
-        alert("Este ítem ya existe");
+        alert("⚠️ Este ítem ya existe para tu usuario. Intenta con otro nombre.");
       } else {
         alert("Error al crear ítem: " + error.message);
       }
@@ -50,7 +61,7 @@ function Items() {
 
     if (error) {
       if (error.code === "23505") {
-        alert("Este ítem ya existe");
+        alert("⚠️ Este ítem ya existe para tu usuario. Intenta con otro nombre.");
       } else {
         alert("Error al editar ítem: " + error.message);
       }
