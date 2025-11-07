@@ -24,6 +24,12 @@ interface Props {
   onAgregarItem: () => void;
   onGuardar: (e: React.FormEvent) => void;
   onSeleccionarCategoria: (c: string) => void;
+
+  // 🔹 nuevas props para editar/borrar
+  onEditarCategoria?: (nombre: string) => void;
+  onEliminarCategoria?: (nombre: string) => void;
+  onEditarItem?: (nombre: string) => void;
+  onEliminarItem?: (nombre: string) => void;
 }
 
 const FormularioEgreso: React.FC<Props> = ({
@@ -50,9 +56,14 @@ const FormularioEgreso: React.FC<Props> = ({
   onAgregarItem,
   onGuardar,
   onSeleccionarCategoria,
+  onEditarCategoria,
+  onEliminarCategoria,
+  onEditarItem,
+  onEliminarItem,
 }) => {
   return (
     <form onSubmit={onGuardar} style={{ marginBottom: "2rem" }}>
+      {/* Categorías */}
       <div>
         <label>Categoría:</label>
         <select
@@ -75,8 +86,20 @@ const FormularioEgreso: React.FC<Props> = ({
           onChange={(e) => setNuevoCategoria(e.target.value)}
         />
         <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
+
+        {/* Lista con botones de acción */}
+        <ul>
+          {categoriasDisponibles.map((c) => (
+            <li key={c} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              <span>{c}</span>
+              <button type="button" onClick={() => onEditarCategoria?.(c)}>✏️</button>
+              <button type="button" onClick={() => onEliminarCategoria?.(c)}>🗑️</button>
+            </li>
+          ))}
+        </ul>
       </div>
 
+      {/* Ítems */}
       <div>
         <label>Ítem:</label>
         <select
@@ -95,8 +118,20 @@ const FormularioEgreso: React.FC<Props> = ({
           onChange={(e) => setNuevoItem(e.target.value)}
         />
         <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
+
+        {/* Lista con botones de acción */}
+        <ul>
+          {itemsDisponibles.map((i) => (
+            <li key={i} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              <span>{i}</span>
+              <button type="button" onClick={() => onEditarItem?.(i)}>✏️</button>
+              <button type="button" onClick={() => onEliminarItem?.(i)}>🗑️</button>
+            </li>
+          ))}
+        </ul>
       </div>
 
+      {/* Monto */}
       <div>
         <label>Monto:</label>
         <input
@@ -106,6 +141,7 @@ const FormularioEgreso: React.FC<Props> = ({
         />
       </div>
 
+      {/* Fecha */}
       <div>
         <label>Fecha:</label>
         <input
@@ -115,6 +151,7 @@ const FormularioEgreso: React.FC<Props> = ({
         />
       </div>
 
+      {/* Forma de pago */}
       <div>
         <label>Forma de Pago:</label>
         <select
