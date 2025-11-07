@@ -16,6 +16,7 @@ interface Egreso {
 }
 
 const Egresos: React.FC = () => {
+  // Estados principales
   const [categoria, setCategoria] = useState("");
   const [categoriasDisponibles, setCategoriasDisponibles] = useState<string[]>([]);
   const [nuevoCategoria, setNuevoCategoria] = useState("");
@@ -36,6 +37,11 @@ const Egresos: React.FC = () => {
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [editando, setEditando] = useState<Egreso | null>(null);
 
+  // 🔹 Filtros adicionales
+  const [categoriaFiltro, setCategoriaFiltro] = useState("");
+  const [itemFiltro, setItemFiltro] = useState("");
+  const [montoMin, setMontoMin] = useState<number | "">("");
+  const [montoMax, setMontoMax] = useState<number | "">("");
   useEffect(() => {
     const getUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -49,6 +55,7 @@ const Egresos: React.FC = () => {
     };
     getUser();
   }, []);
+
   const cargarCategorias = async () => {
     const { data, error } = await supabase
       .from("categorias_egresos")
@@ -85,41 +92,6 @@ const Egresos: React.FC = () => {
     }
     setItemsDisponibles(data?.map((i: any) => i.nombre) || []);
   };
-
-  const cargarEgresos = async (uid: string) => {
-    const { data, error } = await supabase
-      .from("egresos")
-      .select(`
-        id,
-        usuario_id,
-        monto,
-        fecha,
-        descripcion,
-        items_egresos (
-          nombre,
-          categorias_egresos (nombre)
-        )
-      `)
-      .eq("usuario_id", uid)
-      .order("fecha", { ascending: false });
-
-    if (error) {
-      setError(error.message);
-      return;
-    }
-
-    const egresosConNombres = data.map((e: any) => ({
-      id: e.id,
-      usuario_id: e.usuario_id,
-      monto: e.monto,
-      fecha: e.fecha,
-      descripcion: e.descripcion,
-      item_nombre: e.items_egresos?.nombre || "",
-      categoria_nombre: e.items_egresos?.categorias_egresos?.nombre || ""
-    }));
-
-    setEgresos(egresosConNombres);
-  };
   const handleAgregarCategoria = async () => {
     const nombre = nuevoCategoria.trim();
     if (!nombre) return;
@@ -129,11 +101,7 @@ const Egresos: React.FC = () => {
     ]);
 
     if (error) {
-      if (error.code === "23505") {
-        setError("⚠️ Esa categoría ya existe para tu usuario.");
-      } else {
-        setError(error.message);
-      }
+      setError(error.message);
       return;
     }
 
@@ -142,6 +110,37 @@ const Egresos: React.FC = () => {
     setNuevoCategoria("");
     setMensaje("✅ Categoría agregada.");
     await cargarItems(nombre);
+  };
+
+  const handleEditarCategoria = async (nombre: string) => {
+    const nuevoNombre = prompt("Nuevo nombre de la categoría:", nombre);
+    if (!nuevoNombre) return;
+
+    const { error } = await supabase
+      .from("categorias_egresos")
+      .update({ nombre: nuevoNombre })
+      .eq("nombre", nombre)
+      .eq("usuario_id", usuarioId);
+
+    if (error) setError(error.message);
+    else {
+      setMensaje("✏️ Categoría actualizada.");
+      cargarCategorias();
+    }
+  };
+
+  const handleEliminarCategoria = async (nombre: string) => {
+    const { error } = await supabase
+      .from("categorias_egresos")
+      .delete()
+      .eq("nombre", nombre)
+      .eq("usuario_id", usuarioId);
+
+    if (error) setError(error.message);
+    else {
+      setMensaje("🗑️ Categoría eliminada.");
+      cargarCategorias();
+    }
   };
 
   const handleAgregarItem = async () => {
@@ -163,11 +162,7 @@ const Egresos: React.FC = () => {
     ]);
 
     if (error) {
-      if (error.code === "23505") {
-        setError("⚠️ Ese ítem ya existe para tu usuario.");
-      } else {
-        setError(error.message);
-      }
+      setError(error.message);
       return;
     }
 
@@ -176,6 +171,79 @@ const Egresos: React.FC = () => {
     setNuevoItem("");
     setMensaje("✅ Ítem agregado.");
   };
+
+  const handleEditarItem = async (nombre: string) => {
+    const nuevoNombre = prompt("Nuevo nombre del ítem:", nombre);
+    if (!nuevoNombre) return;
+
+    const { error } = await supabase
+      .from("items_egresos")
+      .update({ nombre: nuevoNombre })
+      .eq("nombre", nombre)
+      .eq("usuario_id", usuarioId);
+
+    if (error) setError(error.message);
+    else {
+      setMensaje("✏️ Ítem actualizado.");
+      cargarItems(categoria);
+    }
+  };
+
+  const handleEliminarItem = async (nombre: string) => {
+    const { error } = await supabase
+      .from("items_egresos")
+      .delete()
+      .eq("nombre", nombre)
+      .eq("usuario_id", usuarioId);
+
+    if (error) setError(error.message);
+    else {
+      setMensaje("🗑️ Ítem eliminado.");
+      cargarItems(categoria);
+    }
+  };
+  const cargarEgresos = async (uid: string) => {
+    let query = supabase
+      .from("egresos")
+      .select(`
+        id,
+        usuario_id,
+        monto,
+        fecha,
+        descripcion,
+        items_egresos (
+          nombre,
+          categorias_egresos (nombre)
+        )
+      `)
+      .eq("usuario_id", uid)
+      .order("fecha", { ascending: false });
+
+    // 🔹 Filtros adicionales
+    if (categoriaFiltro) query = query.eq("categoria_id", categoriaFiltro);
+    if (itemFiltro) query = query.eq("item_id", itemFiltro);
+    if (montoMin !== "" && montoMin !== undefined) query = query.gte("monto", montoMin);
+    if (montoMax !== "" && montoMax !== undefined) query = query.lte("monto", montoMax);
+
+    const { data, error } = await query;
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    const egresosConNombres = data.map((e: any) => ({
+      id: e.id,
+      usuario_id: e.usuario_id,
+      monto: e.monto,
+      fecha: e.fecha,
+      descripcion: e.descripcion,
+      item_nombre: e.items_egresos?.nombre || "",
+      categoria_nombre: e.items_egresos?.categorias_egresos?.nombre || ""
+    }));
+
+    setEgresos(egresosConNombres);
+  };
+
   const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usuarioId || !categoria || !item || !monto || !fecha) return;
@@ -214,7 +282,6 @@ const Egresos: React.FC = () => {
       await cargarEgresos(usuarioId);
     }
   };
-
   const limpiarFormulario = () => {
     setCategoria("");
     setItem("");
@@ -255,9 +322,61 @@ const Egresos: React.FC = () => {
 
   const total = egresos.reduce((acc, egreso) => acc + egreso.monto, 0);
 
+  // Render
   return (
     <div style={{ padding: "2rem" }}>
       <h2>📉 Egresos</h2>
+
+      {/* 🔹 Filtros adicionales para la tabla */}
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+        <div>
+          <label>Categoría:</label>
+          <select value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)}>
+            <option value="">Todas</option>
+            {categoriasDisponibles.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label>Ítem:</label>
+          <select value={itemFiltro} onChange={(e) => setItemFiltro(e.target.value)}>
+            <option value="">Todos</option>
+            {itemsDisponibles.map((i) => (
+              <option key={i} value={i}>{i}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label>Monto entre:</label>
+          <input
+            type="number"
+            placeholder="mín"
+            value={montoMin}
+            onChange={(e) => setMontoMin(Number(e.target.value))}
+            style={{ width: "6rem" }}
+          />
+          <input
+            type="number"
+            placeholder="máx"
+            value={montoMax}
+            onChange={(e) => setMontoMax(Number(e.target.value))}
+            style={{ width: "6rem", marginLeft: "0.5rem" }}
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={() => usuarioId && cargarEgresos(usuarioId)}
+          style={{ alignSelf: "flex-end" }}
+        >
+          🔍 Filtrar
+        </button>
+      </div>
+
+      {/* Formulario con acciones */}
       <FormularioEgreso
         categoria={categoria}
         categoriasDisponibles={categoriasDisponibles}
@@ -281,11 +400,14 @@ const Egresos: React.FC = () => {
         onAgregarCategoria={handleAgregarCategoria}
         onAgregarItem={handleAgregarItem}
         onGuardar={handleGuardarEgreso}
-        onSeleccionarCategoria={(cat) => {
-          cargarItems(cat); // 🔑 carga ítems al seleccionar categoría
-        }}
+        onSeleccionarCategoria={(cat) => cargarItems(cat)}
+        onEditarCategoria={handleEditarCategoria}
+        onEliminarCategoria={handleEliminarCategoria}
+        onEditarItem={handleEditarItem}
+        onEliminarItem={handleEliminarItem}
       />
 
+      {/* Lista de egresos */}
       <ListaEgresos
         egresos={egresos}
         seleccionados={seleccionados}
