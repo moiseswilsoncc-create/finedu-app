@@ -12,26 +12,37 @@ function Categorias() {
       setUser(data.user);
     };
     fetchUser();
-    cargarCategorias();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      cargarCategorias();
+    }
+  }, [user]);
 
   const cargarCategorias = async () => {
     const { data, error } = await supabase
       .from("categorias_egresos")
       .select("*")
+      .or(`usuario_id.eq.${user.id},usuario_id.is.null`)
       .order("nombre", { ascending: true });
 
     if (!error) setCategorias(data || []);
   };
 
   const crearCategoria = async () => {
+    if (!user) {
+      alert("Usuario no autenticado");
+      return;
+    }
+
     const { error } = await supabase
       .from("categorias_egresos")
-      .insert([{ nombre }]);
+      .insert([{ nombre, usuario_id: user.id }]);
 
     if (error) {
       if (error.code === "23505") {
-        alert("Esta categoría ya existe");
+        alert("⚠️ Esta categoría ya existe para tu usuario. Intenta con otro nombre.");
       } else {
         alert("Error al crear categoría: " + error.message);
       }
@@ -50,7 +61,7 @@ function Categorias() {
 
     if (error) {
       if (error.code === "23505") {
-        alert("Esta categoría ya existe");
+        alert("⚠️ Esta categoría ya existe para tu usuario. Intenta con otro nombre.");
       } else {
         alert("Error al editar categoría: " + error.message);
       }
