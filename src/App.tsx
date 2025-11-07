@@ -17,11 +17,15 @@ import RegistroPendiente from "./components/RegistroPendiente";
 import Finanzas from "./components/Finanzas";
 import Ingresos from "./components/Ingresos";
 import Egresos from "./components/Egresos";
-import EgresosCategoria from "./components/EgresosCategoria"; // 👈 nuevo import
+import EgresosCategoria from "./components/EgresosCategoria";
 import ResumenFinanciero from "./components/ResumenFinanciero";
 import ResumenEgresos from "./components/ResumenEgresos";
 import SimuladorCreditos from "./components/SimuladorCreditos";
 import ForoFinanciero from "./components/ForoFinanciero";
+
+// 🧩 Nuevos módulos Finanzas
+import Categorias from "./Categorias";
+import Items from "./Items";
 
 // 🧩 Colaboradores
 import RegistroColaborador from "./components/RegistroColaborador";
@@ -60,7 +64,7 @@ const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     validarSesion();
   }, []);
 
-  if (autenticado === null) return null; // mientras valida
+  if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/login-usuario" replace />;
 };
 
@@ -97,7 +101,6 @@ const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ c
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/" replace />;
 };
-
 const App: React.FC = () => {
   const location = useLocation();
   const rutasPublicas = [
@@ -128,19 +131,22 @@ const App: React.FC = () => {
         <Route path="/recuperar-clave" element={<RecuperarClave />} />
         <Route path="/nueva-clave" element={<NuevaClave />} />
 
-        {/* Finanzas (protegido) */}
+        {/* Finanzas */}
         <Route path="/finanzas" element={<RutaProtegida><Finanzas pais="Chile" /></RutaProtegida>} />
         <Route path="/finanzas/ingresos" element={<RutaProtegida><Ingresos /></RutaProtegida>} />
         <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
-        <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} /> {/* 👈 nueva ruta */}
+        <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} />
         <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
         <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
         <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
         <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
 
-        {/* Vista Grupal (nuevo módulo protegido) */}
-        <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} /></RutaProtegida>} />
+        {/* Nuevos módulos Finanzas */}
+        <Route path="/finanzas/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
+        <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
 
+        {/* Vista Grupal */}
+        <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} /></RutaProtegida>} />
         {/* Colaboradores */}
         <Route path="/registro-colaborador" element={<RegistroColaborador />} />
         <Route path="/ingreso-colaborador" element={<IngresoColaborador />} />
@@ -151,7 +157,7 @@ const App: React.FC = () => {
         <Route path="/publicar-oferta-colaborador" element={<RutaProtegidaColaborador><PublicarOfertaColaborador /></RutaProtegidaColaborador>} />
         <Route path="/datos-ofertas" element={<RutaProtegidaColaborador><OfertasColaboradores /></RutaProtegidaColaborador>} />
 
-        {/* Institucional */}
+                {/* Institucional */}
         <Route path="/dashboard-institucional" element={<RutaProtegidaInstitucional><DashboardInstitucional /></RutaProtegidaInstitucional>} />
         <Route path="/editor-estado" element={<RutaProtegidaInstitucional><EditorEstadoArchivos /></RutaProtegidaInstitucional>} />
         <Route path="/editor-trazabilidad" element={<RutaProtegidaInstitucional><EditorTrazabilidad /></RutaProtegidaInstitucional>} />
@@ -166,3 +172,5 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+                                                                                                  
