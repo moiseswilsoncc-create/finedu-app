@@ -64,7 +64,7 @@ const FormularioEgreso: React.FC<Props> = ({
   return (
     <form onSubmit={onGuardar} style={{ marginBottom: "2rem" }}>
       {/* Categorías */}
-      <div>
+      <div style={{ marginBottom: "1rem" }}>
         <label>Categoría:</label>
         <select
           value={categoria}
@@ -80,17 +80,20 @@ const FormularioEgreso: React.FC<Props> = ({
           ))}
         </select>
 
-        <input
-          type="text"
-          placeholder="Nueva categoría"
-          value={nuevoCategoria}
-          onChange={(e) => setNuevoCategoria(e.target.value)}
-        />
-        <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
+        {/* Bloque de agregar categoría */}
+        <div style={{ marginTop: "0.5rem" }}>
+          <input
+            type="text"
+            placeholder="Nueva categoría"
+            value={nuevoCategoria}
+            onChange={(e) => setNuevoCategoria(e.target.value)}
+          />
+          <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
+        </div>
 
-        {/* 🔹 Botones únicos para la categoría seleccionada */}
+        {/* Bloque de editar/eliminar categoría */}
         {categoria && (
-          <div style={{ marginTop: "0.5rem" }}>
+          <div style={{ marginTop: "0.75rem", display: "flex", gap: "0.5rem" }}>
             <button type="button" onClick={() => onEditarCategoria?.(categoria)}>✏️ Editar</button>
             <button type="button" onClick={() => onEliminarCategoria?.(categoria)}>🗑️ Eliminar</button>
           </div>
@@ -98,7 +101,7 @@ const FormularioEgreso: React.FC<Props> = ({
       </div>
 
       {/* Ítems */}
-      <div>
+      <div style={{ marginBottom: "1rem" }}>
         <label>Ítem:</label>
         <select
           value={item}
@@ -110,17 +113,20 @@ const FormularioEgreso: React.FC<Props> = ({
           ))}
         </select>
 
-        <input
-          type="text"
-          placeholder="Nuevo ítem"
-          value={nuevoItem}
-          onChange={(e) => setNuevoItem(e.target.value)}
-        />
-        <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
+        {/* Bloque de agregar ítem */}
+        <div style={{ marginTop: "0.5rem" }}>
+          <input
+            type="text"
+            placeholder="Nuevo ítem"
+            value={nuevoItem}
+            onChange={(e) => setNuevoItem(e.target.value)}
+          />
+          <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
+        </div>
 
-        {/* 🔹 Botones únicos para el ítem seleccionado */}
+        {/* Bloque de editar/eliminar ítem */}
         {item && (
-          <div style={{ marginTop: "0.5rem" }}>
+          <div style={{ marginTop: "0.75rem", display: "flex", gap: "0.5rem" }}>
             <button type="button" onClick={() => onEditarItem?.(item)}>✏️ Editar</button>
             <button type="button" onClick={() => onEliminarItem?.(item)}>🗑️ Eliminar</button>
           </div>
