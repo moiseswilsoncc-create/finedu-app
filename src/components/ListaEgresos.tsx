@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface Egreso {
   id: string;
@@ -17,10 +17,14 @@ interface Props {
   handleEditarSeleccionado: () => void;
   handleEliminarSeleccionados: () => void;
   total: number;
+  mesFiltro: string;
+  anioFiltro: string;
   categoriaFiltro: string;
   itemFiltro: string;
   montoMin: number | "";
   montoMax: number | "";
+  setMesFiltro: (val: string) => void;
+  setAnioFiltro: (val: string) => void;
   setCategoriaFiltro: (val: string) => void;
   setItemFiltro: (val: string) => void;
   setMontoMin: (val: number | "") => void;
@@ -36,10 +40,14 @@ const ListaEgresos: React.FC<Props> = ({
   handleEditarSeleccionado,
   handleEliminarSeleccionados,
   total,
+  mesFiltro,
+  anioFiltro,
   categoriaFiltro,
   itemFiltro,
   montoMin,
   montoMax,
+  setMesFiltro,
+  setAnioFiltro,
   setCategoriaFiltro,
   setItemFiltro,
   setMontoMin,
@@ -50,6 +58,8 @@ const ListaEgresos: React.FC<Props> = ({
   // 🔹 Filtros aplicados en la tabla
   const egresosFiltrados = egresos.filter((e) => {
     return (
+      (mesFiltro === "" || e.fecha.slice(5, 7) === mesFiltro) &&
+      (anioFiltro === "" || e.fecha.slice(0, 4) === anioFiltro) &&
       (categoriaFiltro === "" || e.categoria_nombre.toLowerCase().includes(categoriaFiltro.toLowerCase())) &&
       (itemFiltro === "" || e.item_nombre.toLowerCase().includes(itemFiltro.toLowerCase())) &&
       (montoMin === "" || e.monto >= Number(montoMin)) &&
@@ -61,41 +71,70 @@ const ListaEgresos: React.FC<Props> = ({
     <div>
       <h3>📋 Lista de Egresos</h3>
 
-      {/* 🔹 Bloque de filtros */}
-      <div style={{ marginBottom: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-        <input
-          type="text"
-          placeholder="Categoría"
-          value={categoriaFiltro}
-          onChange={(e) => setCategoriaFiltro(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Ítem"
-          value={itemFiltro}
-          onChange={(e) => setItemFiltro(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Monto mín"
-          value={montoMin}
-          onChange={(e) => setMontoMin(e.target.value === "" ? "" : Number(e.target.value))}
-          style={{ width: "6rem" }}
-        />
-        <input
-          type="number"
-          placeholder="Monto máx"
-          value={montoMax}
-          onChange={(e) => setMontoMax(e.target.value === "" ? "" : Number(e.target.value))}
-          style={{ width: "6rem" }}
-        />
-        <button
-          type="button"
-          onClick={() => usuarioId && cargarEgresos(usuarioId)}
-        >
-          🔍 Filtrar
-        </button>
+      {/* 🔹 Bloque de filtros en una sola línea */}
+      <div style={{ marginBottom: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "flex-end" }}>
+        <div>
+          <label>Mes</label>
+          <select value={mesFiltro} onChange={(e) => setMesFiltro(e.target.value)}>
+            <option value="">Todos</option>
+            {["01","02","03","04","05","06","07","08","09","10","11","12"].map(m => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label>Año</label>
+          <input
+            type="number"
+            placeholder="2025"
+            value={anioFiltro}
+            onChange={(e) => setAnioFiltro(e.target.value)}
+            style={{ width: "6rem" }}
+          />
+        </div>
+
+        <div>
+          <label>Categoría</label>
+          <input
+            type="text"
+            placeholder="Categoría"
+            value={categoriaFiltro}
+            onChange={(e) => setCategoriaFiltro(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label>Ítem</label>
+          <input
+            type="text"
+            placeholder="Ítem"
+            value={itemFiltro}
+            onChange={(e) => setItemFiltro(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label>Monto</label>
+          <input
+            type="number"
+            placeholder="mín"
+            value={montoMin}
+            onChange={(e) => setMontoMin(e.target.value === "" ? "" : Number(e.target.value))}
+            style={{ width: "6rem" }}
+          />
+          <input
+            type="number"
+            placeholder="máx"
+            value={montoMax}
+            onChange={(e) => setMontoMax(e.target.value === "" ? "" : Number(e.target.value))}
+            style={{ width: "6rem", marginLeft: "0.5rem" }}
+          />
+        </div>
+
+        <button type="button" onClick={() => usuarioId && cargarEgresos(usuarioId)}>🔍 Filtrar</button>
       </div>
+
       {/* 🔹 Tabla de egresos */}
       <table border={1} cellPadding={5} style={{ width: "100%", marginBottom: "1rem" }}>
         <thead>
@@ -105,7 +144,7 @@ const ListaEgresos: React.FC<Props> = ({
             <th>Ítem</th>
             <th>Monto</th>
             <th>Fecha</th>
-            <th>Forma de Pago</th>
+            <th>Descripción</th>
           </tr>
         </thead>
         <tbody>
@@ -127,6 +166,7 @@ const ListaEgresos: React.FC<Props> = ({
           ))}
         </tbody>
       </table>
+
       <p><strong>Total:</strong> {total}</p>
 
       {/* 🔹 Botones de acción sobre egresos seleccionados */}
@@ -137,4 +177,5 @@ const ListaEgresos: React.FC<Props> = ({
     </div>
   );
 };
+
 export default ListaEgresos;
