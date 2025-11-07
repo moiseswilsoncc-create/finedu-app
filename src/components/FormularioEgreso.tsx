@@ -63,7 +63,7 @@ const FormularioEgreso: React.FC<Props> = ({
 }) => {
   return (
     <form onSubmit={onGuardar} style={{ marginBottom: "2rem" }}>
-      {/* Categorías */}
+      {/* Selección de categoría */}
       <div style={{ marginBottom: "1rem" }}>
         <label>Categoría:</label>
         <select
@@ -79,28 +79,9 @@ const FormularioEgreso: React.FC<Props> = ({
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
-
-        {/* Bloque de agregar categoría */}
-        <div style={{ marginTop: "0.5rem" }}>
-          <input
-            type="text"
-            placeholder="Nueva categoría"
-            value={nuevoCategoria}
-            onChange={(e) => setNuevoCategoria(e.target.value)}
-          />
-          <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
-        </div>
-
-        {/* Bloque de editar/eliminar categoría */}
-        {categoria && (
-          <div style={{ marginTop: "0.75rem", display: "flex", gap: "0.5rem" }}>
-            <button type="button" onClick={() => onEditarCategoria?.(categoria)}>✏️ Editar</button>
-            <button type="button" onClick={() => onEliminarCategoria?.(categoria)}>🗑️ Eliminar</button>
-          </div>
-        )}
       </div>
 
-      {/* Ítems */}
+      {/* Selección de ítem */}
       <div style={{ marginBottom: "1rem" }}>
         <label>Ítem:</label>
         <select
@@ -112,25 +93,19 @@ const FormularioEgreso: React.FC<Props> = ({
             <option key={i} value={i}>{i}</option>
           ))}
         </select>
+      </div>
 
-        {/* Bloque de agregar ítem */}
-        <div style={{ marginTop: "0.5rem" }}>
-          <input
-            type="text"
-            placeholder="Nuevo ítem"
-            value={nuevoItem}
-            onChange={(e) => setNuevoItem(e.target.value)}
-          />
+      {/* Bloque independiente con los 4 botones */}
+      <div style={{ margin: "1rem 0", padding: "0.5rem", border: "1px solid #ccc", borderRadius: "6px" }}>
+        <h4>Acciones de Categoría/Ítem</h4>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+          <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
           <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
+          {categoria && <button type="button" onClick={() => onEditarCategoria?.(categoria)}>✏️ Editar Categoría</button>}
+          {categoria && <button type="button" onClick={() => onEliminarCategoria?.(categoria)}>🗑️ Eliminar Categoría</button>}
+          {item && <button type="button" onClick={() => onEditarItem?.(item)}>✏️ Editar Ítem</button>}
+          {item && <button type="button" onClick={() => onEliminarItem?.(item)}>🗑️ Eliminar Ítem</button>}
         </div>
-
-        {/* Bloque de editar/eliminar ítem */}
-        {item && (
-          <div style={{ marginTop: "0.75rem", display: "flex", gap: "0.5rem" }}>
-            <button type="button" onClick={() => onEditarItem?.(item)}>✏️ Editar</button>
-            <button type="button" onClick={() => onEliminarItem?.(item)}>🗑️ Eliminar</button>
-          </div>
-        )}
       </div>
 
       {/* Monto */}
