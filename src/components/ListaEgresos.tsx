@@ -55,7 +55,6 @@ const ListaEgresos: React.FC<Props> = ({
   usuarioId,
   cargarEgresos,
 }) => {
-  // 🔹 Filtros aplicados en la tabla
   const egresosFiltrados = egresos.filter((e) => {
     return (
       (mesFiltro === "" || e.fecha.slice(5, 7) === mesFiltro) &&
@@ -71,7 +70,7 @@ const ListaEgresos: React.FC<Props> = ({
     <div>
       <h3>📋 Lista de Egresos</h3>
 
-      {/* 🔹 Bloque de filtros en una sola línea */}
+      {/* Filtros en una sola línea */}
       <div style={{ marginBottom: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "flex-end" }}>
         <div>
           <label>Mes</label>
@@ -107,75 +106,3 @@ const ListaEgresos: React.FC<Props> = ({
         <div>
           <label>Ítem</label>
           <input
-            type="text"
-            placeholder="Ítem"
-            value={itemFiltro}
-            onChange={(e) => setItemFiltro(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label>Monto</label>
-          <input
-            type="number"
-            placeholder="mín"
-            value={montoMin}
-            onChange={(e) => setMontoMin(e.target.value === "" ? "" : Number(e.target.value))}
-            style={{ width: "6rem" }}
-          />
-          <input
-            type="number"
-            placeholder="máx"
-            value={montoMax}
-            onChange={(e) => setMontoMax(e.target.value === "" ? "" : Number(e.target.value))}
-            style={{ width: "6rem", marginLeft: "0.5rem" }}
-          />
-        </div>
-
-        <button type="button" onClick={() => usuarioId && cargarEgresos(usuarioId)}>🔍 Filtrar</button>
-      </div>
-
-      {/* 🔹 Tabla de egresos */}
-      <table border={1} cellPadding={5} style={{ width: "100%", marginBottom: "1rem" }}>
-        <thead>
-          <tr>
-            <th>✔</th>
-            <th>Categoría</th>
-            <th>Ítem</th>
-            <th>Monto</th>
-            <th>Fecha</th>
-            <th>Descripción</th>
-          </tr>
-        </thead>
-        <tbody>
-          {egresosFiltrados.map((egreso) => (
-            <tr key={egreso.id}>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={seleccionados.includes(egreso.id)}
-                  onChange={() => toggleSeleccion(egreso.id)}
-                />
-              </td>
-              <td>{egreso.categoria_nombre}</td>
-              <td>{egreso.item_nombre}</td>
-              <td>{egreso.monto}</td>
-              <td>{egreso.fecha}</td>
-              <td>{egreso.descripcion}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <p><strong>Total:</strong> {total}</p>
-
-      {/* 🔹 Botones de acción sobre egresos seleccionados */}
-      <div style={{ display: "flex", gap: "1rem" }}>
-        <button type="button" onClick={handleEditarSeleccionado}>✏️ Editar</button>
-        <button type="button" onClick={handleEliminarSeleccionados}>🗑️ Eliminar</button>
-      </div>
-    </div>
-  );
-};
-
-export default ListaEgresos;
