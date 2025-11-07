@@ -55,13 +55,17 @@ const ListaEgresos: React.FC<Props> = ({
   usuarioId,
   cargarEgresos,
 }) => {
-  // 🔹 Aplicar filtros
+  // 🔹 Aplicar filtros robustos
   const egresosFiltrados = egresos.filter((e) => {
+    const fechaObj = new Date(e.fecha);
+    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+    const anio = String(fechaObj.getFullYear());
+
     return (
-      (mesFiltro === "" || e.fecha.slice(5, 7) === mesFiltro) &&
-      (anioFiltro === "" || e.fecha.slice(0, 4) === anioFiltro) &&
-      (categoriaFiltro === "" || e.categoria_nombre.toLowerCase().includes(categoriaFiltro.toLowerCase())) &&
-      (itemFiltro === "" || e.item_nombre.toLowerCase().includes(itemFiltro.toLowerCase())) &&
+      (mesFiltro === "" || mes === mesFiltro) &&
+      (anioFiltro === "" || anio === anioFiltro) &&
+      (categoriaFiltro === "" || (e.categoria_nombre || "").toLowerCase().includes(categoriaFiltro.toLowerCase())) &&
+      (itemFiltro === "" || (e.item_nombre || "").toLowerCase().includes(itemFiltro.toLowerCase())) &&
       (montoMin === "" || e.monto >= Number(montoMin)) &&
       (montoMax === "" || e.monto <= Number(montoMax))
     );
