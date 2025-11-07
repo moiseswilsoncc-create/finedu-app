@@ -3,20 +3,17 @@ import React from "react";
 interface Props {
   categoria: string;
   categoriasDisponibles: string[];
-  nuevoCategoria: string;
   item: string;
   itemsDisponibles: string[];
-  nuevoItem: string;
   monto: number | "";
   fecha: string;
+  // Usamos 'descripcion' como estado del campo, pero visualmente es "Forma de Pago"
   descripcion: string;
   editando: any;
   mensaje: string;
   error: string;
   setCategoria: (val: string) => void;
-  setNuevoCategoria: (val: string) => void;
   setItem: (val: string) => void;
-  setNuevoItem: (val: string) => void;
   setMonto: (val: number | "") => void;
   setFecha: (val: string) => void;
   setDescripcion: (val: string) => void;
@@ -104,16 +101,24 @@ const FormularioEgreso: React.FC<Props> = ({
         />
       </div>
 
+      {/* Forma de Pago: reemplaza el campo "Descripción" */}
       <div>
-        <label>Descripción:</label>
-        <input
-          type="text"
+        <label>Forma de Pago:</label>
+        <select
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
-        />
+        >
+          <option value="">Seleccione</option>
+          <option value="Efectivo">Efectivo</option>
+          <option value="Débito">Débito</option>
+          <option value="Crédito">Crédito</option>
+          <option value="Cheque">Cheque</option>
+        </select>
       </div>
 
-      <button type="submit">{editando ? "Guardar cambios" : "Guardar egreso"}</button>
+      <button type="submit" style={{ marginTop: "0.75rem" }}>
+        {editando ? "Guardar cambios" : "Guardar egreso"}
+      </button>
 
       {/* Bloque 2: acciones de catálogo */}
       <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
