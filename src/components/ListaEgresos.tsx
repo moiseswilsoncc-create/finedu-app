@@ -5,7 +5,7 @@ interface Egreso {
   usuario_id: string;
   monto: number;
   fecha: string;
-  descripcion?: string;
+  forma_pago?: string; // antes era descripcion
   item_nombre: string;
   categoria_nombre: string;
 }
@@ -23,12 +23,14 @@ interface Props {
   itemFiltro: string;
   montoMin: number | "";
   montoMax: number | "";
+  formaPagoFiltro: string;
   setMesFiltro: (val: string) => void;
   setAnioFiltro: (val: string) => void;
   setCategoriaFiltro: (val: string) => void;
   setItemFiltro: (val: string) => void;
   setMontoMin: (val: number | "") => void;
   setMontoMax: (val: number | "") => void;
+  setFormaPagoFiltro: (val: string) => void;
   usuarioId: string | null;
   cargarEgresos: (uid: string) => Promise<void>;
 }
@@ -46,12 +48,14 @@ const ListaEgresos: React.FC<Props> = ({
   itemFiltro,
   montoMin,
   montoMax,
+  formaPagoFiltro,
   setMesFiltro,
   setAnioFiltro,
   setCategoriaFiltro,
   setItemFiltro,
   setMontoMin,
   setMontoMax,
+  setFormaPagoFiltro,
   usuarioId,
   cargarEgresos,
 }) => {
@@ -63,7 +67,8 @@ const ListaEgresos: React.FC<Props> = ({
       (categoriaFiltro === "" || e.categoria_nombre.toLowerCase().includes(categoriaFiltro.toLowerCase())) &&
       (itemFiltro === "" || e.item_nombre.toLowerCase().includes(itemFiltro.toLowerCase())) &&
       (montoMin === "" || e.monto >= Number(montoMin)) &&
-      (montoMax === "" || e.monto <= Number(montoMax))
+      (montoMax === "" || e.monto <= Number(montoMax)) &&
+      (formaPagoFiltro === "" || e.forma_pago === formaPagoFiltro)
     );
   });
 
@@ -140,6 +145,17 @@ const ListaEgresos: React.FC<Props> = ({
           />
         </div>
 
+        <div>
+          <label>Forma de Pago</label>
+          <select value={formaPagoFiltro} onChange={(e) => setFormaPagoFiltro(e.target.value)}>
+            <option value="">Todos</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Débito">Débito</option>
+            <option value="Crédito">Crédito</option>
+            <option value="Cheque">Cheque</option>
+          </select>
+        </div>
+
         <button type="button" onClick={() => usuarioId && cargarEgresos(usuarioId)}>
           🔍 Filtrar
         </button>
@@ -154,7 +170,7 @@ const ListaEgresos: React.FC<Props> = ({
             <th>Ítem</th>
             <th>Monto</th>
             <th>Fecha</th>
-            <th>Descripción</th>
+            <th>Forma de Pago</th>
           </tr>
         </thead>
         <tbody>
@@ -171,7 +187,7 @@ const ListaEgresos: React.FC<Props> = ({
               <td>{egreso.item_nombre}</td>
               <td>{egreso.monto}</td>
               <td>{egreso.fecha}</td>
-              <td>{egreso.descripcion}</td>
+              <td>{egreso.forma_pago}</td>
             </tr>
           ))}
         </tbody>
