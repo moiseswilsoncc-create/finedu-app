@@ -63,68 +63,33 @@ const FormularioEgreso: React.FC<Props> = ({
     <form onSubmit={onGuardar} style={{ marginBottom: "2rem" }}>
       <h3>{editando ? "✏️ Editar Egreso" : "➕ Nuevo Egreso"}</h3>
 
-      {/* Bloque 1: formulario principal */}
-      <div style={{ display: "grid", gap: "0.75rem", gridTemplateColumns: "repeat(2, minmax(220px, 1fr))" }}>
-        <div>
-          <label>Categoría</label>
-          <select
-            value={categoria}
-            onChange={(e) => {
-              setCategoria(e.target.value);
-              onSeleccionarCategoria(e.target.value);
-            }}
-          >
-            <option value="">Seleccione</option>
-            {categoriasDisponibles.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label>Ítem</label>
-          <select value={item} onChange={(e) => setItem(e.target.value)}>
-            <option value="">Seleccione</option>
-            {itemsDisponibles.map((i) => (
-              <option key={i} value={i}>{i}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label>Monto</label>
-          <input
-            type="number"
-            value={monto}
-            onChange={(e) => setMonto(e.target.value === "" ? "" : Number(e.target.value))}
-            placeholder="Ej: 50000"
-          />
-        </div>
-
-        <div>
-          <label>Fecha</label>
-          <input
-            type="date"
-            value={fecha}
-            onChange={(e) => setFecha(e.target.value)}
-          />
-        </div>
-
-        <div style={{ gridColumn: "1 / -1" }}>
-          <label>Descripción</label>
-          <input
-            type="text"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-          />
-        </div>
+      <div>
+        <label>Categoría:</label>
+        <select
+          value={categoria}
+          onChange={(e) => {
+            setCategoria(e.target.value);
+            onSeleccionarCategoria(e.target.value);
+          }}
+        >
+          <option value="">Seleccione</option>
+          {categoriasDisponibles.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
       </div>
 
-      <div style={{ marginTop: "1rem" }}>
-        <button type="submit">{editando ? "Guardar cambios" : "Guardar egreso"}</button>
+      <div>
+        <label>Ítem:</label>
+        <select value={item} onChange={(e) => setItem(e.target.value)}>
+          <option value="">Seleccione</option>
+          {itemsDisponibles.map((i) => (
+            <option key={i} value={i}>{i}</option>
+          ))}
+        </select>
       </div>
 
-      {/* Bloque 2: acciones de catálogo */}
+      {/* 🔹 Bloque independiente de acciones */}
       <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
         <button type="button" onClick={onAgregarCategoria}>➕ Agregar Categoría</button>
         <button type="button" onClick={onAgregarItem}>➕ Agregar Ítem</button>
@@ -134,8 +99,37 @@ const FormularioEgreso: React.FC<Props> = ({
         <button type="button" onClick={() => item && onEliminarItem(item)}>🗑️ Eliminar Ítem</button>
       </div>
 
-      {mensaje && <p style={{ color: "green", marginTop: "0.5rem" }}>{mensaje}</p>}
-      {error && <p style={{ color: "red", marginTop: "0.5rem" }}>{error}</p>}
+      <div>
+        <label>Monto:</label>
+        <input
+          type="number"
+          value={monto}
+          onChange={(e) => setMonto(e.target.value === "" ? "" : Number(e.target.value))}
+        />
+      </div>
+
+      <div>
+        <label>Fecha:</label>
+        <input
+          type="date"
+          value={fecha}
+          onChange={(e) => setFecha(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label>Descripción:</label>
+        <input
+          type="text"
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+        />
+      </div>
+
+      <button type="submit">{editando ? "Guardar cambios" : "Guardar egreso"}</button>
+
+      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
   );
 };
