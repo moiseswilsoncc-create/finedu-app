@@ -5,7 +5,7 @@ interface Egreso {
   usuario_id: string;
   monto: number;
   fecha: string;
-  forma_pago?: string; // antes era descripcion
+  forma_pago?: string; // reemplaza descripción
   item_nombre: string;
   categoria_nombre: string;
 }
@@ -23,14 +23,12 @@ interface Props {
   itemFiltro: string;
   montoMin: number | "";
   montoMax: number | "";
-  formaPagoFiltro: string;
   setMesFiltro: (val: string) => void;
   setAnioFiltro: (val: string) => void;
   setCategoriaFiltro: (val: string) => void;
   setItemFiltro: (val: string) => void;
   setMontoMin: (val: number | "") => void;
   setMontoMax: (val: number | "") => void;
-  setFormaPagoFiltro: (val: string) => void;
   usuarioId: string | null;
   cargarEgresos: (uid: string) => Promise<void>;
 }
@@ -48,14 +46,12 @@ const ListaEgresos: React.FC<Props> = ({
   itemFiltro,
   montoMin,
   montoMax,
-  formaPagoFiltro,
   setMesFiltro,
   setAnioFiltro,
   setCategoriaFiltro,
   setItemFiltro,
   setMontoMin,
   setMontoMax,
-  setFormaPagoFiltro,
   usuarioId,
   cargarEgresos,
 }) => {
@@ -67,8 +63,7 @@ const ListaEgresos: React.FC<Props> = ({
       (categoriaFiltro === "" || e.categoria_nombre.toLowerCase().includes(categoriaFiltro.toLowerCase())) &&
       (itemFiltro === "" || e.item_nombre.toLowerCase().includes(itemFiltro.toLowerCase())) &&
       (montoMin === "" || e.monto >= Number(montoMin)) &&
-      (montoMax === "" || e.monto <= Number(montoMax)) &&
-      (formaPagoFiltro === "" || e.forma_pago === formaPagoFiltro)
+      (montoMax === "" || e.monto <= Number(montoMax))
     );
   });
 
@@ -143,17 +138,6 @@ const ListaEgresos: React.FC<Props> = ({
             onChange={(e) => setMontoMax(e.target.value === "" ? "" : Number(e.target.value))}
             style={{ width: "6rem", marginLeft: "0.5rem" }}
           />
-        </div>
-
-        <div>
-          <label>Forma de Pago</label>
-          <select value={formaPagoFiltro} onChange={(e) => setFormaPagoFiltro(e.target.value)}>
-            <option value="">Todos</option>
-            <option value="Efectivo">Efectivo</option>
-            <option value="Débito">Débito</option>
-            <option value="Crédito">Crédito</option>
-            <option value="Cheque">Cheque</option>
-          </select>
         </div>
 
         <button type="button" onClick={() => usuarioId && cargarEgresos(usuarioId)}>
