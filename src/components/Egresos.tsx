@@ -44,16 +44,15 @@ const Egresos: React.FC = () => {
         return;
       }
       setUsuarioId(data.user.id);
-      cargarCategorias(data.user.id);
+      cargarCategorias();
       cargarEgresos(data.user.id);
     };
     getUser();
   }, []);
-  const cargarCategorias = async (uid: string) => {
+  const cargarCategorias = async () => {
     const { data, error } = await supabase
       .from("categorias_egresos")
-      .select("nombre")
-      .eq("usuario_id", uid);
+      .select("nombre"); // globales
 
     if (error) {
       setError(error.message);
@@ -62,11 +61,10 @@ const Egresos: React.FC = () => {
     setCategoriasDisponibles(data?.map((c: any) => c.nombre) || []);
   };
 
-  const cargarItems = async (uid: string, catNombre: string) => {
+  const cargarItems = async (catNombre: string) => {
     const { data: catData, error: catError } = await supabase
       .from("categorias_egresos")
       .select("id")
-      .eq("usuario_id", uid)
       .eq("nombre", catNombre)
       .single();
 
@@ -79,8 +77,7 @@ const Egresos: React.FC = () => {
     const { data, error } = await supabase
       .from("items_egresos")
       .select("nombre")
-      .eq("usuario_id", uid)
-      .eq("categoria_id", categoriaId);
+      .eq("categoria_id", categoriaId); // globales
 
     if (error) {
       setError(error.message);
@@ -103,7 +100,7 @@ const Egresos: React.FC = () => {
           categorias_egresos (nombre)
         )
       `)
-      .eq("usuario_id", uid)
+      .eq("usuario_id", uid) // personales
       .order("fecha", { ascending: false });
 
     if (error) {
@@ -125,12 +122,11 @@ const Egresos: React.FC = () => {
   };
 
   const handleAgregarCategoria = async () => {
-    if (!usuarioId) return;
     const nombre = nuevoCategoria.trim();
     if (!nombre) return;
 
     const { error } = await supabase.from("categorias_egresos").insert([
-      { usuario_id: usuarioId, nombre }
+      { nombre }
     ]);
 
     if (error) {
@@ -142,16 +138,15 @@ const Egresos: React.FC = () => {
     setCategoria(nombre);
     setNuevoCategoria("");
     setMensaje("✅ Categoría agregada.");
-    await cargarItems(usuarioId, nombre);
+    await cargarItems(nombre);
   };
 
   const handleAgregarItem = async () => {
-    if (!usuarioId || !categoria) return;
+    if (!categoria) return;
 
     const { data: catData } = await supabase
       .from("categorias_egresos")
       .select("id")
-      .eq("usuario_id", usuarioId)
       .eq("nombre", categoria)
       .single();
 
@@ -161,7 +156,7 @@ const Egresos: React.FC = () => {
     if (!nombreItem) return;
 
     const { error } = await supabase.from("items_egresos").insert([
-      { usuario_id: usuarioId, categoria_id: categoriaId, nombre: nombreItem }
+      { categoria_id: categoriaId, nombre: nombreItem }
     ]);
 
     if (error) {
@@ -182,7 +177,6 @@ const Egresos: React.FC = () => {
     const { data: itemData } = await supabase
       .from("items_egresos")
       .select("id")
-      .eq("usuario_id", usuarioId)
       .eq("nombre", item)
       .single();
 
@@ -257,36 +251,33 @@ const Egresos: React.FC = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <h2>📉 Egresos</h2>
-     <FormularioEgreso
-  categoria={categoria}
-  categoriasDisponibles={categoriasDisponibles}
-  nuevoCategoria={nuevoCategoria}
-  item={item}
-  itemsDisponibles={itemsDisponibles}
-  nuevoItem={nuevoItem}
-  monto={monto}
-  fecha={fecha}
-  descripcion={descripcion}
-  editando={editando}
-  mensaje={mensaje}
-  error={error}
-  setCategoria={setCategoria}
-  setNuevoCategoria={setNuevoCategoria}
-  setItem={setItem}
-  setNuevoItem={setNuevoItem}
-  setMonto={setMonto}
-  setFecha={setFecha}
-  setDescripcion={setDescripcion}
-  onAgregarCategoria={handleAgregarCategoria}
-  onAgregarItem={handleAgregarItem}
-  onGuardar={handleGuardarEgreso}
-  /** 🔑 Nueva prop: carga ítems al seleccionar categoría */
-  onSeleccionarCategoria={(cat) => {
-    if (usuarioId) {
-      cargarItems(usuarioId, cat);
-    }
-  }}
-/>
+      <FormularioEgreso
+        categoria={categoria}
+        categoriasDisponibles={categoriasDisponibles}
+        nuevoCategoria={nuevoCategoria}
+        item={item}
+        itemsDisponibles={itemsDisponibles}
+        nuevoItem={nuevoItem}
+        monto={monto}
+        fecha={fecha}
+        descripcion={descripcion}
+        editando={editando}
+        mensaje={mensaje}
+        error={error}
+        setCategoria={setCategoria}
+        setNuevoCategoria={setNuevoCategoria}
+        setItem={setItem}
+        setNuevoItem={setNuevoItem}
+        setMonto={setMonto}
+        setFecha={setFecha}
+        setDescripcion={setDescripcion}
+        onAgregarCategoria={handleAgregarCategoria}
+        onAgregarItem={handleAgregarItem}
+        onGuardar={handleGuardarEgreso}
+        onSeleccionarCategoria={(cat) => {
+          cargarItems(cat); // 🔑 carga ítems globales al seleccionar categoría
+        }}
+      />
 
       <ListaEgresos
         egresos={egresos}
