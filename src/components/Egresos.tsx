@@ -37,7 +37,9 @@ const Egresos: React.FC = () => {
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [editando, setEditando] = useState<Egreso | null>(null);
 
-  // 🔹 Filtros adicionales (se pasarán a ListaEgresos)
+  // 🔹 Filtros
+  const [mesFiltro, setMesFiltro] = useState<string>("");
+  const [anioFiltro, setAnioFiltro] = useState<string>("");
   const [categoriaFiltro, setCategoriaFiltro] = useState("");
   const [itemFiltro, setItemFiltro] = useState("");
   const [montoMin, setMontoMin] = useState<number | "">("");
@@ -93,6 +95,7 @@ const Egresos: React.FC = () => {
     }
     setItemsDisponibles(data?.map((i: any) => i.nombre) || []);
   };
+
   const handleAgregarCategoria = async () => {
     const nombre = nuevoCategoria.trim();
     if (!nombre) return;
@@ -172,6 +175,7 @@ const Egresos: React.FC = () => {
     setNuevoItem("");
     setMensaje("✅ Ítem agregado.");
   };
+
   const handleEditarItem = async (nombre: string) => {
     const nuevoNombre = prompt("Nuevo nombre del ítem:", nombre);
     if (!nuevoNombre) return;
@@ -220,7 +224,8 @@ const Egresos: React.FC = () => {
       .eq("usuario_id", uid)
       .order("fecha", { ascending: false });
 
-    // 🔹 Filtros adicionales
+    if (mesFiltro) query = query.eq("mes", mesFiltro);
+    if (anioFiltro) query = query.eq("anio", anioFiltro);
     if (categoriaFiltro) query = query.eq("categoria_id", categoriaFiltro);
     if (itemFiltro) query = query.eq("item_id", itemFiltro);
     if (montoMin !== "" && montoMin !== undefined) query = query.gte("monto", montoMin);
@@ -244,7 +249,8 @@ const Egresos: React.FC = () => {
 
     setEgresos(egresosConNombres);
   };
-  const handleGuardarEgreso = async (e: React.FormEvent) => {
+
+    const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usuarioId || !categoria || !item || !monto || !fecha) return;
 
@@ -323,11 +329,12 @@ const Egresos: React.FC = () => {
 
   const total = egresos.reduce((acc, egreso) => acc + egreso.monto, 0);
 
-  // Render
+  // Render final
   return (
     <div style={{ padding: "2rem" }}>
       <h2>📉 Egresos</h2>
-      {/* Formulario con acciones */}
+
+      {/* Bloque 1 + Bloque 2: Formulario y acciones */}
       <FormularioEgreso
         categoria={categoria}
         categoriasDisponibles={categoriasDisponibles}
@@ -341,7 +348,7 @@ const Egresos: React.FC = () => {
         editando={editando}
         mensaje={mensaje}
         error={error}
-        setCategoria={setCategoria}
+        setCategoria={(val) => { setCategoria(val); cargarItems(val); }}
         setNuevoCategoria={setNuevoCategoria}
         setItem={setItem}
         setNuevoItem={setNuevoItem}
@@ -358,7 +365,7 @@ const Egresos: React.FC = () => {
         onEliminarItem={handleEliminarItem}
       />
 
-      {/* Lista de egresos con filtros integrados */}
+      {/* Bloque 3: Lista con filtros integrados */}
       <ListaEgresos
         egresos={egresos}
         seleccionados={seleccionados}
@@ -366,10 +373,14 @@ const Egresos: React.FC = () => {
         handleEditarSeleccionado={handleEditarSeleccionado}
         handleEliminarSeleccionados={handleEliminarSeleccionados}
         total={total}
+        mesFiltro={mesFiltro}
+        anioFiltro={anioFiltro}
         categoriaFiltro={categoriaFiltro}
         itemFiltro={itemFiltro}
         montoMin={montoMin}
         montoMax={montoMax}
+        setMesFiltro={setMesFiltro}
+        setAnioFiltro={setAnioFiltro}
         setCategoriaFiltro={setCategoriaFiltro}
         setItemFiltro={setItemFiltro}
         setMontoMin={setMontoMin}
@@ -397,3 +408,5 @@ const Egresos: React.FC = () => {
 };
 
 export default Egresos;
+
+        
