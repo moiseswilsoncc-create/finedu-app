@@ -49,7 +49,6 @@ const Egresos: React.FC = () => {
     };
     getUser();
   }, []);
-
   const cargarCategorias = async (uid: string) => {
     const { data, error } = await supabase
       .from("categorias_egresos")
@@ -57,11 +56,9 @@ const Egresos: React.FC = () => {
       .eq("usuario_id", uid);
 
     if (error) {
-      console.error("Error al cargar categorías:", error.message);
       setError(error.message);
       return;
     }
-
     setCategoriasDisponibles(data?.map((c: any) => c.nombre) || []);
   };
 
@@ -79,7 +76,6 @@ const Egresos: React.FC = () => {
     }
 
     const categoriaId = catData.id;
-
     const { data, error } = await supabase
       .from("items_egresos")
       .select("nombre")
@@ -87,13 +83,12 @@ const Egresos: React.FC = () => {
       .eq("categoria_id", categoriaId);
 
     if (error) {
-      console.error("Error al cargar ítems:", error.message);
       setError(error.message);
       return;
     }
-
     setItemsDisponibles(data?.map((i: any) => i.nombre) || []);
   };
+
   const cargarEgresos = async (uid: string) => {
     const { data, error } = await supabase
       .from("egresos")
@@ -112,7 +107,6 @@ const Egresos: React.FC = () => {
       .order("fecha", { ascending: false });
 
     if (error) {
-      console.error("Error al cargar egresos:", error.message);
       setError(error.message);
       return;
     }
@@ -131,23 +125,16 @@ const Egresos: React.FC = () => {
   };
 
   const handleAgregarCategoria = async () => {
-    setError(""); setMensaje("");
-    if (!usuarioId) { setError("No hay sesión activa."); return; }
-
+    if (!usuarioId) return;
     const nombre = nuevoCategoria.trim();
-    if (!nombre) { setError("Ingresa un nombre de categoría."); return; }
-    if (categoriasDisponibles.includes(nombre)) {
-      setError("⚠️ La categoría ya existe.");
-      return;
-    }
+    if (!nombre) return;
 
     const { error } = await supabase.from("categorias_egresos").insert([
       { usuario_id: usuarioId, nombre }
     ]);
 
     if (error) {
-      console.error("Error Supabase:", error.message);
-      setError("Error al crear categoría: " + error.message);
+      setError(error.message);
       return;
     }
 
@@ -159,39 +146,26 @@ const Egresos: React.FC = () => {
   };
 
   const handleAgregarItem = async () => {
-    setError(""); setMensaje("");
-    if (!usuarioId) { setError("No hay sesión activa."); return; }
-    if (!categoria) { setError("Selecciona una categoría."); return; }
+    if (!usuarioId || !categoria) return;
 
-    // Buscar id de la categoría
-    const { data: catData, error: catError } = await supabase
+    const { data: catData } = await supabase
       .from("categorias_egresos")
       .select("id")
       .eq("usuario_id", usuarioId)
       .eq("nombre", categoria)
       .single();
 
-    if (catError || !catData) {
-      setError("No se encontró la categoría en Supabase.");
-      return;
-    }
-
+    if (!catData) return;
     const categoriaId = catData.id;
     const nombreItem = nuevoItem.trim();
-
-    if (!nombreItem) { setError("Ingresa un nombre de ítem."); return; }
-    if (itemsDisponibles.includes(nombreItem)) {
-      setError("⚠️ El ítem ya existe en esta categoría.");
-      return;
-    }
+    if (!nombreItem) return;
 
     const { error } = await supabase.from("items_egresos").insert([
       { usuario_id: usuarioId, categoria_id: categoriaId, nombre: nombreItem }
     ]);
 
     if (error) {
-      console.error("Error Supabase:", error.message);
-      setError("Error al crear ítem: " + error.message);
+      setError(error.message);
       return;
     }
 
@@ -203,27 +177,16 @@ const Egresos: React.FC = () => {
 
   const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); setMensaje("");
-    if (!usuarioId) { setError("No hay usuario válido."); return; }
+    if (!usuarioId || !categoria || !item || !monto || !fecha) return;
 
-    if (!categoria || !item || !monto || !fecha) {
-      setError("Todos los campos son obligatorios.");
-      return;
-    }
-
-    // Buscar id del ítem
-    const { data: itemData, error: itemError } = await supabase
+    const { data: itemData } = await supabase
       .from("items_egresos")
       .select("id")
       .eq("usuario_id", usuarioId)
       .eq("nombre", item)
       .single();
 
-    if (itemError || !itemData) {
-      setError("No se encontró el ítem en Supabase.");
-      return;
-    }
-
+    if (!itemData) return;
     const itemId = itemData.id;
 
     if (editando) {
@@ -233,39 +196,22 @@ const Egresos: React.FC = () => {
         fecha,
         descripcion
       };
-
-      const { error } = await supabase.from("egresos").update(cambios).eq("id", editando.id);
-      if (error) {
-        console.error("Error Supabase:", error.message);
-        setError("No se pudo actualizar el egreso: " + error.message);
-        return;
-      }
-
+      await supabase.from("egresos").update(cambios).eq("id", editando.id);
       setMensaje("✏️ Egreso actualizado.");
-      setEgresos(egresos.map((e) => (e.id === editando.id ? { ...e, ...cambios } : e)));
       setEditando(null);
       limpiarFormulario();
-    } else {
-      const { data, error } = await supabase
-        .from("egresos")
-        .insert([{
-          usuario_id: usuarioId,
-          item_id: itemId,
-          monto: Number(monto),
-          fecha,
-          descripcion
-        }])
-        .select();
-
-      if (error) {
-        console.error("Error Supabase:", error.message);
-        setError("No se pudo guardar el egreso: " + error.message);
-        return;
-      }
-
-      setMensaje("✅ Egreso agregado.");
       await cargarEgresos(usuarioId);
+    } else {
+      await supabase.from("egresos").insert([{
+        usuario_id: usuarioId,
+        item_id: itemId,
+        monto: Number(monto),
+        fecha,
+        descripcion
+      }]);
+      setMensaje("✅ Egreso agregado.");
       limpiarFormulario();
+      await cargarEgresos(usuarioId);
     }
   };
   const limpiarFormulario = () => {
@@ -289,34 +235,21 @@ const Egresos: React.FC = () => {
       const egreso = egresos.find((e) => e.id === seleccionados[0]);
       if (egreso) {
         setEditando(egreso);
-        setCategoria(egreso.categoria_nombre || "");
-        setItem(egreso.item_nombre || "");
+        setCategoria(egreso.categoria_nombre);
+        setItem(egreso.item_nombre);
         setMonto(egreso.monto);
         setFecha(egreso.fecha);
         setDescripcion(egreso.descripcion || "");
-        setMensaje("✏️ Editando egreso seleccionado.");
       }
-    } else {
-      setError("Debes seleccionar exactamente un egreso para editar.");
     }
   };
 
   const handleEliminarSeleccionados = async () => {
-    if (seleccionados.length === 0) {
-      setError("Debes seleccionar al menos un egreso para eliminar.");
-      return;
-    }
-
-    const { error } = await supabase.from("egresos").delete().in("id", seleccionados);
-    if (error) {
-      console.error("Error Supabase:", error.message);
-      setError("No se pudieron eliminar los egresos: " + error.message);
-      return;
-    }
-
+    if (!usuarioId || seleccionados.length === 0) return;
+    await supabase.from("egresos").delete().in("id", seleccionados);
     setEgresos(egresos.filter((e) => !seleccionados.includes(e.id)));
     setSeleccionados([]);
-    setMensaje("🗑️ Egresos eliminados correctamente.");
+    setMensaje("🗑️ Egresos eliminados.");
   };
 
   const total = egresos.reduce((acc, egreso) => acc + egreso.monto, 0);
@@ -324,8 +257,6 @@ const Egresos: React.FC = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <h2>📉 Egresos</h2>
-      <p>Registra y visualiza tus egresos.</p>
-
       <FormularioEgreso
         categoria={categoria}
         categoriasDisponibles={categoriasDisponibles}
