@@ -23,6 +23,8 @@ interface Props {
   onAgregarCategoria: () => void;
   onAgregarItem: () => void;
   onGuardar: (e: React.FormEvent) => void;
+  /** 🔑 Nueva prop: función para cargar ítems al seleccionar categoría */
+  onSeleccionarCategoria: (categoria: string) => void;
 }
 
 const FormularioEgreso: React.FC<Props> = ({
@@ -48,6 +50,7 @@ const FormularioEgreso: React.FC<Props> = ({
   onAgregarCategoria,
   onAgregarItem,
   onGuardar,
+  onSeleccionarCategoria,
 }) => {
   return (
     <form onSubmit={onGuardar} style={{ marginBottom: "2rem" }}>
@@ -60,7 +63,11 @@ const FormularioEgreso: React.FC<Props> = ({
         <label>Categoría:</label>
         <select
           value={categoria}
-          onChange={(e) => setCategoria(e.target.value)}
+          onChange={(e) => {
+            const nuevaCategoria = e.target.value;
+            setCategoria(nuevaCategoria);
+            onSeleccionarCategoria(nuevaCategoria); // 🔑 dispara carga de ítems
+          }}
         >
           <option value="">-- Selecciona --</option>
           {categoriasDisponibles.map((c) => (
