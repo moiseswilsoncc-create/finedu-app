@@ -76,6 +76,89 @@ const Ingresos: React.FC = () => {
     }
   };
 
+  const handleAgregarTipo = () => {
+    if (nuevoTipo && !tiposDisponibles.includes(nuevoTipo)) {
+      setTiposDisponibles([...tiposDisponibles, nuevoTipo]);
+      setTipo(nuevoTipo);
+      setNuevoTipo("");
+    }
+  };
+
+  const handleGuardarIngreso = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setMensaje("");
+
+    if (!usuarioId) {
+      setError("No hay usuario válido.");
+      return;
+    }
+
+    if (!tipo || !monto || !fecha) {
+      setError("Todos los campos son obligatorios.");
+      return;
+    }
+
+    const ingreso = {
+      usuario_id: usuarioId,
+      tipo,
+      monto: Number(monto),
+      fecha,
+      mes: fecha.slice(5, 7),
+      anio: Number(fecha.slice(0, 4))
+    };
+
+    if (editando) {
+      const cambios: any = {};
+      if (monto !== "" && monto !== editando.monto) cambios.monto = ingreso.monto;
+      if (fecha && fecha !== editando.fecha) {
+        cambios.fecha = ingreso.fecha;
+        cambios.mes = ingreso.mes;
+        cambios.anio = ingreso.anio;
+      }
+
+      if (Object.keys(cambios).length === 0) {
+        setMensaje("⚠️ No se detectaron cambios.");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("ingresos")
+        .update(cambios)
+        .eq("id", editando.id);
+
+      if (error) {
+        setError("No se pudo actualizar el ingreso.");
+      } else {
+        setMensaje("✏️ Ingreso actualizado correctamente.");
+        setIngresos(
+          ingresos.map((i) =>
+            i.id === editando.id ? { ...i, ...cambios } : i
+          )
+        );
+        setEditando(null);
+        setTipo("");
+        setMonto("");
+        setFecha("");
+        setSeleccionados([]);
+      }
+    } else {
+      const { data, error } = await supabase
+        .from("ingresos")
+        .insert([ingreso])
+        .select();
+
+      if (error) {
+        setError("No se pudo guardar el ingreso.");
+      } else {
+        setMensaje("✅ Ingreso guardado correctamente.");
+        setIngresos([...(data || []), ...ingresos]);
+        setTipo("");
+        setMonto("");
+        setFecha("");
+      }
+    }
+  };
   const toggleSeleccion = (id: string) => {
     setSeleccionados((prev) =>
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
