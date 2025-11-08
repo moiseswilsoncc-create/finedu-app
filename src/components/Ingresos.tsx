@@ -213,3 +213,5 @@ const Ingresos: React.FC = () => {
 };
 
 export default Ingresos;
+
+
