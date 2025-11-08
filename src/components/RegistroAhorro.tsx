@@ -17,6 +17,8 @@ function RegistroAhorro() {
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
   const [filtroMes, setFiltroMes] = useState("");
   const [filtroAño, setFiltroAño] = useState("");
+  const [editandoId, setEditandoId] = useState<string | null>(null);
+  const [nuevoMonto, setNuevoMonto] = useState("");
 
   useEffect(() => {
     const id = localStorage.getItem("usuarioId");
@@ -84,11 +86,52 @@ function RegistroAhorro() {
     }
   };
 
+  const iniciarEdicion = () => {
+    if (seleccionados.length !== 1) {
+      alert("Selecciona solo un aporte para editar.");
+      return;
+    }
+
+    const id = seleccionados[0];
+    const aporte = historial.find((a) => a.id === id);
+    if (aporte) {
+      setEditandoId(id);
+      setNuevoMonto(aporte.monto.toString());
+    }
+  };
+
+  const actualizarAporte = async () => {
+    if (!editandoId || !nuevoMonto) return;
+
+    const { error } = await supabase
+      .from("aportes_usuario")
+      .update({ monto: parseFloat(nuevoMonto) })
+      .eq("id", editandoId);
+
+    if (error) {
+      console.error("Error al actualizar aporte:", error.message);
+      setMensaje("❌ Error al actualizar aporte.");
+    } else {
+      setMensaje("✅ Aporte actualizado correctamente.");
+      setEditandoId(null);
+      setNuevoMonto("");
+      setSeleccionados([]);
+      obtenerAportes();
+      setTimeout(() => setMensaje(""), 3000);
+    }
+  };
+
   const toggleSeleccion = (id: string) => {
     setSeleccionados((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
+
+  const historialFiltrado = historial.filter((a) => {
+    const coincideMes = filtroMes ? a.mes === parseInt(filtroMes) : true;
+    const coincideAño = filtroAño ? a.año === parseInt(filtroAño) : true;
+    return coincideMes && coincideAño;
+  });
 
   const toggleSeleccionGlobal = () => {
     if (seleccionados.length === historialFiltrado.length) {
@@ -97,12 +140,6 @@ function RegistroAhorro() {
       setSeleccionados(historialFiltrado.map((a) => a.id));
     }
   };
-
-  const historialFiltrado = historial.filter((a) => {
-    const coincideMes = filtroMes ? a.mes === parseInt(filtroMes) : true;
-    const coincideAño = filtroAño ? a.año === parseInt(filtroAño) : true;
-    return coincideMes && coincideAño;
-  });
 
   const totalAhorrado = historialFiltrado.reduce((sum, a) => sum + a.monto, 0);
   return (
@@ -203,7 +240,7 @@ function RegistroAhorro() {
 
           <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
             <button
-              onClick={() => alert("Función de edición múltiple pendiente")}
+              onClick={iniciarEdicion}
               style={{
                 backgroundColor: "#f39c12",
                 color: "white",
@@ -230,6 +267,48 @@ function RegistroAhorro() {
               🗑️ Eliminar seleccionados
             </button>
           </div>
+
+          {editandoId && (
+            <div style={{ marginTop: "1rem", display: "flex", gap: "1rem" }}>
+              <input
+                type="number"
+                value={nuevoMonto}
+                onChange={(e) => setNuevoMonto(e.target.value)}
+                placeholder="Nuevo monto"
+                style={{ padding: "0.5rem", borderRadius: "6px", border: "1px solid #ccc" }}
+              />
+              <button
+                onClick={actualizarAporte}
+                style={{
+                  backgroundColor: "#27ae60",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "0.5rem 1rem",
+                  cursor: "pointer"
+                }}
+              >
+                💾 Guardar
+              </button>
+              <button
+                onClick={() => {
+                  setEditandoId(null);
+                  setNuevoMonto("");
+                  setSeleccionados([]);
+                }}
+                style={{
+                  backgroundColor: "#95a5a6",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "0.5rem 1rem",
+                  cursor: "pointer"
+                }}
+              >
+                ❌ Cancelar
+              </button>
+            </div>
+          )}
 
           <p style={{ marginTop: "1rem", fontWeight: "bold", color: "#2c3e50" }}>
             💰 Total: ${totalAhorrado.toLocaleString()}
