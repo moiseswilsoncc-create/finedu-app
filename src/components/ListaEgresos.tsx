@@ -70,7 +70,7 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
       .order("fecha", { ascending: false });
 
     if (mesFiltro) query = query.eq("mes", mesFiltro);
-    if (anioFiltro) query = query.eq("anio", anioFiltro);
+    if (anioFiltro !== "") query = query.eq("anio", Number(anioFiltro));
     if (categoriaId !== "") query = query.eq("items_egresos.categoria_id", categoriaId);
     if (itemId !== "") query = query.eq("item_id", itemId);
     if (montoMin !== "") query = query.gte("monto", montoMin);
@@ -126,7 +126,16 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
 
         <div>
           <label>Año</label>
-          <input type="number" placeholder="2025" value={anioFiltro} onChange={(e) => setAnioFiltro(e.target.value)} style={{ width: "6rem" }} />
+          <input
+            type="number"
+            placeholder="2025"
+            value={anioFiltro}
+            onChange={(e) => {
+              const val = e.target.value;
+              setAnioFiltro(val === "" ? "" : String(Number(val)));
+            }}
+            style={{ width: "6rem" }}
+          />
         </div>
 
         <div>
@@ -151,8 +160,20 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
 
         <div>
           <label>Monto</label>
-          <input type="number" placeholder="mín" value={montoMin} onChange={(e) => setMontoMin(e.target.value === "" ? "" : Number(e.target.value))} style={{ width: "6rem" }} />
-          <input type="number" placeholder="máx" value={montoMax} onChange={(e) => setMontoMax(e.target.value === "" ? "" : Number(e.target.value))} style={{ width: "6rem", marginLeft: "0.5rem" }} />
+          <input
+            type="number"
+            placeholder="mín"
+            value={montoMin}
+            onChange={(e) => setMontoMin(e.target.value === "" ? "" : Number(e.target.value))}
+            style={{ width: "6rem" }}
+          />
+          <input
+            type="number"
+            placeholder="máx"
+            value={montoMax}
+            onChange={(e) => setMontoMax(e.target.value === "" ? "" : Number(e.target.value))}
+            style={{ width: "6rem", marginLeft: "0.5rem" }}
+          />
         </div>
       </div>
 
