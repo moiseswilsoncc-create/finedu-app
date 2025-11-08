@@ -1,0 +1,46 @@
+# 🧩 Módulo Ingresos — Milestone técnico institucional
+
+## 📌 Objetivo
+Permitir a cada usuario registrar sus fuentes de ingreso con trazabilidad institucional, visual clara y compatibilidad con Supabase.
+
+---
+
+## 🧠 Estructura funcional
+
+- Componente: `RegistroIngreso.tsx` (pendiente de consolidación)
+- Tabla Supabase: `ingresos_usuario`
+- Campos: `id`, `usuario_id`, `fecha`, `monto`, `tipo_ingreso`, `mes`, `año`
+- Tipos de ingreso institucionalizados:
+  - Sueldo
+  - Boletas de honorarios
+  - Mesada
+  - Otros
+
+---
+
+## ✅ Funcionalidades implementadas
+
+- Registro de ingresos con fecha actual y cálculo automático de mes/año
+- Visualización de ingresos recientes con filtros por tipo, mes y año
+- Total acumulado por filtro
+- Navegación institucional
+
+---
+
+## 🔐 Seguridad y RLS
+
+Tabla `ingresos_usuario` con políticas activas:
+
+- ✅ `SELECT`: `USING (usuario_id = auth.uid())`
+- ✅ `INSERT`: `WITH CHECK (usuario_id = auth.uid())`
+- ✅ `DELETE`: `USING (usuario_id = auth.uid())`
+- ✅ `UPDATE`: `USING (usuario_id = auth.uid()) WITH CHECK (usuario_id = auth.uid())`
+
+---
+
+## 📦 Estado final
+
+✅ Tipos de ingreso institucionalizados en Supabase  
+✅ Listo para consolidar visual y activar edición/eliminación  
+✅ Compatible con panel de simulación y trazabilidad financiera
+
