@@ -1,3 +1,20 @@
+# 💚 Corazón del Ahorro Grupal — Declaración institucional
+
+1. **Cualquier usuario puede crear un grupo y ser administrador.**
+2. **Un administrador puede pertenecer a múltiples grupos, como admin o participante.**
+3. **Solo el administrador puede ingresar, editar o grabar:**
+   - Participantes
+   - Depósitos
+   - Metas
+4. **Los participantes solo pueden:**
+   - Ver los grupos donde participan
+   - Ver a sus compañeros y su progreso
+   - No pueden editar, ingresar ni borrar nada
+
+🔐 Esta lógica es la base de las políticas RLS, los endpoints Express y la UI condicional.
+
+
+
 # 🧩 Comparativa institucional — Archivos y Tablas del módulo Ahorro Grupal
 
 | Elemento              | Tipo      | Estado técnico        | Acción recomendada        | Observaciones clave                                      |
@@ -13,4 +30,181 @@
 | vista_grupal          | Vista     | ⚠️ Sin RLS              | ✅ Conservar (filtrar en frontend) | Muestra compañeros y aportes por grupo         |
 | vista_mis_grupos      | Vista     | ⚠️ Sin RLS              | ✅ Conservar (filtrar en frontend) | Muestra grupos del usuario actual              |
 | grupos (obsoleta)     | Tabla     | ❌ No existe en Supabase | ❌ Eliminar o migrar       | Usada en archivos antiguos, no forma parte del sistema   |
+
+
+🧩 Plan de trabajo con Supabase (previo a adaptar archivos)
+1. Validar estructura actual
+[x] Tablas: grupos_ahorro, aportes_grupales, participantes_grupo
+
+[x] Vistas: vista_grupal, vista_mis_grupos
+
+[x] Políticas RLS activas y documentadas
+
+2. Migrar lógica de archivos obsoletos
+[ ] Reemplazar referencias a grupos por grupos_ahorro
+
+[ ] Crear inserciones en participantes_grupo al crear grupo
+
+[ ] Confirmar que usuario_id se obtiene desde auth.uid() en todas las inserciones
+
+3. Endpoints Express necesarios
+[ ] POST /crear-grupo: inserta en grupos_ahorro y participantes_grupo
+
+[ ] GET /mis-grupos: consulta vista_mis_grupos por auth.uid()
+
+[ ] GET /grupo/:id: consulta vista_grupal por grupo_id
+
+[ ] POST /aportar: inserta en aportes_grupales con validación de pertenencia
+
+4. Validar relaciones y consistencia
+[ ] Confirmar que grupo_id en aportes_grupales y participantes_grupo corresponde a grupos_ahorro.id
+
+[ ] Confirmar que usuario_id en todas las tablas es uuid y se alinea con auth.users
+
+5. Simulación y pruebas
+[ ] Crear grupo desde Supabase UI
+
+[ ] Agregar participantes manualmente
+
+[ ] Insertar aportes y validar vistas
+
+
+
+🧩 Plan maestro — Institucionalización Supabase (Ahorro Grupal)
+Paso	Objetivo técnico	Resultado esperado
+1️⃣	Validar estructura de tablas y relaciones	Confirmar consistencia entre claves y tipos :OK
+2️⃣	Crear endpoint /crear-grupo	Insertar en grupos_ahorro y participantes_grupo:  
+3️⃣	Crear endpoint /aportar	Insertar en aportes_grupales con validación
+4️⃣	Crear endpoint /mis-grupos	Consultar vista_mis_grupos por auth.uid()
+5️⃣	Crear endpoint /grupo/:id	Consultar vista_grupal por grupo_id
+6️⃣	Validar seguridad y RLS	Confirmar que cada acción respeta las políticas
+7️⃣	Adaptar archivos visuales	Conectar componentes React con endpoints
+8️⃣	Documentar milestone técnico	Consolidar todo en estadoConstruccionFinedu.md
+
+
+
+
+🧩 Milestone técnico — Adaptación visual: AhorroGrupal.tsx
+📦 Archivo adaptado
+AhorroGrupal.tsx Componente React que permite crear un grupo de ahorro con proyección financiera colaborativa.
+
+🔄 Antes
+Calculaba proyección localmente (monto final, fecha estimada)
+
+No persistía datos en Supabase
+
+Agregaba correos sin vinculación institucional
+
+✅ Después
+Conectado al endpoint Express POST /crear-grupo
+
+Inserta en grupos_ahorro con trazabilidad completa
+
+Registra automáticamente al creador como admin en participantes_grupo
+
+Envía JWT en el header para validación segura (Authorization: Bearer token)
+
+Listo para extender con más participantes en fase 2
+
+🔐 Seguridad validada
+El backend valida auth.uid() antes de insertar
+
+RLS activa en grupos_ahorro y participantes_grupo
+
+No se expone lógica sensible en el frontend
+
+🧩 Flujo institucional consolidado
+mermaid
+graph TD
+  A[Usuario crea grupo en AhorroGrupal.tsx] --> B[POST /crear-grupo]
+  B --> C[Insertar en grupos_ahorro]
+  B --> D[Insertar en participantes_grupo (rol: admin)]
+  C --> E[Grupo institucional creado]
+  D --> F[Usuario vinculado como administrador]
+📁 Archivos involucrados
+AhorroGrupal.tsx (adaptado)
+
+routes/grupo.js → endpoint /crear-grupo
+
+middlewareAuth.js → extracción de auth.uid() y correo
+
+Supabase: tablas grupos_ahorro, participantes_grupo
+
+
+
+
+
+# 🧩 Milestone técnico — Módulo Ahorro Grupal
+
+## 🎯 Propósito
+Institucionalizar el flujo de ahorro colaborativo entre usuarios, con trazabilidad, seguridad y visualización grupal. El módulo permite crear grupos, registrar aportes, simular metas y visualizar el progreso colectivo.
+
+---
+
+## 🧱 Estructura Supabase
+
+### Tablas
+- `grupos_ahorro`: define el grupo, meta, plazo, tipo y administrador
+- `participantes_grupo`: vincula usuarios al grupo con rol (`admin`, `miembro`)
+- `aportes_grupales`: registra aportes individuales con fecha y monto
+
+### Vistas
+- `vista_mis_grupos`: muestra los grupos donde participa el usuario
+- `vista_grupal`: muestra el progreso de cada participante en un grupo
+
+---
+
+## 🔐 Seguridad y RLS
+
+| Tabla/Vista             | RLS activa | Observación clave                                 |
+|-------------------------|------------|--------------------------------------------------|
+| `grupos_ahorro`         | ✅         | Solo el admin puede modificar su grupo           |
+| `participantes_grupo`   | ✅         | Visibilidad por grupo y rol                      |
+| `aportes_grupales`      | ✅         | Cada usuario gestiona sus propios aportes        |
+| `vista_mis_grupos`      | ⚠️         | Filtrada en backend por `auth.uid()`             |
+| `vista_grupal`          | ⚠️         | Filtrada en backend por `grupo_id`               |
+
+---
+
+## 🔌 Endpoints Express
+
+| Endpoint           | Acción Supabase         | Seguridad validada | Estado |
+|--------------------|-------------------------|---------------------|--------|
+| `POST /crear-grupo`| Inserta en `grupos_ahorro` y `participantes_grupo` | ✅ JWT + RLS         | ✅ Listo |
+| `POST /aportar`    | Inserta en `aportes_grupales`                      | ✅ JWT + RLS         | ✅ Listo |
+| `GET /mis-grupos`  | Consulta `vista_mis_grupos`                        | ✅ Filtrado backend  | ✅ Listo |
+| `GET /grupo/:id`   | Consulta `vista_grupal`                            | ✅ Filtrado backend  | ✅ Listo |
+
+---
+
+## 🎨 Archivos visuales adaptados
+
+| Archivo visual         | Estado técnico        | Endpoint conectado         | Resultado esperado                          |
+|------------------------|------------------------|-----------------------------|---------------------------------------------|
+| `AhorroGrupal.tsx`     | ✅ Adaptado             | `POST /crear-grupo`         | Crea grupo y vincula al creador como admin  |
+| `VistaGrupal.tsx`      | ✅ Adaptado             | `GET /mis-grupos`           | Muestra todos los grupos del usuario        |
+| `PanelGrupo.tsx`       | ✅ Adaptado             | `GET /grupo/:id`            | Muestra detalle colaborativo del grupo      |
+| `VistaParticipante.tsx`| ⚠️ Listo para integrar  | (opcional: simulador)       | Diagnóstico financiero previo al compromiso |
+
+---
+
+## 🧠 Flujo institucional consolidado
+
+```mermaid
+graph TD
+  A[Usuario crea grupo en AhorroGrupal.tsx] --> B[POST /crear-grupo]
+  B --> C[Insertar en grupos_ahorro]
+  B --> D[Insertar en participantes_grupo (rol: admin)]
+  C --> E[Grupo institucional creado]
+  D --> F[Usuario vinculado como administrador]
+  G[Usuario aporta en VistaGrupal.tsx] --> H[POST /aportar]
+  H --> I[Insertar en aportes_grupales]
+  J[VistaGrupal.tsx] --> K[GET /mis-grupos]
+  L[PanelGrupo.tsx] --> M[GET /grupo/:id]
+
+
+
+
+
+
 
