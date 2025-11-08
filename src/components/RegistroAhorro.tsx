@@ -30,7 +30,8 @@ function RegistroAhorro() {
       .from("aportes_usuario")
       .select("id, fecha, monto, mes, año")
       .eq("usuario_id", usuarioId)
-      .order("fecha", { ascending: false });
+      .order("fecha", { ascending: false })
+      .limit(6);
 
     if (error) {
       console.error("Error al obtener aportes:", error.message);
@@ -43,13 +44,16 @@ function RegistroAhorro() {
   const registrarAporte = async () => {
     if (!usuarioId || !monto) return;
 
-    const { error } = await supabase.from("aportes_usuario").insert([
-      {
-        usuario_id: usuarioId,
-        monto: parseFloat(monto),
-        fecha: new Date().toISOString()
-      }
-    ]);
+    const fechaActual = new Date();
+    const nuevoAporte = {
+      usuario_id: usuarioId,
+      monto: parseFloat(monto),
+      fecha: fechaActual.toISOString(),
+      mes: fechaActual.getMonth() + 1,
+      año: fechaActual.getFullYear()
+    };
+
+    const { error } = await supabase.from("aportes_usuario").insert([nuevoAporte]);
 
     if (error) {
       console.error("Error al registrar aporte:", error.message);
@@ -95,6 +99,8 @@ function RegistroAhorro() {
     const coincideAño = filtroAño ? a.año === parseInt(filtroAño) : true;
     return coincideMes && coincideAño;
   });
+
+  const totalAhorrado = historialFiltrado.reduce((sum, a) => sum + a.monto, 0);
 
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
@@ -149,83 +155,7 @@ function RegistroAhorro() {
           ))}
         </select>
       </div>
-      {historialFiltrado.length > 0 ? (
-        <table style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          marginTop: "1rem",
-          fontSize: "0.95rem"
-        }}>
-          <thead style={{ backgroundColor: "#f2f2f2" }}>
-            <tr>
-              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
-                <input type="checkbox" onChange={toggleSeleccionGlobal} />
-              </th>
-              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Fecha</th>
-              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Monto</th>
-              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Mes</th>
-              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Año</th>
-              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {historialFiltrado.map((aporte) => (
-              <tr key={aporte.id}>
-                <td style={{ border: "1px solid #ccc", padding: "0.5rem", textAlign: "center" }}>
-                  <input
-                    type="checkbox"
-                    checked={seleccionados.includes(aporte.id)}
-                    onChange={() => toggleSeleccion(aporte.id)}
-                  />
-                </td>
-                <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
-                  {new Date(aporte.fecha).toLocaleDateString()}
-                </td>
-                <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
-                  ${aporte.monto.toLocaleString()}
-                </td>
-                <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>{aporte.mes}</td>
-                <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>{aporte.año}</td>
-                <td style={{ border: "1px solid #ccc", padding: "0.5rem", textAlign: "center" }}>
-                  <button
-                    onClick={() => eliminarAporte(aporte.id)}
-                    style={{
-                      backgroundColor: "#e74c3c",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      padding: "0.3rem 0.6rem",
-                      cursor: "pointer"
-                    }}
-                  >
-                    🗑️
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p style={{ marginTop: "1rem", color: "#888" }}>
-          No hay aportes registrados aún.
-        </p>
-      )}
 
-      <button
-        style={{
-          marginTop: "2rem",
-          padding: "0.6rem 1.2rem",
-          backgroundColor: "#ccc",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer"
-        }}
-        onClick={() => window.location.href = "/dashboard"}
-      >
-        ⬅️ Volver al menú principal
-      </button>
-    </div>
-  );
-}
-
-export default RegistroAhorro;
+      <p style={{ marginTop: "1rem", fontWeight: "bold", color: "#2c3e50" }}>
+        💰 Total ahorrado: ${totalAhorrado.toLocaleString()}
+      </p>
