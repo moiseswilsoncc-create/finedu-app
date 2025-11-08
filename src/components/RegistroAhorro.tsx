@@ -172,7 +172,6 @@ function RegistroAhorro() {
                 <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Monto</th>
                 <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Mes</th>
                 <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Año</th>
-                <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -193,35 +192,6 @@ function RegistroAhorro() {
                   </td>
                   <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>{aporte.mes}</td>
                   <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>{aporte.año}</td>
-                  <td style={{ border: "1px solid #ccc", padding: "0.5rem", textAlign: "center" }}>
-                    <button
-                      onClick={() => alert("Función de edición pendiente")}
-                      style={{
-                        backgroundColor: "#f39c12",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        padding: "0.3rem 0.6rem",
-                        marginRight: "0.5rem",
-                        cursor: "pointer"
-                      }}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={() => eliminarAporte(aporte.id)}
-                      style={{
-                        backgroundColor: "#e74c3c",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        padding: "0.3rem 0.6rem",
-                        cursor: "pointer"
-                      }}
-                    >
-                      🗑️
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -276,7 +246,7 @@ function RegistroAhorro() {
           borderRadius: "6px",
           cursor: "pointer"
         }}
-        onClick={() => window.location.href = "/dashboard"}
+        onClick={() => window.location.href = "/panel-usuario"}
       >
         ⬅️ Volver al menú principal
       </button>
