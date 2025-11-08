@@ -8,36 +8,34 @@ interface Ingreso {
   tipo: string;
   monto: number;
   fecha: string;
-  descripcion?: string;
   mes?: string;
   anio?: number;
 }
 
 const Ingresos: React.FC = () => {
-  const [usuarioId, setUsuarioId] = useState<string | null>(null);
-  const [ingresos, setIngresos] = useState<Ingreso[]>([]);
-  const [seleccionados, setSeleccionados] = useState<string[]>([]);
-  const [editando, setEditando] = useState<Ingreso | null>(null);
-
   const [tipo, setTipo] = useState("");
+  const [tiposDisponibles, setTiposDisponibles] = useState<string[]>([
+    "Sueldo",
+    "Boletas de honorarios",
+    "Aguinaldo",
+    "Mesada",
+    "Ingreso cumpleaños"
+  ]);
+  const [nuevoTipo, setNuevoTipo] = useState("");
+
   const [monto, setMonto] = useState<number | "">("");
   const [fecha, setFecha] = useState("");
-  const [descripcion, setDescripcion] = useState("");
+  const [ingresos, setIngresos] = useState<Ingreso[]>([]);
+  const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
+
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
+  const [seleccionados, setSeleccionados] = useState<string[]>([]);
+  const [editando, setEditando] = useState<Ingreso | null>(null);
 
   const [mesFiltro, setMesFiltro] = useState("");
   const [anioFiltro, setAnioFiltro] = useState("");
   const [tipoFiltro, setTipoFiltro] = useState("");
-
-  const tiposDisponibles = [
-    "Sueldo",
-    "Boletas de honorarios",
-    "Mesada",
-    "Ingreso cumpleaños",
-    "Otros"
-  ];
-
-  const [error, setError] = useState("");
-  const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
     const getUser = async () => {
@@ -77,72 +75,51 @@ const Ingresos: React.FC = () => {
       setIngresos(data || []);
     }
   };
+  };
 
-  const handleGuardarIngreso = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setMensaje("");
+  const toggleSeleccion = (id: string) => {
+    setSeleccionados((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
+  };
 
-    if (!usuarioId) {
-      setError("No hay usuario válido.");
-      return;
-    }
-
-    if (!tipo || !monto || !fecha) {
-      setError("Todos los campos son obligatorios.");
-      return;
-    }
-
-    if (editando) {
-      const cambios: any = {};
-      if (monto !== "" && monto !== editando.monto) cambios.monto = Number(monto);
-      if (fecha && fecha !== editando.fecha) cambios.fecha = fecha;
-      if (descripcion !== editando.descripcion) cambios.descripcion = descripcion;
-
-      if (Object.keys(cambios).length === 0) {
-        setMensaje("⚠️ No se detectaron cambios.");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("ingresos")
-        .update(cambios)
-        .eq("id", editando.id);
-
-      if (error) {
-        setError("No se pudo actualizar el ingreso.");
-      } else {
-        setMensaje("✏️ Ingreso actualizado correctamente.");
-        setIngresos(
-          ingresos.map((i) =>
-            i.id === editando.id ? { ...i, ...cambios } : i
-          )
-        );
-        setEditando(null);
-        setTipo("");
-        setMonto("");
-        setFecha("");
-        setDescripcion("");
-        setSeleccionados([]);
+  const handleEditarSeleccionado = () => {
+    if (seleccionados.length === 1) {
+      const ingreso = ingresos.find((i) => i.id === seleccionados[0]);
+      if (ingreso) {
+        setEditando(ingreso);
+        setTipo(ingreso.tipo);
+        setMonto(ingreso.monto);
+        setFecha(ingreso.fecha);
+        setMensaje("✏️ Editando ingreso seleccionado.");
       }
     } else {
-      const { data, error } = await supabase
-        .from("ingresos")
-        .insert([{ usuario_id: usuarioId, tipo, monto: Number(monto), fecha, descripcion }])
-        .select();
-
-      if (error) {
-        setError("No se pudo guardar el ingreso.");
-      } else {
-        setMensaje("✅ Ingreso guardado correctamente.");
-        setIngresos([...(data || []), ...ingresos]);
-        setTipo("");
-        setMonto("");
-        setFecha("");
-        setDescripcion("");
-      }
+      setError("Debes seleccionar exactamente un ingreso para editar.");
     }
   };
+
+  const handleEliminarSeleccionados = async () => {
+    if (seleccionados.length === 0) {
+      setError("Debes seleccionar al menos un ingreso para eliminar.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("ingresos")
+      .delete()
+      .in("id", seleccionados);
+
+    if (error) {
+      setError("No se pudieron eliminar los ingresos seleccionados.");
+    } else {
+      setIngresos(ingresos.filter((i) => !seleccionados.includes(i.id)));
+      setSeleccionados([]);
+      setMensaje("🗑️ Ingresos eliminados correctamente.");
+    }
+  };
+
+  const total = ingresos.reduce((acc, ingreso) => acc + ingreso.monto, 0);
+
   return (
     <div style={{ padding: "2rem" }}>
       <h2>📈 Ingresos</h2>
@@ -150,29 +127,64 @@ const Ingresos: React.FC = () => {
 
       {/* Formulario */}
       <form onSubmit={handleGuardarIngreso} style={{ marginBottom: "1.5rem" }}>
+        <div style={{ display: "flex", gap: "1rem", marginBottom: "0.5rem" }}>
+          <input
+            type="text"
+            placeholder="Agregar nuevo tipo (ej: Propina)"
+            value={nuevoTipo}
+            onChange={(e) => setNuevoTipo(e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <button
+            type="button"
+            onClick={handleAgregarTipo}
+            style={{
+              padding: "0.5rem 1rem",
+              backgroundColor: "#16a085",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
+          >
+            ➕ Tipo
+          </button>
+        </div>
+
         <div>
-          <label>Tipo de ingreso: </label>
-          <select value={tipo} onChange={(e) => setTipo(e.target.value)} required disabled={!!editando}>
+          <label>Elige tu ingreso: </label>
+          <select
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            required
+            disabled={!!editando}
+          >
             <option value="">-- Selecciona --</option>
             {tiposDisponibles.map((t, index) => (
-              <option key={index} value={t}>{t}</option>
+              <option key={index} value={t}>
+                {t}
+              </option>
             ))}
           </select>
         </div>
 
         <div>
           <label>Monto: </label>
-          <input type="number" value={monto} onChange={(e) => setMonto(Number(e.target.value))} placeholder="Ej: 50000" />
+          <input
+            type="number"
+            value={monto}
+            onChange={(e) => setMonto(Number(e.target.value))}
+            placeholder="Ej: 50000"
+          />
         </div>
 
         <div>
           <label>Fecha: </label>
-          <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
-        </div>
-
-        <div>
-          <label>Descripción: </label>
-          <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Ej: sueldo mensual" />
+          <input
+            type="date"
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+          />
         </div>
 
         <button type="submit">
@@ -225,7 +237,6 @@ const Ingresos: React.FC = () => {
               <th>Tipo</th>
               <th>Monto</th>
               <th>Fecha</th>
-              <th>Descripción</th>
             </tr>
           </thead>
           <tbody>
@@ -241,7 +252,6 @@ const Ingresos: React.FC = () => {
                 <td>{ingreso.tipo}</td>
                 <td>${ingreso.monto.toLocaleString("es-CL")}</td>
                 <td>{ingreso.fecha}</td>
-                <td>{ingreso.descripcion || "—"}</td>
               </tr>
             ))}
           </tbody>
