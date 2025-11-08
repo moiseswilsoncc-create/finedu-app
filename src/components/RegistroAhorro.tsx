@@ -145,8 +145,6 @@ function RegistroAhorro() {
           No hay aportes registrados aún.
         </p>
       )}
-
-      <SimuladorCredito pais={paisUsuario} grupoActivo={grupoActivo} />
     </div>
   );
 }
