@@ -10,6 +10,7 @@ type Aporte = {
 };
 
 function RegistroAhorro() {
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
   const [monto, setMonto] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [historial, setHistorial] = useState<Aporte[]>([]);
@@ -17,10 +18,13 @@ function RegistroAhorro() {
   const [filtroMes, setFiltroMes] = useState("");
   const [filtroAño, setFiltroAño] = useState("");
 
-  const usuarioId = localStorage.getItem("usuarioId");
+  useEffect(() => {
+    const id = localStorage.getItem("usuarioId");
+    setUsuarioId(id);
+  }, []);
 
   useEffect(() => {
-    obtenerAportes();
+    if (usuarioId) obtenerAportes();
   }, [usuarioId]);
 
   const obtenerAportes = async () => {
@@ -44,6 +48,11 @@ function RegistroAhorro() {
 
     if (isNaN(montoNum) || montoNum <= 0) {
       setMensaje("❌ Ingresa un monto válido.");
+      return;
+    }
+
+    if (!usuarioId) {
+      setMensaje("❌ Usuario no disponible aún.");
       return;
     }
 
@@ -163,6 +172,7 @@ function RegistroAhorro() {
           ))}
         </select>
       </div>
+
       {historialFiltrado.length > 0 ? (
         <>
           <table style={{
