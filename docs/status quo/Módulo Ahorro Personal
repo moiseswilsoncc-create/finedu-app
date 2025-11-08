@@ -1,0 +1,65 @@
+# 🧩 Módulo Ahorro Personal — Milestone técnico institucional
+
+## 📌 Objetivo
+Permitir a cada usuario registrar, visualizar, editar y eliminar sus propios aportes de ahorro, con trazabilidad institucional, filtros por mes/año, y visual profesional.
+
+---
+
+## 🧠 Estructura funcional
+
+- Componente: `RegistroAhorro.tsx`
+- Tabla Supabase: `aportes_usuario`
+- Campos: `id`, `usuario_id`, `fecha`, `monto`, `mes`, `año` (mes y año generados automáticamente)
+- Visual: tabla institucional con filtros, selección múltiple, total acumulado y navegación
+
+---
+
+## ✅ Funcionalidades implementadas
+
+- Registro de aportes con fecha actual (`fecha`) y cálculo automático de `mes` y `año` vía Supabase
+- Visualización de últimos 6 aportes con filtros por mes y año
+- Selección múltiple con checkbox global
+- Botón 🗑️ Eliminar seleccionados — funcional, con limpieza de selección
+- Botón ✏️ Editar seleccionado — funcional, con validación de único registro y edición en línea
+- Botón ⬅️ Volver al menú principal
+- Mensajes de éxito/error con feedback visual
+- Total acumulado de ahorro filtrado
+
+---
+
+## 🔐 Seguridad y RLS
+
+Tabla `aportes_usuario` con las siguientes políticas activas:
+
+- ✅ `SELECT`: `USING (usuario_id = auth.uid())`
+- ✅ `INSERT`: `WITH CHECK (usuario_id = auth.uid())`
+- ✅ `DELETE`: `USING (usuario_id = auth.uid())`
+- ✅ `UPDATE`: `USING (usuario_id = auth.uid()) WITH CHECK (usuario_id = auth.uid())`
+
+Estas políticas aseguran que cada usuario solo pueda ver, registrar, editar y eliminar sus propios aportes.
+
+---
+
+## 🧼 Trazabilidad y validación
+
+- Validado en Vercel con Supabase URL: `https://ftsbnorudtcyrruubutt.supabase.co`
+- Confirmado que los campos `mes` y `año` son generados automáticamente
+- Eliminado intento de insert manual de `mes` y `año` para evitar error 400
+- Confirmado que los botones ejecutan correctamente las acciones y limpian selección
+- Confirmado que RLS bloqueaba `DELETE` y `UPDATE` antes de agregar políticas faltantes
+
+---
+
+## 🧭 Navegación y experiencia
+
+- Visual institucional con tabla clara, filtros accesibles y botones intuitivos
+- Mensajes de estado visibles y temporizados
+- Navegación fluida entre panel de ahorro y menú principal
+
+---
+
+## 📦 Estado final
+
+✅ Módulo Ahorro Personal completamente funcional, validado y documentado.  
+Listo para onboarding, integración con panel grupal y trazabilidad institucional.
+
