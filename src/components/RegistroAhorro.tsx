@@ -14,6 +14,9 @@ function RegistroAhorro() {
   const [monto, setMonto] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [historial, setHistorial] = useState<Aporte[]>([]);
+  const [seleccionados, setSeleccionados] = useState<string[]>([]);
+  const [filtroMes, setFiltroMes] = useState("");
+  const [filtroAño, setFiltroAño] = useState("");
 
   useEffect(() => {
     const id = localStorage.getItem("usuarioId");
@@ -52,7 +55,7 @@ function RegistroAhorro() {
     const { error } = await supabase.from("aportes_usuario").insert([aporte]);
 
     if (error) {
-      console.error("❌ Error Supabase:", error);
+      console.error("Error al registrar aporte:", error.message);
       setMensaje("❌ Error al registrar aporte.");
     } else {
       setMonto("");
@@ -61,7 +64,6 @@ function RegistroAhorro() {
       obtenerAportes();
     }
   };
-
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       <h2>📘 Registro de ahorro</h2>
@@ -98,19 +100,119 @@ function RegistroAhorro() {
         <p style={{ color: mensaje.includes("✅") ? "green" : "red" }}>{mensaje}</p>
       )}
 
-      {historial.length > 0 ? (
-        <ul>
-          {historial.map((a) => (
-            <li key={a.id}>
-              {new Date(a.fecha).toLocaleDateString()} — ${a.monto.toLocaleString()} (Mes {a.mes}, Año {a.año})
-            </li>
+      <div style={{ display: "flex", gap: "1rem", margin: "1rem 0" }}>
+        <select value={filtroMes} onChange={(e) => setFiltroMes(e.target.value)}>
+          <option value="">Todos los meses</option>
+          {[...Array(12)].map((_, i) => (
+            <option key={i + 1} value={i + 1}>
+              Mes {i + 1}
+            </option>
           ))}
-        </ul>
+        </select>
+
+        <select value={filtroAño} onChange={(e) => setFiltroAño(e.target.value)}>
+          <option value="">Todos los años</option>
+          {[2025, 2024, 2023].map((año) => (
+            <option key={año} value={año}>{año}</option>
+          ))}
+        </select>
+      </div>
+
+      {historialFiltrado.length > 0 ? (
+        <>
+          <table style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            marginTop: "1rem",
+            fontSize: "0.95rem"
+          }}>
+            <thead style={{ backgroundColor: "#f2f2f2" }}>
+              <tr>
+                <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
+                  <input type="checkbox" onChange={toggleSeleccionGlobal} />
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Fecha</th>
+                <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Monto</th>
+                <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Mes</th>
+                <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Año</th>
+              </tr>
+            </thead>
+            <tbody>
+              {historialFiltrado.map((aporte) => (
+                <tr key={aporte.id}>
+                  <td style={{ border: "1px solid #ccc", padding: "0.5rem", textAlign: "center" }}>
+                    <input
+                      type="checkbox"
+                      checked={seleccionados.includes(aporte.id)}
+                      onChange={() => toggleSeleccion(aporte.id)}
+                    />
+                  </td>
+                  <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
+                    {new Date(aporte.fecha).toLocaleDateString()}
+                  </td>
+                  <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
+                    ${aporte.monto.toLocaleString()}
+                  </td>
+                  <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>{aporte.mes}</td>
+                  <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>{aporte.año}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+            <button
+              onClick={() => alert("Función de edición múltiple pendiente")}
+              style={{
+                backgroundColor: "#f39c12",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                padding: "0.5rem 1rem",
+                cursor: "pointer"
+              }}
+            >
+              ✏️ Editar seleccionado
+            </button>
+
+            <button
+              onClick={eliminarSeleccionados}
+              style={{
+                backgroundColor: "#e74c3c",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                padding: "0.5rem 1rem",
+                cursor: "pointer"
+              }}
+            >
+              🗑️ Eliminar seleccionados
+            </button>
+          </div>
+
+          <p style={{ marginTop: "1rem", fontWeight: "bold", color: "#2c3e50" }}>
+            💰 Total: ${totalAhorrado.toLocaleString()}
+          </p>
+        </>
       ) : (
         <p style={{ marginTop: "1rem", color: "#888" }}>
           No hay aportes registrados aún.
         </p>
       )}
+
+      <button
+        style={{
+          marginTop: "2rem",
+          padding: "0.6rem 1.2rem",
+          backgroundColor: "#ccc",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer"
+        }}
+        onClick={() => window.location.href = "/panel-usuario"}
+      >
+        ⬅️ Volver al menú principal
+      </button>
     </div>
   );
 }
