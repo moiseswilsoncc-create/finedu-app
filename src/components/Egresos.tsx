@@ -12,7 +12,7 @@ interface Egreso {
   categoria_nombre: string;
   monto: number;
   fecha: string;
-  forma_pago?: string;
+  descripcion?: string;
 }
 
 const Egresos: React.FC = () => {
@@ -27,7 +27,7 @@ const Egresos: React.FC = () => {
 
   const [monto, setMonto] = useState<number | "">("");
   const [fecha, setFecha] = useState("");
-  const [forma_pago, setforma_pago] = useState("");
+  const [descripcion, setDescripcion] = useState("");
 
   const [egresos, setEgresos] = useState<Egreso[]>([]);
   const [error, setError] = useState("");
@@ -215,7 +215,7 @@ const Egresos: React.FC = () => {
         usuario_id,
         monto,
         fecha,
-        forma_pago,
+        descripcion,
         items_egresos (
           nombre,
           categorias_egresos (nombre)
@@ -242,7 +242,7 @@ const Egresos: React.FC = () => {
       usuario_id: e.usuario_id,
       monto: e.monto,
       fecha: e.fecha,
-      forma_pago: e.forma_pago,
+      descripcion: e.descripcion,
       item_nombre: e.items_egresos?.nombre || "",
       categoria_nombre: e.items_egresos?.categorias_egresos?.nombre || ""
     }));
@@ -250,7 +250,7 @@ const Egresos: React.FC = () => {
     setEgresos(egresosConNombres);
   };
 
-    const handleGuardarEgreso = async (e: React.FormEvent) => {
+  const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usuarioId || !categoria || !item || !monto || !fecha) return;
 
@@ -268,7 +268,7 @@ const Egresos: React.FC = () => {
         item_id: itemId,
         monto: Number(monto),
         fecha,
-        forma_pago
+        descripcion
       };
       await supabase.from("egresos").update(cambios).eq("id", editando.id);
       setMensaje("✏️ Egreso actualizado.");
@@ -281,7 +281,7 @@ const Egresos: React.FC = () => {
         item_id: itemId,
         monto: Number(monto),
         fecha,
-        forma_pago
+        descripcion
       }]);
       setMensaje("✅ Egreso agregado.");
       limpiarFormulario();
@@ -314,7 +314,7 @@ const Egresos: React.FC = () => {
         setItem(egreso.item_nombre);
         setMonto(egreso.monto);
         setFecha(egreso.fecha);
-        setforma_pago(egreso.forma_pago || "");
+        setDescripcion(egreso.descripcion || "");
       }
     }
   };
@@ -344,7 +344,7 @@ const Egresos: React.FC = () => {
         nuevoItem={nuevoItem}
         monto={monto}
         fecha={fecha}
-        forma_pago={descripcion}
+        descripcion={descripcion}
         editando={editando}
         mensaje={mensaje}
         error={error}
@@ -354,7 +354,7 @@ const Egresos: React.FC = () => {
         setNuevoItem={setNuevoItem}
         setMonto={setMonto}
         setFecha={setFecha}
-        setforma_pago={setforma_pago}
+        setDescripcion={setDescripcion}
         onAgregarCategoria={handleAgregarCategoria}
         onAgregarItem={handleAgregarItem}
         onGuardar={handleGuardarEgreso}
@@ -408,5 +408,3 @@ const Egresos: React.FC = () => {
 };
 
 export default Egresos;
-
-        
