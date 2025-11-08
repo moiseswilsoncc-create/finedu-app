@@ -46,15 +46,16 @@ function RegistroAhorro() {
   const registrarAporte = async () => {
     if (!usuarioId || !monto) return;
 
-    const { error } = await supabase.from("aportes_usuario").insert([
-      {
-        usuario_id: usuarioId,
-        monto: parseFloat(monto),
-        fecha: new Date().toISOString(),
-        mes: new Date().getMonth() + 1,
-        año: new Date().getFullYear()
-      }
-    ]);
+    const fechaActual = new Date();
+    const aporte = {
+      usuario_id: usuarioId,
+      monto: parseFloat(monto),
+      fecha: fechaActual.toISOString(),
+      mes: fechaActual.getMonth() + 1,
+      año: fechaActual.getFullYear()
+    };
+
+    const { error } = await supabase.from("aportes_usuario").insert([aporte]);
 
     if (error) {
       console.error("Error al registrar aporte:", error.message);
