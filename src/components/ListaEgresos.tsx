@@ -5,7 +5,7 @@ interface Egreso {
   usuario_id: string;
   monto: number;
   fecha: string;
-  forma_pago?: string; // reemplaza descripción
+  forma_pago?: string;
   item_nombre: string;
   categoria_nombre: string;
 }
@@ -55,7 +55,7 @@ const ListaEgresos: React.FC<Props> = ({
   usuarioId,
   cargarEgresos,
 }) => {
-  // 🔹 Aplicar filtros robustos y reactivos
+  // 🔹 Filtrado local en memoria
   const egresosFiltrados = React.useMemo(() => {
     return egresos.filter((e) => {
       const fechaObj = new Date(e.fecha);
@@ -89,7 +89,7 @@ const ListaEgresos: React.FC<Props> = ({
     <div>
       <h3>📋 Lista de Egresos</h3>
 
-      {/* 🔹 Bloque de filtros en una sola línea */}
+      {/* 🔹 Bloque de filtros */}
       <div
         style={{
           marginBottom: "1rem",
@@ -163,7 +163,7 @@ const ListaEgresos: React.FC<Props> = ({
         </div>
 
         <button type="button" onClick={() => usuarioId && cargarEgresos(usuarioId)}>
-          🔍 Filtrar
+          🔄 Recargar
         </button>
       </div>
 
