@@ -13,9 +13,7 @@ interface Egreso {
   anio?: number;
 }
 
-const ListaEgresos: React.FC<{
-  usuarioId: string | null;
-}> = ({ usuarioId }) => {
+const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => {
   const [egresos, setEgresos] = React.useState<Egreso[]>([]);
   const [seleccionados, setSeleccionados] = React.useState<string[]>([]);
   const [mesFiltro, setMesFiltro] = React.useState("");
@@ -93,6 +91,13 @@ const ListaEgresos: React.FC<{
     setEgresos(egresosConNombres);
   };
 
+  // 🔄 Recarga automática al cambiar filtros
+  React.useEffect(() => {
+    if (usuarioId) {
+      cargarEgresos(usuarioId);
+    }
+  }, [usuarioId, mesFiltro, anioFiltro, categoriaFiltro, itemFiltro, montoMin, montoMax]);
+
   return (
     <div>
       <h3>📋 Lista de Egresos</h3>
@@ -129,10 +134,6 @@ const ListaEgresos: React.FC<{
           <input type="number" placeholder="mín" value={montoMin} onChange={(e) => setMontoMin(e.target.value === "" ? "" : Number(e.target.value))} style={{ width: "6rem" }} />
           <input type="number" placeholder="máx" value={montoMax} onChange={(e) => setMontoMax(e.target.value === "" ? "" : Number(e.target.value))} style={{ width: "6rem", marginLeft: "0.5rem" }} />
         </div>
-
-        <button type="button" onClick={() => usuarioId && cargarEgresos(usuarioId)}>
-          🔄 Recargar
-        </button>
       </div>
 
       {/* 🔹 Tabla de egresos */}
