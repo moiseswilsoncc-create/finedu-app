@@ -41,24 +41,13 @@ function RegistroAhorro() {
   };
 
   const registrarAporte = async () => {
-    if (!usuarioId || !monto) {
-      console.warn("usuarioId o monto no definidos");
-      return;
-    }
+    if (!usuarioId || !monto) return;
 
-    const fechaActual = new Date();
     const aporte = {
       usuario_id: usuarioId,
       monto: parseFloat(monto),
-      fecha: fechaActual.toISOString(),
-      mes: fechaActual.getMonth() + 1,
-      año: fechaActual.getFullYear()
+      fecha: new Date().toISOString()
     };
-
-    // 🧠 Trazabilidad cuántica
-    console.log("🧩 usuarioId:", usuarioId);
-    console.log("🧩 monto:", monto, "→ parseFloat:", parseFloat(monto));
-    console.log("🧩 aporte:", aporte);
 
     const { error } = await supabase.from("aportes_usuario").insert([aporte]);
 
@@ -66,7 +55,6 @@ function RegistroAhorro() {
       console.error("❌ Error Supabase:", error);
       setMensaje("❌ Error al registrar aporte.");
     } else {
-      console.log("✅ Aporte registrado correctamente");
       setMonto("");
       setMensaje("✅ Aporte registrado correctamente.");
       setTimeout(() => setMensaje(""), 3000);
