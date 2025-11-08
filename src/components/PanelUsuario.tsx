@@ -18,7 +18,7 @@ const PanelUsuario: React.FC = () => {
   // 📌 Módulos disponibles para el usuario
   const modulos = [
     { nombre: "💸 Ingresos y Egresos", ruta: "/finanzas", color: "#f39c12" },
-    { nombre: "💰 Registro de Ahorro", ruta: "/registro-ahorro", color: "#27ae60" },
+    { nombre: "💰 Módulo de Ahorro", ruta: "/panel-ahorro", color: "#27ae60" },
     { nombre: "👥 Mi Grupo", ruta: "/mi-grupo", color: "#2980b9" },
     { nombre: "🤝 Vista Grupal", ruta: "/vista-grupal", color: "#1abc9c" },
     { nombre: "📈 Simulador de Inversión", ruta: "/simulador-inversion", color: "#8e44ad" },
