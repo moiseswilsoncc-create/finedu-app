@@ -75,7 +75,6 @@ const Ingresos: React.FC = () => {
       setIngresos(data || []);
     }
   };
-  };
 
   const toggleSeleccion = (id: string) => {
     setSeleccionados((prev) =>
