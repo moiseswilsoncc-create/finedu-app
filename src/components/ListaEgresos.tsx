@@ -20,8 +20,8 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
   const [anioFiltro, setAnioFiltro] = React.useState("");
   const [categoriaId, setCategoriaId] = React.useState<number | "">("");
   const [itemId, setItemId] = React.useState<number | "">("");
-  const [montoMin, setMontoMin] = React.useState<number | "">("");
-  const [montoMax, setMontoMax] = React.useState<number | "">("");
+  const [montoMin, setMontoMin] = React.useState<string>("");
+  const [montoMax, setMontoMax] = React.useState<string>("");
   const [categorias, setCategorias] = React.useState<{ id: number; nombre: string }[]>([]);
   const [items, setItems] = React.useState<{ id: number; nombre: string }[]>([]);
 
@@ -70,11 +70,11 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
       .order("fecha", { ascending: false });
 
     if (mesFiltro) query = query.eq("mes", mesFiltro);
-    if (anioFiltro !== "") query = query.eq("anio", Number(anioFiltro));
+    if (anioFiltro) query = query.eq("anio", Number(anioFiltro));
     if (categoriaId !== "") query = query.eq("items_egresos.categoria_id", categoriaId);
     if (itemId !== "") query = query.eq("item_id", itemId);
-    if (montoMin !== "") query = query.gte("monto", montoMin);
-    if (montoMax !== "") query = query.lte("monto", montoMax);
+    if (montoMin !== "") query = query.gte("monto", Number(montoMin));
+    if (montoMax !== "") query = query.lte("monto", Number(montoMax));
 
     const { data, error } = await query;
 
@@ -126,16 +126,12 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
 
         <div>
           <label>Año</label>
-          <input
-            type="number"
-            placeholder="2025"
-            value={anioFiltro}
-            onChange={(e) => {
-              const val = e.target.value;
-              setAnioFiltro(val === "" ? "" : String(Number(val)));
-            }}
-            style={{ width: "6rem" }}
-          />
+          <select value={anioFiltro} onChange={(e) => setAnioFiltro(e.target.value)}>
+            <option value="">Todos</option>
+            {["2023", "2024", "2025"].map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -159,21 +155,23 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
         </div>
 
         <div>
-          <label>Monto</label>
-          <input
-            type="number"
-            placeholder="mín"
-            value={montoMin}
-            onChange={(e) => setMontoMin(e.target.value === "" ? "" : Number(e.target.value))}
-            style={{ width: "6rem" }}
-          />
-          <input
-            type="number"
-            placeholder="máx"
-            value={montoMax}
-            onChange={(e) => setMontoMax(e.target.value === "" ? "" : Number(e.target.value))}
-            style={{ width: "6rem", marginLeft: "0.5rem" }}
-          />
+          <label>Monto mínimo</label>
+          <select value={montoMin} onChange={(e) => setMontoMin(e.target.value)}>
+            <option value="">Sin mínimo</option>
+            {["0", "10000", "50000", "100000"].map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label>Monto máximo</label>
+          <select value={montoMax} onChange={(e) => setMontoMax(e.target.value)}>
+            <option value="">Sin máximo</option>
+            {["50000", "100000", "200000", "500000"].map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
         </div>
       </div>
 
