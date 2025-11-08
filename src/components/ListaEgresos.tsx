@@ -8,6 +8,8 @@ interface Egreso {
   forma_pago?: string;
   item_nombre: string;
   categoria_nombre: string;
+  mes?: string;   // nuevo
+  anio?: number;  // nuevo
 }
 
 interface Props {
@@ -55,20 +57,16 @@ const ListaEgresos: React.FC<Props> = ({
   usuarioId,
   cargarEgresos,
 }) => {
-  // 🔹 Filtrado local en memoria
+  // 🔹 Filtrado local usando mes/anio de Supabase
   const egresosFiltrados = React.useMemo(() => {
     return egresos.filter((e) => {
-      const fechaObj = new Date(e.fecha);
-      const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
-      const anio = String(fechaObj.getFullYear());
-
       const cat = (e.categoria_nombre || "").toLowerCase();
       const itm = (e.item_nombre || "").toLowerCase();
       const catFiltro = categoriaFiltro.trim().toLowerCase();
       const itmFiltro = itemFiltro.trim().toLowerCase();
 
-      const pasaMes = mesFiltro === "" || mes === mesFiltro;
-      const pasaAnio = anioFiltro === "" || anio === anioFiltro;
+      const pasaMes = mesFiltro === "" || e.mes === mesFiltro;
+      const pasaAnio = anioFiltro === "" || String(e.anio) === anioFiltro;
       const pasaCategoria = catFiltro === "" || cat.includes(catFiltro);
       const pasaItem = itmFiltro === "" || itm.includes(itmFiltro);
       const pasaMontoMin = montoMin === "" || e.monto >= Number(montoMin);
@@ -84,7 +82,6 @@ const ListaEgresos: React.FC<Props> = ({
       );
     });
   }, [egresos, mesFiltro, anioFiltro, categoriaFiltro, itemFiltro, montoMin, montoMax]);
-
   return (
     <div>
       <h3>📋 Lista de Egresos</h3>
