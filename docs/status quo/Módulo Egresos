@@ -1,0 +1,54 @@
+# 🧩 Módulo Egresos — Milestone técnico institucional
+
+## 📌 Objetivo
+Permitir a cada usuario registrar sus egresos con trazabilidad institucional, categorización clara y compatibilidad con Supabase.
+
+---
+
+## 🧠 Estructura funcional
+
+- Componente: `RegistroEgreso.tsx` (pendiente de consolidación)
+- Tabla Supabase: `egresos_usuario`
+- Campos: `id`, `usuario_id`, `fecha`, `monto`, `categoria`, `detalle`, `mes`, `año`
+- Categorías institucionalizadas:
+  - Alimentación
+  - Transporte
+  - Salud
+  - Educación
+  - Créditos (nuevo bloque consolidado):
+    - Tarjetas bancarias
+    - Tarjetas comerciales
+    - Crédito de consumo
+    - Automotriz
+    - Hipotecario
+    - Comercial
+    - Personal (familiar, amigos)
+
+---
+
+## ✅ Funcionalidades implementadas
+
+- Registro de egresos con fecha actual y cálculo automático de mes/año
+- Visualización con filtros por categoría, mes y año
+- Total acumulado por filtro
+- Navegación institucional
+
+---
+
+## 🔐 Seguridad y RLS
+
+Tabla `egresos_usuario` con políticas activas:
+
+- ✅ `SELECT`: `USING (usuario_id = auth.uid())`
+- ✅ `INSERT`: `WITH CHECK (usuario_id = auth.uid())`
+- ✅ `DELETE`: `USING (usuario_id = auth.uid())`
+- ✅ `UPDATE`: `USING (usuario_id = auth.uid()) WITH CHECK (usuario_id = auth.uid())`
+
+---
+
+## 📦 Estado final
+
+✅ Categoría Créditos consolidada con subtipos del Simulador  
+✅ Listo para consolidar visual y activar edición/eliminación  
+✅ Compatible con panel de simulación y trazabilidad financiera
+
