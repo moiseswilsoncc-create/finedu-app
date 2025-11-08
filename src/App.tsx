@@ -27,6 +27,9 @@ import ForoFinanciero from "./components/ForoFinanciero";
 import Categorias from "./components/Categorias";
 import Items from "./components/Items";
 
+// 🧩 Módulo Ahorro
+import PanelAhorro from "./components/PanelAhorro";
+
 // 🧩 Colaboradores
 import RegistroColaborador from "./components/RegistroColaborador";
 import IngresoColaborador from "./components/IngresoColaborador";
@@ -52,7 +55,6 @@ import VistaGrupal from "./components/VistaGrupal";
 
 console.log("🧼 App.tsx actualizado: rutas oficiales consolidadas");
 
-// 🔒 Ruta protegida para usuarios
 const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
 
@@ -68,7 +70,6 @@ const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   return autenticado ? <>{children}</> : <Navigate to="/login-usuario" replace />;
 };
 
-// 🔒 Ruta protegida para colaboradores
 const RutaProtegidaColaborador: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
 
@@ -85,7 +86,6 @@ const RutaProtegidaColaborador: React.FC<{ children: React.ReactNode }> = ({ chi
   return autenticado ? <>{children}</> : <Navigate to="/login-colaborador" replace />;
 };
 
-// 🔒 Ruta protegida para institucional
 const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
 
@@ -140,13 +140,15 @@ const App: React.FC = () => {
         <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
         <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
         <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
-
-        {/* Nuevos módulos Finanzas */}
         <Route path="/finanzas/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
         <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
 
+        {/* ✅ Módulo de Ahorro */}
+        <Route path="/panel-ahorro" element={<RutaProtegida><PanelAhorro /></RutaProtegida>} />
+
         {/* Vista Grupal */}
         <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} /></RutaProtegida>} />
+
         {/* Colaboradores */}
         <Route path="/registro-colaborador" element={<RegistroColaborador />} />
         <Route path="/ingreso-colaborador" element={<IngresoColaborador />} />
@@ -157,7 +159,7 @@ const App: React.FC = () => {
         <Route path="/publicar-oferta-colaborador" element={<RutaProtegidaColaborador><PublicarOfertaColaborador /></RutaProtegidaColaborador>} />
         <Route path="/datos-ofertas" element={<RutaProtegidaColaborador><OfertasColaboradores /></RutaProtegidaColaborador>} />
 
-                {/* Institucional */}
+        {/* Institucional */}
         <Route path="/dashboard-institucional" element={<RutaProtegidaInstitucional><DashboardInstitucional /></RutaProtegidaInstitucional>} />
         <Route path="/editor-estado" element={<RutaProtegidaInstitucional><EditorEstadoArchivos /></RutaProtegidaInstitucional>} />
         <Route path="/editor-trazabilidad" element={<RutaProtegidaInstitucional><EditorTrazabilidad /></RutaProtegidaInstitucional>} />
@@ -172,5 +174,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-                                                                                                  
