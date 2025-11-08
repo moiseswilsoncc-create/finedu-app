@@ -1,0 +1,66 @@
+## 🧩 Milestone técnico — Módulo Ahorro Grupal
+
+### 🧱 Estructura de navegación en `panel-ahorro`
+
+Se institucionalizan tres filtros principales para el módulo de ahorro:
+
+1. **Ahorro personal**
+   - Visual individual del usuario
+   - Tabla con aportes, edición, eliminación, totales
+   - Sin contexto grupal
+
+2. **Crear grupo**
+   - Permite crear un nuevo grupo de ahorro
+   - Muestra si el usuario ya pertenece a algún grupo (`vista_mis_grupos`)
+   - Posible extensión: abandonar grupo, ver historial, invitar miembros
+
+3. **Ahorro grupal**
+   - Selector de grupo si el usuario participa en varios
+   - Visual colaborativa:
+     - Tabla con compañeros y sus aportes (`vista_grupal`)
+     - Meses ahorrados y faltantes
+     - Meta grupal y progreso total
+     - Posible extensión: reputación, roles, historial
+
+---
+
+### 🗂️ Tablas institucionales
+
+| Tabla/Vista           | Descripción funcional                                       |
+|-----------------------|-------------------------------------------------------------|
+| `aportes_grupales`    | Registra cada aporte hecho por un usuario en un grupo       |
+| `grupos_ahorro`       | Define los grupos, metas, plazos y administrador            |
+| `participantes_grupo` | Relaciona usuarios con grupos y define roles                |
+| `vista_grupal`        | Consolida aportes por grupo, compañeros, progreso           |
+| `vista_mis_grupos`    | Muestra los grupos donde participa el usuario               |
+
+---
+
+### 🔐 Políticas RLS activas
+
+| Tabla                | Políticas activas                                           |
+|----------------------|-------------------------------------------------------------|
+| `aportes_grupales`   | SELECT, INSERT, UPDATE, DELETE                              |
+| `grupos_ahorro`      | SELECT (x3), ALL (admin gestiona grupos)                    |
+| `participantes_grupo`| SELECT (x3), ALL (admin gestiona participantes)             |
+| `vista_grupal`       | Sin políticas (controlada por origen o filtros en frontend) |
+| `vista_mis_grupos`   | Sin políticas (controlada por origen o filtros en frontend) |
+
+---
+
+### 🧠 Recomendaciones institucionales
+
+- Las vistas pueden mantenerse sin RLS si derivan de tablas con RLS activo, pero se recomienda filtrar por `auth.uid()` en el frontend.
+- Cada filtro del panel debe tener su componente visual modular, con lógica condicional según pertenencia a grupo.
+- Este diseño permite escalar hacia reputación grupal, metas compartidas, historial colaborativo y roles dinámicos.
+
+---
+
+### 📦 Estado de validación
+
+✅ Tablas creadas y estructuradas  
+✅ Políticas RLS activas en tablas principales  
+✅ Vistas funcionales listas para integración  
+✅ Navegación con tres filtros definida  
+✅ Listo para implementación visual y despliegue
+
