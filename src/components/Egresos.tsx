@@ -27,7 +27,7 @@ const Egresos: React.FC = () => {
 
   const [monto, setMonto] = useState<number | "">("");
   const [fecha, setFecha] = useState("");
-  const [formaPago, setFormaPago] = useState(""); // antes era descripcion
+  const [formaPago, setFormaPago] = useState(""); 
 
   const [egresos, setEgresos] = useState<Egreso[]>([]);
   const [error, setError] = useState("");
@@ -214,7 +214,7 @@ const Egresos: React.FC = () => {
         usuario_id,
         monto,
         fecha,
-        forma_pago,     -- reemplaza descripcion
+        forma_pago,     
         items_egresos (
           nombre,
           categorias_egresos (nombre)
@@ -244,7 +244,7 @@ const Egresos: React.FC = () => {
       usuario_id: e.usuario_id,
       monto: e.monto,
       fecha: e.fecha,
-      forma_pago: e.forma_pago, // antes era e.descripcion
+      forma_pago: e.forma_pago, 
       item_nombre: e.items_egresos?.nombre || "",
       categoria_nombre: e.items_egresos?.categorias_egresos?.nombre || ""
     }));
@@ -271,7 +271,7 @@ const Egresos: React.FC = () => {
         item_id: itemId,
         monto: Number(monto),
         fecha,
-        forma_pago: formaPago // antes era descripcion
+        forma_pago: formaPago 
       };
       const { error } = await supabase.from("egresos").update(cambios).eq("id", editando.id);
       if (error) {
@@ -305,7 +305,7 @@ const Egresos: React.FC = () => {
     setItem("");
     setMonto("");
     setFecha("");
-    setFormaPago(""); // antes era setDescripcion("")
+    setFormaPago(""); 
   };
 
   const toggleSeleccion = (id: string) => {
@@ -325,7 +325,7 @@ const Egresos: React.FC = () => {
         setItem(egreso.item_nombre);
         setMonto(egreso.monto);
         setFecha(egreso.fecha);
-        setFormaPago(egreso.forma_pago || ""); // antes era descripcion
+        setFormaPago(egreso.forma_pago || ""); 
       }
     }
   };
