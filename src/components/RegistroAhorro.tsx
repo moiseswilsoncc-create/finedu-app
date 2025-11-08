@@ -149,35 +149,44 @@ function RegistroAhorro() {
           ))}
         </select>
       </div>
-
       {historialFiltrado.length > 0 ? (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
+        <table style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          marginTop: "1rem",
+          fontSize: "0.95rem"
+        }}>
+          <thead style={{ backgroundColor: "#f2f2f2" }}>
             <tr>
-              <th><input type="checkbox" onChange={toggleSeleccionGlobal} /></th>
-              <th>Fecha</th>
-              <th>Monto</th>
-              <th>Mes</th>
-              <th>Año</th>
-              <th>Acciones</th>
+              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
+                <input type="checkbox" onChange={toggleSeleccionGlobal} />
+              </th>
+              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Fecha</th>
+              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Monto</th>
+              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Mes</th>
+              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Año</th>
+              <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {historialFiltrado.map((aporte) => (
               <tr key={aporte.id}>
-                <td>
+                <td style={{ border: "1px solid #ccc", padding: "0.5rem", textAlign: "center" }}>
                   <input
                     type="checkbox"
                     checked={seleccionados.includes(aporte.id)}
                     onChange={() => toggleSeleccion(aporte.id)}
                   />
                 </td>
-                <td>{new Date(aporte.fecha).toLocaleDateString()}</td>
-                <td>${aporte.monto.toLocaleString()}</td>
-                <td>{aporte.mes}</td>
-                <td>{aporte.año}</td>
-                <td>
-                  {/* Aquí puedes agregar lógica de edición */}
+                <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
+                  {new Date(aporte.fecha).toLocaleDateString()}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
+                  ${aporte.monto.toLocaleString()}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>{aporte.mes}</td>
+                <td style={{ border: "1px solid #ccc", padding: "0.5rem" }}>{aporte.año}</td>
+                <td style={{ border: "1px solid #ccc", padding: "0.5rem", textAlign: "center" }}>
                   <button
                     onClick={() => eliminarAporte(aporte.id)}
                     style={{
