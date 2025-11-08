@@ -143,6 +143,76 @@ const Ingresos: React.FC = () => {
       }
     }
   };
+  return (
+    <div style={{ padding: "2rem" }}>
+      <h2>📈 Ingresos</h2>
+      <p>Registra y visualiza tus ingresos.</p>
+
+      {/* Formulario */}
+      <form onSubmit={handleGuardarIngreso} style={{ marginBottom: "1.5rem" }}>
+        <div>
+          <label>Tipo de ingreso: </label>
+          <select value={tipo} onChange={(e) => setTipo(e.target.value)} required disabled={!!editando}>
+            <option value="">-- Selecciona --</option>
+            {tiposDisponibles.map((t, index) => (
+              <option key={index} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label>Monto: </label>
+          <input type="number" value={monto} onChange={(e) => setMonto(Number(e.target.value))} placeholder="Ej: 50000" />
+        </div>
+
+        <div>
+          <label>Fecha: </label>
+          <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+        </div>
+
+        <div>
+          <label>Descripción: </label>
+          <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Ej: sueldo mensual" />
+        </div>
+
+        <button type="submit">
+          {editando ? "✏️ Guardar Cambios" : "💾 Guardar Ingreso"}
+        </button>
+      </form>
+
+      {/* Filtros */}
+      <div style={{ marginBottom: "1rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        <div>
+          <label>Mes</label>
+          <select value={mesFiltro} onChange={(e) => setMesFiltro(e.target.value)}>
+            <option value="">Todos</option>
+            {["01","02","03","04","05","06","07","08","09","10","11","12"].map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label>Año</label>
+          <select value={anioFiltro} onChange={(e) => setAnioFiltro(e.target.value)}>
+            <option value="">Todos</option>
+            {["2023", "2024", "2025"].map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label>Tipo</label>
+          <select value={tipoFiltro} onChange={(e) => setTipoFiltro(e.target.value)}>
+            <option value="">Todos</option>
+            {tiposDisponibles.map((t, index) => (
+              <option key={index} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {/* Lista de ingresos */}
       <h3>📋 Lista de Ingresos</h3>
       {ingresos.length === 0 ? (
@@ -206,12 +276,10 @@ const Ingresos: React.FC = () => {
           textDecoration: "none"
         }}
       >
-       ⬅️ Volver al menú principal
+        ⬅️ Volver al menú principal
       </Link>
     </div>
   );
 };
 
 export default Ingresos;
-
-
