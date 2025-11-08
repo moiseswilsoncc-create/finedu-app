@@ -66,18 +66,23 @@ function RegistroAhorro() {
     }
   };
 
-  const eliminarAporte = async (id: string) => {
+  const eliminarSeleccionados = async () => {
+    if (seleccionados.length === 0) return;
+
     const { error } = await supabase
       .from("aportes_usuario")
       .delete()
-      .eq("id", id);
+      .in("id", seleccionados);
 
     if (error) {
-      console.error("Error al eliminar aporte:", error.message);
-      return;
+      console.error("Error al eliminar seleccionados:", error.message);
+      setMensaje("❌ Error al eliminar seleccionados.");
+    } else {
+      setMensaje("✅ Aportes eliminados correctamente.");
+      setSeleccionados([]);
+      obtenerAportes();
+      setTimeout(() => setMensaje(""), 3000);
     }
-
-    obtenerAportes();
   };
 
   const toggleSeleccion = (id: string) => {
@@ -213,7 +218,7 @@ function RegistroAhorro() {
             </button>
 
             <button
-              onClick={() => alert("Función de eliminación múltiple pendiente")}
+              onClick={eliminarSeleccionados}
               style={{
                 backgroundColor: "#e74c3c",
                 color: "white",
