@@ -24,8 +24,6 @@ function RegistroAhorro() {
   }, [usuarioId]);
 
   const obtenerAportes = async () => {
-    if (!usuarioId) return;
-
     const { data, error } = await supabase
       .from("aportes_usuario")
       .select("id, fecha, monto, mes, año")
@@ -42,12 +40,17 @@ function RegistroAhorro() {
   };
 
   const registrarAporte = async () => {
-    if (!usuarioId || !monto) return;
+    const montoNum = parseFloat(monto);
+
+    if (isNaN(montoNum) || montoNum <= 0) {
+      setMensaje("❌ Ingresa un monto válido.");
+      return;
+    }
 
     const fechaActual = new Date();
     const nuevoAporte = {
       usuario_id: usuarioId,
-      monto: parseFloat(monto),
+      monto: montoNum,
       fecha: fechaActual.toISOString(),
       mes: fechaActual.getMonth() + 1,
       año: fechaActual.getFullYear()
