@@ -12,7 +12,7 @@ interface Egreso {
   categoria_nombre: string;
   monto: number;
   fecha: string;
-  forma_pago?: string; // reemplaza descripcion
+  forma_pago?: string; 
 }
 
 const Egresos: React.FC = () => {
@@ -358,7 +358,7 @@ const Egresos: React.FC = () => {
         nuevoItem={nuevoItem}
         monto={monto}
         fecha={fecha}
-        formaPago={formaPago}              // reemplaza descripcion
+        formaPago={formaPago}              
         editando={editando}
         mensaje={mensaje}
         error={error}
@@ -368,7 +368,7 @@ const Egresos: React.FC = () => {
         setNuevoItem={setNuevoItem}
         setMonto={setMonto}
         setFecha={setFecha}
-        setFormaPago={setFormaPago}        // reemplaza setDescripcion
+        setFormaPago={setFormaPago}        
         onAgregarCategoria={handleAgregarCategoria}
         onAgregarItem={handleAgregarItem}
         onGuardar={handleGuardarEgreso}
