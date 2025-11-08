@@ -44,28 +44,17 @@ function RegistroAhorro() {
   };
 
   const registrarAporte = async () => {
-    const montoNum = parseFloat(monto);
+    if (!usuarioId || !monto) return;
 
-    if (isNaN(montoNum) || montoNum <= 0) {
-      setMensaje("❌ Ingresa un monto válido.");
-      return;
-    }
-
-    if (!usuarioId) {
-      setMensaje("❌ Usuario no disponible aún.");
-      return;
-    }
-
-    const fechaActual = new Date();
-    const nuevoAporte = {
-      usuario_id: usuarioId,
-      monto: montoNum,
-      fecha: fechaActual.toISOString(),
-      mes: fechaActual.getMonth() + 1,
-      año: fechaActual.getFullYear()
-    };
-
-    const { error } = await supabase.from("aportes_usuario").insert([nuevoAporte]);
+    const { error } = await supabase.from("aportes_usuario").insert([
+      {
+        usuario_id: usuarioId,
+        monto: parseFloat(monto),
+        fecha: new Date().toISOString(),
+        mes: new Date().getMonth() + 1,
+        año: new Date().getFullYear()
+      }
+    ]);
 
     if (error) {
       console.error("Error al registrar aporte:", error.message);
@@ -118,7 +107,6 @@ function RegistroAhorro() {
   });
 
   const totalAhorrado = historialFiltrado.reduce((sum, a) => sum + a.monto, 0);
-
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       <h2>📘 Registro de ahorro</h2>
