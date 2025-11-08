@@ -18,10 +18,12 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
   const [seleccionados, setSeleccionados] = React.useState<string[]>([]);
   const [mesFiltro, setMesFiltro] = React.useState("");
   const [anioFiltro, setAnioFiltro] = React.useState("");
-  const [categoriaFiltro, setCategoriaFiltro] = React.useState("");
-  const [itemFiltro, setItemFiltro] = React.useState("");
+  const [categoriaId, setCategoriaId] = React.useState<number | "">("");
+  const [itemId, setItemId] = React.useState<number | "">("");
   const [montoMin, setMontoMin] = React.useState<number | "">("");
   const [montoMax, setMontoMax] = React.useState<number | "">("");
+  const [categorias, setCategorias] = React.useState<{ id: number; nombre: string }[]>([]);
+  const [items, setItems] = React.useState<{ id: number; nombre: string }[]>([]);
 
   const total = egresos.reduce((acc, e) => acc + e.monto, 0);
 
@@ -37,6 +39,13 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
 
   const handleEliminarSeleccionados = () => {
     // lógica de eliminación
+  };
+
+  const cargarOpciones = async () => {
+    const { data: cat } = await supabase.from("categorias_egresos").select("id, nombre");
+    const { data: itm } = await supabase.from("items_egresos").select("id, nombre");
+    if (cat) setCategorias(cat);
+    if (itm) setItems(itm);
   };
 
   const cargarEgresos = async (uid: string) => {
@@ -62,10 +71,8 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
 
     if (mesFiltro) query = query.eq("mes", mesFiltro);
     if (anioFiltro) query = query.eq("anio", anioFiltro);
-    if (categoriaFiltro.trim() !== "")
-      query = query.ilike("items_egresos.categorias_egresos.nombre", `%${categoriaFiltro.trim()}%`);
-    if (itemFiltro.trim() !== "")
-      query = query.ilike("items_egresos.nombre", `%${itemFiltro.trim()}%`);
+    if (categoriaId !== "") query = query.eq("items_egresos.categoria_id", categoriaId);
+    if (itemId !== "") query = query.eq("item_id", itemId);
     if (montoMin !== "") query = query.gte("monto", montoMin);
     if (montoMax !== "") query = query.lte("monto", montoMax);
 
@@ -91,12 +98,15 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
     setEgresos(egresosConNombres);
   };
 
-  // 🔄 Recarga automática al cambiar filtros
+  React.useEffect(() => {
+    cargarOpciones();
+  }, []);
+
   React.useEffect(() => {
     if (usuarioId) {
       cargarEgresos(usuarioId);
     }
-  }, [usuarioId, mesFiltro, anioFiltro, categoriaFiltro, itemFiltro, montoMin, montoMax]);
+  }, [usuarioId, mesFiltro, anioFiltro, categoriaId, itemId, montoMin, montoMax]);
 
   return (
     <div>
@@ -121,12 +131,22 @@ const ListaEgresos: React.FC<{ usuarioId: string | null }> = ({ usuarioId }) => 
 
         <div>
           <label>Categoría</label>
-          <input type="text" placeholder="Categoría" value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)} />
+          <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value === "" ? "" : Number(e.target.value))}>
+            <option value="">Todas</option>
+            {categorias.map((c) => (
+              <option key={c.id} value={c.id}>{c.nombre}</option>
+            ))}
+          </select>
         </div>
 
         <div>
           <label>Ítem</label>
-          <input type="text" placeholder="Ítem" value={itemFiltro} onChange={(e) => setItemFiltro(e.target.value)} />
+          <select value={itemId} onChange={(e) => setItemId(e.target.value === "" ? "" : Number(e.target.value))}>
+            <option value="">Todos</option>
+            {items.map((i) => (
+              <option key={i.id} value={i.id}>{i.nombre}</option>
+            ))}
+          </select>
         </div>
 
         <div>
