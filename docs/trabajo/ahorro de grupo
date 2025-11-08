@@ -1,0 +1,16 @@
+# 🧩 Comparativa institucional — Archivos y Tablas del módulo Ahorro Grupal
+
+| Elemento              | Tipo      | Estado técnico        | Acción recomendada        | Observaciones clave                                      |
+|-----------------------|-----------|------------------------|---------------------------|----------------------------------------------------------|
+| AhorroGrupal.tsx      | Frontend  | Parcial (sin Supabase) | ✅ Adaptar y conservar     | Lógica de cálculo sólida, falta persistencia en Supabase |
+| CrearGrupo.tsx        | Frontend  | Parcial (tabla obsoleta) | ⚠️ Migrar o fusionar       | Usa `grupos`, debe migrar a `grupos_ahorro`              |
+| PanelGrupo.tsx        | Frontend  | Parcial (tabla obsoleta) | ⚠️ Migrar y extender       | Buena base institucional, falta compañeros y aportes     |
+| VistaGrupal.tsx       | Frontend  | ✅ Completo             | ✅ Conservar               | Visual colaborativa lista para producción                |
+| VistaParticipante.tsx | Frontend  | Prototipo local        | ⚠️ Evaluar integración     | Útil para simulador o diagnóstico, no conectado aún      |
+| grupos_ahorro         | Tabla     | ✅ Validada con RLS     | ✅ Conservar               | Estructura oficial para grupos                           |
+| aportes_grupales      | Tabla     | ✅ Validada con RLS     | ✅ Conservar               | Registra aportes individuales                           |
+| participantes_grupo   | Tabla     | ✅ Validada con RLS     | ✅ Conservar               | Relación usuario-grupo con roles                         |
+| vista_grupal          | Vista     | ⚠️ Sin RLS              | ✅ Conservar (filtrar en frontend) | Muestra compañeros y aportes por grupo         |
+| vista_mis_grupos      | Vista     | ⚠️ Sin RLS              | ✅ Conservar (filtrar en frontend) | Muestra grupos del usuario actual              |
+| grupos (obsoleta)     | Tabla     | ❌ No existe en Supabase | ❌ Eliminar o migrar       | Usada en archivos antiguos, no forma parte del sistema   |
+
