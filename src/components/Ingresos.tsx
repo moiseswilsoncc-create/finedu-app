@@ -206,7 +206,7 @@ const Ingresos: React.FC = () => {
           textDecoration: "none"
         }}
       >
-        ⬅️ Volver al menú principal
+       ⬅️ Volver al menú principal
       </Link>
     </div>
   );
