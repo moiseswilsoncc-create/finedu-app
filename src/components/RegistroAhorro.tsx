@@ -64,6 +64,47 @@ function RegistroAhorro() {
       obtenerAportes();
     }
   };
+
+  const eliminarSeleccionados = async () => {
+    if (seleccionados.length === 0) return;
+
+    const { error } = await supabase
+      .from("aportes_usuario")
+      .delete()
+      .in("id", seleccionados);
+
+    if (error) {
+      console.error("Error al eliminar seleccionados:", error.message);
+      setMensaje("❌ Error al eliminar seleccionados.");
+    } else {
+      setMensaje("✅ Aportes eliminados correctamente.");
+      setSeleccionados([]);
+      obtenerAportes();
+      setTimeout(() => setMensaje(""), 3000);
+    }
+  };
+
+  const toggleSeleccion = (id: string) => {
+    setSeleccionados((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSeleccionGlobal = () => {
+    if (seleccionados.length === historialFiltrado.length) {
+      setSeleccionados([]);
+    } else {
+      setSeleccionados(historialFiltrado.map((a) => a.id));
+    }
+  };
+
+  const historialFiltrado = historial.filter((a) => {
+    const coincideMes = filtroMes ? a.mes === parseInt(filtroMes) : true;
+    const coincideAño = filtroAño ? a.año === parseInt(filtroAño) : true;
+    return coincideMes && coincideAño;
+  });
+
+  const totalAhorrado = historialFiltrado.reduce((sum, a) => sum + a.monto, 0);
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       <h2>📘 Registro de ahorro</h2>
