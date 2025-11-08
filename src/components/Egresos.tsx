@@ -12,7 +12,7 @@ interface Egreso {
   categoria_nombre: string;
   monto: number;
   fecha: string;
-  descripcion?: string;
+  forma_pago?: string;
 }
 
 const Egresos: React.FC = () => {
@@ -27,7 +27,7 @@ const Egresos: React.FC = () => {
 
   const [monto, setMonto] = useState<number | "">("");
   const [fecha, setFecha] = useState("");
-  const [descripcion, setDescripcion] = useState("");
+  const [forma_pago, setforma_pago] = useState("");
 
   const [egresos, setEgresos] = useState<Egreso[]>([]);
   const [error, setError] = useState("");
@@ -215,7 +215,7 @@ const Egresos: React.FC = () => {
         usuario_id,
         monto,
         fecha,
-        descripcion,
+        forma_pago,
         items_egresos (
           nombre,
           categorias_egresos (nombre)
@@ -242,7 +242,7 @@ const Egresos: React.FC = () => {
       usuario_id: e.usuario_id,
       monto: e.monto,
       fecha: e.fecha,
-      descripcion: e.descripcion,
+      forma_pago: e.forma_pago,
       item_nombre: e.items_egresos?.nombre || "",
       categoria_nombre: e.items_egresos?.categorias_egresos?.nombre || ""
     }));
@@ -268,7 +268,7 @@ const Egresos: React.FC = () => {
         item_id: itemId,
         monto: Number(monto),
         fecha,
-        descripcion
+        forma_pago
       };
       await supabase.from("egresos").update(cambios).eq("id", editando.id);
       setMensaje("✏️ Egreso actualizado.");
@@ -281,7 +281,7 @@ const Egresos: React.FC = () => {
         item_id: itemId,
         monto: Number(monto),
         fecha,
-        descripcion
+        forma_pago
       }]);
       setMensaje("✅ Egreso agregado.");
       limpiarFormulario();
@@ -314,7 +314,7 @@ const Egresos: React.FC = () => {
         setItem(egreso.item_nombre);
         setMonto(egreso.monto);
         setFecha(egreso.fecha);
-        setDescripcion(egreso.descripcion || "");
+        setforma_pago(egreso.forma_pago || "");
       }
     }
   };
@@ -344,7 +344,7 @@ const Egresos: React.FC = () => {
         nuevoItem={nuevoItem}
         monto={monto}
         fecha={fecha}
-        descripcion={descripcion}
+        forma_pago={descripcion}
         editando={editando}
         mensaje={mensaje}
         error={error}
@@ -354,7 +354,7 @@ const Egresos: React.FC = () => {
         setNuevoItem={setNuevoItem}
         setMonto={setMonto}
         setFecha={setFecha}
-        setDescripcion={setDescripcion}
+        setforma_pago={setforma_pago}
         onAgregarCategoria={handleAgregarCategoria}
         onAgregarItem={handleAgregarItem}
         onGuardar={handleGuardarEgreso}
