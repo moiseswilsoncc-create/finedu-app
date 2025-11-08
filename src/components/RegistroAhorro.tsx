@@ -5,7 +5,6 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
-import SimuladorCredito from "./SimuladorCredito";
 
 type Grupo = {
   id: string;
