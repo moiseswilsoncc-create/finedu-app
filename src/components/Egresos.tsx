@@ -12,7 +12,7 @@ interface Egreso {
   categoria_nombre: string;
   monto: number;
   fecha: string;
-  descripcion?: string;
+  forma_pago?: string; // reemplaza descripcion
 }
 
 const Egresos: React.FC = () => {
@@ -27,7 +27,7 @@ const Egresos: React.FC = () => {
 
   const [monto, setMonto] = useState<number | "">("");
   const [fecha, setFecha] = useState("");
-  const [descripcion, setDescripcion] = useState("");
+  const [formaPago, setFormaPago] = useState(""); // antes era descripcion
 
   const [egresos, setEgresos] = useState<Egreso[]>([]);
   const [error, setError] = useState("");
@@ -44,7 +44,6 @@ const Egresos: React.FC = () => {
   const [itemFiltro, setItemFiltro] = useState("");
   const [montoMin, setMontoMin] = useState<number | "">("");
   const [montoMax, setMontoMax] = useState<number | "">("");
-
   useEffect(() => {
     const getUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -206,7 +205,7 @@ const Egresos: React.FC = () => {
       cargarItems(categoria);
     }
   };
-
+  // 🔹 Cargar egresos
   const cargarEgresos = async (uid: string) => {
     let query = supabase
       .from("egresos")
@@ -215,7 +214,7 @@ const Egresos: React.FC = () => {
         usuario_id,
         monto,
         fecha,
-        descripcion,
+        forma_pago,     -- reemplaza descripcion
         items_egresos (
           nombre,
           categorias_egresos (nombre)
@@ -224,6 +223,9 @@ const Egresos: React.FC = () => {
       .eq("usuario_id", uid)
       .order("fecha", { ascending: false });
 
+    // Nota: estos eq() suponen columnas calculadas en DB.
+    // Si no existen (mes, anio, categoria_id, item_id), puedes eliminar estos filtros del servidor
+    // y aplicar filtrado local en ListaEgresos.
     if (mesFiltro) query = query.eq("mes", mesFiltro);
     if (anioFiltro) query = query.eq("anio", anioFiltro);
     if (categoriaFiltro) query = query.eq("categoria_id", categoriaFiltro);
@@ -237,12 +239,12 @@ const Egresos: React.FC = () => {
       return;
     }
 
-    const egresosConNombres = data.map((e: any) => ({
+    const egresosConNombres = (data || []).map((e: any) => ({
       id: e.id,
       usuario_id: e.usuario_id,
       monto: e.monto,
       fecha: e.fecha,
-      descripcion: e.descripcion,
+      forma_pago: e.forma_pago, // antes era e.descripcion
       item_nombre: e.items_egresos?.nombre || "",
       categoria_nombre: e.items_egresos?.categorias_egresos?.nombre || ""
     }));
@@ -250,6 +252,7 @@ const Egresos: React.FC = () => {
     setEgresos(egresosConNombres);
   };
 
+  // 🔹 Guardar egreso
   const handleGuardarEgreso = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usuarioId || !categoria || !item || !monto || !fecha) return;
@@ -268,21 +271,29 @@ const Egresos: React.FC = () => {
         item_id: itemId,
         monto: Number(monto),
         fecha,
-        descripcion
+        forma_pago: formaPago // antes era descripcion
       };
-      await supabase.from("egresos").update(cambios).eq("id", editando.id);
+      const { error } = await supabase.from("egresos").update(cambios).eq("id", editando.id);
+      if (error) {
+        setError(error.message);
+        return;
+      }
       setMensaje("✏️ Egreso actualizado.");
       setEditando(null);
       limpiarFormulario();
       await cargarEgresos(usuarioId);
     } else {
-      await supabase.from("egresos").insert([{
+      const { error } = await supabase.from("egresos").insert([{
         usuario_id: usuarioId,
         item_id: itemId,
         monto: Number(monto),
         fecha,
-        descripcion
+        forma_pago: formaPago
       }]);
+      if (error) {
+        setError(error.message);
+        return;
+      }
       setMensaje("✅ Egreso agregado.");
       limpiarFormulario();
       await cargarEgresos(usuarioId);
@@ -294,7 +305,7 @@ const Egresos: React.FC = () => {
     setItem("");
     setMonto("");
     setFecha("");
-    setDescripcion("");
+    setFormaPago(""); // antes era setDescripcion("")
   };
 
   const toggleSeleccion = (id: string) => {
@@ -314,21 +325,24 @@ const Egresos: React.FC = () => {
         setItem(egreso.item_nombre);
         setMonto(egreso.monto);
         setFecha(egreso.fecha);
-        setDescripcion(egreso.descripcion || "");
+        setFormaPago(egreso.forma_pago || ""); // antes era descripcion
       }
     }
   };
 
   const handleEliminarSeleccionados = async () => {
     if (!usuarioId || seleccionados.length === 0) return;
-    await supabase.from("egresos").delete().in("id", seleccionados);
+    const { error } = await supabase.from("egresos").delete().in("id", seleccionados);
+    if (error) {
+      setError(error.message);
+      return;
+    }
     setEgresos(egresos.filter((e) => !seleccionados.includes(e.id)));
     setSeleccionados([]);
     setMensaje("🗑️ Egresos eliminados.");
   };
 
   const total = egresos.reduce((acc, egreso) => acc + egreso.monto, 0);
-
   // Render final
   return (
     <div style={{ padding: "2rem" }}>
@@ -344,7 +358,7 @@ const Egresos: React.FC = () => {
         nuevoItem={nuevoItem}
         monto={monto}
         fecha={fecha}
-        descripcion={descripcion}
+        formaPago={formaPago}              // reemplaza descripcion
         editando={editando}
         mensaje={mensaje}
         error={error}
@@ -354,7 +368,7 @@ const Egresos: React.FC = () => {
         setNuevoItem={setNuevoItem}
         setMonto={setMonto}
         setFecha={setFecha}
-        setDescripcion={setDescripcion}
+        setFormaPago={setFormaPago}        // reemplaza setDescripcion
         onAgregarCategoria={handleAgregarCategoria}
         onAgregarItem={handleAgregarItem}
         onGuardar={handleGuardarEgreso}
