@@ -5,7 +5,7 @@ interface Egreso {
   usuario_id: string;
   monto: number;
   fecha: string;
-  forma_pago?: string;
+  forma_pago?: string; // reemplaza descripción
   item_nombre: string;
   categoria_nombre: string;
 }
@@ -55,43 +55,41 @@ const ListaEgresos: React.FC<Props> = ({
   usuarioId,
   cargarEgresos,
 }) => {
-  // Normaliza fecha (soporta YYYY-MM-DD y timestamps ISO)
-  const parseFecha = (fecha: string) => {
-    const d = new Date(fecha);
-    const mes = String(d.getMonth() + 1).padStart(2, "0");
-    const anio = String(d.getFullYear());
-    return { mes, anio };
-  };
+  // 🔹 Aplicar filtros robustos y reactivos
+  const egresosFiltrados = React.useMemo(() => {
+    return egresos.filter((e) => {
+      const fechaObj = new Date(e.fecha);
+      const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+      const anio = String(fechaObj.getFullYear());
 
-  const egresosFiltrados = egresos.filter((e) => {
-    const { mes, anio } = parseFecha(e.fecha);
-    const cat = (e.categoria_nombre || "").toLowerCase();
-    const itm = (e.item_nombre || "").toLowerCase();
-    const catFiltro = categoriaFiltro.trim().toLowerCase();
-    const itmFiltro = itemFiltro.trim().toLowerCase();
+      const cat = (e.categoria_nombre || "").toLowerCase();
+      const itm = (e.item_nombre || "").toLowerCase();
+      const catFiltro = categoriaFiltro.trim().toLowerCase();
+      const itmFiltro = itemFiltro.trim().toLowerCase();
 
-    const pasaMes = mesFiltro === "" || mes === mesFiltro;
-    const pasaAnio = anioFiltro === "" || anio === anioFiltro;
-    const pasaCategoria = catFiltro === "" || cat.includes(catFiltro);
-    const pasaItem = itmFiltro === "" || itm.includes(itmFiltro);
-    const pasaMontoMin = montoMin === "" || e.monto >= Number(montoMin);
-    const pasaMontoMax = montoMax === "" || e.monto <= Number(montoMax);
+      const pasaMes = mesFiltro === "" || mes === mesFiltro;
+      const pasaAnio = anioFiltro === "" || anio === anioFiltro;
+      const pasaCategoria = catFiltro === "" || cat.includes(catFiltro);
+      const pasaItem = itmFiltro === "" || itm.includes(itmFiltro);
+      const pasaMontoMin = montoMin === "" || e.monto >= Number(montoMin);
+      const pasaMontoMax = montoMax === "" || e.monto <= Number(montoMax);
 
-    return (
-      pasaMes &&
-      pasaAnio &&
-      pasaCategoria &&
-      pasaItem &&
-      pasaMontoMin &&
-      pasaMontoMax
-    );
-  });
+      return (
+        pasaMes &&
+        pasaAnio &&
+        pasaCategoria &&
+        pasaItem &&
+        pasaMontoMin &&
+        pasaMontoMax
+      );
+    });
+  }, [egresos, mesFiltro, anioFiltro, categoriaFiltro, itemFiltro, montoMin, montoMax]);
 
   return (
     <div>
       <h3>📋 Lista de Egresos</h3>
 
-      {/* Filtros en una sola línea */}
+      {/* 🔹 Bloque de filtros en una sola línea */}
       <div
         style={{
           marginBottom: "1rem",
@@ -164,14 +162,12 @@ const ListaEgresos: React.FC<Props> = ({
           />
         </div>
 
-        {/* El botón puede recargar datos del servidor si lo necesitas,
-            pero el filtrado local ya se aplica en tiempo real */}
         <button type="button" onClick={() => usuarioId && cargarEgresos(usuarioId)}>
           🔍 Filtrar
         </button>
       </div>
 
-      {/* Tabla */}
+      {/* 🔹 Tabla de egresos */}
       <table border={1} cellPadding={5} style={{ width: "100%", marginBottom: "1rem" }}>
         <thead>
           <tr>
@@ -205,7 +201,7 @@ const ListaEgresos: React.FC<Props> = ({
 
       <p><strong>Total:</strong> {total}</p>
 
-      {/* Acciones */}
+      {/* 🔹 Botones de acción */}
       <div style={{ display: "flex", gap: "1rem" }}>
         <button type="button" onClick={handleEditarSeleccionado}>✏️ Editar</button>
         <button type="button" onClick={handleEliminarSeleccionados}>🗑️ Eliminar</button>
