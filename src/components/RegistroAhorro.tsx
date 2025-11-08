@@ -1,71 +1,44 @@
-// 🧩 Copia técnica: RegistroAhorro.tsx
-// Estado: ✅ Compatible con Vercel
-// Ubicación: src/components/RegistroAhorro.tsx
-// Conectado al sistema activo sin gráfico
-
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
-type Grupo = {
-  id: string;
-  nombre: string;
-  estado: string;
-  integrantes: number;
-};
-
 type Aporte = {
+  id: string;
   fecha: string;
   monto: number;
+  mes: number;
+  año: number;
 };
 
 function RegistroAhorro() {
-  const [grupo, setGrupo] = useState<Grupo | null>(null);
-  const [paisUsuario, setPaisUsuario] = useState("Chile");
-  const [historial, setHistorial] = useState<Aporte[]>([]);
   const [monto, setMonto] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [historial, setHistorial] = useState<Aporte[]>([]);
+  const [seleccionados, setSeleccionados] = useState<string[]>([]);
+  const [filtroMes, setFiltroMes] = useState("");
+  const [filtroAño, setFiltroAño] = useState("");
 
   const usuarioId = localStorage.getItem("usuarioId");
-  const grupoActivo = grupo?.estado === "activo";
 
   useEffect(() => {
-    const obtenerGrupo = async () => {
-      if (!usuarioId) return;
-
-      const { data, error } = await supabase
-        .from("grupos_financieros")
-        .select("id, nombre, estado, integrantes")
-        .eq("usuario_id", usuarioId)
-        .single();
-
-      if (error) {
-        console.error("Error al obtener grupo:", error.message);
-        return;
-      }
-
-      setGrupo(data);
-    };
-
-    const obtenerAportes = async () => {
-      if (!usuarioId) return;
-
-      const { data, error } = await supabase
-        .from("aportes_usuario")
-        .select("fecha, monto")
-        .eq("usuario_id", usuarioId)
-        .order("fecha", { ascending: true });
-
-      if (error) {
-        console.error("Error al obtener aportes:", error.message);
-        return;
-      }
-
-      setHistorial(data || []);
-    };
-
-    obtenerGrupo();
     obtenerAportes();
   }, [usuarioId]);
+
+  const obtenerAportes = async () => {
+    if (!usuarioId) return;
+
+    const { data, error } = await supabase
+      .from("aportes_usuario")
+      .select("id, fecha, monto, mes, año")
+      .eq("usuario_id", usuarioId)
+      .order("fecha", { ascending: false });
+
+    if (error) {
+      console.error("Error al obtener aportes:", error.message);
+      return;
+    }
+
+    setHistorial(data || []);
+  };
 
   const registrarAporte = async () => {
     if (!usuarioId || !monto) return;
@@ -85,14 +58,43 @@ function RegistroAhorro() {
       setMonto("");
       setMensaje("✅ Aporte registrado correctamente.");
       setTimeout(() => setMensaje(""), 3000);
-      const { data } = await supabase
-        .from("aportes_usuario")
-        .select("fecha, monto")
-        .eq("usuario_id", usuarioId)
-        .order("fecha", { ascending: true });
-      setHistorial(data || []);
+      obtenerAportes();
     }
   };
+
+  const eliminarAporte = async (id: string) => {
+    const { error } = await supabase
+      .from("aportes_usuario")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error al eliminar aporte:", error.message);
+      return;
+    }
+
+    obtenerAportes();
+  };
+
+  const toggleSeleccion = (id: string) => {
+    setSeleccionados((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSeleccionGlobal = () => {
+    if (seleccionados.length === historialFiltrado.length) {
+      setSeleccionados([]);
+    } else {
+      setSeleccionados(historialFiltrado.map((a) => a.id));
+    }
+  };
+
+  const historialFiltrado = historial.filter((a) => {
+    const coincideMes = filtroMes ? a.mes === parseInt(filtroMes) : true;
+    const coincideAño = filtroAño ? a.año === parseInt(filtroAño) : true;
+    return coincideMes && coincideAño;
+  });
 
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
@@ -130,21 +132,89 @@ function RegistroAhorro() {
         <p style={{ color: mensaje.includes("✅") ? "green" : "red" }}>{mensaje}</p>
       )}
 
-      {grupoActivo && (
-        <p style={{ color: "#27ae60", marginBottom: "1rem" }}>
-          ✅ Tu grupo está activo. Este aporte impactará en el panel grupal.
-        </p>
-      )}
+      <div style={{ display: "flex", gap: "1rem", margin: "1rem 0" }}>
+        <select value={filtroMes} onChange={(e) => setFiltroMes(e.target.value)}>
+          <option value="">Todos los meses</option>
+          {[...Array(12)].map((_, i) => (
+            <option key={i + 1} value={i + 1}>
+              Mes {i + 1}
+            </option>
+          ))}
+        </select>
 
-      {historial.length > 0 ? (
-        <p style={{ marginTop: "1rem", color: "#888" }}>
-          Aportes registrados correctamente. El gráfico fue desactivado por compatibilidad en Vercel.
-        </p>
+        <select value={filtroAño} onChange={(e) => setFiltroAño(e.target.value)}>
+          <option value="">Todos los años</option>
+          {[2025, 2024, 2023].map((año) => (
+            <option key={año} value={año}>{año}</option>
+          ))}
+        </select>
+      </div>
+
+      {historialFiltrado.length > 0 ? (
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th><input type="checkbox" onChange={toggleSeleccionGlobal} /></th>
+              <th>Fecha</th>
+              <th>Monto</th>
+              <th>Mes</th>
+              <th>Año</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {historialFiltrado.map((aporte) => (
+              <tr key={aporte.id}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={seleccionados.includes(aporte.id)}
+                    onChange={() => toggleSeleccion(aporte.id)}
+                  />
+                </td>
+                <td>{new Date(aporte.fecha).toLocaleDateString()}</td>
+                <td>${aporte.monto.toLocaleString()}</td>
+                <td>{aporte.mes}</td>
+                <td>{aporte.año}</td>
+                <td>
+                  {/* Aquí puedes agregar lógica de edición */}
+                  <button
+                    onClick={() => eliminarAporte(aporte.id)}
+                    style={{
+                      backgroundColor: "#e74c3c",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "0.3rem 0.6rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
         <p style={{ marginTop: "1rem", color: "#888" }}>
           No hay aportes registrados aún.
         </p>
       )}
+
+      <button
+        style={{
+          marginTop: "2rem",
+          padding: "0.6rem 1.2rem",
+          backgroundColor: "#ccc",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer"
+        }}
+        onClick={() => window.location.href = "/dashboard"}
+      >
+        ⬅️ Volver al menú principal
+      </button>
     </div>
   );
 }
