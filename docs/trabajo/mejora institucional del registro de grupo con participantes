@@ -1,0 +1,7 @@
+### 🧠 Milestone: mejora institucional del registro de grupo con participantes
+
+- Se amplía el formulario de creación de grupo para incluir participantes
+- Se establece validación: mínimo 2, máximo 100 participantes
+- Se exige al menos 1 admin por grupo
+- Se institucionaliza la lógica colaborativa desde el momento de creación
+- Se mantiene coherencia visual con el panel-ahorro personal
