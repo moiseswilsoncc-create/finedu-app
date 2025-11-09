@@ -1,7 +1,6 @@
 import React from 'react';
 import TablaParticipantes from './TablaParticipantes';
 import BitacoraGrupo from './BitacoraGrupo';
-import AportesGrupo from './AportesGrupo';
 import { Grupo } from '../types'; // ← tipado institucional
 
 interface Props {
