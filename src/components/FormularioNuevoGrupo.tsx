@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { registrarGrupo } from '../utils/registrarGrupo';
 import { supabase } from '../supabaseClient';
+import { useNavigate } from 'react-router-dom'; // ← nuevo import
 
 export default function FormularioNuevoGrupo() {
   const [nombre, setNombre] = useState('');
@@ -11,6 +12,8 @@ export default function FormularioNuevoGrupo() {
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
+
+  const navigate = useNavigate(); // ← inicializar navegación
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,12 +43,11 @@ export default function FormularioNuevoGrupo() {
       };
 
       const resultado = await registrarGrupo(nuevoGrupo);
-      setMensaje(resultado.mensaje || 'Grupo registrado exitosamente.');
-      setNombre('');
-      setCiudad('');
-      setComuna('');
-      setPais('');
-      setMetaGrupal('');
+
+      // Guardar ID del grupo y redirigir
+      localStorage.setItem('grupoId', resultado.grupo.id);
+      navigate('/panel-grupo');
+
     } catch (err: any) {
       setError(err.message || 'Error al registrar grupo');
     } finally {
@@ -103,4 +105,5 @@ export default function FormularioNuevoGrupo() {
     </form>
   );
 }
+
 export default FormularioNuevoGrupo;
