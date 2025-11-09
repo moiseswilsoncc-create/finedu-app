@@ -1,4 +1,4 @@
-// 🧠 Confirmación institucional: import corregido a '../supabaseClient'
+// 🧠 Confirmación institucional: import corregido a '../supabaseClient' (forzado para Vercel)
 
 import { supabase } from '../supabaseClient';
 
