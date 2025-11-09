@@ -62,4 +62,3 @@ export default function BitacoraGrupo({ grupoId, usuarioId }: Props) {
     </div>
   );
 }
-export default BitacoraGrupo;
