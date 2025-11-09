@@ -1,12 +1,7 @@
 import React from 'react';
 import TablaParticipantes from './TablaParticipantes';
 import BitacoraGrupo from './BitacoraGrupo';
-
-interface Grupo {
-  id: number;
-  nombre: string;
-  administrador_id: string;
-}
+import { Grupo } from '../types'; // ← tipado institucional
 
 interface Props {
   grupo: Grupo;
@@ -15,8 +10,8 @@ interface Props {
 
 const PanelParticipante: React.FC<Props> = ({ grupo, usuarioId }) => {
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h2 style={{ marginBottom: '1rem' }}>Panel de Participante — {grupo.nombre}</h2>
+    <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
+      <h2 style={{ marginBottom: '1rem' }}>🤝 Panel de Participante — {grupo.nombre}</h2>
 
       <section style={{ marginBottom: '2rem' }}>
         <h3>👥 Compañeros de grupo</h3>
@@ -25,7 +20,7 @@ const PanelParticipante: React.FC<Props> = ({ grupo, usuarioId }) => {
 
       <section>
         <h3>📜 Bitácora institucional</h3>
-        <BitacoraGrupo grupoId={grupo.id} usuarioId={usuarioId} />
+        <BitacoraGrupo grupoId={grupo.id.toString()} usuarioId={usuarioId} />
       </section>
     </div>
   );
