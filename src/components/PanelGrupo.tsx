@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import { Grupo } from '../types';
 import PanelAdminGrupo from './PanelAdminGrupo';
 import PanelParticipante from './PanelParticipante';
+import ResumenGrupo from './ResumenGrupo'; // ← nuevo import
 
 const PanelGrupo: React.FC = () => {
   const [grupo, setGrupo] = useState<Grupo | null>(null);
@@ -76,22 +77,7 @@ const PanelGrupo: React.FC = () => {
         🧭 Panel del grupo: {grupo.nombre}
       </h2>
 
-      <div
-        style={{
-          backgroundColor: '#ecf0f1',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-          marginBottom: '2rem',
-        }}
-      >
-        <p><strong>Ciudad:</strong> {grupo.ciudad}</p>
-        <p><strong>Comuna:</strong> {grupo.comuna}</p>
-        <p><strong>País:</strong> {grupo.pais}</p>
-        <p><strong>Meta grupal:</strong> ${grupo.meta_grupal.toLocaleString('es-CL')}</p>
-        <p><strong>Fecha de creación:</strong> {new Date(grupo.fecha_creacion).toLocaleDateString('es-CL')}</p>
-        <p><strong>Estado:</strong> {grupo.activo ? '✅ Activo' : '⛔️ Inactivo'}</p>
-      </div>
+      <ResumenGrupo grupo={grupo} /> {/* ← componente modular */}
 
       {esAdmin ? (
         <PanelAdminGrupo grupo={grupo} usuarioId={usuarioId} />
