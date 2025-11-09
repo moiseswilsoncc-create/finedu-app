@@ -1,0 +1,7 @@
+### 🧠 Milestone: validación institucional de participantes al crear grupo
+
+- Se establece que ningún participante puede ser agregado si no está registrado en Finedu
+- El correo electrónico es el identificador único para validación
+- Se implementa verificación contra la tabla `usuarios` en Supabase
+- Se bloquea el registro si algún correo no existe
+- Se exige al menos un admin por grupo
