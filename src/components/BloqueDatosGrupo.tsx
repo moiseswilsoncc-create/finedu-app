@@ -5,17 +5,15 @@ interface Props {
   ciudad: string;
   comuna: string;
   pais: string;
-  fechaTermino: string;
   setNombreGrupo: (v: string) => void;
   setCiudad: (v: string) => void;
   setComuna: (v: string) => void;
   setPais: (v: string) => void;
-  setFechaTermino: (v: string) => void;
 }
 
 const BloqueDatosGrupo: React.FC<Props> = ({
-  nombreGrupo, ciudad, comuna, pais, fechaTermino,
-  setNombreGrupo, setCiudad, setComuna, setPais, setFechaTermino
+  nombreGrupo, ciudad, comuna, pais,
+  setNombreGrupo, setCiudad, setComuna, setPais
 }) => (
   <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
     <h3>📌 Datos generales del grupo</h3>
@@ -31,9 +29,6 @@ const BloqueDatosGrupo: React.FC<Props> = ({
 
     <label>País:</label>
     <input value={pais} onChange={(e) => setPais(e.target.value)} />
-
-    <label>Fecha de término:</label>
-    <input type="date" value={fechaTermino} onChange={(e) => setFechaTermino(e.target.value)} />
   </div>
 );
 
