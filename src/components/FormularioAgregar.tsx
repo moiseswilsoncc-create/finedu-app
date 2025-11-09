@@ -53,4 +53,3 @@ export default function FormularioAgregar({ grupoId, adminId }: Props) {
   );
 }
 
-export default FormularioAgregar;
