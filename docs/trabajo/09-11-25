@@ -65,3 +65,9 @@
 - Se configura el puerto dinámico desde entorno
 - Se institucionaliza trazabilidad con mensaje de inicio profesional
 
+### 📅 Milestone: consolidación temporal en BloqueMetaFinanciera
+
+- Se elimina la fecha manual del bloque de datos generales
+- Se calcula automáticamente la fecha de inicio como mes/año actual
+- Se calcula automáticamente la fecha de término sumando los meses definidos
+- Se mejora la experiencia visual y se institucionaliza la trazabilidad temporal
