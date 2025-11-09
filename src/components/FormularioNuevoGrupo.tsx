@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { registrarGrupo } from '../utils/registrarGrupo';
 import { supabase } from '../supabaseClient';
-import { useNavigate } from 'react-router-dom'; // ← nuevo import
+import { useNavigate } from 'react-router-dom';
+import { Grupo } from '../types';
 
 export default function FormularioNuevoGrupo() {
   const [nombre, setNombre] = useState('');
@@ -13,7 +14,7 @@ export default function FormularioNuevoGrupo() {
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
 
-  const navigate = useNavigate(); // ← inicializar navegación
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,23 +32,25 @@ export default function FormularioNuevoGrupo() {
         throw new Error('No se pudo obtener el usuario actual.');
       }
 
-      const nuevoGrupo = {
+      const meta = parseInt(metaGrupal);
+      if (isNaN(meta) || meta <= 0) {
+        throw new Error('La meta grupal debe ser un número positivo.');
+      }
+
+      const nuevoGrupo: Omit<Grupo, 'id'> = {
         nombre,
         ciudad,
         comuna,
         pais,
-        meta_grupal: parseInt(metaGrupal),
+        meta_grupal: meta,
         fecha_creacion: new Date().toISOString(),
         activo: true,
         administrador_id: user.id,
       };
 
       const resultado = await registrarGrupo(nuevoGrupo);
-
-      // Guardar ID del grupo y redirigir
       localStorage.setItem('grupoId', resultado.grupo.id);
       navigate('/panel-grupo');
-
     } catch (err: any) {
       setError(err.message || 'Error al registrar grupo');
     } finally {
@@ -105,5 +108,4 @@ export default function FormularioNuevoGrupo() {
     </form>
   );
 }
-
 export default FormularioNuevoGrupo;
