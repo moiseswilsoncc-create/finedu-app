@@ -1,3 +1,5 @@
+// 🧠 Validación institucional: versión limpia sin AportesGrupo
+
 import React from 'react';
 import TablaParticipantes from './TablaParticipantes';
 import BitacoraGrupo from './BitacoraGrupo';
