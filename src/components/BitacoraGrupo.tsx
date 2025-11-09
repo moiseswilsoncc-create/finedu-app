@@ -1,3 +1,5 @@
+// 🧠 Validación institucional: componente limpio y funcional
+
 import React, { useEffect, useState } from 'react';
 import { verHistorialGrupo, EventoHistorial } from '../utils/verHistorialGrupo';
 
