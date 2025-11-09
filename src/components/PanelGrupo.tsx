@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { Grupo } from "../types";
-
-const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
-const supabaseKey = "TU_API_KEY";
+import PanelAdminGrupo from "./PanelAdminGrupo";
+import PanelParticipante from "./PanelParticipante";
 
 const PanelGrupo: React.FC = () => {
   const [grupo, setGrupo] = useState<Grupo | null>(null);
   const [error, setError] = useState("");
+  const [usuarioId, setUsuarioId] = useState<string>("");
 
   const grupoId = localStorage.getItem("grupoId");
 
@@ -18,18 +18,30 @@ const PanelGrupo: React.FC = () => {
         return;
       }
 
-      const { data, error: errorGrupo } = await supabase
+      const { data: grupoData, error: errorGrupo } = await supabase
         .from("grupos")
         .select("*")
         .eq("id", grupoId)
         .single();
 
-      if (errorGrupo || !data) {
+      if (errorGrupo || !grupoData) {
         setError("No se pudo cargar la información del grupo.");
         return;
       }
 
-      setGrupo(data);
+      setGrupo(grupoData);
+
+      const {
+        data: { user },
+        error: errorUsuario,
+      } = await supabase.auth.getUser();
+
+      if (errorUsuario || !user) {
+        setError("No se pudo obtener el usuario actual.");
+        return;
+      }
+
+      setUsuarioId(user.id);
     };
 
     cargarGrupo();
@@ -44,7 +56,7 @@ const PanelGrupo: React.FC = () => {
     );
   }
 
-  if (!grupo) {
+  if (!grupo || !usuarioId) {
     return (
       <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
         <h2 style={{ color: "#2980b9" }}>⏳ Cargando grupo...</h2>
@@ -52,19 +64,23 @@ const PanelGrupo: React.FC = () => {
     );
   }
 
+  const esAdmin = grupo.administrador_id === usuarioId;
+
   return (
     <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
       <h2 style={{ color: "#2c3e50", marginBottom: "1rem" }}>
         🧭 Panel del grupo: {grupo.nombre}
       </h2>
 
-      <div style={{
-        backgroundColor: "#ecf0f1",
-        padding: "1.5rem",
-        borderRadius: "12px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-        marginBottom: "2rem"
-      }}>
+      <div
+        style={{
+          backgroundColor: "#ecf0f1",
+          padding: "1.5rem",
+          borderRadius: "12px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          marginBottom: "2rem",
+        }}
+      >
         <p><strong>Ciudad:</strong> {grupo.ciudad}</p>
         <p><strong>Comuna:</strong> {grupo.comuna}</p>
         <p><strong>País:</strong> {grupo.pais}</p>
@@ -73,9 +89,11 @@ const PanelGrupo: React.FC = () => {
         <p><strong>Estado:</strong> {grupo.activo ? "✅ Activo" : "⛔️ Inactivo"}</p>
       </div>
 
-      <p style={{ fontSize: "0.95rem", color: "#888" }}>
-        Este panel muestra la información institucional del grupo al que perteneces.
-      </p>
+      {esAdmin ? (
+        <PanelAdminGrupo grupo={grupo} usuarioId={usuarioId} />
+      ) : (
+        <PanelParticipante grupo={grupo} usuarioId={usuarioId} />
+      )}
     </div>
   );
 };
