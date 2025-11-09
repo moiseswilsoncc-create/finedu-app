@@ -1,3 +1,5 @@
+// 🔁 Cambio técnico para forzar nuevo SHA
+
 import React from 'react';
 import TablaParticipantes from './TablaParticipantes';
 import BitacoraGrupo from './BitacoraGrupo';
