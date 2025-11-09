@@ -7,7 +7,7 @@ export interface EventoHistorial {
   fecha: string;
 }
 
-export async function verHistorialGrupo(grupoId: string, usuarioId: string): Promise<EventoHistorial[]> {
+export async function verHistorialGrupoNuevo(grupoId: string, usuarioId: string): Promise<EventoHistorial[]> {
   // 1. Validar que el usuario pertenece al grupo
   const { data: vinculo, error: errorVinculo } = await supabase
     .from('participantes_grupo')
