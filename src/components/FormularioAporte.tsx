@@ -85,4 +85,3 @@ export default function FormularioAporte({ grupoId, adminId }: Props) {
   );
 }
 
-export default FormularioAporte;
