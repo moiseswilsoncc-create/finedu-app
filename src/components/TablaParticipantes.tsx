@@ -90,4 +90,3 @@ export default function TablaParticipantes({ grupoId, adminId }: Props) {
   );
 }
 
-export default TablaParticipantes;
