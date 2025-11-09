@@ -76,3 +76,5 @@ export default function DashboardInicio() {
     </div>
   );
 }
+
+export default DashboardInicio;
