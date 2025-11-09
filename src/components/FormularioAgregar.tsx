@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { agregarParticipante } from '../utils/agregarParticipante';
+import { agregarParticipante } from '../utils/agregarParticipanteNuevo';
 
 interface Props {
   grupoId: number;
