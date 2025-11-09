@@ -19,4 +19,3 @@ export default function AppRouter() {
     </Router>
   );
 }
-export default router;
