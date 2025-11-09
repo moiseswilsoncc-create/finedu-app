@@ -109,4 +109,3 @@ export default function FormularioNuevoGrupo() {
   );
 }
 
-export default FormularioNuevoGrupo;
