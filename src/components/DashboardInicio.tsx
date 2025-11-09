@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import { Grupo } from '../types';
 import { useNavigate } from 'react-router-dom';
 import FormularioNuevoGrupo from './FormularioNuevoGrupo';
+import ResumenGrupoCompacto from './ResumenGrupoCompacto'; // ← nuevo import
 
 export default function DashboardInicio() {
   const [grupos, setGrupos] = useState<Grupo[]>([]);
@@ -56,20 +57,15 @@ export default function DashboardInicio() {
         {grupos.length === 0 ? (
           <p>No tienes grupos registrados aún.</p>
         ) : (
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <div>
             {grupos.map((grupo) => (
-              <li key={grupo.id} style={{ marginBottom: '1rem' }}>
-                <strong>{grupo.nombre}</strong> — {grupo.ciudad}, {grupo.pais}
-                <br />
-                <button
-                  onClick={() => ingresarAGrupo(grupo.id)}
-                  style={{ marginTop: '0.5rem', padding: '0.4rem 0.8rem' }}
-                >
-                  Ingresar al grupo
-                </button>
-              </li>
+              <ResumenGrupoCompacto
+                key={grupo.id}
+                grupo={grupo}
+                onIngresar={ingresarAGrupo}
+              />
             ))}
-          </ul>
+          </div>
         )}
       </section>
 
@@ -80,4 +76,3 @@ export default function DashboardInicio() {
     </div>
   );
 }
-export default DashboardInicio;
