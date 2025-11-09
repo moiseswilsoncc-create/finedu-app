@@ -14,3 +14,19 @@
 - Se guarda en Supabase con trazabilidad por integrante
 - Se valida que el total no exceda la meta grupal
 - Se institucionaliza la lógica colaborativa desde el momento de creación
+
+### 🧱 Milestone: consolidación institucional del formulario Crear Grupo de Ahorro
+
+- Se estructura el formulario en tres secciones:
+  1. Datos del grupo
+  2. Meta y planificación
+  3. Participantes
+- Se agregan campos pendientes:
+  - Meses de ahorro
+  - Monto por mes (calculado)
+  - Fecha de creación (automática)
+  - Fecha de término (manual)
+- Se institucionaliza la lógica de distribución de meta por participante
+- Se valida existencia de usuarios en Supabase
+- Se exige al menos un administrador
+- Se permite edición de montos solo por el admin
