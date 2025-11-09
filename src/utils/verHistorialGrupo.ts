@@ -1,6 +1,13 @@
 import { supabase } from './supabaseClient';
 
-export async function verHistorialGrupo(grupoId: number, usuarioId: string) {
+export interface EventoHistorial {
+  tipo_evento: string;
+  detalle: string;
+  usuario_id: string;
+  fecha: string;
+}
+
+export async function verHistorialGrupo(grupoId: string, usuarioId: string): Promise<EventoHistorial[]> {
   // 1. Validar que el usuario pertenece al grupo
   const { data: vinculo, error: errorVinculo } = await supabase
     .from('participantes_grupo')
@@ -21,7 +28,9 @@ export async function verHistorialGrupo(grupoId: number, usuarioId: string) {
     .eq('grupo_id', grupoId)
     .order('fecha', { ascending: false });
 
-  if (errorHistorial) throw new Error('Error al obtener el historial del grupo');
+  if (errorHistorial) {
+    throw new Error('Error al obtener el historial del grupo');
+  }
 
-  return historial;
+  return historial as EventoHistorial[];
 }
