@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient'; // ajusta si tu cliente está en otra ruta
+import { supabase } from '../supabaseClient';  // ajusta si tu cliente está en otra ruta
 
 export async function agregarParticipante(grupoId: number, correo: string, adminId: string) {
   // 1. Validar que el usuario que llama sea el admin del grupo
