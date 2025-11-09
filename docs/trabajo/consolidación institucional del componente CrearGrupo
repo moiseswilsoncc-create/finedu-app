@@ -1,0 +1,10 @@
+### 🧱 Milestone: consolidación institucional del componente CrearGrupo
+
+- Se parte desde el componente original `CrearGrupo.tsx`
+- Se integran todas las mejoras validadas:
+  - Validación de correos en Supabase
+  - Límite de participantes (min 2, max 100)
+  - Roles por integrante
+  - Registro en tablas separadas: `grupos_ahorro` y `miembros_grupo`
+- Se elimina el componente alternativo para evitar duplicación
+- Se institucionaliza como flujo oficial de creación de grupo en Finedu
