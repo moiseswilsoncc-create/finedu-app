@@ -16,8 +16,6 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
 
   const fechaCreacion = new Date().toISOString();
   const totalIntegrantes = 1 + correos.length;
-
-  // 🧮 Cálculo equitativo: todos deben aportar lo mismo al final
   const metaIndividual = meta > 0 && totalIntegrantes > 0 ? Math.round(meta / totalIntegrantes) : 0;
   const cuotaMensual = metaIndividual > 0 && meses > 0 ? Math.round(metaIndividual / meses) : 0;
 
@@ -141,97 +139,113 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
     setMontos({});
   };
   return (
-    <div style={{ maxWidth: "600px", margin: "2rem auto", padding: "1rem" }}>
+    <div style={{ maxWidth: "700px", margin: "2rem auto", padding: "1rem" }}>
       <h2>🛠️ Crear nuevo grupo de ahorro</h2>
 
-      <label>Nombre del grupo:</label>
-      <input value={nombreGrupo} onChange={(e) => setNombreGrupo(e.target.value)} />
+      {/* 🔹 Bloque 1: Datos generales del grupo */}
+      <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
+        <h3>📌 Datos generales del grupo</h3>
 
-      <label>Ciudad:</label>
-      <input value={ciudad} onChange={(e) => setCiudad(e.target.value)} />
+        <label>Nombre del grupo:</label>
+        <input value={nombreGrupo} onChange={(e) => setNombreGrupo(e.target.value)} />
 
-      <label>Comuna:</label>
-      <input value={comuna} onChange={(e) => setComuna(e.target.value)} />
+        <label>Ciudad:</label>
+        <input value={ciudad} onChange={(e) => setCiudad(e.target.value)} />
 
-      <label>País:</label>
-      <input value={pais} onChange={(e) => setPais(e.target.value)} />
+        <label>Comuna:</label>
+        <input value={comuna} onChange={(e) => setComuna(e.target.value)} />
 
-      <label>Monto meta grupal (CLP):</label>
-      <input type="number" value={meta} onChange={(e) => setMeta(Number(e.target.value))} />
+        <label>País:</label>
+        <input value={pais} onChange={(e) => setPais(e.target.value)} />
 
-      <label>Meses de ahorro:</label>
-      <input type="number" min={1} max={36} value={meses} onChange={(e) => setMeses(Number(e.target.value))} />
+        <label>Fecha de término:</label>
+        <input type="date" value={fechaTermino} onChange={(e) => setFechaTermino(e.target.value)} />
+      </div>
 
-      <label>Fecha de término:</label>
-      <input type="date" value={fechaTermino} onChange={(e) => setFechaTermino(e.target.value)} />
+      {/* 🔹 Bloque 2: Meta y planificación financiera */}
+      <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
+        <h3>💰 Meta y planificación financiera</h3>
 
-      <p>💰 Cuota mensual por persona: <strong>${cuotaMensual.toLocaleString("es-CL")}</strong></p>
-      <p>🎯 Meta individual total: <strong>${metaIndividual.toLocaleString("es-CL")}</strong></p>
+        <label>Monto meta grupal (CLP):</label>
+        <input type="number" value={meta} onChange={(e) => setMeta(Number(e.target.value))} />
 
-      <hr />
-      <h3>👥 Participantes del grupo</h3>
+        <label>Meses de ahorro:</label>
+        <input type="number" min={1} max={36} value={meses} onChange={(e) => setMeses(Number(e.target.value))} />
 
-      <label>Agregar integrante (correo):</label>
-      <input type="email" value={nuevoCorreo} onChange={(e) => setNuevoCorreo(e.target.value)} />
-      <button onClick={agregarCorreo}>➕ Agregar</button>
+        <p>🎯 Meta individual total: <strong>${metaIndividual.toLocaleString("es-CL")}</strong></p>
+        <p>📆 Cuota mensual por persona: <strong>${cuotaMensual.toLocaleString("es-CL")}</strong></p>
+      </div>
 
-      <table style={{ width: "100%", marginTop: "1rem", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Correo</th>
-            <th>Rol</th>
-            <th>Monto mensual</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {[usuario.correo, ...correos].map((correo, i) => (
-            <tr key={correo}>
-              <td>{i + 1}</td>
-              <td>{correo}</td>
-              <td>
-                {correo === usuario.correo ? (
-                  "Administrador"
-                ) : (
-                  <select
-                    value={roles[correo]}
-                    onChange={(e) =>
-                      cambiarRol(correo, e.target.value as "admin" | "participante")
-                    }
-                  >
-                    <option value="participante">Participante</option>
-                    <option value="admin">Administrador</option>
-                  </select>
-                )}
-              </td>
-              <td>
-                ${cuotaMensual.toLocaleString("es-CL")}
-              </td>
-              <td>
-                {correo === usuario.correo ? "—" : (
-                  <button onClick={() => eliminarCorreo(correo)}>❌</button>
-                )}
-              </td>
+      {/* 🔹 Bloque 3: Participantes del grupo */}
+      <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
+        <h3>👥 Participantes del grupo</h3>
+
+        <label>Agregar integrante (correo):</label>
+        <input
+          type="email"
+          value={nuevoCorreo}
+          onChange={(e) => setNuevoCorreo(e.target.value)}
+          placeholder="correo@ejemplo.com"
+          style={{ marginRight: "0.5rem" }}
+        />
+        <button onClick={agregarCorreo}>➕ Agregar</button>
+
+        <table style={{ width: "100%", marginTop: "1rem", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>Monto mensual</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {[usuario.correo, ...correos].map((correo, i) => (
+              <tr key={correo}>
+                <td>{i + 1}</td>
+                <td>{correo}</td>
+                <td>
+                  {correo === usuario.correo ? (
+                    "Administrador"
+                  ) : (
+                    <select
+                      value={roles[correo]}
+                      onChange={(e) =>
+                        cambiarRol(correo, e.target.value as "admin" | "participante")
+                      }
+                    >
+                      <option value="participante">Participante</option>
+                      <option value="admin">Administrador</option>
+                    </select>
+                  )}
+                </td>
+                <td>${cuotaMensual.toLocaleString("es-CL")}</td>
+                <td>
+                  {correo === usuario.correo ? "—" : (
+                    <button onClick={() => eliminarCorreo(correo)}>❌</button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <button
-        onClick={crearGrupo}
-        style={{
-          marginTop: "2rem",
-          padding: "0.75rem 1.5rem",
-          backgroundColor: "#2980b9",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-        }}
-      >
-        ✅ Registrar grupo
-      </button>
+        <button
+          onClick={crearGrupo}
+          style={{
+            marginTop: "2rem",
+            padding: "0.75rem 1.5rem",
+            backgroundColor: "#27ae60",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+          }}
+        >
+          ✅ Registrar grupo
+        </button>
+      </div>
     </div>
   );
 };
