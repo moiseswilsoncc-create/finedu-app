@@ -30,3 +30,11 @@
 - Se valida existencia de usuarios en Supabase
 - Se exige al menos un administrador
 - Se permite edición de montos solo por el admin
+
+### 🧮 Milestone: simulación colaborativa viva con equidad total
+
+- Se institucionaliza una meta individual fija para cada participante según la meta y cantidad total de miembros
+- La cuota mensual se recalcula automáticamente según los meses restantes desde el ingreso
+- El sistema descuenta lo ya aportado y ajusta lo que falta
+- Se permite modificar la meta y los meses sin romper la equidad
+- Se habilita trazabilidad completa por participante y por mes
