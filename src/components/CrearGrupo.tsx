@@ -16,17 +16,19 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
 
   const fechaCreacion = new Date().toISOString();
   const totalIntegrantes = 1 + correos.length;
-  const montoPorMes = meta > 0 && meses > 0 ? Math.round(meta / meses) : 0;
-  const montoSugeridoPorIntegrante = meta > 0 ? Math.round(meta / totalIntegrantes) : 0;
+
+  // 🧮 Cálculo equitativo: todos deben aportar lo mismo al final
+  const metaIndividual = meta > 0 && totalIntegrantes > 0 ? Math.round(meta / totalIntegrantes) : 0;
+  const cuotaMensual = metaIndividual > 0 && meses > 0 ? Math.round(metaIndividual / meses) : 0;
 
   useEffect(() => {
     const nuevosMontos: any = {};
     correos.forEach((correo) => {
-      nuevosMontos[correo] = montos[correo] || montoSugeridoPorIntegrante;
+      nuevosMontos[correo] = cuotaMensual;
     });
-    nuevosMontos[usuario.correo] = montos[usuario.correo] || montoSugeridoPorIntegrante;
+    nuevosMontos[usuario.correo] = cuotaMensual;
     setMontos(nuevosMontos);
-  }, [meta, correos]);
+  }, [meta, meses, correos]);
 
   const agregarCorreo = () => {
     const correoLimpio = nuevoCorreo.trim().toLowerCase();
@@ -37,7 +39,6 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
     ) {
       setCorreos([...correos, correoLimpio]);
       setRoles({ ...roles, [correoLimpio]: "participante" });
-      setMontos({ ...montos, [correoLimpio]: montoSugeridoPorIntegrante });
       setNuevoCorreo("");
     }
   };
@@ -68,7 +69,7 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
 
     const todosLosCorreos = [usuario.correo, ...correos];
     const rolesFinales = { ...roles, [usuario.correo]: "admin" };
-    const montosFinales = { ...montos, [usuario.correo]: montoSugeridoPorIntegrante };
+    const montosFinales = { ...montos, [usuario.correo]: cuotaMensual };
 
     const { data: usuariosValidos, error: errorUsuarios } = await supabase
       .from("usuarios")
@@ -97,7 +98,7 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
           pais,
           meta,
           meses,
-          monto_mensual: montoPorMes,
+          monto_mensual: cuotaMensual,
           fecha_creacion: fechaCreacion,
           fecha_termino: fechaTermino,
           administrador: usuario.correo,
@@ -115,7 +116,7 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
       grupo_id: grupoId,
       correo,
       rol: rolesFinales[correo],
-      monto_asignado: montosFinales[correo],
+      monto_asignado: cuotaMensual,
     }));
 
     const { error: miembrosError } = await supabase
@@ -164,8 +165,8 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
       <label>Fecha de término:</label>
       <input type="date" value={fechaTermino} onChange={(e) => setFechaTermino(e.target.value)} />
 
-      <p>💰 Monto mensual sugerido: <strong>${montoPorMes.toLocaleString("es-CL")}</strong></p>
-      <p>👥 Monto sugerido por integrante: <strong>${montoSugeridoPorIntegrante.toLocaleString("es-CL")}</strong></p>
+      <p>💰 Cuota mensual por persona: <strong>${cuotaMensual.toLocaleString("es-CL")}</strong></p>
+      <p>🎯 Meta individual total: <strong>${metaIndividual.toLocaleString("es-CL")}</strong></p>
 
       <hr />
       <h3>👥 Participantes del grupo</h3>
@@ -180,7 +181,7 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
             <th>#</th>
             <th>Correo</th>
             <th>Rol</th>
-            <th>Monto asignado</th>
+            <th>Monto mensual</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -205,15 +206,7 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
                 )}
               </td>
               <td>
-                {correo === usuario.correo ? (
-                  `$${montos[correo]?.toLocaleString("es-CL")}`
-                ) : (
-                  <input
-                    type="number"
-                    value={montos[correo] || 0}
-                    onChange={(e) => cambiarMonto(correo, Number(e.target.value))}
-                  />
-                )}
+                ${cuotaMensual.toLocaleString("es-CL")}
               </td>
               <td>
                 {correo === usuario.correo ? "—" : (
