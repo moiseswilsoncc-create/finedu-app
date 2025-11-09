@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import RegistroAhorro from "./RegistroAhorro";
 import PanelGrupo from "./PanelGrupo";
-import FormularioNuevoGrupo from "./FormularioNuevoGrupo";
+import CrearGrupo from "./CrearGrupo"; // ✅ Componente institucionalizado
 
 const PanelAhorro: React.FC = () => {
   const [modo, setModo] = useState<"individual" | "grupal" | "crear">("individual");
@@ -41,7 +41,7 @@ const PanelAhorro: React.FC = () => {
 
       {modo === "individual" && <RegistroAhorro />}
       {modo === "grupal" && <PanelGrupo />}
-      {modo === "crear" && <FormularioNuevoGrupo />}
+      {modo === "crear" && <CrearGrupo usuario={{ correo: correoUsuario }} />} {/* ✅ Integrado */}
     </div>
   );
 };
