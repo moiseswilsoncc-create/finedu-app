@@ -18,11 +18,6 @@ const PanelParticipante: React.FC<Props> = ({ grupo, usuarioId }) => {
         <TablaParticipantes grupoId={grupo.id} adminId={usuarioId} />
       </section>
 
-      <section style={{ marginBottom: '2rem' }}>
-        <h3>💰 Tus aportes al grupo</h3>
-        <AportesGrupo grupoId={grupo.id} usuarioId={usuarioId} esAdmin={false} />
-      </section>
-
       <section>
         <h3>📜 Bitácora institucional</h3>
         <BitacoraGrupo grupoId={grupo.id.toString()} usuarioId={usuarioId} />
