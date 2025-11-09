@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 
 export async function verParticipantes(grupoId: number, usuarioId: string) {
   // 1. Validar que el usuario pertenece al grupo
