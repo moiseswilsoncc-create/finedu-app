@@ -1,4 +1,4 @@
-import { supabase } from "../supabaseClient";
+import { supabase } from '../supabaseClient';
 
 export async function agregarParticipante(grupoId: number, correo: string, adminId: string) {
   // 1. Validar que el usuario que llama sea el admin del grupo
