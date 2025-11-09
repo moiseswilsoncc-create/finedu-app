@@ -1,0 +1,16 @@
+### 🧱 Milestone: jerarquía institucional al crear grupo
+
+- El creador del grupo se registra automáticamente como administrador
+- No se permite eliminar ni modificar su rol
+- Los participantes se agregan manualmente y se validan contra Supabase
+- Se muestra una tabla con todos los integrantes y sus roles
+- Se institucionaliza la jerarquía desde el momento de creación
+
+### 🧮 Milestone: distribución automática y editable de la meta grupal
+
+- Se calcula automáticamente el monto sugerido por participante
+- Se muestra en tabla editable con campos: correo, rol, monto asignado
+- Solo el administrador puede editar los montos
+- Se guarda en Supabase con trazabilidad por integrante
+- Se valida que el total no exceda la meta grupal
+- Se institucionaliza la lógica colaborativa desde el momento de creación

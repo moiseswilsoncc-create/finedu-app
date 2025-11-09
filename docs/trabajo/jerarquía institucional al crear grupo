@@ -1,7 +1,0 @@
-### 🧱 Milestone: jerarquía institucional al crear grupo
-
-- El creador del grupo se registra automáticamente como administrador
-- No se permite eliminar ni modificar su rol
-- Los participantes se agregan manualmente y se validan contra Supabase
-- Se muestra una tabla con todos los integrantes y sus roles
-- Se institucionaliza la jerarquía desde el momento de creación
