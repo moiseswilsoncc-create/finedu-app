@@ -47,5 +47,14 @@
 - Se institucionaliza la equidad contributiva y la trazabilidad desde el momento de creación
 
 
+### 🧱 Milestone: modularización visual y funcional del componente CrearGrupo
+
+- Se separa el formulario en tres bloques institucionales:
+  1. BloqueDatosGrupo.tsx
+  2. BloqueMetaFinanciera.tsx
+  3. BloqueParticipantes.tsx
+- Cada bloque tiene props claras y trazabilidad lista para escalar
+- Se mejora la claridad visual, mantenibilidad y profesionalismo del componente
+- Se prepara para futuras extensiones como simuladores, trazabilidad mensual o reglas de ingreso
 
 
