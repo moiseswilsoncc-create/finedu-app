@@ -45,4 +45,3 @@ export default function RutaProtegidaPerfil() {
   return <PerfilUsuario />;
 }
 
-export default RutaProtegidaPerfil;
