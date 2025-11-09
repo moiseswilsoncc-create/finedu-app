@@ -84,4 +84,3 @@ export default function PerfilUsuario() {
   );
 }
 
-export default PerfilUsuario;
