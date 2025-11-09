@@ -57,4 +57,11 @@
 - Se mejora la claridad visual, mantenibilidad y profesionalismo del componente
 - Se prepara para futuras extensiones como simuladores, trazabilidad mensual o reglas de ingreso
 
+### 🧱 Milestone: institucionalización del backend Express
+
+- Se valida `index.ts` como raíz oficial del backend Finedu
+- Se aplica middleware institucional: `cors`, `express.json`, `dotenv`
+- Se expone la ruta `/api/guardarOferta` para registrar ofertas de colaboradores
+- Se configura el puerto dinámico desde entorno
+- Se institucionaliza trazabilidad con mensaje de inicio profesional
 
