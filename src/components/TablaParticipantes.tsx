@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { verParticipantes } from '../utils/verParticipantes';
+import { verParticipantes } from '../utils/verParticipantesNuevo';
 import { expulsarParticipante } from '../utils/expulsarParticipante';
 
 interface Props {
