@@ -1,15 +1,7 @@
 import { supabase } from '../supabaseClient';
+import { Grupo } from '../types';
 
-interface NuevoGrupo {
-  nombre: string;
-  ciudad: string;
-  comuna: string;
-  pais: string;
-  meta_grupal: number;
-  fecha_creacion: string;
-  activo: boolean;
-  administrador_id: string;
-}
+export type NuevoGrupo = Omit<Grupo, 'id'>;
 
 export async function registrarGrupo(grupo: NuevoGrupo) {
   const { data, error } = await supabase
@@ -24,6 +16,6 @@ export async function registrarGrupo(grupo: NuevoGrupo) {
 
   return {
     mensaje: `Grupo "${data.nombre}" creado exitosamente.`,
-    grupo: data,
+    grupo: data as Grupo,
   };
 }
