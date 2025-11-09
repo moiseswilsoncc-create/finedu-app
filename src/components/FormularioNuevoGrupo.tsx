@@ -108,4 +108,5 @@ export default function FormularioNuevoGrupo() {
     </form>
   );
 }
+
 export default FormularioNuevoGrupo;
