@@ -62,6 +62,7 @@ export interface Grupo {
   meta_grupal: number;
   fecha_creacion: string;
   activo: boolean;
+  administrador_id: string; // ← agregado para lógica condicional en PanelGrupo
 }
 
 // Colaborador institucional
