@@ -3,12 +3,7 @@ import FormularioAgregar from './FormularioAgregar';
 import FormularioAporte from './FormularioAporte';
 import TablaParticipantes from './TablaParticipantes';
 import BitacoraGrupo from './BitacoraGrupo';
-
-interface Grupo {
-  id: number;
-  nombre: string;
-  administrador_id: string;
-}
+import { Grupo } from '../types'; // ← tipado institucional
 
 interface Props {
   grupo: Grupo;
@@ -23,12 +18,17 @@ const PanelAdminGrupo: React.FC<Props> = ({ grupo, usuarioId }) => {
   }, [grupo, usuarioId]);
 
   if (!esAdmin) {
-    return <p>No tienes permisos para administrar este grupo.</p>;
+    return (
+      <div style={{ padding: '2rem' }}>
+        <h2>🔒 Acceso restringido</h2>
+        <p>No tienes permisos para administrar este grupo.</p>
+      </div>
+    );
   }
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h2 style={{ marginBottom: '1rem' }}>Panel de Administración — {grupo.nombre}</h2>
+    <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
+      <h2 style={{ marginBottom: '1rem' }}>👑 Panel de Administración — {grupo.nombre}</h2>
 
       <section style={{ marginBottom: '2rem' }}>
         <h3>👥 Participantes activos</h3>
@@ -47,7 +47,7 @@ const PanelAdminGrupo: React.FC<Props> = ({ grupo, usuarioId }) => {
 
       <section>
         <h3>📜 Bitácora institucional</h3>
-        <BitacoraGrupo grupoId={grupo.id} usuarioId={usuarioId} />
+        <BitacoraGrupo grupoId={grupo.id.toString()} usuarioId={usuarioId} />
       </section>
     </div>
   );
