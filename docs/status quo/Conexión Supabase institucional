@@ -1,0 +1,6 @@
+### 🔌 Conexión Supabase institucional
+
+- Archivo oficial: `src/supabaseClient.ts`
+- Usado por todos los módulos frontend (`components`, `institucional`, `usuario`, etc.)
+- Backend usa `backend/supabaseClient.js` exclusivamente en rutas Express
+- Se eliminó `src/src/supabaseClient.ts` por duplicación no referenciada
