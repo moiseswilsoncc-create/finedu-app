@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 
 export async function registrarAporte(grupoId: number, monto: number, participanteId: string, adminId: string, observaciones?: string) {
   // 1. Validar que el usuario que llama sea el admin del grupo
