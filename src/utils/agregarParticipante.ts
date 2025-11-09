@@ -1,3 +1,5 @@
+// 🧠 Confirmación institucional: import corregido a '../supabaseClient'
+
 import { supabase } from '../supabaseClient';
 
 export async function agregarParticipante(grupoId: number, correo: string, adminId: string) {
