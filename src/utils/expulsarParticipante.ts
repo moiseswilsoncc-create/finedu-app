@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 
 export async function expulsarParticipante(grupoId: number, participanteId: string, adminId: string) {
   // 1. Validar que quien llama sea el admin del grupo
