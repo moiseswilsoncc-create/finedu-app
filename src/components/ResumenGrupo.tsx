@@ -6,6 +6,19 @@ interface Props {
 }
 
 const ResumenGrupo: React.FC<Props> = ({ grupo }) => {
+  // Validaciones seguras para evitar crash si algún campo viene null/undefined
+  const ciudad = grupo?.ciudad || "No definida";
+  const comuna = grupo?.comuna || "No definida";
+  const pais = grupo?.pais || "No definido";
+  const metaGrupal =
+    typeof grupo?.meta_grupal === "number"
+      ? `$${grupo.meta_grupal.toLocaleString("es-CL")}`
+      : "No definida";
+  const fechaCreacion = grupo?.fecha_creacion
+    ? new Date(grupo.fecha_creacion).toLocaleDateString("es-CL")
+    : "Sin fecha";
+  const estado = grupo?.activo ? "✅ Activo" : "⛔️ Inactivo";
+
   return (
     <div
       style={{
@@ -16,12 +29,12 @@ const ResumenGrupo: React.FC<Props> = ({ grupo }) => {
         marginBottom: '2rem',
       }}
     >
-      <p><strong>📍 Ciudad:</strong> {grupo.ciudad}</p>
-      <p><strong>🏘 Comuna:</strong> {grupo.comuna}</p>
-      <p><strong>🌎 País:</strong> {grupo.pais}</p>
-      <p><strong>🎯 Meta grupal:</strong> ${grupo.meta_grupal.toLocaleString('es-CL')}</p>
-      <p><strong>📅 Fecha de creación:</strong> {new Date(grupo.fecha_creacion).toLocaleDateString('es-CL')}</p>
-      <p><strong>🔐 Estado:</strong> {grupo.activo ? '✅ Activo' : '⛔️ Inactivo'}</p>
+      <p><strong>📍 Ciudad:</strong> {ciudad}</p>
+      <p><strong>🏘 Comuna:</strong> {comuna}</p>
+      <p><strong>🌎 País:</strong> {pais}</p>
+      <p><strong>🎯 Meta grupal:</strong> {metaGrupal}</p>
+      <p><strong>📅 Fecha de creación:</strong> {fechaCreacion}</p>
+      <p><strong>🔐 Estado:</strong> {estado}</p>
     </div>
   );
 };
