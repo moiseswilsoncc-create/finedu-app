@@ -1,8 +1,10 @@
+// src/App.tsx
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { usePermisos } from "./hooks/usePermisos";
 
+// 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
 import RegistroUsuario from "./components/RegistroUsuario";
 import LoginUsuario from "./components/LoginUsuario";
@@ -12,6 +14,7 @@ import RecuperarClave from "./components/RecuperarClave";
 import NuevaClave from "./components/NuevaClave";
 import RegistroPendiente from "./components/RegistroPendiente";
 
+// 🧩 Módulo Finanzas
 import Finanzas from "./components/Finanzas";
 import Ingresos from "./components/Ingresos";
 import Egresos from "./components/Egresos";
@@ -20,12 +23,15 @@ import ResumenFinanciero from "./components/ResumenFinanciero";
 import ResumenEgresos from "./components/ResumenEgresos";
 import SimuladorCreditos from "./components/SimuladorCreditos";
 import ForoFinanciero from "./components/ForoFinanciero";
+
+// 🧩 Nuevos módulos Finanzas
 import Categorias from "./components/Categorias";
 import Items from "./components/Items";
 
+// 🧩 Módulo Ahorro
 import PanelAhorro from "./components/PanelAhorro";
-import VistaGrupal from "./components/VistaGrupal";
 
+// 🧩 Colaboradores
 import RegistroColaborador from "./components/RegistroColaborador";
 import IngresoColaborador from "./components/IngresoColaborador";
 import LoginColaborador from "./components/LoginColaborador";
@@ -34,72 +40,96 @@ import InvitacionColaboradores from "./components/InvitacionColaboradores";
 import OfertasColaboradores from "./components/OfertasColaboradores";
 import PublicarOfertaColaborador from "./components/PublicarOfertaColaborador";
 
+// 🧩 Institucional
 import DashboardInstitucional from "./institucional/DashboardInstitucional";
 import EditorEstadoArchivos from "./institucional/EditorEstadoArchivos";
 import EditorTrazabilidad from "./institucional/EditorTrazabilidad";
 import MetricaSupabase from "./institucional/MetricaSupabase";
 import TestInstitucional from "./institucional/TestInstitucional";
 
+// 🧩 Navegación
 import MenuModulos from "./components/MenuModulos";
 import Navbar from "./components/Navbar";
 
-const RutaProtegida = ({ children }: { children: React.ReactNode }) => {
+// 🧩 Nuevo módulo de usuario
+import VistaGrupal from "./components/VistaGrupal";
+
+console.log("🧼 App.tsx actualizado: rutas oficiales consolidadas");
+
+const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data, error }) => {
+    const validarSesion = async () => {
+      const { data, error } = await supabase.auth.getUser();
       setAutenticado(!!data.user && !error);
-    });
+    };
+    validarSesion();
   }, []);
+
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/login-usuario" replace />;
 };
 
-const RutaProtegidaColaborador = ({ children }: { children: React.ReactNode }) => {
+const RutaProtegidaColaborador: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data, error }) => {
+    const validarSesion = async () => {
+      const { data, error } = await supabase.auth.getUser();
       const rol = data.user?.user_metadata?.rol;
       setAutenticado(!!data.user && rol === "colaborador" && !error);
-    });
+    };
+    validarSesion();
   }, []);
+
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/login-colaborador" replace />;
 };
 
-const RutaProtegidaInstitucional = ({ children }: { children: React.ReactNode }) => {
+const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data, error }) => {
+    const validarSesion = async () => {
+      const { data, error } = await supabase.auth.getUser();
       const rol = data.user?.user_metadata?.rol;
       setAutenticado(!!data.user && rol === "admin" && !error);
-    });
+    };
+    validarSesion();
   }, []);
+
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/" replace />;
 };
 
-const App = () => {
+const App: React.FC = () => {
   const location = useLocation();
   const rutasPublicas = [
     "/", "/login-usuario", "/registro-usuario", "/registro-pendiente",
     "/error-acceso", "/recuperar-clave", "/nueva-clave",
     "/login-colaborador", "/registro-colaborador", "/ingreso-colaborador"
   ];
+
   const mostrarNavbar = !rutasPublicas.includes(location.pathname);
 
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    const obtenerUsuario = async () => {
+      const { data } = await supabase.auth.getUser();
       const id = data.user?.id || null;
       console.log("🧠 ID del usuario:", id);
       setUsuarioId(id);
-    });
+    };
+    obtenerUsuario();
   }, []);
 
-  const { modulos, cargando } = usePermisos(usuarioId ?? undefined);
+  const { modulos, cargando } = usePermisos(usuarioId);
 
-  if (cargando || !usuarioId || modulos === null) {
-    return <p style={{ padding: "2rem" }}>🔄 Cargando módulos habilitados...</p>;
+  if (cargando) return <p style={{ padding: "2rem" }}>🔄 Cargando módulos habilitados...</p>;
+  if (!modulos || !Array.isArray(modulos)) {
+    return <p style={{ padding: "2rem", color: "#999" }}>⚠️ No se pudieron cargar los módulos habilitados.</p>;
   }
   return (
     <>
