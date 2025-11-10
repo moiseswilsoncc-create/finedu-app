@@ -85,3 +85,12 @@
 - Se reorganiza el orden de ejecución para proteger el hook con condición
 - Se elimina el error `usuarioId es null` y se restablece el render seguro
 - Se institucionaliza la trazabilidad de sesión y permisos en App.tsx
+
+
+### 🧱 Milestone: resolución de pantalla en blanco por render condicional prematuro
+
+- Se detecta que el render condicional de rutas depende de `modulos.includes(...)` antes de que `modulos` esté listo
+- Se agrega protección global con `if (cargando || !usuarioId || !modulos.length)` antes del render
+- Se eliminan condicionales internos en `<Routes>` para evitar render vacío
+- Se institucionaliza el patrón de render seguro en `App.tsx` para despliegue en Vercel
+
