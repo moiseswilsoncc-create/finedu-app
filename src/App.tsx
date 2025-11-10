@@ -53,9 +53,9 @@ import VistaGrupal from "./components/VistaGrupal";
 
 console.log("🧼 App.tsx actualizado: rutas oficiales consolidadas");
 
+// 🔒 Rutas protegidas
 const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
-
   useEffect(() => {
     const validarSesion = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -63,14 +63,12 @@ const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     };
     validarSesion();
   }, []);
-
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/login-usuario" replace />;
 };
 
 const RutaProtegidaColaborador: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
-
   useEffect(() => {
     const validarSesion = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -79,14 +77,12 @@ const RutaProtegidaColaborador: React.FC<{ children: React.ReactNode }> = ({ chi
     };
     validarSesion();
   }, []);
-
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/login-colaborador" replace />;
 };
 
 const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
-
   useEffect(() => {
     const validarSesion = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -95,7 +91,6 @@ const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ c
     };
     validarSesion();
   }, []);
-
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/" replace />;
 };
@@ -148,90 +143,6 @@ const App: React.FC = () => {
         <Route path="/error-acceso" element={<VistaErrorAcceso />} />
         <Route path="/recuperar-clave" element={<RecuperarClave />} />
         <Route path="/nueva-clave" element={<NuevaClave />} />
-
-        {/* Finanzas */}
-        {modulos.includes("finanzas") && (
-          <>
-            <Route path="/finanzas" element={<RutaProtegida><Finanzas pais="Chile" /></RutaProtegida>} />
-            <Route path="/finanzas/ingresos" element={<RutaProtegida><Ingresos /></RutaProtegida>} />
-            <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
-            <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} />
-            <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
-            <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
-            <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
-            <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
-            <Route path="/finanzas/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
-            <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
-          </>
-        )}
-
-        {/* Ahorro */}
-        {modulos.includes("panel-ahorro") && (
-          <>
-            <Route path="/panel-ahorro" element={<RutaProtegida><PanelAhorro /></RutaProtegida>} />
-            <Route path="/crear-grupo" element={<RutaProtegida><CrearGrupo usuario={{ correo: usuarioCorreo }} /></RutaProtegida>} />
-          </>
-        )}
-
-        {/* Vista Grupal */}
-        {modulos.includes("vista-grupal") && (
-          <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} /></RutaProtegida>} />
-        )}
-
-        {/* Colaboradores */}
-        <Route path="/registro-colaborador" element={<RegistroColaborador />} />
-        <Route path="/ingreso-colaborador" element={<IngresoColaborador />} />
-        <Route path="/login-colaborador" element={<LoginColaborador />} />
-const App: React.FC = () => {
-  const location = useLocation();
-  const rutasPublicas = [
-    "/", "/login-usuario", "/registro-usuario", "/registro-pendiente",
-    "/error-acceso", "/recuperar-clave", "/nueva-clave",
-    "/login-colaborador", "/registro-colaborador", "/ingreso-colaborador"
-  ];
-
-  const mostrarNavbar = !rutasPublicas.includes(location.pathname);
-
-  const [usuarioId, setUsuarioId] = useState<string | null>(null);
-  const [usuarioCorreo, setUsuarioCorreo] = useState<string>("");
-
-  useEffect(() => {
-    const obtenerUsuario = async () => {
-      const { data } = await supabase.auth.getUser();
-      const id = data.user?.id || null;
-      const correo = data.user?.email || "";
-      console.log("🧠 ID del usuario:", id);
-      setUsuarioId(id);
-      setUsuarioCorreo(correo);
-    };
-    obtenerUsuario();
-  }, []);
-
-  const { modulos, cargando } = usePermisos(usuarioId);
-  if (cargando) return null;
-
-  return (
-    <>
-      {mostrarNavbar && <Navbar />}
-      {mostrarNavbar && <MenuModulos />}
-
-      <Routes>
-        {/* Bienvenida */}
-        <Route path="/" element={<Bienvenida />} />
-
-        {/* Usuarios */}
-        <Route path="/registro-usuario" element={<RegistroUsuario />} />
-        <Route path="/login-usuario" element={<LoginUsuario />} />
-        {modulos.includes("panel-usuario") && (
-          <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
-        )}
-
-        {/* Flujo de acceso */}
-        <Route path="/registro-pendiente" element={<RegistroPendiente />} />
-        <Route path="/error-acceso" element={<VistaErrorAcceso />} />
-        <Route path="/recuperar-clave" element={<RecuperarClave />} />
-        <Route path="/nueva-clave" element={<NuevaClave />} />
-
         {/* Finanzas */}
         {modulos.includes("finanzas") && (
           <>
