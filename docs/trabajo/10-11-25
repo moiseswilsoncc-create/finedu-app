@@ -59,3 +59,31 @@ E --> F[Frontend detecta módulos vía `usePermisos`]
 - Se documenta que los permisos existen en Supabase pero no se están usando en el frontend
 - Se propone reactivar `usePermisos` con validación segura y render condicional
 - Se institucionaliza este paso como parte del protocolo de restauración modular sin bloqueo
+
+## 📌 Milestone — Restauración Panel de Ahorro y Crear Grupo
+
+**Fecha:** 10 de noviembre de 2025  
+**Responsable:** Wilson (Finedu)  
+**Estado:** ✅ Consolidado
+
+### 🎯 Objetivo
+Restaurar la pantalla de **Crear Grupo** dentro del Panel de Ahorro, eliminando errores de iteración (`TypeError: e is not iterable`) y asegurar la renderización completa de los bloques institucionales.
+
+### 🔧 Acciones realizadas
+- **TablaParticipantes.tsx**: validación con `Array.isArray` y fallback seguro para evitar crash en `.map()`.
+- **FormularioAgregar.tsx**: blindaje de props (`grupoId`, `adminId`) y validación de respuesta de Supabase.
+- **FormularioAporte.tsx**: validación de `monto` contra `NaN` y fallback seguro en `resultado?.mensaje`.
+- **CrearGrupo.tsx**: correcciones en validación de arrays (`usuariosValidos`, `grupoData`), roles y montos finales.
+- **BloqueParticipantes.tsx**: fallback seguro para `participantes`, validación de `cuotaMensual` y blindaje en `todos = [...]`.
+
+### 📊 Resultado
+- La pantalla de **Crear Grupo** se renderiza correctamente.  
+- El flujo de **Panel de Ahorro** (personal, grupal y creación de grupos) está operativo y blindado contra datos incompletos.  
+- Error crítico de iteración eliminado.  
+
+### 📜 Aprendizaje institucional
+Cada fix documentado se convierte en legado para futuros colaboradores.  
+Este milestone asegura que el Panel de Ahorro no vuelva a caer en blanco por errores de iteración y queda registrado como cierre técnico y emocional.
+
+---
+
