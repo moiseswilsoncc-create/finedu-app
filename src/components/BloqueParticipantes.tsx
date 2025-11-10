@@ -9,7 +9,7 @@ interface Participante {
 
 interface Props {
   usuario: { correo: string; nombre: string; apellido: string };
-  participantes: Participante[];
+  participantes?: Participante[]; // opcional para evitar crash
   cuotaMensual: number;
   nuevoCorreo: string;
   setNuevoCorreo: (v: string) => void;
@@ -22,7 +22,7 @@ interface Props {
 
 const BloqueParticipantes: React.FC<Props> = ({
   usuario,
-  participantes,
+  participantes = [], // fallback seguro
   cuotaMensual,
   nuevoCorreo,
   setNuevoCorreo,
@@ -32,7 +32,8 @@ const BloqueParticipantes: React.FC<Props> = ({
   eliminarSeleccionados,
   crearGrupo
 }) => {
-  const todos = [{ ...usuario, seleccionado: false }, ...participantes];
+  const todos = [{ ...usuario, seleccionado: false }, ...(Array.isArray(participantes) ? participantes : [])];
+  const hayParticipantes = Array.isArray(participantes) && participantes.length > 0;
 
   return (
     <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
@@ -65,19 +66,13 @@ const BloqueParticipantes: React.FC<Props> = ({
       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "1rem" }}>
         <thead>
           <tr style={{ backgroundColor: "#f2f2f2" }}>
-            <th style={{ padding: "0.5rem", borderBottom: "1px solid #ddd" }}>✔</th>
-            <th style={{ padding: "0.5rem", borderBottom: "1px solid #ddd" }}>#</th>
-            <th style={{ padding: "0.5rem", borderBottom: "1px solid #ddd" }}>Correo</th>
-            <th style={{ padding: "0.5rem", borderBottom: "1px solid #ddd" }}>Nombre</th>
-            <th style={{ padding: "0.5rem", borderBottom: "1px solid #ddd" }}>Apellido</th>
-            <th style={{ padding: "0.5rem", borderBottom: "1px solid #ddd" }}>Rol</th>
-            <th style={{ padding: "0.5rem", borderBottom: "1px solid #ddd" }}>Cuota mensual</th>
+            <th>✔</th><th>#</th><th>Correo</th><th>Nombre</th><th>Apellido</th><th>Rol</th><th>Cuota mensual</th>
           </tr>
         </thead>
         <tbody>
           {todos.map((p, i) => (
             <tr key={p.correo} style={{ borderBottom: "1px solid #eee" }}>
-              <td style={{ padding: "0.5rem", textAlign: "center" }}>
+              <td style={{ textAlign: "center" }}>
                 {p.correo === usuario.correo ? "—" : (
                   <input
                     type="checkbox"
@@ -86,57 +81,35 @@ const BloqueParticipantes: React.FC<Props> = ({
                   />
                 )}
               </td>
-              <td style={{ padding: "0.5rem" }}>{i + 1}</td>
-              <td style={{ padding: "0.5rem" }}>{p.correo}</td>
-              <td style={{ padding: "0.5rem" }}>{p.nombre}</td>
-              <td style={{ padding: "0.5rem" }}>{p.apellido}</td>
-              <td style={{ padding: "0.5rem" }}>{p.correo === usuario.correo ? "Administrador" : "Participante"}</td>
-              <td style={{ padding: "0.5rem" }}>${cuotaMensual.toLocaleString("es-CL")}</td>
+              <td>{i + 1}</td>
+              <td>{p.correo}</td>
+              <td>{p.nombre || "—"}</td>
+              <td>{p.apellido || "—"}</td>
+              <td>{p.correo === usuario.correo ? "Administrador" : "Participante"}</td>
+              <td>
+                {typeof cuotaMensual === "number" ? `$${cuotaMensual.toLocaleString("es-CL")}` : "—"}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
       <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-        <button
-          onClick={editarSeleccionados}
-          style={{
-            padding: "0.5rem 1rem",
-            backgroundColor: "#f39c12",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer"
-          }}
-        >
-          📝 Editar seleccionados
-        </button>
-        <button
-          onClick={eliminarSeleccionados}
-          style={{
-            padding: "0.5rem 1rem",
-            backgroundColor: "#e74c3c",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer"
-          }}
-        >
-          🗑️ Eliminar seleccionados
-        </button>
+        <button onClick={editarSeleccionados} style={{ backgroundColor: "#f39c12", color: "white" }}>📝 Editar seleccionados</button>
+        <button onClick={eliminarSeleccionados} style={{ backgroundColor: "#e74c3c", color: "white" }}>🗑️ Eliminar seleccionados</button>
       </div>
 
       <button
         onClick={crearGrupo}
-        disabled={participantes.length === 0}
+        disabled={!hayParticipantes}
         style={{
           marginTop: "2rem",
           padding: "0.75rem 1.5rem",
-          backgroundColor: participantes.length === 0 ? "#bdc3c7" : "#27ae60",
+          backgroundColor: !hayParticipantes ? "#bdc3c7" : "#27ae60",
           color: "white",
           border: "none",
           borderRadius: "6px",
-          cursor: participantes.length === 0 ? "not-allowed" : "pointer"
+          cursor: !hayParticipantes ? "not-allowed" : "pointer"
         }}
       >
         ✅ Registrar grupo
