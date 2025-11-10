@@ -53,3 +53,9 @@ E --> F[Frontend detecta módulos vía `usePermisos`]
 - Se confirma que desacoplar `usePermisos` permitió restaurar el render
 - Se institucionaliza este momento como señal de recuperación y avance emocional
 
+### 🧱 Milestone: restauración progresiva de `usePermisos` en frontend
+
+- Se confirma que `usePermisos` y la validación de `permiso` fueron desconectados para evitar pantalla en blanco
+- Se documenta que los permisos existen en Supabase pero no se están usando en el frontend
+- Se propone reactivar `usePermisos` con validación segura y render condicional
+- Se institucionaliza este paso como parte del protocolo de restauración modular sin bloqueo
