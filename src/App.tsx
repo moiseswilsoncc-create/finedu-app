@@ -114,8 +114,6 @@ const App: React.FC = () => {
   const mostrarNavbar = !rutasPublicas.includes(location.pathname);
 
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
-  const [modulos, setModulos] = useState<string[]>([]);
-  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     const obtenerUsuario = async () => {
@@ -127,15 +125,7 @@ const App: React.FC = () => {
     obtenerUsuario();
   }, []);
 
-  useEffect(() => {
-    const cargarPermisos = async () => {
-      if (!usuarioId) return;
-      const { modulos, cargando } = usePermisos(usuarioId);
-      setModulos(modulos);
-      setCargando(cargando);
-    };
-    cargarPermisos();
-  }, [usuarioId]);
+  const { modulos, cargando } = usePermisos(usuarioId);
 
   if (cargando) return <p style={{ padding: "2rem" }}>🔄 Cargando módulos habilitados...</p>;
   if (!modulos || !Array.isArray(modulos)) {
