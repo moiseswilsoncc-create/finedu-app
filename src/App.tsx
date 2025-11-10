@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
+import { usePermisos } from "./hooks/usePermisos";
 
 // 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
@@ -101,6 +102,7 @@ const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ c
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/" replace />;
 };
+
 const App: React.FC = () => {
   const location = useLocation();
   const rutasPublicas = [
@@ -111,6 +113,18 @@ const App: React.FC = () => {
 
   const mostrarNavbar = !rutasPublicas.includes(location.pathname);
 
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
+  const { modulos, cargando } = usePermisos(usuarioId);
+
+  useEffect(() => {
+    const obtenerUsuario = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUsuarioId(data.user?.id || null);
+    };
+    obtenerUsuario();
+  }, []);
+
+  if (cargando) return <p style={{ padding: "2rem" }}>🔄 Cargando módulos habilitados...</p>;
   return (
     <>
       {mostrarNavbar && <Navbar />}
@@ -132,22 +146,30 @@ const App: React.FC = () => {
         <Route path="/nueva-clave" element={<NuevaClave />} />
 
         {/* Finanzas */}
-        <Route path="/finanzas" element={<RutaProtegida><Finanzas pais="Chile" /></RutaProtegida>} />
-        <Route path="/finanzas/ingresos" element={<RutaProtegida><Ingresos /></RutaProtegida>} />
-        <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
-        <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} />
-        <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
-        <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
-        <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
-        <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
-        <Route path="/finanzas/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
-        <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
+        {modulos.includes("finanzas") && (
+          <>
+            <Route path="/finanzas" element={<RutaProtegida><Finanzas pais="Chile" /></RutaProtegida>} />
+            <Route path="/finanzas/ingresos" element={<RutaProtegida><Ingresos /></RutaProtegida>} />
+            <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
+            <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} />
+            <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
+            <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
+            <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
+            <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
+            <Route path="/finanzas/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
+            <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
+          </>
+        )}
 
-        {/* ✅ Módulo de Ahorro */}
-        <Route path="/panel-ahorro" element={<RutaProtegida><PanelAhorro /></RutaProtegida>} />
+        {/* Ahorro */}
+        {modulos.includes("panel-ahorro") && (
+          <Route path="/panel-ahorro" element={<RutaProtegida><PanelAhorro /></RutaProtegida>} />
+        )}
 
         {/* Vista Grupal */}
-        <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} /></RutaProtegida>} />
+        {modulos.includes("vista-grupal") && (
+          <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} /></RutaProtegida>} />
+        )}
 
         {/* Colaboradores */}
         <Route path="/registro-colaborador" element={<RegistroColaborador />} />
