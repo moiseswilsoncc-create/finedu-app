@@ -98,7 +98,7 @@ const App = () => {
 
   const { modulos, cargando } = usePermisos(usuarioId ?? undefined);
 
-  if (cargando || !usuarioId || !modulos.length) {
+  if (cargando || !usuarioId || modulos === null) {
     return <p style={{ padding: "2rem" }}>🔄 Cargando módulos habilitados...</p>;
   }
   return (
@@ -122,22 +122,30 @@ const App = () => {
         <Route path="/nueva-clave" element={<NuevaClave />} />
 
         {/* Finanzas */}
-        <Route path="/finanzas" element={<RutaProtegida><Finanzas pais="Chile" /></RutaProtegida>} />
-        <Route path="/finanzas/ingresos" element={<RutaProtegida><Ingresos /></RutaProtegida>} />
-        <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
-        <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} />
-        <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
-        <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
-        <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
-        <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
-        <Route path="/finanzas/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
-        <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
+        {modulos.includes("finanzas") && (
+          <>
+            <Route path="/finanzas" element={<RutaProtegida><Finanzas pais="Chile" /></RutaProtegida>} />
+            <Route path="/finanzas/ingresos" element={<RutaProtegida><Ingresos /></RutaProtegida>} />
+            <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
+            <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} />
+            <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
+            <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
+            <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
+            <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
+            <Route path="/finanzas/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
+            <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
+          </>
+        )}
 
         {/* Ahorro */}
-        <Route path="/panel-ahorro" element={<RutaProtegida><PanelAhorro /></RutaProtegida>} />
+        {modulos.includes("panel-ahorro") && (
+          <Route path="/panel-ahorro" element={<RutaProtegida><PanelAhorro /></RutaProtegida>} />
+        )}
 
         {/* Vista Grupal */}
-        <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} /></RutaProtegida>} />
+        {modulos.includes("vista-grupal") && (
+          <Route path="/vista-grupal" element={<RutaProtegida><VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} /></RutaProtegida>} />
+        )}
 
         {/* Colaboradores */}
         <Route path="/registro-colaborador" element={<RegistroColaborador />} />
