@@ -14,8 +14,19 @@ const PanelAdminGrupo: React.FC<Props> = ({ grupo, usuarioId }) => {
   const [esAdmin, setEsAdmin] = useState(false);
 
   useEffect(() => {
-    setEsAdmin(grupo.administrador_id === usuarioId);
+    if (grupo && usuarioId) {
+      setEsAdmin(grupo.administrador_id === usuarioId);
+    }
   }, [grupo, usuarioId]);
+
+  if (!grupo) {
+    return (
+      <div style={{ padding: '2rem' }}>
+        <h2>⚠️ Grupo no disponible</h2>
+        <p>No se pudo cargar la información del grupo.</p>
+      </div>
+    );
+  }
 
   if (!esAdmin) {
     return (
@@ -28,26 +39,29 @@ const PanelAdminGrupo: React.FC<Props> = ({ grupo, usuarioId }) => {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
-      <h2 style={{ marginBottom: '1rem' }}>👑 Panel de Administración — {grupo.nombre}</h2>
+      <h2 style={{ marginBottom: '1rem' }}>
+        👑 Panel de Administración — {grupo.nombre || "Sin nombre"}
+      </h2>
 
       <section style={{ marginBottom: '2rem' }}>
         <h3>👥 Participantes activos</h3>
-        <TablaParticipantes grupoId={grupo.id} adminId={usuarioId} />
+        {/* Validación: pasamos siempre valores seguros */}
+        <TablaParticipantes grupoId={grupo.id?.toString() || ""} adminId={usuarioId} />
       </section>
 
       <section style={{ marginBottom: '2rem' }}>
         <h3>📩 Agregar participante</h3>
-        <FormularioAgregar grupoId={grupo.id} adminId={usuarioId} />
+        <FormularioAgregar grupoId={grupo.id?.toString() || ""} adminId={usuarioId} />
       </section>
 
       <section style={{ marginBottom: '2rem' }}>
         <h3>💰 Registrar aporte</h3>
-        <FormularioAporte grupoId={grupo.id} adminId={usuarioId} />
+        <FormularioAporte grupoId={grupo.id?.toString() || ""} adminId={usuarioId} />
       </section>
 
       <section>
         <h3>📜 Bitácora institucional</h3>
-        <BitacoraGrupo grupoId={grupo.id.toString()} usuarioId={usuarioId} />
+        <BitacoraGrupo grupoId={grupo.id?.toString() || ""} usuarioId={usuarioId} />
       </section>
     </div>
   );
