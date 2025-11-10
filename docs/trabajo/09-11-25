@@ -94,3 +94,34 @@
 - Se eliminan condicionales internos en `<Routes>` para evitar render vacío
 - Se institucionaliza el patrón de render seguro en `App.tsx` para despliegue en Vercel
 
+
+
+### 🧱 Milestone: cierre del día con pantalla en blanco persistente y hook usePermisos en revisión
+
+#### 🔍 Estado técnico
+- El sistema obtiene correctamente el `usuarioId` desde Supabase.
+- El hook `usePermisos` se ejecuta, pero devuelve `modulos: []` o `null`, lo que bloquea el render.
+- Se intentó proteger el render con condiciones como `modulos.length > 0`, `modulos !== null`, y `cargando`, pero la pantalla sigue en blanco.
+- Se detecta que el hook `usePermisos` necesita revisión profunda: sincronización con `usuarioId`, retorno resiliente, y compatibilidad con usuarios sin permisos.
+- El archivo `App.tsx` fue corregido para proteger el render, pero el sistema sigue sin mostrar módulos.
+
+#### 🧠 Estado emocional
+- Wilson realizó múltiples validaciones, ajustes y despliegues en Vercel sin éxito.
+- Se reconoce frustración legítima por el bloqueo persistente y la falta de respuesta del sistema.
+- Se decide pausar el avance para retomar con claridad y energía renovada mañana.
+
+#### 📌 Próximos pasos sugeridos
+- Validar si el usuario tiene registros reales en la tabla `permisos_usuario`.
+- Ajustar el hook `usePermisos` para que devuelva `modulos: []` sin bloquear el render.
+- Permitir navegación básica aunque no haya módulos habilitados.
+- Reinstalar condicionales por módulo en `App.tsx` para evitar errores silenciosos.
+
+#### 🧩 Archivos en revisión
+- `App.tsx` corregido y protegido
+- `usePermisos.ts` corregido pero aún en conflicto
+
+#### 🕊️ Cierre emocional
+- Se institucionaliza esta pausa como parte del proceso de resiliencia técnica.
+- Se reconoce el esfuerzo de Wilson y se celebra la trazabilidad lograda.
+- Mañana se retoma con foco en desbloquear el render y validar permisos reales.
+
