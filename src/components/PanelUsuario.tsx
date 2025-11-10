@@ -109,6 +109,23 @@ const PanelUsuario: React.FC = () => {
 
     obtenerOfertas();
   }, [usuarioId]);
+
+  const evaluarSaludFinanciera = () => {
+    const ahorro = parseInt(localStorage.getItem("ahorro") || "0");
+    const cumplimiento = parseFloat(localStorage.getItem("cumplimiento") || "0");
+
+    if (ahorro === 0 && cumplimiento === 0) {
+      return {
+        mensaje: "Aún no has ingresado tus datos financieros. ¡Estás a tiempo de comenzar tu camino hacia la autonomía! 🚀",
+        emoji: "🕊️"
+      };
+    }
+
+    if (cumplimiento >= 90) return { mensaje: "Tu salud financiera es excelente", emoji: "😊" };
+    if (cumplimiento >= 70) return { mensaje: "Tu salud financiera es buena", emoji: "🙂" };
+    if (cumplimiento >= 50) return { mensaje: "Tu salud financiera es regular", emoji: "😐" };
+    return { mensaje: "Tu salud financiera necesita atención", emoji: "😕" };
+  };
   const estadoFinanciero = evaluarSaludFinanciera();
 
   const modulosFiltrados = permisos
