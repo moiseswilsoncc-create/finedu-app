@@ -15,6 +15,13 @@ const Permisos: React.FC<Props> = ({ usuarioId }) => {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
+    if (!usuarioId) {
+      console.warn("⚠️ Permisos: usuarioId no definido");
+      return;
+    }
+
+    console.log("🧩 Permisos: usuarioId recibido:", usuarioId);
+
     const cargarPermisos = async () => {
       try {
         const { data, error } = await supabase
@@ -35,7 +42,8 @@ const Permisos: React.FC<Props> = ({ usuarioId }) => {
           return;
         }
 
-        const modulos = data.map((item) => item.modulo);
+        const modulos = data.map((item) => item.modulo).filter(Boolean);
+        console.log("🔍 Permisos recibidos:", modulos);
         setModulosPermitidos(modulos);
       } catch (err) {
         console.error("❌ Error inesperado al cargar permisos:", err);
