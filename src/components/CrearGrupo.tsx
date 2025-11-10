@@ -4,7 +4,15 @@ import BloqueDatosGrupo from "./BloqueDatosGrupo";
 import BloqueMetaFinanciera from "./BloqueMetaFinanciera";
 import BloqueParticipantes from "./BloqueParticipantes";
 
-const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
+interface Props {
+  usuario: {
+    correo?: string;
+  };
+}
+
+const CrearGrupo: React.FC<Props> = ({ usuario }) => {
+  const correoUsuario = usuario?.correo?.trim().toLowerCase() || "";
+
   const [nombreGrupo, setNombreGrupo] = useState("");
   const [ciudad, setCiudad] = useState("");
   const [comuna, setComuna] = useState("");
@@ -23,27 +31,27 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
   const cuotaMensual = metaIndividual > 0 && meses > 0 ? Math.round(metaIndividual / meses) : 0;
 
   useEffect(() => {
+    if (!correoUsuario) return;
     const nuevosMontos: any = {};
     correos.forEach((correo) => {
       nuevosMontos[correo] = cuotaMensual;
     });
-    nuevosMontos[usuario.correo] = cuotaMensual;
+    nuevosMontos[correoUsuario] = cuotaMensual;
     setMontos(nuevosMontos);
-  }, [meta, meses, correos]);
+  }, [meta, meses, correos, correoUsuario]);
 
   const agregarCorreo = () => {
     const correoLimpio = nuevoCorreo.trim().toLowerCase();
     if (
       correoLimpio &&
       !correos.includes(correoLimpio) &&
-      correoLimpio !== usuario.correo
+      correoLimpio !== correoUsuario
     ) {
       setCorreos([...correos, correoLimpio]);
       setRoles({ ...roles, [correoLimpio]: "participante" });
       setNuevoCorreo("");
     }
   };
-
   const eliminarCorreo = (correo: string) => {
     setCorreos(correos.filter((c) => c !== correo));
     const updatedRoles = { ...roles };
@@ -68,9 +76,9 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
       return;
     }
 
-    const todosLosCorreos = [usuario.correo, ...correos];
-    const rolesFinales = { ...roles, [usuario.correo]: "admin" };
-    const montosFinales = { ...montos, [usuario.correo]: cuotaMensual };
+    const todosLosCorreos = [correoUsuario, ...correos];
+    const rolesFinales = { ...roles, [correoUsuario]: "admin" };
+    const montosFinales = { ...montos, [correoUsuario]: cuotaMensual };
 
     const { data: usuariosValidos, error: errorUsuarios } = await supabase
       .from("usuarios")
@@ -102,7 +110,7 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
           monto_mensual: cuotaMensual,
           fecha_creacion: fechaCreacion,
           fecha_termino: fechaTermino,
-          administrador: usuario.correo,
+          administrador: correoUsuario,
         },
       ])
       .select();
@@ -117,7 +125,7 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
       grupo_id: grupoId,
       correo,
       rol: rolesFinales[correo],
-      monto_asignado: cuotaMensual,
+      monto_asignado: montosFinales[correo],
     }));
 
     const { error: miembrosError } = await supabase
@@ -141,6 +149,11 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
     setRoles({});
     setMontos({});
   };
+
+  if (!correoUsuario) {
+    return <p>⚠️ No se puede crear grupo sin correo de usuario.</p>;
+  }
+
   return (
     <div style={{ maxWidth: "700px", margin: "2rem auto", padding: "1rem" }}>
       <h2>🛠️ Crear nuevo grupo de ahorro</h2>
@@ -168,7 +181,7 @@ const CrearGrupo: React.FC<{ usuario: any }> = ({ usuario }) => {
       />
 
       <BloqueParticipantes
-        usuario={usuario}
+        usuario={{ correo: correoUsuario }}
         correos={correos}
         roles={roles}
         cuotaMensual={cuotaMensual}
