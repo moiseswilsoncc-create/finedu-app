@@ -79,3 +79,9 @@
 - El despliegue finalmente muestra la versión actualizada
 - Se celebra el cierre técnico y emocional del ciclo de validación
 
+### 🧱 Milestone: resolución de pantalla en blanco por ejecución prematura del hook
+
+- Se detecta que `usePermisos` se ejecuta antes de que `usuarioId` esté disponible
+- Se reorganiza el orden de ejecución para proteger el hook con condición
+- Se elimina el error `usuarioId es null` y se restablece el render seguro
+- Se institucionaliza la trazabilidad de sesión y permisos en App.tsx
