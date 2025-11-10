@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
-const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
-const supabaseKey = "TU_API_KEY";
+interface Props {
+  usuario: {
+    correo: string;
+  };
+}
 
-const EditarIngresosEgresos: React.FC = () => {
+const EditarIngresosEgresos: React.FC<Props> = ({ usuario }) => {
   const [ingresos, setIngresos] = useState<number>(0);
   const [egresos, setEgresos] = useState<number>(0);
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(true);
 
-  const correo = localStorage.getItem("correo");
+  const correo = usuario?.correo;
 
   useEffect(() => {
     const cargarDatos = async () => {
       if (!correo) {
-        setMensaje("No se encontró el correo en la sesión.");
+        setMensaje("⚠️ No se encontró el correo en la sesión.");
         return;
       }
 
@@ -26,7 +29,7 @@ const EditarIngresosEgresos: React.FC = () => {
         .single();
 
       if (error || !data) {
-        setMensaje("No se pudieron cargar tus datos.");
+        setMensaje("❌ No se pudieron cargar tus datos.");
         return;
       }
 
@@ -82,11 +85,32 @@ const EditarIngresosEgresos: React.FC = () => {
           required
           style={inputStyle}
         />
-        <button type="submit" style={{ padding: "0.8rem", backgroundColor: "#27ae60", color: "white", border: "none", borderRadius: "8px", fontSize: "1rem", cursor: "pointer" }}>
+        <button
+          type="submit"
+          style={{
+            padding: "0.8rem",
+            backgroundColor: "#27ae60",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            cursor: "pointer"
+          }}
+        >
           💾 Guardar cambios
         </button>
       </form>
-      {mensaje && <p style={{ marginTop: "1rem", textAlign: "center", color: mensaje.includes("✅") ? "green" : "red" }}>{mensaje}</p>}
+      {mensaje && (
+        <p
+          style={{
+            marginTop: "1rem",
+            textAlign: "center",
+            color: mensaje.includes("✅") ? "green" : "red"
+          }}
+        >
+          {mensaje}
+        </p>
+      )}
     </div>
   );
 };
