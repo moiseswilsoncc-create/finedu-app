@@ -1,4 +1,3 @@
-// src/hooks/usePermisos.ts
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
@@ -8,6 +7,7 @@ export const usePermisos = (usuarioId: string | null) => {
 
   useEffect(() => {
     if (!usuarioId) {
+      console.warn("⚠️ usuarioId es null, no se puede consultar permisos");
       setModulos([]);
       setCargando(false);
       return;
@@ -18,7 +18,7 @@ export const usePermisos = (usuarioId: string | null) => {
         const { data, error } = await supabase
           .from("permisos_usuario")
           .select("modulo")
-          .eq("usuario_id", usuarioId)
+          .eq("usuario_id", usuarioId) // ✅ campo correcto
           .eq("permiso", "acceso");
 
         if (error) {
