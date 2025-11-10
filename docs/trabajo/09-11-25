@@ -71,3 +71,11 @@
 - Se calcula automáticamente la fecha de inicio como mes/año actual
 - Se calcula automáticamente la fecha de término sumando los meses definidos
 - Se mejora la experiencia visual y se institucionaliza la trazabilidad temporal
+
+### 🎉 Milestone: despliegue exitoso tras purga de caché
+
+- Se detecta que Vercel no reflejaba los cambios recientes
+- Se realiza purga de CDN Cache con método “Invalidate content”
+- El despliegue finalmente muestra la versión actualizada
+- Se celebra el cierre técnico y emocional del ciclo de validación
+
