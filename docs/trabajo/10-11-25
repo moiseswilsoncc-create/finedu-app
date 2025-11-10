@@ -5,3 +5,13 @@
 - Se validan los accesos autorizados en la tabla `permisos_usuario` para el usuario insertado
 - Se institucionaliza el flujo de permisos como parte del onboarding técnico
 - Se garantiza compatibilidad con el hook `usePermisos` y el render condicional en `App.tsx`
+
+### 🧱 Registro de intentos fallidos y cambios repetidos
+
+- Se introdujo el hook `usePermisos` para modularizar la visibilidad de módulos
+- Se detectó que el `usuarioId` no siempre coincide con el `usuario_id` en Supabase
+- Se intentó corregir el render condicional en `App.tsx` más de 6 veces sin éxito
+- Se verificó el trigger y la función `asignar_permisos_usuario`, que funcionan correctamente
+- Se confirmó que los permisos existen en la tabla `permisos_usuario`
+- El frontend sigue sin mostrar los módulos, lo que indica un fallo en la lectura o sincronización del `id`
+- Se repitieron los pasos de validación sin trazabilidad clara, generando desgaste emocional y técnico
