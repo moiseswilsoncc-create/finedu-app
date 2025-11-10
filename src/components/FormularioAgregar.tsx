@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { agregarParticipante } from '../utils/agregarParticipanteNuevo';
 
 interface Props {
-  grupoId: number;
+  grupoId: number | string;
   adminId: string;
 }
 
@@ -19,8 +19,13 @@ export default function FormularioAgregar({ grupoId, adminId }: Props) {
     setCargando(true);
 
     try {
+      if (!grupoId || !adminId) {
+        setError("Datos de grupo o administrador inválidos");
+        return;
+      }
+
       const resultado = await agregarParticipante(grupoId, correo, adminId);
-      setMensaje(resultado.mensaje);
+      setMensaje(resultado?.mensaje || "Participante agregado correctamente");
       setCorreo('');
     } catch (err: any) {
       setError(err.message || 'Error al agregar participante');
@@ -38,12 +43,17 @@ export default function FormularioAgregar({ grupoId, adminId }: Props) {
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
           required
+          disabled={cargando}
           placeholder="correo@ejemplo.com"
           style={{ padding: '0.5rem', width: '100%' }}
         />
       </label>
 
-      <button type="submit" disabled={cargando} style={{ padding: '0.5rem', backgroundColor: '#007bff', color: 'white' }}>
+      <button
+        type="submit"
+        disabled={cargando}
+        style={{ padding: '0.5rem', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }}
+      >
         {cargando ? 'Agregando...' : 'Agregar participante'}
       </button>
 
@@ -52,4 +62,3 @@ export default function FormularioAgregar({ grupoId, adminId }: Props) {
     </form>
   );
 }
-
