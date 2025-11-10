@@ -2,28 +2,31 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
-const supabaseUrl = "https://ftsbnorudtcyrrubutt.supabase.co";
-const supabaseKey = "TU_API_KEY"; // 🔒 Reemplazar con variable segura
+interface Props {
+  usuario: {
+    correo: string;
+  };
+}
 
-const VistaIngresoColaborador: React.FC = () => {
+const VistaIngresoColaborador: React.FC<Props> = ({ usuario }) => {
   const navigate = useNavigate();
   const [estadoAcceso, setEstadoAcceso] = useState<"pendiente" | "autorizado" | "no-autorizado">("pendiente");
   const [correo, setCorreo] = useState("");
 
   useEffect(() => {
     const validarRol = async () => {
-      const correoLocal = localStorage.getItem("correo");
-      if (!correoLocal) {
+      const correoUsuario = usuario?.correo;
+      if (!correoUsuario) {
         setEstadoAcceso("pendiente");
         return;
       }
 
-      setCorreo(correoLocal);
+      setCorreo(correoUsuario);
 
       const { data, error } = await supabase
         .from("usuarios")
         .select("rol")
-        .eq("correo", correoLocal)
+        .eq("correo", correoUsuario)
         .single();
 
       if (data?.rol === "colaborador") {
@@ -34,7 +37,7 @@ const VistaIngresoColaborador: React.FC = () => {
     };
 
     validarRol();
-  }, []);
+  }, [usuario]);
 
   return (
     <div style={{
