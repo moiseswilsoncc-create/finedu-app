@@ -126,6 +126,9 @@ const App: React.FC = () => {
   }, []);
 
   if (cargando) return <p style={{ padding: "2rem" }}>🔄 Cargando módulos habilitados...</p>;
+  if (!modulos || !Array.isArray(modulos)) {
+    return <p style={{ padding: "2rem", color: "#999" }}>⚠️ No se pudieron cargar los módulos habilitados.</p>;
+  }
   return (
     <>
       {mostrarNavbar && <Navbar />}
