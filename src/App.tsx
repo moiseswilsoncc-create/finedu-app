@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
-import { usePermisos } from "./hooks/usePermisos";
 
 // 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
@@ -125,12 +124,13 @@ const App: React.FC = () => {
     obtenerUsuario();
   }, []);
 
-  const { modulos, cargando } = usePermisos(usuarioId);
-
-  if (cargando) return <p style={{ padding: "2rem" }}>🔄 Cargando módulos habilitados...</p>;
-  if (!modulos || !Array.isArray(modulos)) {
-    return <p style={{ padding: "2rem", color: "#999" }}>⚠️ No se pudieron cargar los módulos habilitados.</p>;
-  }
+  const modulos = [
+    "panel-usuario",
+    "finanzas",
+    "panel-ahorro",
+    "vista-grupal",
+    "panel-ofertas"
+  ];
   return (
     <>
       {mostrarNavbar && <Navbar />}
