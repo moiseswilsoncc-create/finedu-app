@@ -15,3 +15,20 @@
 - Se confirmó que los permisos existen en la tabla `permisos_usuario`
 - El frontend sigue sin mostrar los módulos, lo que indica un fallo en la lectura o sincronización del `id`
 - Se repitieron los pasos de validación sin trazabilidad clara, generando desgaste emocional y técnico
+
+graph TD
+A[Usuario se registra en Auth] --> B[Correo de verificación enviado]
+B --> C[Usuario confirma correo]
+C --> D[Se crea registro en tabla `usuarios`]
+D --> E[Trigger asigna permisos automáticamente]
+E --> F[Frontend detecta módulos vía `usePermisos`]
+
+### 🧱 Milestone: desacoplamiento del flujo de registro y verificación
+
+- Se detecta que el sistema intenta validar por correo a un usuario que aún no tiene registro en la tabla `usuarios`
+- Se confirma que esto rompe la sincronización entre Supabase Auth y la lógica de permisos
+- Se institucionaliza el desacoplamiento del flujo:
+  - Registro en Auth → verificación por correo
+  - Luego inserción en `usuarios` → activación de permisos
+- Se documenta que el trigger de permisos depende de la tabla `usuarios`, no de Auth
+
