@@ -2,16 +2,20 @@ import { Navigate, useLocation } from "react-router-dom";
 
 type Props = {
   children: JSX.Element;
+  usuario: {
+    correo?: string;
+    rol?: string;
+    logueado?: boolean;
+  };
 };
 
-const RutaAdministrador = ({ children }: Props) => {
+const RutaAdministrador = ({ children, usuario }: Props) => {
   const location = useLocation();
 
-  const logueado = localStorage.getItem("logueado") === "true";
-  const correo = localStorage.getItem("correo");
-  const rol = localStorage.getItem("rol");
-
-  const sesionValida = logueado && correo && rol === "admin";
+  const sesionValida =
+    usuario?.logueado === true &&
+    usuario?.correo &&
+    usuario?.rol === "admin";
 
   return sesionValida
     ? children
