@@ -119,6 +119,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const obtenerUsuario = async () => {
       const { data } = await supabase.auth.getUser();
+      console.log("🧠 ID del usuario:", data.user?.id);
       setUsuarioId(data.user?.id || null);
     };
     obtenerUsuario();
