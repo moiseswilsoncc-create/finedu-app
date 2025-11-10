@@ -3,21 +3,22 @@ import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
 export const usePermisos = (usuarioId: string | undefined) => {
-  const [modulos, setModulos] = useState<string[]>([]);
+  const [modulos, setModulos] = useState<string[] | null>(null);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    if (!usuarioId) return; // ⛔ evita ejecución prematura
+    if (!usuarioId) return;
+
+    setCargando(true);
 
     const cargar = async () => {
-      setCargando(true); // ✅ activa carga solo si hay ID
-
       try {
         const { data, error } = await supabase
           .from("permisos_usuario")
           .select("modulo")
           .eq("usuario_id", usuarioId)
           .eq("permiso", "acceso");
+
         if (error) {
           console.error("❌ Error al consultar permisos:", error.message);
           setModulos([]);
