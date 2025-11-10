@@ -114,16 +114,28 @@ const App: React.FC = () => {
   const mostrarNavbar = !rutasPublicas.includes(location.pathname);
 
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
-  const { modulos, cargando } = usePermisos(usuarioId);
+  const [modulos, setModulos] = useState<string[]>([]);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     const obtenerUsuario = async () => {
       const { data } = await supabase.auth.getUser();
-      console.log("🧠 ID del usuario:", data.user?.id);
-      setUsuarioId(data.user?.id || null);
+      const id = data.user?.id || null;
+      console.log("🧠 ID del usuario:", id);
+      setUsuarioId(id);
     };
     obtenerUsuario();
   }, []);
+
+  useEffect(() => {
+    const cargarPermisos = async () => {
+      if (!usuarioId) return;
+      const { modulos, cargando } = usePermisos(usuarioId);
+      setModulos(modulos);
+      setCargando(cargando);
+    };
+    cargarPermisos();
+  }, [usuarioId]);
 
   if (cargando) return <p style={{ padding: "2rem" }}>🔄 Cargando módulos habilitados...</p>;
   if (!modulos || !Array.isArray(modulos)) {
