@@ -7,23 +7,36 @@ export const usePermisos = (usuarioId: string | null) => {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    if (!usuarioId) return;
+    if (!usuarioId) {
+      setModulos([]);
+      setCargando(false);
+      return;
+    }
 
     const cargar = async () => {
-      const { data, error } = await supabase
-        .from("permisos_usuario")
-        .select("modulo")
-        .eq("usuario_id", usuarioId)
-        .eq("permiso", "acceso");
+      try {
+        const { data, error } = await supabase
+          .from("permisos_usuario")
+          .select("modulo")
+          .eq("usuario_id", usuarioId)
+          .eq("permiso", "acceso");
 
-      if (error || !Array.isArray(data)) {
-        console.error("Error al cargar permisos:", error?.message || data);
+        if (error) {
+          console.error("❌ Error al consultar permisos:", error.message);
+          setModulos([]);
+        } else if (!Array.isArray(data)) {
+          console.warn("⚠️ Respuesta inesperada de Supabase:", data);
+          setModulos([]);
+        } else {
+          const modulos = data.map((d) => d.modulo).filter(Boolean);
+          setModulos(modulos);
+        }
+      } catch (err) {
+        console.error("❌ Error inesperado al cargar permisos:", err);
         setModulos([]);
-      } else {
-        setModulos(data.map((d) => d.modulo));
+      } finally {
+        setCargando(false);
       }
-
-      setCargando(false);
     };
 
     cargar();
