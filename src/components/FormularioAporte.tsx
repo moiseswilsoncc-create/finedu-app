@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { registrarAporte } from '../utils/registrarAporte';
 
 interface Props {
-  grupoId: number;
+  grupoId: number | string;
   adminId: string;
 }
 
@@ -21,14 +21,26 @@ export default function FormularioAporte({ grupoId, adminId }: Props) {
     setCargando(true);
 
     try {
+      if (!grupoId || !adminId) {
+        setError("Datos de grupo o administrador inválidos");
+        return;
+      }
+
+      const montoNum = parseInt(monto, 10);
+      if (isNaN(montoNum) || montoNum <= 0) {
+        setError("El monto debe ser un número válido mayor a 0");
+        return;
+      }
+
       const resultado = await registrarAporte(
         grupoId,
-        parseInt(monto),
+        montoNum,
         participanteId,
         adminId,
         observaciones
       );
-      setMensaje(resultado.mensaje);
+
+      setMensaje(resultado?.mensaje || "Aporte registrado correctamente");
       setParticipanteId('');
       setMonto('');
       setObservaciones('');
@@ -48,6 +60,7 @@ export default function FormularioAporte({ grupoId, adminId }: Props) {
           value={participanteId}
           onChange={(e) => setParticipanteId(e.target.value)}
           required
+          disabled={cargando}
           placeholder="Ej: 1234-uuid"
           style={{ padding: '0.5rem', width: '100%' }}
         />
@@ -60,6 +73,7 @@ export default function FormularioAporte({ grupoId, adminId }: Props) {
           value={monto}
           onChange={(e) => setMonto(e.target.value)}
           required
+          disabled={cargando}
           placeholder="Ej: 5000"
           style={{ padding: '0.5rem', width: '100%' }}
         />
@@ -70,12 +84,17 @@ export default function FormularioAporte({ grupoId, adminId }: Props) {
         <textarea
           value={observaciones}
           onChange={(e) => setObservaciones(e.target.value)}
+          disabled={cargando}
           placeholder="Ej: Aporte mensual de noviembre"
           style={{ padding: '0.5rem', width: '100%' }}
         />
       </label>
 
-      <button type="submit" disabled={cargando} style={{ padding: '0.5rem', backgroundColor: '#28a745', color: 'white' }}>
+      <button
+        type="submit"
+        disabled={cargando}
+        style={{ padding: '0.5rem', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px' }}
+      >
         {cargando ? 'Registrando...' : 'Registrar aporte'}
       </button>
 
@@ -84,4 +103,3 @@ export default function FormularioAporte({ grupoId, adminId }: Props) {
     </form>
   );
 }
-
