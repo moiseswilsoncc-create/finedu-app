@@ -38,3 +38,18 @@ E --> F[Frontend detecta módulos vía `usePermisos`]
 - El navegador abre automáticamente en `http://localhost:5173/`
 - Se muestra la pantalla de bienvenida sin errores
 - Se confirma que el entorno está limpio, funcional y listo para restaurar el usuario
+
+### 🧱 Milestone: validación final de permisos institucionales
+
+- Se confirma que el trigger `trigger_insertar_permisos` ejecutó correctamente la función `asignar_permisos_usuario`
+- El usuario `f27be1e5-16e4-441a-ac5b-1d02b3ab5bfd` tiene todos los módulos habilitados con permiso `acceso`
+- Se valida que el sistema puede reactivar `usePermisos` en frontend sin bloqueos
+- Se institucionaliza este paso como parte del protocolo de restauración y trazabilidad
+
+### 🧱 Milestone: primera señal visual de recuperación en producción
+
+- Se despliega correctamente la aplicación en Vercel con render activo
+- Se visualiza el cuadro de bienvenida institucional con botones de ingreso por rol
+- Se confirma que desacoplar `usePermisos` permitió restaurar el render
+- Se institucionaliza este momento como señal de recuperación y avance emocional
+
