@@ -32,3 +32,9 @@ E --> F[Frontend detecta módulos vía `usePermisos`]
   - Luego inserción en `usuarios` → activación de permisos
 - Se documenta que el trigger de permisos depende de la tabla `usuarios`, no de Auth
 
+### 🧱 Milestone: validación del entorno en modo desarrollo
+
+- Se ejecuta `npm run dev` con éxito
+- El navegador abre automáticamente en `http://localhost:5173/`
+- Se muestra la pantalla de bienvenida sin errores
+- Se confirma que el entorno está limpio, funcional y listo para restaurar el usuario
