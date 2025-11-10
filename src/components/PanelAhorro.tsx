@@ -1,5 +1,4 @@
-// Forzar redeploy de PanelAhorro.tsx
-
+// src/components/PanelAhorro.tsx
 import React, { useState, useEffect } from "react";
 import RegistroAhorro from "./RegistroAhorro";
 import PanelGrupo from "./PanelGrupo";
@@ -7,7 +6,17 @@ import CrearGrupo from "./CrearGrupo"; // ✅ Componente institucionalizado
 
 const PanelAhorro: React.FC = () => {
   const [modo, setModo] = useState<"individual" | "grupal" | "crear">("individual");
-  const correoUsuario = localStorage.getItem("correo") || "";
+  const [correoUsuario, setCorreoUsuario] = useState("");
+
+  // Recuperar correo desde localStorage
+  useEffect(() => {
+    const correo = localStorage.getItem("correo");
+    if (correo) {
+      setCorreoUsuario(correo);
+    } else {
+      console.warn("⚠️ No se encontró correo en localStorage");
+    }
+  }, []);
 
   // Recuperar modo guardado
   useEffect(() => {
@@ -32,7 +41,7 @@ const PanelAhorro: React.FC = () => {
         <select
           id="modo"
           value={modo}
-          onChange={(e) => setModo(e.target.value as any)}
+          onChange={(e) => setModo(e.target.value as "individual" | "grupal" | "crear")}
           style={{ marginLeft: "0.5rem" }}
         >
           <option value="individual">Ahorro personal</option>
@@ -43,7 +52,11 @@ const PanelAhorro: React.FC = () => {
 
       {modo === "individual" && <RegistroAhorro />}
       {modo === "grupal" && <PanelGrupo />}
-      {modo === "crear" && <CrearGrupo usuario={{ correo: correoUsuario }} />} {/* ✅ Integrado */}
+      {modo === "crear" && correoUsuario ? (
+        <CrearGrupo usuario={{ correo: correoUsuario }} />
+      ) : (
+        <p style={{ color: "#999" }}>No se puede crear grupo sin correo de usuario.</p>
+      )}
     </div>
   );
 };
