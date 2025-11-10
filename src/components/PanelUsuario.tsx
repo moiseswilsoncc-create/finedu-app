@@ -63,10 +63,7 @@ const PanelUsuario: React.FC = () => {
         console.error("❌ Error al cargar permisos:", permisosError.message);
         setPermisos([]);
       } else {
-        setPermisos(permisosData && permisosData.length > 0
-          ? permisosData
-          : modulos.map(m => ({ modulo: m.ruta, permiso: "acceso" }))
-        );
+        setPermisos(permisosData || []);
       }
     };
 
@@ -128,9 +125,25 @@ const PanelUsuario: React.FC = () => {
   };
   const estadoFinanciero = evaluarSaludFinanciera();
 
-  const modulosFiltrados = permisos
-    ? modulos.filter(m => permisos.some(p => p.modulo === m.ruta && p.permiso === "acceso"))
-    : [];
+  const rutasPermitidas = permisos?.map(p => {
+    switch (p.modulo) {
+      case "creditos": return "/finanzas/creditos";
+      case "ingresos": return "/finanzas/ingresos";
+      case "egresos": return "/finanzas/egresos";
+      case "resumen": return "/finanzas/resumen";
+      case "resumen-egresos": return "/finanzas/resumen-egresos";
+      case "foro": return "/finanzas/foro";
+      case "panel-ahorro": return "/panel-ahorro";
+      case "vista-grupal": return "/vista-grupal";
+      case "simulador-inversion": return "/simulador-inversion";
+      case "test-financiero": return "/test-financiero";
+      case "mi-grupo": return "/mi-grupo";
+      case "vista-etapa": return "/vista-etapa";
+      default: return p.modulo;
+    }
+  }) || [];
+
+  const modulosFiltrados = modulos.filter(m => rutasPermitidas.includes(m.ruta));
 
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
