@@ -1,3 +1,4 @@
+// src/components/MenuModulos.tsx
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -6,8 +7,6 @@ import "../styles/MenuModulos.css";
 // 📌 Lista de módulos visibles para USUARIOS
 const todosLosModulos = [
   { ruta: "/panel-usuario", label: "👤 Panel del Usuario" },
-
-  // Finanzas: accesos directos
   { ruta: "/finanzas/resumen", label: "📊 Resumen Financiero" },
   { ruta: "/finanzas/resumen-egresos", label: "📊 Resumen de Egresos" },
   { ruta: "/finanzas/ingresos", label: "💵 Ingresos" },
@@ -15,17 +14,12 @@ const todosLosModulos = [
   { ruta: "/finanzas/egresos/categoria", label: "📂 Egresos por Categoría" },
   { ruta: "/finanzas/creditos", label: "🏦 Simulador de Créditos" },
   { ruta: "/finanzas/foro", label: "💬 Foro Financiero" },
-
-  // ✅ Actualizado: módulo de ahorro
   { ruta: "/panel-ahorro", label: "💰 Módulo de Ahorro" },
-
   { ruta: "/simulador-inversion", label: "📈 Simulador de Inversión" },
   { ruta: "/test-financiero", label: "🧠 Test Financiero" },
-
   { ruta: "/vista-grupal", label: "👨‍👩‍👧‍👦 Vista Grupal" },
   { ruta: "/admin-grupo", label: "🛠️ Administración de Grupo" },
   { ruta: "/evaluador-credito", label: "🏦 Evaluador de Crédito Inteligente" },
-
   { ruta: "/panel-ofertas", label: "📢 Ofertas activas" },
   { ruta: "/datos-ofertas", label: "📢 Publicar oferta" }
 ];
@@ -38,7 +32,10 @@ const MenuModulos = () => {
 
   useEffect(() => {
     const verificarPermisos = async () => {
-      if (!usuarioId) return;
+      if (!usuarioId) {
+        console.warn("⚠️ MenuModulos: usuarioId no disponible en localStorage");
+        return;
+      }
 
       const { data, error } = await supabase
         .from("permisos_usuario")
@@ -47,7 +44,7 @@ const MenuModulos = () => {
         .eq("permiso", "acceso");
 
       if (error) {
-        console.error("Error al cargar permisos:", error.message);
+        console.error("❌ Error al cargar permisos:", error.message);
         setModulosPermitidos([]);
         return;
       }
@@ -68,7 +65,7 @@ const MenuModulos = () => {
         .maybeSingle();
 
       if (visError && visError.code !== "PGRST116") {
-        console.error("Error cargando registro_visualizacion:", visError.message);
+        console.error("❌ Error cargando registro_visualizacion:", visError.message);
       }
 
       const { data: ofertas, error: ofertasError } = await supabase
@@ -77,7 +74,7 @@ const MenuModulos = () => {
         .gt("expira", new Date().toISOString());
 
       if (ofertasError) {
-        console.error("Error cargando ofertas:", ofertasError.message);
+        console.error("❌ Error cargando ofertas:", ofertasError.message);
         setNuevasOfertas(0);
         return;
       }
@@ -102,6 +99,9 @@ const MenuModulos = () => {
     <div className="menu-modulos-container">
       <h2>📂 Accede a tus módulos</h2>
       <div className="modulo-grid">
+        {modulosFiltrados.length === 0 && (
+          <p style={{ color: "#999" }}>No tienes módulos habilitados actualmente.</p>
+        )}
         {modulosFiltrados.map((modulo, index) => (
           <Link key={index} to={modulo.ruta} className="btn-modulo">
             {modulo.label}
