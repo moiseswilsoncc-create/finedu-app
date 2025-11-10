@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
+import usePermisos from "./hooks/usePermisos";
 
 // 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
@@ -22,8 +23,6 @@ import ResumenFinanciero from "./components/ResumenFinanciero";
 import ResumenEgresos from "./components/ResumenEgresos";
 import SimuladorCreditos from "./components/SimuladorCreditos";
 import ForoFinanciero from "./components/ForoFinanciero";
-
-// 🧩 Nuevos módulos Finanzas
 import Categorias from "./components/Categorias";
 import Items from "./components/Items";
 
@@ -49,8 +48,6 @@ import TestInstitucional from "./institucional/TestInstitucional";
 // 🧩 Navegación
 import MenuModulos from "./components/MenuModulos";
 import Navbar from "./components/Navbar";
-
-// 🧩 Nuevo módulo de usuario
 import VistaGrupal from "./components/VistaGrupal";
 
 console.log("🧼 App.tsx actualizado: rutas oficiales consolidadas");
@@ -101,7 +98,6 @@ const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ c
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/" replace />;
 };
-
 const App: React.FC = () => {
   const location = useLocation();
   const rutasPublicas = [
@@ -124,13 +120,10 @@ const App: React.FC = () => {
     obtenerUsuario();
   }, []);
 
-  const modulos = [
-    "panel-usuario",
-    "finanzas",
-    "panel-ahorro",
-    "vista-grupal",
-    "panel-ofertas"
-  ];
+  const { modulos, cargando } = usePermisos(usuarioId);
+
+  if (cargando) return null;
+
   return (
     <>
       {mostrarNavbar && <Navbar />}
@@ -143,7 +136,9 @@ const App: React.FC = () => {
         {/* Usuarios */}
         <Route path="/registro-usuario" element={<RegistroUsuario />} />
         <Route path="/login-usuario" element={<LoginUsuario />} />
-        <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
+        {modulos.includes("panel-usuario") && (
+          <Route path="/panel-usuario" element={<RutaProtegida><PanelUsuario /></RutaProtegida>} />
+        )}
 
         {/* Flujo de acceso */}
         <Route path="/registro-pendiente" element={<RegistroPendiente />} />
