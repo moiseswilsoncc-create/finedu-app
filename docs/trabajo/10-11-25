@@ -1,0 +1,7 @@
+### 🧱 Milestone: flujo automático de permisos validado
+
+- Se confirma que el trigger `trigger_insertar_permisos` en la tabla `usuarios` está activo y funcional
+- La función `asignar_permisos_usuario()` ejecuta correctamente la inserción de permisos
+- Se validan los accesos autorizados en la tabla `permisos_usuario` para el usuario insertado
+- Se institucionaliza el flujo de permisos como parte del onboarding técnico
+- Se garantiza compatibilidad con el hook `usePermisos` y el render condicional en `App.tsx`
