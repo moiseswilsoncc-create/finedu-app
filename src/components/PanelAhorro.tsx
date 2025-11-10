@@ -1,3 +1,5 @@
+// Forzar redeploy de PanelAhorro.tsx
+
 import React, { useState, useEffect } from "react";
 import RegistroAhorro from "./RegistroAhorro";
 import PanelGrupo from "./PanelGrupo";
