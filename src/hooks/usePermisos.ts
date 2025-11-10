@@ -1,4 +1,3 @@
-// src/hooks/usePermisos.ts
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
@@ -7,8 +6,12 @@ export const usePermisos = (usuarioId: string | undefined) => {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    if (!usuarioId) return;
+    if (!usuarioId) {
+      console.warn("⚠️ usePermisos: usuarioId no definido");
+      return;
+    }
 
+    console.log("🧩 usePermisos: usuarioId recibido:", usuarioId);
     setCargando(true);
 
     const cargar = async () => {
@@ -27,6 +30,7 @@ export const usePermisos = (usuarioId: string | undefined) => {
           setModulos([]);
         } else {
           const modulos = data.map((d) => d.modulo).filter(Boolean);
+          console.log("🔍 Módulos permitidos:", modulos);
           setModulos(modulos);
         }
       } catch (err) {
