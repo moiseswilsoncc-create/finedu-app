@@ -16,15 +16,11 @@ const PanelUsuario: React.FC = () => {
   const [permisos, setPermisos] = useState<Permiso[] | null>(null);
 
   const modulos = [
-    { nombre: "💸 Ingresos y Egresos", ruta: "/finanzas", color: "#f39c12" },
+    { nombre: "💸 Finanzas", ruta: "/finanzas", color: "#f39c12" },
     { nombre: "💰 Módulo de Ahorro", ruta: "/panel-ahorro", color: "#27ae60" },
-    { nombre: "👥 Mi Grupo", ruta: "/mi-grupo", color: "#2980b9" },
-    { nombre: "🤝 Vista Grupal", ruta: "/vista-grupal", color: "#1abc9c" },
-    { nombre: "📈 Simulador de Inversión", ruta: "/simulador-inversion", color: "#8e44ad" },
-    { nombre: "🏦 Simulador de Crédito", ruta: "/finanzas/creditos", color: "#c0392b" },
-    { nombre: "🧠 Test Financiero", ruta: "/test-financiero", color: "#16a085" },
-    { nombre: "📊 Mi Progreso", ruta: "/vista-etapa", color: "#34495e" },
-    { nombre: "🗣️ Foro Financiero", ruta: "/finanzas/foro", color: "#2c3e50" }
+    { nombre: "📢 Ofertas activas", ruta: "/panel-ofertas", color: "#d35400" },
+    { nombre: "👤 Panel del Usuario", ruta: "/panel-usuario", color: "#9b59b6" },
+    { nombre: "🤝 Vista Grupal", ruta: "/vista-grupal", color: "#1abc9c" }
   ];
 
   useEffect(() => {
@@ -125,21 +121,15 @@ const PanelUsuario: React.FC = () => {
   };
   const estadoFinanciero = evaluarSaludFinanciera();
 
+  // 🔧 Normalización de permisos → rutas
   const rutasPermitidas = permisos?.map(p => {
     switch (p.modulo) {
-      case "creditos": return "/finanzas/creditos";
-      case "ingresos": return "/finanzas/ingresos";
-      case "egresos": return "/finanzas/egresos";
-      case "resumen": return "/finanzas/resumen";
-      case "resumen-egresos": return "/finanzas/resumen-egresos";
-      case "foro": return "/finanzas/foro";
+      case "finanzas": return "/finanzas";
       case "panel-ahorro": return "/panel-ahorro";
+      case "panel-ofertas": return "/panel-ofertas";
+      case "panel-usuario": return "/panel-usuario";
       case "vista-grupal": return "/vista-grupal";
-      case "simulador-inversion": return "/simulador-inversion";
-      case "test-financiero": return "/test-financiero";
-      case "mi-grupo": return "/mi-grupo";
-      case "vista-etapa": return "/vista-etapa";
-      default: return p.modulo;
+      default: return p.modulo; // fallback
     }
   }) || [];
 
