@@ -4,19 +4,14 @@ import RegistroAhorro from "./RegistroAhorro";
 import PanelGrupo from "./PanelGrupo";
 import CrearGrupo from "./CrearGrupo"; // ✅ Componente institucionalizado
 
-const PanelAhorro: React.FC = () => {
-  const [modo, setModo] = useState<"individual" | "grupal" | "crear">("individual");
-  const [correoUsuario, setCorreoUsuario] = useState("");
+interface Props {
+  usuario: {
+    correo: string;
+  };
+}
 
-  // Recuperar correo desde localStorage
-  useEffect(() => {
-    const correo = localStorage.getItem("correo");
-    if (correo) {
-      setCorreoUsuario(correo);
-    } else {
-      console.warn("⚠️ No se encontró correo en localStorage");
-    }
-  }, []);
+const PanelAhorro: React.FC<Props> = ({ usuario }) => {
+  const [modo, setModo] = useState<"individual" | "grupal" | "crear">("individual");
 
   // Recuperar modo guardado
   useEffect(() => {
@@ -52,8 +47,8 @@ const PanelAhorro: React.FC = () => {
 
       {modo === "individual" && <RegistroAhorro />}
       {modo === "grupal" && <PanelGrupo />}
-      {modo === "crear" && correoUsuario ? (
-        <CrearGrupo usuario={{ correo: correoUsuario }} />
+      {modo === "crear" && usuario?.correo ? (
+        <CrearGrupo usuario={{ correo: usuario.correo }} />
       ) : (
         <p style={{ color: "#999" }}>No se puede crear grupo sin correo de usuario.</p>
       )}
