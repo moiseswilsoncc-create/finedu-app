@@ -28,6 +28,7 @@ import Items from "./components/Items";
 
 // 🧩 Módulo Ahorro
 import PanelAhorro from "./components/PanelAhorro";
+import CrearGrupo from "./components/CrearGrupo";
 
 // 🧩 Colaboradores
 import RegistroColaborador from "./components/RegistroColaborador";
@@ -66,38 +67,6 @@ const RutaProtegida: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/login-usuario" replace />;
 };
-
-const RutaProtegidaColaborador: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [autenticado, setAutenticado] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const validarSesion = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      const rol = data.user?.user_metadata?.rol;
-      setAutenticado(!!data.user && rol === "colaborador" && !error);
-    };
-    validarSesion();
-  }, []);
-
-  if (autenticado === null) return null;
-  return autenticado ? <>{children}</> : <Navigate to="/login-colaborador" replace />;
-};
-
-const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [autenticado, setAutenticado] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const validarSesion = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      const rol = data.user?.user_metadata?.rol;
-      setAutenticado(!!data.user && rol === "admin" && !error);
-    };
-    validarSesion();
-  }, []);
-
-  if (autenticado === null) return null;
-  return autenticado ? <>{children}</> : <Navigate to="/" replace />;
-};
 const App: React.FC = () => {
   const location = useLocation();
   const rutasPublicas = [
@@ -109,19 +78,21 @@ const App: React.FC = () => {
   const mostrarNavbar = !rutasPublicas.includes(location.pathname);
 
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
+  const [usuarioCorreo, setUsuarioCorreo] = useState<string>("");
 
   useEffect(() => {
     const obtenerUsuario = async () => {
       const { data } = await supabase.auth.getUser();
       const id = data.user?.id || null;
+      const correo = data.user?.email || "";
       console.log("🧠 ID del usuario:", id);
       setUsuarioId(id);
+      setUsuarioCorreo(correo);
     };
     obtenerUsuario();
   }, []);
 
   const { modulos, cargando } = usePermisos(usuarioId);
-
   if (cargando) return null;
 
   return (
@@ -164,7 +135,10 @@ const App: React.FC = () => {
 
         {/* Ahorro */}
         {modulos.includes("panel-ahorro") && (
-          <Route path="/panel-ahorro" element={<RutaProtegida><PanelAhorro /></RutaProtegida>} />
+          <>
+            <Route path="/panel-ahorro" element={<RutaProtegida><PanelAhorro /></RutaProtegida>} />
+            <Route path="/crear-grupo" element={<RutaProtegida><CrearGrupo usuario={{ correo: usuarioCorreo }} /></RutaProtegida>} />
+          </>
         )}
 
         {/* Vista Grupal */}
