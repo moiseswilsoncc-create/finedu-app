@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -11,8 +10,8 @@ interface Props {
 const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
   const location = useLocation();
   const [enlacesPermitidos, setEnlacesPermitidos] = useState<string[]>([]);
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
   const nombreUsuario = localStorage.getItem("nombreUsuario") || "";
-  const correo = localStorage.getItem("correoUsuario");
 
   const capitalizarNombre = (nombre: string) =>
     nombre
@@ -21,14 +20,22 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
       .join(" ");
 
   useEffect(() => {
+    const obtenerUsuario = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUsuarioId(data.user?.id || null);
+    };
+    obtenerUsuario();
+  }, []);
+
+  useEffect(() => {
     const cargarPermisos = async () => {
-      if (!correo) return;
+      if (!usuarioId) return;
 
       const { data, error } = await supabase
         .from("permisos_usuario")
         .select("modulo")
-        .eq("usuario", correo)
-        .eq("acceso", true);
+        .eq("usuario_id", usuarioId) // ✅ campo correcto
+        .eq("permiso", "acceso");
 
       if (error) {
         console.error("Error al cargar permisos:", error.message);
@@ -40,7 +47,7 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
     };
 
     cargarPermisos();
-  }, [correo]);
+  }, [usuarioId]);
 
   if (!tipoUsuario) return null;
 
