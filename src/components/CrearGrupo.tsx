@@ -32,7 +32,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
 
   useEffect(() => {
     if (!correoUsuario) return;
-    const nuevosMontos: any = {};
+    const nuevosMontos: Record<string, number> = {};
     correos.forEach((correo) => {
       nuevosMontos[correo] = cuotaMensual;
     });
@@ -52,6 +52,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       setNuevoCorreo("");
     }
   };
+
   const eliminarCorreo = (correo: string) => {
     setCorreos(correos.filter((c) => c !== correo));
     const updatedRoles = { ...roles };
@@ -90,7 +91,9 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       return;
     }
 
-    const registrados = usuariosValidos.map((u) => u.correo);
+    const registrados = Array.isArray(usuariosValidos)
+      ? usuariosValidos.map((u) => u.correo)
+      : [];
     const faltantes = todosLosCorreos.filter((c) => !registrados.includes(c));
     if (faltantes.length > 0) {
       alert(`⚠️ Los siguientes correos no están registrados:\n${faltantes.join("\n")}`);
@@ -115,7 +118,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       ])
       .select();
 
-    if (grupoError || !grupoData) {
+    if (grupoError || !Array.isArray(grupoData) || grupoData.length === 0) {
       alert("❌ No se pudo crear el grupo.");
       return;
     }
@@ -124,8 +127,8 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     const miembros = todosLosCorreos.map((correo) => ({
       grupo_id: grupoId,
       correo,
-      rol: rolesFinales[correo],
-      monto_asignado: montosFinales[correo],
+      rol: rolesFinales[correo] || "participante",
+      monto_asignado: montosFinales[correo] || 0,
     }));
 
     const { error: miembrosError } = await supabase
