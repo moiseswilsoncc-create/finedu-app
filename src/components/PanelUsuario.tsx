@@ -15,7 +15,6 @@ const PanelUsuario: React.FC = () => {
   const [ofertasFiltradas, setOfertasFiltradas] = useState<OfertaColaborador[]>([]);
   const [permisos, setPermisos] = useState<Permiso[] | null>(null);
 
-  // 📌 Módulos disponibles para el usuario
   const modulos = [
     { nombre: "💸 Ingresos y Egresos", ruta: "/finanzas", color: "#f39c12" },
     { nombre: "💰 Módulo de Ahorro", ruta: "/panel-ahorro", color: "#27ae60" },
@@ -28,7 +27,6 @@ const PanelUsuario: React.FC = () => {
     { nombre: "🗣️ Foro Financiero", ruta: "/finanzas/foro", color: "#2c3e50" }
   ];
 
-  // ✅ Validar sesión con Supabase Auth
   useEffect(() => {
     const validarSesion = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -39,8 +37,9 @@ const PanelUsuario: React.FC = () => {
 
       setCorreo(data.user.email ?? null);
       setUsuarioId(data.user.id);
+      localStorage.setItem("usuarioId", data.user.id);
+      localStorage.setItem("tipoUsuario", "usuario");
 
-      // Traer datos extra desde tabla usuarios
       const { data: usuarioExtra } = await supabase
         .from("usuarios")
         .select("nombre, apellido")
@@ -54,12 +53,11 @@ const PanelUsuario: React.FC = () => {
         setNombreUsuario(data.user.email?.split("@")[0] || "Usuario");
       }
 
-      // ✅ Cargar permisos del usuario
       const { data: permisosData, error: permisosError } = await supabase
         .from("permisos_usuario")
         .select("modulo, permiso")
         .eq("usuario_id", data.user.id)
-        .eq("permiso", "acceso"); // ✅ solo permisos válidos
+        .eq("permiso", "acceso");
 
       if (permisosError) {
         console.error("❌ Error al cargar permisos:", permisosError.message);
@@ -74,7 +72,7 @@ const PanelUsuario: React.FC = () => {
 
     validarSesion();
   }, [navigate]);
-  // ✅ Obtener ofertas personalizadas
+
   useEffect(() => {
     const obtenerOfertas = async () => {
       if (!usuarioId) return;
@@ -91,7 +89,7 @@ const PanelUsuario: React.FC = () => {
       }
 
       const { data: ofertas, error: ofertasError } = await supabase
-        .from("ofertas_colaboradores") // ✅ nombre correcto de la tabla
+        .from("ofertas_colaboradores")
         .select("*")
         .eq("visible", true)
         .gt("expira", new Date().toISOString());
@@ -111,27 +109,8 @@ const PanelUsuario: React.FC = () => {
 
     obtenerOfertas();
   }, [usuarioId]);
-
-  const evaluarSaludFinanciera = () => {
-    const ahorro = parseInt(localStorage.getItem("ahorro") || "0");
-    const cumplimiento = parseFloat(localStorage.getItem("cumplimiento") || "0");
-
-    if (ahorro === 0 && cumplimiento === 0) {
-      return {
-        mensaje: "Aún no has ingresado tus datos financieros. ¡Estás a tiempo de comenzar tu camino hacia la autonomía! 🚀",
-        emoji: "🕊️"
-      };
-    }
-
-    if (cumplimiento >= 90) return { mensaje: "Tu salud financiera es excelente", emoji: "😊" };
-    if (cumplimiento >= 70) return { mensaje: "Tu salud financiera es buena", emoji: "🙂" };
-    if (cumplimiento >= 50) return { mensaje: "Tu salud financiera es regular", emoji: "😐" };
-    return { mensaje: "Tu salud financiera necesita atención", emoji: "😕" };
-  };
-
   const estadoFinanciero = evaluarSaludFinanciera();
 
-  // ✅ Filtrar módulos según permisos
   const modulosFiltrados = permisos
     ? modulos.filter(m => permisos.some(p => p.modulo === m.ruta && p.permiso === "acceso"))
     : [];
@@ -156,6 +135,9 @@ const PanelUsuario: React.FC = () => {
           gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
           gap: "1rem"
         }}>
+          {modulosFiltrados.length === 0 && (
+            <p style={{ color: "#999" }}>No tienes módulos habilitados actualmente.</p>
+          )}
           {modulosFiltrados.map((modulo, index) => (
             <button
               key={index}
