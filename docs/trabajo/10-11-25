@@ -85,5 +85,37 @@ Restaurar la pantalla de **Crear Grupo** dentro del Panel de Ahorro, eliminando 
 Cada fix documentado se convierte en legado para futuros colaboradores.  
 Este milestone asegura que el Panel de Ahorro no vuelva a caer en blanco por errores de iteración y queda registrado como cierre técnico y emocional.
 
+# 📌 Milestone — Lunes 10 de noviembre 2025
+
+### 1. Diagnóstico y validación de CrearGrupo
+- Se identificó que la pantalla quedaba en blanco por un error en la tabla de participantes.
+- El error provenía de estados `nombres` y `montos` no inicializados para el administrador.
+- Se propuso inicializar siempre al admin en `useState` y `useEffect` para evitar `undefined`.
+
+### 2. BloqueParticipantes
+- Se restauró el bloque completo para ingresar participantes.
+- Se ajustó la tabla a las columnas institucionales: **Correo / Nombre Apellido / Total cuota mensual**.
+- Se eliminó la columna de rol, ya que el creador queda automáticamente como administrador.
+- Se incluyó input para agregar correos, botón ➕, fila fija del admin y botón final ✅ Crear grupo.
+- Se discutió la necesidad de fetch automático de nombre/apellido desde Supabase al agregar un correo (pendiente para mañana).
+
+### 3. Errores en consola
+- Se registró el error:
+
+
+- Se confirmó que el usuario estaba autenticado y con permisos correctos (`panel-usuario`, `finanzas`, `panel-ahorro`, `vista-grupal`, `panel-ofertas`).
+- Se concluyó que el error era puramente de inicialización de estados en la UI, no de RLS ni backend.
+
+### 4. Decisión de cierre
+- Se dejó un archivo anterior para que la página no quedara en blanco mientras se valida la nueva versión.
+- Se acordó retomar mañana la implementación del fetch de nombre/apellido y la validación final de CrearGrupo.
+
 ---
+
+## ✅ Estado de avance
+- **CrearGrupo**: bloque de participantes restaurado y ajustado.
+- **Dashboards**: pendientes de validación una vez que CrearGrupo funcione correctamente.
+- **Errores críticos**: identificados y documentados.
+- **Próximo paso**: inicializar estados correctamente y conectar fetch de nombre/apellido desde Supabase.
+
 
