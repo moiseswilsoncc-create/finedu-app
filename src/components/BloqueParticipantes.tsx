@@ -42,7 +42,9 @@ const BloqueParticipantes: React.FC<Props> = ({
           .ilike("correo", usuario.correo.trim().toLowerCase())
           .single();
 
-        const nombreCompleto = data ? `${data.nombre} ${data.apellido}` : "Administrador";
+        const nombreCompleto = data
+          ? `${data.nombre || ""} ${data.apellido || ""}`.trim() || "Administrador"
+          : "Administrador";
 
         setNombres((prev) => ({
           ...prev,
@@ -93,7 +95,10 @@ const BloqueParticipantes: React.FC<Props> = ({
       .ilike("correo", correo.trim().toLowerCase())
       .single();
 
-    return data ? `${data.nombre} ${data.apellido}` : null;
+    if (!data) return null;
+
+    const nombre = `${data.nombre || ""} ${data.apellido || ""}`.trim();
+    return nombre || "—";
   };
 
   const handleAgregarCorreo = async () => {
@@ -105,7 +110,7 @@ const BloqueParticipantes: React.FC<Props> = ({
     ) {
       const nombreCompleto = await fetchNombreParticipante(correoLimpio);
 
-      if (!nombreCompleto) {
+      if (nombreCompleto === null) {
         alert("⚠️ El correo ingresado no está registrado en Finedu. El participante debe estar registrado para poder unirse al grupo.");
         return;
       }
