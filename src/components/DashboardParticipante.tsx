@@ -1,16 +1,79 @@
-const { data, error: errorGrupos } = await supabase
-  .from('participantes_grupo')
-  .select('grupo_id, grupos_ahorro(*)') // 👈 join correcto
-  .eq('usuario_id', user.id)
-  .eq('estado', 'activo');
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
+import { Grupo } from '../types';
+import { useNavigate } from 'react-router-dom';
+import ResumenGrupoCompacto from './ResumenGrupoCompacto';
 
-if (errorGrupos) {
-  setError('Error al cargar tus grupos como participante.');
-  return;
+export default function DashboardParticipante() {
+  const [grupos, setGrupos] = useState<Grupo[]>([]);
+  const [usuarioId, setUsuarioId] = useState<string>('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const cargarGrupos = async () => {
+      const {
+        data: { user },
+        error: errorUsuario,
+      } = await supabase.auth.getUser();
+
+      if (errorUsuario || !user) {
+        setError('No se pudo obtener el usuario actual.');
+        return;
+      }
+
+      setUsuarioId(user.id);
+
+      // ✅ Consulta corregida: join con grupos_ahorro
+      const { data, error: errorGrupos } = await supabase
+        .from('participantes_grupo')
+        .select('grupo_id, grupos_ahorro(*)')
+        .eq('usuario_id', user.id)
+        .eq('estado', 'activo');
+
+      if (errorGrupos) {
+        setError('Error al cargar tus grupos como participante.');
+        return;
+      }
+
+      // ✅ Mapear correctamente el join
+      const gruposFiltrados = (data || [])
+        .map((registro: any) => registro.grupos_ahorro)
+        .filter((g: Grupo) => g && g.administrador_id !== user.id);
+
+      setGrupos(gruposFiltrados);
+    };
+
+    cargarGrupos();
+  }, []);
+
+  const ingresarAGrupo = (grupoId: string) => {
+    localStorage.setItem('grupoId', grupoId);
+    navigate('/panel-grupo');
+  };
+
+  return (
+    <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
+      <h2>🤝 Dashboard de participación</h2>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      <section>
+        <h3>📌 Grupos donde participas</h3>
+        {grupos.length === 0 ? (
+          <p>No estás activo en ningún grupo actualmente.</p>
+        ) : (
+          <div>
+            {grupos.map((grupo) => (
+              <ResumenGrupoCompacto
+                key={grupo.id}
+                grupo={grupo}
+                onIngresar={ingresarAGrupo}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
 }
-
-const gruposFiltrados = (data || [])
-  .map((registro: any) => registro.grupos_ahorro) // 👈 campo correcto
-  .filter((g: Grupo) => g && g.administrador_id !== user.id);
-
-setGrupos(gruposFiltrados);
