@@ -164,6 +164,26 @@ Bloque de colaboradores integrado, con trazabilidad completa y mensajes claros e
 Mantener este patrón como base para cualquier inserción en tablas protegidas por RLS.  
 Documentar cada política y su campo clave (`auth.uid()`) para evitar bloqueos silenciosos.
 
+### 🧩 Milestone: Creación e integración de tabla `ingresos_grupo`
+
+**Fecha:** 11 de noviembre de 2025  
+**Responsable:** Wilson Contreras  
+**Estado:** En proceso de implementación
+
+#### 🎯 Objetivo
+Registrar los ingresos individuales de cada participante al momento de crear un grupo, para habilitar el cálculo automático de cuotas, metas individuales y trazabilidad financiera.
+
+#### 🧱 Estructura de tabla propuesta
+
+```sql
+CREATE TABLE ingresos_grupo (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  grupo_id BIGINT REFERENCES grupos(id) ON DELETE CASCADE,
+  usuario_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
+  tipo_ingreso TEXT NOT NULL, -- sueldo, boleta, mesada, otros
+  monto NUMERIC NOT NULL,
+  fecha_registro TIMESTAMP DEFAULT NOW()
+);
 
  
  
