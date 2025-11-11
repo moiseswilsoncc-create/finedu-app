@@ -39,8 +39,8 @@ const BloqueParticipantes: React.FC<Props> = ({
         const { data, error } = await supabase
           .from("usuarios")
           .select("nombre, apellido")
-          .ilike("correo", usuario.correo.trim().toLowerCase())
-          .maybeSingle(); // evita falsos negativos por .single()
+          .eq("correo", usuario.correo.trim().toLowerCase())
+          .maybeSingle();
 
         if (error) {
           console.error("Error Supabase (admin):", error);
@@ -96,8 +96,8 @@ const BloqueParticipantes: React.FC<Props> = ({
     const { data, error } = await supabase
       .from("usuarios")
       .select("nombre, apellido")
-      .ilike("correo", correo.trim().toLowerCase())
-      .maybeSingle(); // más seguro que .single()
+      .eq("correo", correo.trim().toLowerCase())
+      .maybeSingle();
 
     if (error) {
       console.error("Error Supabase (participante):", error);
@@ -116,18 +116,15 @@ const BloqueParticipantes: React.FC<Props> = ({
       !correos.includes(correoLimpio) &&
       correoLimpio !== usuario.correo
     ) {
-      // Trazabilidad para depurar en tiempo real
       console.log("Buscando correo:", correoLimpio);
 
       const nombreCompleto = await fetchNombreParticipante(correoLimpio);
 
-      // Si no existe en la base, mostramos mensaje institucional
       if (nombreCompleto === null) {
         alert("⚠️ El correo ingresado no está registrado en Finedu. El participante debe estar registrado para poder unirse al grupo.");
         return;
       }
 
-      // Si existe, agregamos con su nombre (o fallback “—”)
       setNombres((prev) => ({ ...prev, [correoLimpio]: nombreCompleto }));
       setMontos((prev) => ({ ...prev, [correoLimpio]: aporteMensual }));
       agregarCorreo();
