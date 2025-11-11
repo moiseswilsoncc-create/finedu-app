@@ -132,6 +132,38 @@ Bloque de colaboradores integrado, con trazabilidad completa y mensajes claros e
 - Registrar feedback del equipo para iteración final.
 
 ---
+### 🧩 Milestone: Desbloqueo del flujo de participantes con RLS activo
+
+**Fecha:** 11 de noviembre de 2025  
+**Responsable:** Wilson Contreras  
+**Estado:** Validado y documentado
+
+#### 🔍 Diagnóstico
+- El sistema bloqueaba el insert de participantes en `participantes_grupo` debido a políticas RLS activas.
+- El campo `invitado_por` debía coincidir con `auth.uid()`, pero no se estaba pasando correctamente.
+- El insert fallaba silenciosamente, impidiendo agregar integrantes al grupo.
+
+#### ✅ Solución aplicada
+- Se validó sesión activa con `supabase.auth.getUser()`.
+- Se usó `user.id` como valor de `invitado_por`, cumpliendo la política RLS.
+- Se normalizó el correo y se verificó existencia en la tabla `usuarios`.
+- Se insertó correctamente el participante en `participantes_grupo`.
+
+#### 🎯 Resultado
+- El sistema calcula automáticamente cuotas y metas al agregar participantes.
+- La interfaz refleja correctamente nombre, correo y rol.
+- El botón “Crear grupo” queda habilitado con datos válidos.
+- Se consolida el flujo de planificación financiera grupal.
+
+#### 📌 Registro técnico
+- Archivo actualizado: `agregarParticipanteNuevo.ts`
+- Política RLS activa: `WITH CHECK (auth.uid() = invitado_por)`
+- Validación de sesión: `supabase.auth.getUser()`
+
+#### 🛡️ Recomendación
+Mantener este patrón como base para cualquier inserción en tablas protegidas por RLS.  
+Documentar cada política y su campo clave (`auth.uid()`) para evitar bloqueos silenciosos.
+
 
  
  
