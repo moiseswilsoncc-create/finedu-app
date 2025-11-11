@@ -32,33 +32,24 @@ const BloqueParticipantes: React.FC<Props> = ({
   const navigate = useNavigate();
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
 
-  // Inicializar admin con nombre/apellido desde tabla usuarios
   useEffect(() => {
     const fetchNombreAdmin = async () => {
       if (usuario?.correo) {
+        const correoLimpio = usuario.correo.trim().toLowerCase();
         const { data, error } = await supabase
           .from("usuarios")
           .select("nombre, apellido")
-          .eq("correo", usuario.correo.trim().toLowerCase())
+          .eq("correo", correoLimpio)
           .maybeSingle();
 
-        if (error) {
-          console.error("Error Supabase (admin):", error);
-        }
+        if (error) console.error("Error Supabase (admin):", error);
 
         const nombreCompleto = data
           ? `${data.nombre || ""} ${data.apellido || ""}`.trim() || "Administrador"
           : "Administrador";
 
-        setNombres((prev) => ({
-          ...prev,
-          [usuario.correo]: nombreCompleto,
-        }));
-
-        setMontos((prev) => ({
-          ...prev,
-          [usuario.correo]: prev[usuario.correo] || aporteMensual,
-        }));
+        setNombres((prev) => ({ ...prev, [usuario.correo]: nombreCompleto }));
+        setMontos((prev) => ({ ...prev, [usuario.correo]: prev[usuario.correo] || aporteMensual }));
       }
     };
 
@@ -67,9 +58,7 @@ const BloqueParticipantes: React.FC<Props> = ({
 
   const toggleSeleccion = (correo: string) => {
     setSeleccionados((prev) =>
-      prev.includes(correo)
-        ? prev.filter((c) => c !== correo)
-        : [...prev, correo]
+      prev.includes(correo) ? prev.filter((c) => c !== correo) : [...prev, correo]
     );
   };
 
@@ -93,16 +82,14 @@ const BloqueParticipantes: React.FC<Props> = ({
   };
 
   const fetchNombreParticipante = async (correo: string) => {
+    const correoLimpio = correo.trim().toLowerCase();
     const { data, error } = await supabase
       .from("usuarios")
       .select("nombre, apellido")
-      .eq("correo", correo.trim().toLowerCase())
+      .eq("correo", correoLimpio)
       .maybeSingle();
 
-    if (error) {
-      console.error("Error Supabase (participante):", error);
-    }
-
+    if (error) console.error("Error Supabase (participante):", error);
     if (!data) return null;
 
     const nombre = `${data.nombre || ""} ${data.apellido || ""}`.trim();
@@ -111,17 +98,16 @@ const BloqueParticipantes: React.FC<Props> = ({
 
   const handleAgregarCorreo = async () => {
     const correoLimpio = nuevoCorreo.trim().toLowerCase();
+
     if (
       correoLimpio &&
       !correos.includes(correoLimpio) &&
       correoLimpio !== usuario.correo
     ) {
-      console.log("Buscando correo:", correoLimpio);
-
       const nombreCompleto = await fetchNombreParticipante(correoLimpio);
 
       if (nombreCompleto === null) {
-        alert("⚠️ El correo ingresado no está registrado en Finedu. El participante debe estar registrado para poder unirse al grupo.");
+        alert("⚠️ El correo ingresado no está registrado en Finedu.");
         return;
       }
 
@@ -136,7 +122,6 @@ const BloqueParticipantes: React.FC<Props> = ({
       <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
         <h3>👥 Integrantes del grupo</h3>
 
-        {/* Input para agregar nuevo correo */}
         <div style={{ marginBottom: "1rem" }}>
           <label>Agregar participante por correo:</label>
           <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -150,7 +135,6 @@ const BloqueParticipantes: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* Tabla de participantes */}
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
@@ -161,7 +145,6 @@ const BloqueParticipantes: React.FC<Props> = ({
             </tr>
           </thead>
           <tbody>
-            {/* Admin */}
             <tr>
               <td>
                 <input
@@ -175,7 +158,6 @@ const BloqueParticipantes: React.FC<Props> = ({
               <td>{montos[usuario.correo] || 0}</td>
             </tr>
 
-            {/* Participantes */}
             {correos.map((correo) => (
               <tr key={correo}>
                 <td>
@@ -205,7 +187,6 @@ const BloqueParticipantes: React.FC<Props> = ({
           </tbody>
         </table>
 
-        {/* Botones institucionales */}
         <div style={{ marginTop: "1rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
           <button onClick={editarSeleccionado}>✏️ Editar seleccionado</button>
           <button onClick={eliminarSeleccionados}>🗑️ Eliminar seleccionados</button>
@@ -213,7 +194,6 @@ const BloqueParticipantes: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Botón externo de navegación */}
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
         <button onClick={() => navigate("/panel-usuario")}>🏠 Volver al menú principal</button>
       </div>
