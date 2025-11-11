@@ -9,28 +9,30 @@ export async function agregarParticipante(
     // Normalizamos el correo
     const correoNormalizado = correo.trim().toLowerCase();
 
-    // Validamos si el correo existe en la tabla usuarios
-    const { data, error } = await supabase
+    // Buscar usuario por correo y obtener su ID
+    const { data: usuario, error } = await supabase
       .from("usuarios")
-      .select("correo")
-      .eq("correo", correoNormalizado);
+      .select("id, correo")
+      .eq("correo", correoNormalizado)
+      .single();
 
     if (error) {
       return { mensaje: "❌ Error al validar usuario", error: true };
     }
 
-    if (!data || data.length === 0) {
+    if (!usuario) {
       return { mensaje: "⚠️ El correo ingresado no está registrado en Finedu", error: true };
     }
 
-    // Insertamos participante en la tabla participantes_grupo
+    // Insertar participante usando usuario_id
     const { error: insertError } = await supabase
       .from("participantes_grupo")
       .insert([
         {
           grupo_id: grupoId,
-          correo: correoNormalizado,
+          usuario_id: usuario.id,   // 👈 clave correcta
           agregado_por: adminId,
+          estado: "activo",
         },
       ]);
 
