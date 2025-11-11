@@ -32,7 +32,6 @@ const BloqueParticipantes: React.FC<Props> = ({
   const navigate = useNavigate();
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
 
-  // Inicializar admin con nombre/apellido desde tabla usuarios
   useEffect(() => {
     const fetchNombreAdmin = async () => {
       if (usuario?.correo) {
@@ -116,14 +115,15 @@ const BloqueParticipantes: React.FC<Props> = ({
       const nombreCompleto = await fetchNombreParticipante(correoLimpio);
 
       if (nombreCompleto === null) {
-        alert("⚠️ El correo ingresado no está registrado en Finedu.");
-        return;
+        console.warn("⚠️ El correo no se encontró en Supabase, pero se agregará para pruebas.");
+        setNombres((prev) => ({ ...prev, [correoLimpio]: "—" }));
+      } else {
+        setNombres((prev) => ({ ...prev, [correoLimpio]: nombreCompleto }));
       }
 
-      setNombres((prev) => ({ ...prev, [correoLimpio]: nombreCompleto }));
       setMontos((prev) => ({ ...prev, [correoLimpio]: aporteMensual }));
       agregarCorreo();
-      setNuevoCorreo(""); // limpia el input
+      setNuevoCorreo("");
     }
   };
 
