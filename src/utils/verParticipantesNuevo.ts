@@ -15,10 +15,20 @@ export async function verParticipantes(grupoId: number, usuarioId: string) {
       return { mensaje: '🔒 No tienes acceso a los participantes de este grupo', error: true, data: [] };
     }
 
-    // 2. Obtener todos los participantes activos del grupo
+    // 2. Obtener todos los participantes activos del grupo con JOIN a usuarios
     const { data: participantes, error: errorLista } = await supabase
       .from('participantes_grupo')
-      .select('usuario_id, rol, fecha_ingreso, estado')
+      .select(`
+        usuario_id,
+        rol,
+        fecha_ingreso,
+        estado,
+        usuarios (
+          nombre,
+          apellido,
+          correo
+        )
+      `)
       .eq('grupo_id', grupoId)
       .eq('estado', 'activo');
 
