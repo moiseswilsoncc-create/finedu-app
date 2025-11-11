@@ -1,52 +1,27 @@
 import React from "react";
 
 interface Props {
-  usuario: { correo: string };
   correos: string[];
   roles: { [correo: string]: "admin" | "participante" };
   montos: { [correo: string]: number };
-  nombres: { [correo: string]: string }; // Nombre Apellido devuelto por Supabase
-  nuevoCorreo: string;
-  setNuevoCorreo: (v: string) => void;
-  agregarCorreo: () => void;
   eliminarCorreo: (correo: string) => void;
   cambiarRol: (correo: string, nuevoRol: "admin" | "participante") => void;
   cambiarMonto: (correo: string, nuevoMonto: number) => void;
-  crearGrupo: () => void;
+  nombres: { [correo: string]: string }; // 👈 aquí guardas "Nombre Apellido" devuelto por Supabase
 }
 
 const BloqueParticipantes: React.FC<Props> = ({
-  usuario,
   correos,
   roles,
   montos,
-  nombres,
-  nuevoCorreo,
-  setNuevoCorreo,
-  agregarCorreo,
   eliminarCorreo,
   cambiarRol,
   cambiarMonto,
-  crearGrupo,
+  nombres,
 }) => (
   <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
     <h3>👥 Integrantes del grupo</h3>
 
-    {/* Input para agregar nuevo correo */}
-    <div style={{ marginBottom: "1rem" }}>
-      <label>Agregar participante por correo:</label>
-      <div style={{ display: "flex", gap: "0.5rem" }}>
-        <input
-          style={{ flex: 1 }}
-          value={nuevoCorreo}
-          onChange={(e) => setNuevoCorreo(e.target.value)}
-          placeholder="correo@ejemplo.com"
-        />
-        <button onClick={agregarCorreo}>➕ Agregar</button>
-      </div>
-    </div>
-
-    {/* Tabla de participantes */}
     {correos.length === 0 ? (
       <p>No has agregado participantes aún.</p>
     ) : (
@@ -61,16 +36,6 @@ const BloqueParticipantes: React.FC<Props> = ({
           </tr>
         </thead>
         <tbody>
-          {/* Admin siempre visible */}
-          <tr>
-            <td>{usuario.correo}</td>
-            <td>{nombres[usuario.correo] || "—"}</td>
-            <td>Admin</td>
-            <td>{montos[usuario.correo] || 0}</td>
-            <td></td>
-          </tr>
-
-          {/* Participantes agregados */}
           {correos.map((correo) => (
             <tr key={correo}>
               <td>{correo}</td>
@@ -100,11 +65,6 @@ const BloqueParticipantes: React.FC<Props> = ({
         </tbody>
       </table>
     )}
-
-    {/* Botón final para crear grupo */}
-    <div style={{ marginTop: "1rem" }}>
-      <button onClick={crearGrupo}>✅ Crear grupo</button>
-    </div>
   </div>
 );
 
