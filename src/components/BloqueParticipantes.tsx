@@ -38,15 +38,15 @@ const BloqueParticipantes: React.FC<Props> = ({
       if (usuario?.correo) {
         const { data } = await supabase
           .from("usuarios")
-          .select("nombre_apellido")
-          .eq("correo", usuario.correo)
+          .select("nombre, apellido")
+          .eq("correo", usuario.correo.toLowerCase())
           .single();
 
-        const nombre = data?.nombre_apellido || "Administrador";
+        const nombreCompleto = data ? `${data.nombre} ${data.apellido}` : "Administrador";
 
         setNombres((prev) => ({
           ...prev,
-          [usuario.correo]: nombre,
+          [usuario.correo]: nombreCompleto,
         }));
 
         setMontos((prev) => ({
@@ -89,12 +89,11 @@ const BloqueParticipantes: React.FC<Props> = ({
   const fetchNombreParticipante = async (correo: string) => {
     const { data } = await supabase
       .from("usuarios")
-      .select("nombre_apellido")
-      .eq("correo", correo)
+      .select("nombre, apellido")
+      .eq("correo", correo.toLowerCase())
       .single();
 
-    const nombre = data?.nombre_apellido || "—";
-    setNombres((prev) => ({ ...prev, [correo]: nombre }));
+    return data ? `${data.nombre} ${data.apellido}` : null;
   };
 
   const handleAgregarCorreo = async () => {
@@ -104,7 +103,14 @@ const BloqueParticipantes: React.FC<Props> = ({
       !correos.includes(correoLimpio) &&
       correoLimpio !== usuario.correo
     ) {
-      await fetchNombreParticipante(correoLimpio);
+      const nombreCompleto = await fetchNombreParticipante(correoLimpio);
+
+      if (!nombreCompleto) {
+        alert("⚠️ El correo ingresado no está registrado en Finedu. El participante debe estar registrado para poder unirse al grupo.");
+        return;
+      }
+
+      setNombres((prev) => ({ ...prev, [correoLimpio]: nombreCompleto }));
       setMontos((prev) => ({ ...prev, [correoLimpio]: aporteMensual }));
       agregarCorreo();
     }
