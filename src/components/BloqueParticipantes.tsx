@@ -1,15 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   usuario: { correo: string };
   correos: string[];
   montos: { [correo: string]: number };
-  nombres: { [correo: string]: string }; // Nombre Apellido devuelto por Supabase
+  nombres: { [correo: string]: string };
   nuevoCorreo: string;
   setNuevoCorreo: (v: string) => void;
   agregarCorreo: () => void;
-  eliminarCorreo: (correo: string) => void;
-  cambiarMonto: (correo: string, nuevoMonto: number) => void;
   crearGrupo: () => void;
   aporteMensual: number;
   setNombres: React.Dispatch<React.SetStateAction<{ [correo: string]: string }>>;
@@ -24,14 +23,15 @@ const BloqueParticipantes: React.FC<Props> = ({
   nuevoCorreo,
   setNuevoCorreo,
   agregarCorreo,
-  eliminarCorreo,
-  cambiarMonto,
   crearGrupo,
   aporteMensual,
   setNombres,
   setMontos,
 }) => {
-  // Inicializar siempre al admin en nombres y montos
+  const navigate = useNavigate();
+  const [seleccionados, setSeleccionados] = useState<string[]>([]);
+
+  // Inicializar admin
   useEffect(() => {
     if (usuario?.correo) {
       setNombres((prev) => ({
@@ -45,15 +45,35 @@ const BloqueParticipantes: React.FC<Props> = ({
     }
   }, [usuario?.correo, aporteMensual, setNombres, setMontos]);
 
+  const toggleSeleccion = (correo: string) => {
+    setSeleccionados((prev) =>
+      prev.includes(correo)
+        ? prev.filter((c) => c !== correo)
+        : [...prev, correo]
+    );
+  };
+
+  const editarSeleccionado = () => {
+    alert("✏️ Función de edición pendiente.");
+  };
+
+  const eliminarSeleccionados = () => {
+    const nuevosCorreos = correos.filter((c) => !seleccionados.includes(c));
+    setMontos((prev) => {
+      const copia = { ...prev };
+      seleccionados.forEach((c) => delete copia[c]);
+      return copia;
+    });
+    setNombres((prev) => {
+      const copia = { ...prev };
+      seleccionados.forEach((c) => delete copia[c]);
+      return copia;
+    });
+    setSeleccionados([]);
+  };
+
   return (
-    <div
-      style={{
-        marginBottom: "2rem",
-        padding: "1rem",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-      }}
-    >
+    <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
       <h3>👥 Integrantes del grupo</h3>
 
       {/* Input para agregar nuevo correo */}
@@ -74,51 +94,61 @@ const BloqueParticipantes: React.FC<Props> = ({
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>
-              Correo
-            </th>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>
-              Nombre Apellido
-            </th>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>
-              Total cuota mensual
-            </th>
-            <th></th>
+            <th>☑</th>
+            <th>Correo</th>
+            <th>Nombre Apellido</th>
+            <th>Total cuota mensual</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {/* Admin siempre visible */}
+          {/* Admin */}
           <tr>
+            <td>
+              <input
+                type="checkbox"
+                checked={seleccionados.includes(usuario.correo)}
+                onChange={() => toggleSeleccion(usuario.correo)}
+              />
+            </td>
             <td>{usuario.correo}</td>
             <td>{nombres[usuario.correo] || "—"}</td>
             <td>{montos[usuario.correo] || 0}</td>
-            <td></td>
+            <td>—</td>
           </tr>
 
-          {/* Participantes agregados */}
+          {/* Participantes */}
           {correos.map((correo) => (
             <tr key={correo}>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={seleccionados.includes(correo)}
+                  onChange={() => toggleSeleccion(correo)}
+                />
+              </td>
               <td>{correo}</td>
               <td>{nombres[correo] || "—"}</td>
               <td>
                 <input
                   type="number"
                   value={montos[correo] || 0}
-                  onChange={(e) => cambiarMonto(correo, Number(e.target.value))}
+                  onChange={(e) => setMontos((prev) => ({ ...prev, [correo]: Number(e.target.value) }))}
                   style={{ width: "100px" }}
                 />
               </td>
-              <td>
-                <button onClick={() => eliminarCorreo(correo)}>❌</button>
-              </td>
+              <td>—</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Botón final para crear grupo */}
-      <div style={{ marginTop: "1rem" }}>
+      {/* Botones institucionales */}
+      <div style={{ marginTop: "1rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        <button onClick={editarSeleccionado}>✏️ Editar seleccionado</button>
+        <button onClick={eliminarSeleccionados}>🗑️ Eliminar seleccionados</button>
         <button onClick={crearGrupo}>✅ Crear grupo</button>
+        <button onClick={() => navigate("/panel-usuario")}>🏠 Volver al menú principal</button>
       </div>
     </div>
   );
