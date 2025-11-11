@@ -1,33 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { Grupo } from '../types';
 import { useNavigate } from 'react-router-dom';
 import ResumenGrupoCompacto from './ResumenGrupoCompacto';
 
 export default function DashboardParticipante() {
-  const [grupos, setGrupos] = useState<Grupo[]>([]);
-  const [usuarioId, setUsuarioId] = useState<string>('');
+  const [grupos, setGrupos] = useState<any[]>([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const cargarGrupos = async () => {
-      const {
-        data: { user },
-        error: errorUsuario,
-      } = await supabase.auth.getUser();
-
+      const { data: { user }, error: errorUsuario } = await supabase.auth.getUser();
       if (errorUsuario || !user) {
         setError('No se pudo obtener el usuario actual.');
         return;
       }
 
-      setUsuarioId(user.id);
-
-      // ✅ Consulta corregida: join con grupos_ahorro
       const { data, error: errorGrupos } = await supabase
         .from('participantes_grupo')
-        .select('grupo_id, grupos_ahorro(*)')
+        .select('grupo_id, grupos_ahorro(*, metadata_grupo(pais, ciudad, comuna))')
         .eq('usuario_id', user.id)
         .eq('estado', 'activo');
 
@@ -36,10 +27,9 @@ export default function DashboardParticipante() {
         return;
       }
 
-      // ✅ Mapear correctamente el join
       const gruposFiltrados = (data || [])
         .map((registro: any) => registro.grupos_ahorro)
-        .filter((g: Grupo) => g && g.administrador_id !== user.id);
+        .filter((g: any) => g && g.administrador_id !== user.id);
 
       setGrupos(gruposFiltrados);
     };
@@ -55,7 +45,6 @@ export default function DashboardParticipante() {
   return (
     <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
       <h2>🤝 Dashboard de participación</h2>
-
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       <section>
@@ -68,6 +57,7 @@ export default function DashboardParticipante() {
               <ResumenGrupoCompacto
                 key={grupo.id}
                 grupo={grupo}
+                metadata={grupo.metadata_grupo?.[0] || grupo.metadata_grupo}
                 onIngresar={ingresarAGrupo}
               />
             ))}
