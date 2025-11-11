@@ -1,3 +1,5 @@
+// 🛠️ CrearGrupo.tsx — Parte 1
+
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import BloqueDatosGrupo from "./BloqueDatosGrupo";
@@ -14,11 +16,12 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
   const correoUsuario = usuario?.correo?.trim().toLowerCase() || "";
 
   const [nombreGrupo, setNombreGrupo] = useState("");
+  const [pais, setPais] = useState("");
   const [ciudad, setCiudad] = useState("");
   const [comuna, setComuna] = useState("");
-  const [pais, setPais] = useState("");
-  const [meta, setMeta] = useState<number>(0);
-  const [meses, setMeses] = useState<number>(1);
+
+  const [metaTotal, setMetaTotal] = useState<number>(0);
+  const [plazoMeses, setPlazoMeses] = useState<number>(1);
   const [fechaTermino, setFechaTermino] = useState("");
   const [nuevoCorreo, setNuevoCorreo] = useState("");
   const [correos, setCorreos] = useState<string[]>([]);
@@ -27,18 +30,18 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
 
   const fechaCreacion = new Date().toISOString();
   const totalIntegrantes = 1 + correos.length;
-  const metaIndividual = meta > 0 && totalIntegrantes > 0 ? Math.round(meta / totalIntegrantes) : 0;
-  const cuotaMensual = metaIndividual > 0 && meses > 0 ? Math.round(metaIndividual / meses) : 0;
+  const metaIndividual = metaTotal > 0 && totalIntegrantes > 0 ? Math.round(metaTotal / totalIntegrantes) : 0;
+  const aporteMensual = metaIndividual > 0 && plazoMeses > 0 ? Math.round(metaIndividual / plazoMeses) : 0;
 
   useEffect(() => {
     if (!correoUsuario) return;
     const nuevosMontos: Record<string, number> = {};
     correos.forEach((correo) => {
-      nuevosMontos[correo] = cuotaMensual;
+      nuevosMontos[correo] = aporteMensual;
     });
-    nuevosMontos[correoUsuario] = cuotaMensual;
+    nuevosMontos[correoUsuario] = aporteMensual;
     setMontos(nuevosMontos);
-  }, [meta, meses, correos, correoUsuario]);
+  }, [metaTotal, plazoMeses, correos, correoUsuario]);
 
   const agregarCorreo = () => {
     const correoLimpio = nuevoCorreo.trim().toLowerCase();
@@ -70,60 +73,60 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
   const cambiarMonto = (correo: string, nuevoMonto: number) => {
     setMontos({ ...montos, [correo]: nuevoMonto });
   };
+// 🛠️ CrearGrupo.tsx — Parte 2
 
   const crearGrupo = async () => {
-    if (!nombreGrupo.trim() || !meta || !meses || !fechaTermino) {
+    if (!nombreGrupo.trim() || !metaTotal || !plazoMeses || !fechaTermino) {
       alert("⚠️ Debes completar todos los campos obligatorios.");
       return;
     }
 
-    const todosLosCorreos = [correoUsuario, ...correos];
-    const rolesFinales = { ...roles, [correoUsuario]: "admin" };
-    const montosFinales = { ...montos, [correoUsuario]: cuotaMensual };
-
-    const { data: usuariosValidos, error: errorUsuarios } = await supabase
-      .from("usuarios")
-      .select("correo")
-      .in("correo", todosLosCorreos);
-
-    if (errorUsuarios) {
-      alert("❌ Error al validar usuarios.");
-      return;
-    }
-
-    const registrados = Array.isArray(usuariosValidos)
-      ? usuariosValidos.map((u) => u.correo)
-      : [];
-    const faltantes = todosLosCorreos.filter((c) => !registrados.includes(c));
-    if (faltantes.length > 0) {
-      alert(`⚠️ Los siguientes correos no están registrados:\n${faltantes.join("\n")}`);
-      return;
-    }
-
+    // 1. Insertar grupo principal en grupos_ahorro
     const { data: grupoData, error: grupoError } = await supabase
       .from("grupos_ahorro")
       .insert([
         {
           nombre: nombreGrupo.trim(),
-          ciudad,
-          comuna,
-          pais,
-          meta,
-          meses,
-          monto_mensual: cuotaMensual,
-          fecha_creacion: fechaCreacion,
-          fecha_termino: fechaTermino,
-          administrador: correoUsuario,
+          meta_total: metaTotal,
+          plazo_meses: plazoMeses,
+          aporte_mensual: aporteMensual,
+          fecha_inicio: new Date().toISOString(),
+          fecha_fin: fechaTermino,
+          administrador_id: correoUsuario,
         },
       ])
-      .select();
+      .select()
+      .single();
 
-    if (grupoError || !Array.isArray(grupoData) || grupoData.length === 0) {
+    if (grupoError || !grupoData) {
       alert("❌ No se pudo crear el grupo.");
       return;
     }
 
-    const grupoId = grupoData[0].id;
+    const grupoId = grupoData.id;
+
+    // 2. Insertar metadata asociada (pais, ciudad, comuna)
+    const { error: metadataError } = await supabase
+      .from("metadata_grupo")
+      .insert([
+        {
+          grupo_id: grupoId,
+          pais,
+          ciudad,
+          comuna,
+        },
+      ]);
+
+    if (metadataError) {
+      alert("⚠️ Grupo creado, pero hubo un error al guardar la metadata.");
+      console.error(metadataError);
+    }
+
+    // 3. Insertar miembros (admin + participantes)
+    const todosLosCorreos = [correoUsuario, ...correos];
+    const rolesFinales = { ...roles, [correoUsuario]: "admin" };
+    const montosFinales = { ...montos, [correoUsuario]: aporteMensual };
+
     const miembros = todosLosCorreos.map((correo) => ({
       grupo_id: grupoId,
       correo,
@@ -132,7 +135,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     }));
 
     const { error: miembrosError } = await supabase
-      .from("miembros_grupo")
+      .from("participantes_grupo")
       .insert(miembros);
 
     if (miembrosError) {
@@ -141,12 +144,13 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     }
 
     alert(`✅ Grupo "${nombreGrupo}" creado exitosamente.`);
+    // Reset de estados
     setNombreGrupo("");
+    setPais("");
     setCiudad("");
     setComuna("");
-    setPais("");
-    setMeta(0);
-    setMeses(1);
+    setMetaTotal(0);
+    setPlazoMeses(1);
     setFechaTermino("");
     setCorreos([]);
     setRoles({});
@@ -163,31 +167,29 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
 
       <BloqueDatosGrupo
         nombreGrupo={nombreGrupo}
+        pais={pais}
         ciudad={ciudad}
         comuna={comuna}
-        pais={pais}
-        fechaTermino={fechaTermino}
         setNombreGrupo={setNombreGrupo}
+        setPais={setPais}
         setCiudad={setCiudad}
         setComuna={setComuna}
-        setPais={setPais}
-        setFechaTermino={setFechaTermino}
       />
 
       <BloqueMetaFinanciera
-        meta={meta}
-        meses={meses}
+        metaTotal={metaTotal}
+        plazoMeses={plazoMeses}
         metaIndividual={metaIndividual}
-        cuotaMensual={cuotaMensual}
-        setMeta={setMeta}
-        setMeses={setMeses}
+        aporteMensual={aporteMensual}
+        setMetaTotal={setMetaTotal}
+        setPlazoMeses={setPlazoMeses}
       />
 
       <BloqueParticipantes
         usuario={{ correo: correoUsuario }}
         correos={correos}
         roles={roles}
-        cuotaMensual={cuotaMensual}
+        cuotaMensual={aporteMensual}
         nuevoCorreo={nuevoCorreo}
         agregarCorreo={agregarCorreo}
         eliminarCorreo={eliminarCorreo}
