@@ -1,5 +1,3 @@
-// 🛠️ CrearGrupo.tsx
-
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import BloqueDatosGrupo from "./BloqueDatosGrupo";
@@ -55,15 +53,39 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     setMontos(nuevosMontos);
   }, [metaTotal, plazoMeses, correos, correoUsuario]);
 
-  // Agregar participante
-  const agregarCorreo = () => {
+  // Agregar participante con validación institucional
+  const agregarCorreo = async () => {
     const correoLimpio = nuevoCorreo.trim().toLowerCase();
     if (
       correoLimpio &&
       !correos.includes(correoLimpio) &&
       correoLimpio !== correoUsuario
     ) {
+      // Validar en Supabase
+      const { data, error } = await supabase
+        .from("usuarios")
+        .select("nombre, apellido")
+        .eq("correo", correoLimpio)
+        .limit(1);
+
+      if (error) {
+        console.error("❌ Error Supabase (agregarCorreo):", error);
+        alert("❌ Error al validar el correo.");
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        alert("⚠️ El correo ingresado no está registrado en Finedu.");
+        return;
+      }
+
+      const { nombre, apellido } = data[0];
+      const nombreCompleto = `${nombre} ${apellido}`.trim();
+
+      // Agregar solo si está registrado
       setCorreos([...correos, correoLimpio]);
+      setNombres((prev) => ({ ...prev, [correoLimpio]: nombreCompleto }));
+      setMontos((prev) => ({ ...prev, [correoLimpio]: aporteMensual }));
       setNuevoCorreo("");
     }
   };
