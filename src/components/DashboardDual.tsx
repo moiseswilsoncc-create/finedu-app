@@ -26,14 +26,16 @@ export default function DashboardDual() {
 
       setUsuarioId(user.id);
 
+      // ✅ Consulta corregida: grupos administrados
       const { data: adminData, error: errorAdmin } = await supabase
-        .from('grupos')
+        .from('grupos_ahorro')
         .select('*')
         .eq('administrador_id', user.id);
 
+      // ✅ Consulta corregida: grupos donde participa
       const { data: participaData, error: errorParticipa } = await supabase
         .from('participantes_grupo')
-        .select('grupo_id, grupos(*)')
+        .select('grupo_id, grupos_ahorro(*)')
         .eq('usuario_id', user.id)
         .eq('estado', 'activo');
 
@@ -44,7 +46,7 @@ export default function DashboardDual() {
 
       const gruposAdmin = adminData || [];
       const gruposParticipa = (participaData || [])
-        .map((registro: any) => registro.grupos)
+        .map((registro: any) => registro.grupos_ahorro)
         .filter((g: Grupo) => g && g.administrador_id !== user.id);
 
       setGruposAdmin(gruposAdmin);
@@ -102,4 +104,3 @@ export default function DashboardDual() {
     </div>
   );
 }
-
