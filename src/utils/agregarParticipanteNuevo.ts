@@ -5,6 +5,19 @@ export async function agregarParticipante(
   correo: string
 ) {
   try {
+    // Validar sesión activa
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return {
+        mensaje: "❌ No hay sesión activa. Debes iniciar sesión para agregar participantes.",
+        error: true,
+      };
+    }
+
     // Normaliza el correo
     const correoNormalizado = correo.trim().toLowerCase();
 
@@ -26,24 +39,14 @@ export async function agregarParticipante(
       };
     }
 
-    // Obtener UID del usuario autenticado (admin)
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { mensaje: "❌ No hay sesión activa", error: true };
-    }
-
-    // Insertar participante
+    // Insertar participante usando usuario_id y correo como auxiliar
     const { error: insertError } = await supabase
       .from("participantes_grupo")
       .insert([
         {
           grupo_id: grupoId,
           usuario_id: usuario.id,     // vínculo oficial
-          correo: usuario.correo,     // auxiliar
+          correo: usuario.correo,     // auxiliar para trazabilidad
           invitado_por: user.id,      // 👈 ahora sí coincide con auth.uid()
           estado: "activo",
           fecha_ingreso: new Date(),  // opcional
