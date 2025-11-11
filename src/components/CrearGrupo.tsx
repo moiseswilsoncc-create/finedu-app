@@ -186,17 +186,21 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       />
 
       <BloqueParticipantes
-        usuario={{ correo: correoUsuario }}
-        correos={correos}
-        roles={roles}
-        cuotaMensual={aporteMensual}
-        nuevoCorreo={nuevoCorreo}
-        agregarCorreo={agregarCorreo}
-        eliminarCorreo={eliminarCorreo}
-        cambiarRol={cambiarRol}
-        setNuevoCorreo={setNuevoCorreo}
-        crearGrupo={crearGrupo}
-      />
+  usuario={{ correo: correoUsuario }}
+  correos={correos}
+  montos={montos}
+  nombres={nombres}
+  setMontos={setMontos}
+  setNombres={setNombres}
+  nuevoCorreo={nuevoCorreo}
+  setNuevoCorreo={setNuevoCorreo}
+  agregarCorreo={agregarCorreo}
+  eliminarCorreo={eliminarCorreo}
+  cambiarMonto={cambiarMonto}
+  crearGrupo={crearGrupo}
+  aporteMensual={aporteMensual}
+/>
+
     </div>
   );
 };
