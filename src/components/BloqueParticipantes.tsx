@@ -3,14 +3,12 @@ import React from "react";
 interface Props {
   usuario: { correo: string };
   correos: string[];
-  roles: { [correo: string]: "admin" | "participante" };
   montos: { [correo: string]: number };
   nombres: { [correo: string]: string }; // Nombre Apellido devuelto por Supabase
   nuevoCorreo: string;
   setNuevoCorreo: (v: string) => void;
   agregarCorreo: () => void;
   eliminarCorreo: (correo: string) => void;
-  cambiarRol: (correo: string, nuevoRol: "admin" | "participante") => void;
   cambiarMonto: (correo: string, nuevoMonto: number) => void;
   crearGrupo: () => void;
 }
@@ -18,14 +16,12 @@ interface Props {
 const BloqueParticipantes: React.FC<Props> = ({
   usuario,
   correos,
-  roles,
   montos,
   nombres,
   nuevoCorreo,
   setNuevoCorreo,
   agregarCorreo,
   eliminarCorreo,
-  cambiarRol,
   cambiarMonto,
   crearGrupo,
 }) => (
@@ -47,59 +43,44 @@ const BloqueParticipantes: React.FC<Props> = ({
     </div>
 
     {/* Tabla de participantes */}
-    {correos.length === 0 ? (
-      <p>No has agregado participantes aún.</p>
-    ) : (
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Correo</th>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Nombre Apellido</th>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Rol</th>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Cuota mensual</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Admin siempre visible */}
-          <tr>
-            <td>{usuario.correo}</td>
-            <td>{nombres[usuario.correo] || "—"}</td>
-            <td>Admin</td>
-            <td>{montos[usuario.correo] || 0}</td>
-            <td></td>
-          </tr>
+    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <thead>
+        <tr>
+          <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Correo</th>
+          <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Nombre Apellido</th>
+          <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Total cuota mensual</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {/* Admin siempre visible */}
+        <tr>
+          <td>{usuario.correo}</td>
+          <td>{nombres[usuario.correo] || "—"}</td>
+          <td>{montos[usuario.correo] || 0}</td>
+          <td></td>
+        </tr>
 
-          {/* Participantes agregados */}
-          {correos.map((correo) => (
-            <tr key={correo}>
-              <td>{correo}</td>
-              <td>{nombres[correo] || "—"}</td>
-              <td>
-                <select
-                  value={roles[correo] || "participante"}
-                  onChange={(e) => cambiarRol(correo, e.target.value as "admin" | "participante")}
-                >
-                  <option value="admin">Admin</option>
-                  <option value="participante">Participante</option>
-                </select>
-              </td>
-              <td>
-                <input
-                  type="number"
-                  value={montos[correo] || 0}
-                  onChange={(e) => cambiarMonto(correo, Number(e.target.value))}
-                  style={{ width: "80px" }}
-                />
-              </td>
-              <td>
-                <button onClick={() => eliminarCorreo(correo)}>❌</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )}
+        {/* Participantes agregados */}
+        {correos.map((correo) => (
+          <tr key={correo}>
+            <td>{correo}</td>
+            <td>{nombres[correo] || "—"}</td>
+            <td>
+              <input
+                type="number"
+                value={montos[correo] || 0}
+                onChange={(e) => cambiarMonto(correo, Number(e.target.value))}
+                style={{ width: "100px" }}
+              />
+            </td>
+            <td>
+              <button onClick={() => eliminarCorreo(correo)}>❌</button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
 
     {/* Botón final para crear grupo */}
     <div style={{ marginTop: "1rem" }}>
