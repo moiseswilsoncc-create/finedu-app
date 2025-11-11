@@ -1,0 +1,48 @@
+# 📌 Milestone — Módulo de Grupos (Finedu)
+
+## Contexto
+Se consolidó la validación y manejo de participantes en el módulo de grupos, eliminando el uso de `alert` invasivos y alineando todos los componentes con el patrón institucional de mensajes controlados en pantalla.
+
+## Archivos revisados y corregidos
+- **CrearGrupo.tsx**  
+  - Validación de correos ajustada para ejecutarse solo al enviar el formulario.  
+  - Mensajes mostrados con `setError` / `setMensaje`.
+
+- **FormularioAgregar.tsx**  
+  - Integrado con `agregarParticipanteNuevo.ts` corregido.  
+  - Manejo de errores y éxitos en pantalla.
+
+- **TablaParticipantes.tsx**  
+  - Mensajes consistentes en pantalla.  
+  - Integración con funciones corregidas (`expulsarParticipante`, `verParticipantesNuevo`).
+
+- **utils/agregarParticipanteNuevo.ts**  
+  - Eliminados `alert`.  
+  - Devuelve `{ mensaje, error }`.  
+  - Normalización de correos antes de validación.
+
+- **utils/expulsarParticipante.ts**  
+  - Eliminados `throw new Error`.  
+  - Devuelve `{ mensaje, error }`.  
+  - Registro en `historial_grupo`.
+
+- **utils/verParticipantesNuevo.ts**  
+  - Eliminados `throw new Error`.  
+  - Devuelve `{ mensaje, error, data }`.  
+  - Manejo de accesos restringidos con mensajes claros.
+
+## Resultado esperado
+- Todos los mensajes se muestran en pantalla (verde para éxito, rojo para error).  
+- No existen `alert` invasivos en el flujo de grupos.  
+- El módulo es resiliente, auditable y consistente con la experiencia institucional.  
+- Despliegue en Vercel con pantallas limpias y mensajes claros.
+
+## Próximos pasos
+- Validar integración completa en entorno de pruebas.  
+- Documentar casos de uso en la bitácora institucional.  
+- Confirmar trazabilidad en Supabase (`usuarios`, `participantes_grupo`, `historial_grupo`).  
+- Registrar feedback del equipo para iteración final.
+
+---
+
+✍️ **Milestone registrado el 11 de noviembre de 2025**  
