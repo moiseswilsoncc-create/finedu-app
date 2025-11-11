@@ -1,88 +1,62 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 interface Props {
   usuario: { correo: string };
   correos: string[];
+  roles: { [correo: string]: "admin" | "participante" };
   montos: { [correo: string]: number };
   nombres: { [correo: string]: string }; // Nombre Apellido devuelto por Supabase
   nuevoCorreo: string;
   setNuevoCorreo: (v: string) => void;
   agregarCorreo: () => void;
   eliminarCorreo: (correo: string) => void;
+  cambiarRol: (correo: string, nuevoRol: "admin" | "participante") => void;
   cambiarMonto: (correo: string, nuevoMonto: number) => void;
   crearGrupo: () => void;
-  aporteMensual: number;
-  setNombres: React.Dispatch<React.SetStateAction<{ [correo: string]: string }>>;
-  setMontos: React.Dispatch<React.SetStateAction<{ [correo: string]: number }>>;
 }
 
 const BloqueParticipantes: React.FC<Props> = ({
   usuario,
   correos,
+  roles,
   montos,
   nombres,
   nuevoCorreo,
   setNuevoCorreo,
   agregarCorreo,
   eliminarCorreo,
+  cambiarRol,
   cambiarMonto,
   crearGrupo,
-  aporteMensual,
-  setNombres,
-  setMontos,
-}) => {
-  // Inicializar siempre al admin en nombres y montos
-  useEffect(() => {
-    if (usuario?.correo) {
-      setNombres((prev) => ({
-        ...prev,
-        [usuario.correo]: prev[usuario.correo] || "Administrador",
-      }));
-      setMontos((prev) => ({
-        ...prev,
-        [usuario.correo]: prev[usuario.correo] || aporteMensual,
-      }));
-    }
-  }, [usuario?.correo, aporteMensual, setNombres, setMontos]);
+}) => (
+  <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
+    <h3>👥 Integrantes del grupo</h3>
 
-  return (
-    <div
-      style={{
-        marginBottom: "2rem",
-        padding: "1rem",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-      }}
-    >
-      <h3>👥 Integrantes del grupo</h3>
-
-      {/* Input para agregar nuevo correo */}
-      <div style={{ marginBottom: "1rem" }}>
-        <label>Agregar participante por correo:</label>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <input
-            style={{ flex: 1 }}
-            value={nuevoCorreo}
-            onChange={(e) => setNuevoCorreo(e.target.value)}
-            placeholder="correo@ejemplo.com"
-          />
-          <button onClick={agregarCorreo}>➕ Agregar</button>
-        </div>
+    {/* Input para agregar nuevo correo */}
+    <div style={{ marginBottom: "1rem" }}>
+      <label>Agregar participante por correo:</label>
+      <div style={{ display: "flex", gap: "0.5rem" }}>
+        <input
+          style={{ flex: 1 }}
+          value={nuevoCorreo}
+          onChange={(e) => setNuevoCorreo(e.target.value)}
+          placeholder="correo@ejemplo.com"
+        />
+        <button onClick={agregarCorreo}>➕ Agregar</button>
       </div>
+    </div>
 
-      {/* Tabla de participantes */}
+    {/* Tabla de participantes */}
+    {correos.length === 0 ? (
+      <p>No has agregado participantes aún.</p>
+    ) : (
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>
-              Correo
-            </th>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>
-              Nombre Apellido
-            </th>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>
-              Total cuota mensual
-            </th>
+            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Correo</th>
+            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Nombre Apellido</th>
+            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Rol</th>
+            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Cuota mensual</th>
             <th></th>
           </tr>
         </thead>
@@ -91,6 +65,7 @@ const BloqueParticipantes: React.FC<Props> = ({
           <tr>
             <td>{usuario.correo}</td>
             <td>{nombres[usuario.correo] || "—"}</td>
+            <td>Admin</td>
             <td>{montos[usuario.correo] || 0}</td>
             <td></td>
           </tr>
@@ -101,11 +76,20 @@ const BloqueParticipantes: React.FC<Props> = ({
               <td>{correo}</td>
               <td>{nombres[correo] || "—"}</td>
               <td>
+                <select
+                  value={roles[correo] || "participante"}
+                  onChange={(e) => cambiarRol(correo, e.target.value as "admin" | "participante")}
+                >
+                  <option value="admin">Admin</option>
+                  <option value="participante">Participante</option>
+                </select>
+              </td>
+              <td>
                 <input
                   type="number"
                   value={montos[correo] || 0}
                   onChange={(e) => cambiarMonto(correo, Number(e.target.value))}
-                  style={{ width: "100px" }}
+                  style={{ width: "80px" }}
                 />
               </td>
               <td>
@@ -115,13 +99,13 @@ const BloqueParticipantes: React.FC<Props> = ({
           ))}
         </tbody>
       </table>
+    )}
 
-      {/* Botón final para crear grupo */}
-      <div style={{ marginTop: "1rem" }}>
-        <button onClick={crearGrupo}>✅ Crear grupo</button>
-      </div>
+    {/* Botón final para crear grupo */}
+    <div style={{ marginTop: "1rem" }}>
+      <button onClick={crearGrupo}>✅ Crear grupo</button>
     </div>
-  );
-};
+  </div>
+);
 
 export default BloqueParticipantes;
