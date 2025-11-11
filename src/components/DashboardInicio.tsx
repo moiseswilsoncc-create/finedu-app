@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import { Grupo } from '../types';
 import { useNavigate } from 'react-router-dom';
 import FormularioNuevoGrupo from './FormularioNuevoGrupo';
-import ResumenGrupoCompacto from './ResumenGrupoCompacto'; // ← nuevo import
+import ResumenGrupoCompacto from './ResumenGrupoCompacto';
 
 export default function DashboardInicio() {
   const [grupos, setGrupos] = useState<Grupo[]>([]);
@@ -26,7 +26,7 @@ export default function DashboardInicio() {
       setUsuarioId(user.id);
 
       const { data, error: errorGrupos } = await supabase
-        .from('grupos')
+        .from('grupos_ahorro') // 👈 tabla correcta
         .select('*')
         .eq('administrador_id', user.id);
 
@@ -76,4 +76,3 @@ export default function DashboardInicio() {
     </div>
   );
 }
-
