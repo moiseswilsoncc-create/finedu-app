@@ -1,23 +1,23 @@
 import React from "react";
 
 interface Props {
-  meta: number;
-  meses: number;
+  metaTotal: number;              // 👈 nombre alineado con la BD
+  plazoMeses: number;             // 👈 nombre alineado con la BD
   metaIndividual: number;
-  cuotaMensual: number;
-  setMeta: (v: number) => void;
-  setMeses: (v: number) => void;
+  aporteMensual: number;          // 👈 nombre alineado con la BD
+  setMetaTotal: (v: number) => void;
+  setPlazoMeses: (v: number) => void;
 }
 
 const BloqueMetaFinanciera: React.FC<Props> = ({
-  meta, meses, metaIndividual, cuotaMensual, setMeta, setMeses
+  metaTotal, plazoMeses, metaIndividual, aporteMensual, setMetaTotal, setPlazoMeses
 }) => {
   const fechaInicial = new Date();
   const mesInicio = fechaInicial.toLocaleString("es-CL", { month: "long" });
   const añoInicio = fechaInicial.getFullYear();
 
   const fechaTermino = new Date(fechaInicial);
-  fechaTermino.setMonth(fechaInicial.getMonth() + meses);
+  fechaTermino.setMonth(fechaInicial.getMonth() + plazoMeses);
   const mesTermino = fechaTermino.toLocaleString("es-CL", { month: "long" });
   const añoTermino = fechaTermino.getFullYear();
 
@@ -26,16 +26,16 @@ const BloqueMetaFinanciera: React.FC<Props> = ({
       <h3>💰 Meta y planificación financiera</h3>
 
       <label>Monto meta grupal (CLP):</label>
-      <input type="number" value={meta} onChange={(e) => setMeta(Number(e.target.value))} />
+      <input type="number" value={metaTotal} onChange={(e) => setMetaTotal(Number(e.target.value))} />
 
       <label>Meses de ahorro:</label>
-      <input type="number" min={1} max={36} value={meses} onChange={(e) => setMeses(Number(e.target.value))} />
+      <input type="number" min={1} max={36} value={plazoMeses} onChange={(e) => setPlazoMeses(Number(e.target.value))} />
 
       <p>📅 Fecha de inicio automática: <strong>{mesInicio} {añoInicio}</strong></p>
       <p>🔚 Fecha estimada de término: <strong>{mesTermino} {añoTermino}</strong></p>
 
       <p>🎯 Meta individual total: <strong>${metaIndividual.toLocaleString("es-CL")}</strong></p>
-      <p>📆 Cuota mensual por persona: <strong>${cuotaMensual.toLocaleString("es-CL")}</strong></p>
+      <p>📆 Aporte mensual por persona: <strong>${aporteMensual.toLocaleString("es-CL")}</strong></p>
     </div>
   );
 };
