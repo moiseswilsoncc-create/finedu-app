@@ -32,12 +32,12 @@ const BloqueParticipantes: React.FC<Props> = ({
   const navigate = useNavigate();
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
 
-  // Inicializar admin con nombre/apellido desde Supabase
+  // Inicializar admin con nombre/apellido desde tabla usuarios
   useEffect(() => {
     const fetchNombreAdmin = async () => {
       if (usuario?.correo) {
-        const { data, error } = await supabase
-          .from("profiles")
+        const { data } = await supabase
+          .from("usuarios")
           .select("nombre_apellido")
           .eq("correo", usuario.correo)
           .single();
@@ -88,7 +88,7 @@ const BloqueParticipantes: React.FC<Props> = ({
 
   const fetchNombreParticipante = async (correo: string) => {
     const { data } = await supabase
-      .from("profiles")
+      .from("usuarios")
       .select("nombre_apellido")
       .eq("correo", correo)
       .single();
