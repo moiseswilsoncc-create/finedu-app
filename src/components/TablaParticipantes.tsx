@@ -3,7 +3,7 @@ import { verParticipantes } from '../utils/verParticipantesNuevo';
 import { expulsarParticipante } from '../utils/expulsarParticipante';
 
 interface Props {
-  grupoId: number | string; // aceptamos string también por seguridad
+  grupoId: number | string;
   adminId: string;
 }
 
@@ -12,6 +12,11 @@ interface Participante {
   rol: string;
   fecha_ingreso: string;
   estado: string;
+  usuarios?: {
+    nombre: string;
+    apellido: string;
+    correo: string;
+  };
 }
 
 export default function TablaParticipantes({ grupoId, adminId }: Props) {
@@ -23,18 +28,18 @@ export default function TablaParticipantes({ grupoId, adminId }: Props) {
   const cargarParticipantes = async () => {
     setError('');
     try {
-      const data = await verParticipantes(grupoId, adminId);
+      const resultado = await verParticipantes(grupoId, adminId);
 
-      // Validamos que data sea un array
-      if (Array.isArray(data)) {
-        setParticipantes(data);
+      if (!resultado.error && Array.isArray(resultado.data)) {
+        setParticipantes(resultado.data);
+        setMensaje(resultado.mensaje);
       } else {
-        console.warn("⚠️ verParticipantes no devolvió un array:", data);
-        setParticipantes([]); // fallback seguro
+        setError(resultado.mensaje || 'Error al cargar participantes');
+        setParticipantes([]);
       }
     } catch (err: any) {
-      setError(err.message || 'Error al cargar participantes');
-      setParticipantes([]); // fallback seguro
+      setError(err.message || 'Error inesperado al cargar participantes');
+      setParticipantes([]);
     }
   };
 
@@ -70,7 +75,8 @@ export default function TablaParticipantes({ grupoId, adminId }: Props) {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th>Usuario ID</th>
+              <th>Nombre</th>
+              <th>Correo</th>
               <th>Rol</th>
               <th>Ingreso</th>
               <th>Estado</th>
@@ -80,7 +86,8 @@ export default function TablaParticipantes({ grupoId, adminId }: Props) {
           <tbody>
             {participantes.map((p) => (
               <tr key={p.usuario_id}>
-                <td>{p.usuario_id}</td>
+                <td>{p.usuarios?.nombre} {p.usuarios?.apellido}</td>
+                <td>{p.usuarios?.correo}</td>
                 <td>{p.rol}</td>
                 <td>
                   {p.fecha_ingreso
