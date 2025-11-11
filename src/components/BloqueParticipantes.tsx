@@ -39,7 +39,7 @@ const BloqueParticipantes: React.FC<Props> = ({
         const { data } = await supabase
           .from("usuarios")
           .select("nombre, apellido")
-          .ilike("correo", usuario.correo) // case-insensitive
+          .ilike("correo", usuario.correo.trim().toLowerCase())
           .single();
 
         const nombreCompleto = data ? `${data.nombre} ${data.apellido}` : "Administrador";
@@ -90,14 +90,14 @@ const BloqueParticipantes: React.FC<Props> = ({
     const { data } = await supabase
       .from("usuarios")
       .select("nombre, apellido")
-      .ilike("correo", correo) // case-insensitive
+      .ilike("correo", correo.trim().toLowerCase())
       .single();
 
     return data ? `${data.nombre} ${data.apellido}` : null;
   };
 
   const handleAgregarCorreo = async () => {
-    const correoLimpio = nuevoCorreo.trim();
+    const correoLimpio = nuevoCorreo.trim().toLowerCase();
     if (
       correoLimpio &&
       !correos.includes(correoLimpio) &&
