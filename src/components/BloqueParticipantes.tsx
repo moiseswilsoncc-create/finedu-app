@@ -34,21 +34,18 @@ const BloqueParticipantes: React.FC<Props> = ({
 
   useEffect(() => {
     const fetchNombreAdmin = async () => {
-      if (usuario?.correo) {
-        const correoLimpio = usuario.correo.trim().toLowerCase();
-        const { data, error } = await supabase
-          .from("usuarios")
-          .select("nombre, apellido")
-          .ilike("correo", correoLimpio)
-          .limit(1);
+      const correoLimpio = usuario.correo.trim().toLowerCase();
+      const { data, error } = await supabase
+        .from("usuarios")
+        .select("nombre, apellido")
+        .eq("correo", correoLimpio)
+        .limit(1);
 
-        if (error) console.error("Error Supabase (admin):", error);
+      if (error) console.error("❌ Error Supabase (admin):", error);
 
-        const nombreCompleto =
-          data && data.length > 0
-            ? `${data[0].nombre || ""} ${data[0].apellido || ""}`.trim() || "Administrador"
-            : "Administrador";
-
+      if (data && data.length > 0) {
+        const { nombre, apellido } = data[0];
+        const nombreCompleto = `${nombre} ${apellido}`.trim();
         setNombres((prev) => ({ ...prev, [usuario.correo]: nombreCompleto }));
         setMontos((prev) => ({ ...prev, [usuario.correo]: prev[usuario.correo] || aporteMensual }));
       }
@@ -87,19 +84,21 @@ const BloqueParticipantes: React.FC<Props> = ({
     const { data, error } = await supabase
       .from("usuarios")
       .select("nombre, apellido")
-      .ilike("correo", correoLimpio)
+      .eq("correo", correoLimpio)
       .limit(1);
 
     if (error) {
-      console.error("Error Supabase (participante):", error);
+      console.error("❌ Error Supabase (participante):", error);
       return null;
     }
 
-    if (!data || data.length === 0) return null;
+    if (!data || data.length === 0) {
+      console.warn("⚠️ Correo no registrado en Supabase:", correoLimpio);
+      return null;
+    }
 
-    const usuario = data[0];
-    const nombre = `${usuario.nombre || ""} ${usuario.apellido || ""}`.trim();
-    return nombre || "—";
+    const { nombre, apellido } = data[0];
+    return `${nombre} ${apellido}`.trim();
   };
 
   const handleAgregarCorreo = async () => {
@@ -110,17 +109,14 @@ const BloqueParticipantes: React.FC<Props> = ({
       !correos.includes(correoLimpio) &&
       correoLimpio !== usuario.correo
     ) {
-      console.log("Buscando correo:", correoLimpio);
-
       const nombreCompleto = await fetchNombreParticipante(correoLimpio);
 
       if (nombreCompleto === null) {
-        console.warn("⚠️ El correo no se encontró en Supabase, pero se agregará para pruebas.");
-        setNombres((prev) => ({ ...prev, [correoLimpio]: "—" }));
-      } else {
-        setNombres((prev) => ({ ...prev, [correoLimpio]: nombreCompleto }));
+        alert("⚠️ El correo ingresado no está registrado en Finedu.");
+        return;
       }
 
+      setNombres((prev) => ({ ...prev, [correoLimpio]: nombreCompleto }));
       setMontos((prev) => ({ ...prev, [correoLimpio]: aporteMensual }));
       agregarCorreo();
       setNuevoCorreo("");
