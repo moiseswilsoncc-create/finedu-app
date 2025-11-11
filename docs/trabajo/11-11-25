@@ -46,3 +46,44 @@ Se consolidó la validación y manejo de participantes en el módulo de grupos, 
 ---
 
 ✍️ **Milestone registrado el 11 de noviembre de 2025**  
+
+# 📌 Milestone — Módulo de Colaboradores (Finedu)
+
+## Contexto
+Se consolidó el Bloque 3: Colaborador como parte del ensamblaje institucional de Finedu.  
+Este bloque incluye la oferta de colaboración, la navegación por rol colaborador y la trazabilidad completa de acciones.
+
+## Archivos y componentes institucionalizados
+- **Formulario de oferta**  
+  - Captura de datos del colaborador.  
+  - Validación de visibilidad institucional.  
+
+- **Tabla Supabase `ofertas_colaborador`**  
+  - Registro centralizado de ofertas.  
+  - Fuente única de verdad para auditoría.  
+
+- **Navegación por rol colaborador**  
+  - Flujo diferenciado para colaboradores.  
+  - Acceso seguro y trazable.  
+
+- **Pendientes trazables**  
+  - Endpoint Express `/guardar-oferta`.  
+  - Lógica de expiración automática de ofertas.  
+  - Validación de visibilidad institucional.
+
+## Resultado esperado
+- Bloque de colaboradores integrado y funcional.  
+- Ofertas registradas en Supabase con trazabilidad completa.  
+- Flujo de navegación seguro y auditable.  
+- Mensajes claros en pantalla, sin `alert` invasivos.  
+- Bitácora institucional actualizada con cada acción.
+
+## Próximos pasos
+- Finalizar endpoint `/guardar-oferta` con validación de expiración.  
+- Documentar casos de uso en la bitácora institucional.  
+- Validar despliegue en Vercel con pruebas de rol colaborador.  
+- Confirmar trazabilidad en Supabase (`ofertas_colaborador`, `historial_colaborador`).  
+
+---
+
+✍️ **Milestone registrado el 11 de noviembre de 2025**  
