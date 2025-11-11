@@ -1,4 +1,4 @@
-// 🛠️ CrearGrupo.tsx — Parte 1
+// 🛠️ CrearGrupo.tsx
 
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
@@ -15,24 +15,36 @@ interface Props {
 const CrearGrupo: React.FC<Props> = ({ usuario }) => {
   const correoUsuario = usuario?.correo?.trim().toLowerCase() || "";
 
+  // Datos generales
   const [nombreGrupo, setNombreGrupo] = useState("");
   const [pais, setPais] = useState("");
   const [ciudad, setCiudad] = useState("");
   const [comuna, setComuna] = useState("");
 
+  // Meta financiera
   const [metaTotal, setMetaTotal] = useState<number>(0);
   const [plazoMeses, setPlazoMeses] = useState<number>(1);
   const [fechaTermino, setFechaTermino] = useState("");
+
+  // Participantes
   const [nuevoCorreo, setNuevoCorreo] = useState("");
   const [correos, setCorreos] = useState<string[]>([]);
-  const [roles, setRoles] = useState<{ [correo: string]: "admin" | "participante" }>({});
   const [montos, setMontos] = useState<{ [correo: string]: number }>({});
+  const [nombres, setNombres] = useState<{ [correo: string]: string }>({});
 
+  // Cálculos derivados
   const fechaCreacion = new Date().toISOString();
   const totalIntegrantes = 1 + correos.length;
-  const metaIndividual = metaTotal > 0 && totalIntegrantes > 0 ? Math.round(metaTotal / totalIntegrantes) : 0;
-  const aporteMensual = metaIndividual > 0 && plazoMeses > 0 ? Math.round(metaIndividual / plazoMeses) : 0;
+  const metaIndividual =
+    metaTotal > 0 && totalIntegrantes > 0
+      ? Math.round(metaTotal / totalIntegrantes)
+      : 0;
+  const aporteMensual =
+    metaIndividual > 0 && plazoMeses > 0
+      ? Math.round(metaIndividual / plazoMeses)
+      : 0;
 
+  // Inicializar montos para admin y participantes
   useEffect(() => {
     if (!correoUsuario) return;
     const nuevosMontos: Record<string, number> = {};
@@ -43,6 +55,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     setMontos(nuevosMontos);
   }, [metaTotal, plazoMeses, correos, correoUsuario]);
 
+  // Agregar participante
   const agregarCorreo = () => {
     const correoLimpio = nuevoCorreo.trim().toLowerCase();
     if (
@@ -51,37 +64,35 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       correoLimpio !== correoUsuario
     ) {
       setCorreos([...correos, correoLimpio]);
-      setRoles({ ...roles, [correoLimpio]: "participante" });
       setNuevoCorreo("");
     }
   };
 
+  // Eliminar participante
   const eliminarCorreo = (correo: string) => {
     setCorreos(correos.filter((c) => c !== correo));
-    const updatedRoles = { ...roles };
     const updatedMontos = { ...montos };
-    delete updatedRoles[correo];
     delete updatedMontos[correo];
-    setRoles(updatedRoles);
     setMontos(updatedMontos);
+
+    const updatedNombres = { ...nombres };
+    delete updatedNombres[correo];
+    setNombres(updatedNombres);
   };
 
-  const cambiarRol = (correo: string, nuevoRol: "admin" | "participante") => {
-    setRoles({ ...roles, [correo]: nuevoRol });
-  };
-
+  // Cambiar monto
   const cambiarMonto = (correo: string, nuevoMonto: number) => {
     setMontos({ ...montos, [correo]: nuevoMonto });
   };
-// 🛠️ CrearGrupo.tsx — Parte 2
 
+  // Crear grupo
   const crearGrupo = async () => {
     if (!nombreGrupo.trim() || !metaTotal || !plazoMeses || !fechaTermino) {
       alert("⚠️ Debes completar todos los campos obligatorios.");
       return;
     }
 
-    // 1. Insertar grupo principal en grupos_ahorro
+    // 1. Insertar grupo principal
     const { data: grupoData, error: grupoError } = await supabase
       .from("grupos_ahorro")
       .insert([
@@ -105,7 +116,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
 
     const grupoId = grupoData.id;
 
-    // 2. Insertar metadata asociada (pais, ciudad, comuna)
+    // 2. Insertar metadata
     const { error: metadataError } = await supabase
       .from("metadata_grupo")
       .insert([
@@ -122,16 +133,13 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       console.error(metadataError);
     }
 
-    // 3. Insertar miembros (admin + participantes)
+    // 3. Insertar miembros
     const todosLosCorreos = [correoUsuario, ...correos];
-    const rolesFinales = { ...roles, [correoUsuario]: "admin" };
-    const montosFinales = { ...montos, [correoUsuario]: aporteMensual };
-
     const miembros = todosLosCorreos.map((correo) => ({
       grupo_id: grupoId,
       correo,
-      rol: rolesFinales[correo] || "participante",
-      monto_asignado: montosFinales[correo] || 0,
+      rol: correo === correoUsuario ? "admin" : "participante",
+      monto_asignado: montos[correo] || 0,
     }));
 
     const { error: miembrosError } = await supabase
@@ -144,6 +152,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     }
 
     alert(`✅ Grupo "${nombreGrupo}" creado exitosamente.`);
+
     // Reset de estados
     setNombreGrupo("");
     setPais("");
@@ -153,8 +162,8 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     setPlazoMeses(1);
     setFechaTermino("");
     setCorreos([]);
-    setRoles({});
     setMontos({});
+    setNombres({});
   };
 
   if (!correoUsuario) {
@@ -186,21 +195,20 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       />
 
       <BloqueParticipantes
-  usuario={{ correo: correoUsuario }}
-  correos={correos}
-  montos={montos}
-  nombres={nombres}
-  setMontos={setMontos}
-  setNombres={setNombres}
-  nuevoCorreo={nuevoCorreo}
-  setNuevoCorreo={setNuevoCorreo}
-  agregarCorreo={agregarCorreo}
-  eliminarCorreo={eliminarCorreo}
-  cambiarMonto={cambiarMonto}
-  crearGrupo={crearGrupo}
-  aporteMensual={aporteMensual}
-/>
-
+        usuario={{ correo: correoUsuario }}
+        correos={correos}
+        montos={montos}
+        nombres={nombres}
+        setMontos={setMontos}
+        setNombres={setNombres}
+        nuevoCorreo={nuevoCorreo}
+        setNuevoCorreo={setNuevoCorreo}
+        agregarCorreo={agregarCorreo}
+        eliminarCorreo={eliminarCorreo}
+        cambiarMonto={cambiarMonto}
+        crearGrupo={crearGrupo}
+        aporteMensual={aporteMensual}
+      />
     </div>
   );
 };
