@@ -43,9 +43,7 @@ Se consolidó la validación y manejo de participantes en el módulo de grupos, 
 - Confirmar trazabilidad en Supabase (`usuarios`, `participantes_grupo`, `historial_grupo`).  
 - Registrar feedback del equipo para iteración final.
 
----
-
-✍️ **Milestone registrado el 11 de noviembre de 2025**  
+--- 
 
 # 📌 Milestone — Módulo de Colaboradores (Finedu)
 
@@ -85,5 +83,55 @@ Este bloque incluye la oferta de colaboración, la navegación por rol colaborad
 - Confirmar trazabilidad en Supabase (`ofertas_colaborador`, `historial_colaborador`).  
 
 ---
+# 📌 Milestone Global — Consolidación de Bloques Institucionales (Finedu)
 
-✍️ **Milestone registrado el 11 de noviembre de 2025**  
+## Contexto
+Se completó la revisión y corrección integral de los módulos **Grupos** y **Colaboradores** en Finedu.  
+Ambos bloques fueron alineados con el patrón institucional de mensajes controlados en pantalla, trazabilidad en Supabase y eliminación de `alert` invasivos.  
+Este milestone marca la consolidación del ensamblaje institucional y la preparación para despliegue estable en Vercel.
+
+---
+
+## Bloque 1: Grupos
+- **CrearGrupo.tsx** → Validación de correos ajustada, mensajes en pantalla.  
+- **FormularioAgregar.tsx** → Integrado con `agregarParticipanteNuevo.ts` corregido.  
+- **TablaParticipantes.tsx** → Manejo de expulsión y carga de participantes con mensajes claros.  
+- **utils/agregarParticipanteNuevo.ts** → Devuelve `{ mensaje, error }`, normaliza correos.  
+- **utils/expulsarParticipante.ts** → Devuelve `{ mensaje, error }`, registra evento en historial.  
+- **utils/verParticipantesNuevo.ts** → Devuelve `{ mensaje, error, data }`, controla accesos restringidos.
+
+**Resultado esperado:**  
+Flujo de creación, validación y expulsión de participantes consistente, auditable y resiliente.
+
+---
+
+## Bloque 2: Colaboradores
+- **Formulario de oferta** → Captura y validación institucional.  
+- **Tabla Supabase `ofertas_colaborador`** → Registro centralizado y auditable.  
+- **Navegación por rol colaborador** → Flujo seguro y diferenciado.  
+- **Pendientes trazables** → Endpoint `/guardar-oferta`, lógica de expiración automática, validación de visibilidad.
+
+**Resultado esperado:**  
+Bloque de colaboradores integrado, con trazabilidad completa y mensajes claros en pantalla.
+
+---
+
+## Consolidación Global
+- Eliminación total de `alert` invasivos.  
+- Mensajes controlados en pantalla (verde éxito, rojo error).  
+- Trazabilidad asegurada en Supabase (`usuarios`, `participantes_grupo`, `historial_grupo`, `ofertas_colaborador`).  
+- Flujo resiliente y auditable para ambos bloques.  
+- Preparación para despliegue estable en Vercel.
+
+---
+
+## Próximos pasos
+- Validar integración completa en entorno de pruebas.  
+- Documentar casos de uso en la bitácora institucional.  
+- Confirmar trazabilidad en Supabase y despliegue en Vercel.  
+- Registrar feedback del equipo para iteración final.
+
+---
+
+ 
+ 
