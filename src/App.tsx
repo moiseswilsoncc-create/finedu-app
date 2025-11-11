@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
@@ -98,6 +97,7 @@ const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ c
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/" replace />;
 };
+
 const App: React.FC = () => {
   const location = useLocation();
   const rutasPublicas = [
@@ -115,8 +115,8 @@ const App: React.FC = () => {
     const obtenerUsuario = async () => {
       const { data } = await supabase.auth.getUser();
       const id = data.user?.id || null;
-      const correo = data.user?.email || "";
-      console.log("🧠 ID del usuario:", id);
+      const correo = data.user?.email?.trim().toLowerCase() || ""; // 👈 normalización aquí
+      console.log("🧠 ID del usuario:", id, "Correo normalizado:", correo);
       setUsuarioId(id);
       setUsuarioCorreo(correo);
     };
@@ -137,6 +137,11 @@ const App: React.FC = () => {
         {/* Usuarios */}
         <Route path="/registro-usuario" element={<RegistroUsuario />} />
         <Route path="/login-usuario" element={<LoginUsuario />} />
+        <Route path="/registro-pendiente" element={<RegistroPendiente />} />
+        <Route path="/error-acceso" element={<VistaErrorAcceso />} />
+        <Route path="/recuperar-clave" element={<RecuperarClave />} />
+        <Route path="/nueva-clave" element={<NuevaClave />} />
+
         {modulos.includes("panel-usuario") && (
           <Route
             path="/panel-usuario"
@@ -147,98 +152,22 @@ const App: React.FC = () => {
             }
           />
         )}
-
-        {/* Flujo de acceso */}
-        <Route path="/registro-pendiente" element={<RegistroPendiente />} />
-        <Route path="/error-acceso" element={<VistaErrorAcceso />} />
-        <Route path="/recuperar-clave" element={<RecuperarClave />} />
-        <Route path="/nueva-clave" element={<NuevaClave />} />
-
         {/* Finanzas */}
         {modulos.includes("finanzas") && (
           <>
-            <Route
-              path="/finanzas"
-              element={
-                <RutaProtegida>
-                  <Finanzas pais="Chile" />
-                </RutaProtegida>
-              }
-            />
-            <Route
-              path="/finanzas/ingresos"
-              element={
-                <RutaProtegida>
-                  <Ingresos />
-                </RutaProtegida>
-              }
-            />
-            <Route
-              path="/finanzas/egresos"
-              element={
-                <RutaProtegida>
-                  <Egresos />
-                </RutaProtegida>
-              }
-            />
-            <Route
-              path="/finanzas/egresos/:slug"
-              element={
-                <RutaProtegida>
-                  <EgresosCategoria />
-                </RutaProtegida>
-              }
-            />
-            <Route
-              path="/finanzas/resumen"
-              element={
-                <RutaProtegida>
-                  <ResumenFinanciero />
-                </RutaProtegida>
-              }
-            />
-            <Route
-              path="/finanzas/resumen-egresos"
-              element={
-                <RutaProtegida>
-                  <ResumenEgresos pais="Chile" />
-                </RutaProtegida>
-              }
-            />
-            <Route
-              path="/finanzas/creditos"
-              element={
-                <RutaProtegida>
-                  <SimuladorCreditos />
-                </RutaProtegida>
-              }
-            />
-            <Route
-              path="/finanzas/foro"
-              element={
-                <RutaProtegida>
-                  <ForoFinanciero />
-                </RutaProtegida>
-              }
-            />
-            <Route
-              path="/finanzas/categorias"
-              element={
-                <RutaProtegida>
-                  <Categorias />
-                </RutaProtegida>
-              }
-            />
-            <Route
-              path="/finanzas/items"
-              element={
-                <RutaProtegida>
-                  <Items />
-                </RutaProtegida>
-              }
-            />
+            <Route path="/finanzas" element={<RutaProtegida><Finanzas pais="Chile" /></RutaProtegida>} />
+            <Route path="/finanzas/ingresos" element={<RutaProtegida><Ingresos /></RutaProtegida>} />
+            <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
+            <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} />
+            <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
+            <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
+            <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
+            <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
+            <Route path="/finanzas/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
+            <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
           </>
         )}
+
         {/* Ahorro */}
         {modulos.includes("panel-ahorro") && (
           <>
@@ -360,8 +289,40 @@ const App: React.FC = () => {
           }
         />
 
-        {/* Menú de módulos */}
+        {/* Navegación y otras vistas */}
         <Route path="/menu-modulos" element={<MenuModulos />} />
+        <Route
+          path="/resumen"
+          element={
+            <RutaProtegida>
+              <Resumen />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/editar-ingresos-egresos"
+          element={
+            <RutaProtegida>
+              <EditarIngresosEgresos />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/editar-oferta"
+          element={
+            <RutaProtegidaColaborador>
+              <EditarOferta />
+            </RutaProtegidaColaborador>
+          }
+        />
+        <Route
+          path="/vista-ingreso-colaborador"
+          element={
+            <RutaProtegidaColaborador>
+              <VistaIngresoColaborador />
+            </RutaProtegidaColaborador>
+          }
+        />
       </Routes>
     </>
   );
