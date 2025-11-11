@@ -6,28 +6,21 @@ import FormularioNuevoGrupo from './FormularioNuevoGrupo';
 import ResumenGrupoCompacto from './ResumenGrupoCompacto';
 
 export default function DashboardInicio() {
-  const [grupos, setGrupos] = useState<Grupo[]>([]);
-  const [usuarioId, setUsuarioId] = useState<string>('');
+  const [grupos, setGrupos] = useState<any[]>([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const cargarGrupos = async () => {
-      const {
-        data: { user },
-        error: errorUsuario,
-      } = await supabase.auth.getUser();
-
+      const { data: { user }, error: errorUsuario } = await supabase.auth.getUser();
       if (errorUsuario || !user) {
         setError('No se pudo obtener el usuario actual.');
         return;
       }
 
-      setUsuarioId(user.id);
-
       const { data, error: errorGrupos } = await supabase
-        .from('grupos_ahorro') // 👈 tabla correcta
-        .select('*')
+        .from('grupos_ahorro')
+        .select('*, metadata_grupo(pais, ciudad, comuna)')
         .eq('administrador_id', user.id);
 
       if (errorGrupos) {
@@ -49,7 +42,6 @@ export default function DashboardInicio() {
   return (
     <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
       <h2>🏠 Dashboard de inicio</h2>
-
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       <section style={{ marginBottom: '2rem' }}>
@@ -62,6 +54,7 @@ export default function DashboardInicio() {
               <ResumenGrupoCompacto
                 key={grupo.id}
                 grupo={grupo}
+                metadata={grupo.metadata_grupo?.[0] || grupo.metadata_grupo} // soporta relación 1:N o 1:1
                 onIngresar={ingresarAGrupo}
               />
             ))}
