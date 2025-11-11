@@ -1,41 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { Grupo } from '../types';
 import { useNavigate } from 'react-router-dom';
 import FormularioNuevoGrupo from './FormularioNuevoGrupo';
 import ResumenGrupoCompacto from './ResumenGrupoCompacto';
 
 export default function DashboardDual() {
-  const [gruposAdmin, setGruposAdmin] = useState<Grupo[]>([]);
-  const [gruposParticipa, setGruposParticipa] = useState<Grupo[]>([]);
-  const [usuarioId, setUsuarioId] = useState<string>('');
+  const [gruposAdmin, setGruposAdmin] = useState<any[]>([]);
+  const [gruposParticipa, setGruposParticipa] = useState<any[]>([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const cargarGrupos = async () => {
-      const {
-        data: { user },
-        error: errorUsuario,
-      } = await supabase.auth.getUser();
-
+      const { data: { user }, error: errorUsuario } = await supabase.auth.getUser();
       if (errorUsuario || !user) {
         setError('No se pudo obtener el usuario actual.');
         return;
       }
 
-      setUsuarioId(user.id);
-
-      // ✅ Consulta corregida: grupos administrados
       const { data: adminData, error: errorAdmin } = await supabase
         .from('grupos_ahorro')
-        .select('*')
+        .select('*, metadata_grupo(pais, ciudad, comuna)')
         .eq('administrador_id', user.id);
 
-      // ✅ Consulta corregida: grupos donde participa
       const { data: participaData, error: errorParticipa } = await supabase
         .from('participantes_grupo')
-        .select('grupo_id, grupos_ahorro(*)')
+        .select('grupo_id, grupos_ahorro(*, metadata_grupo(pais, ciudad, comuna))')
         .eq('usuario_id', user.id)
         .eq('estado', 'activo');
 
@@ -47,7 +37,7 @@ export default function DashboardDual() {
       const gruposAdmin = adminData || [];
       const gruposParticipa = (participaData || [])
         .map((registro: any) => registro.grupos_ahorro)
-        .filter((g: Grupo) => g && g.administrador_id !== user.id);
+        .filter((g: any) => g && g.administrador_id !== user.id);
 
       setGruposAdmin(gruposAdmin);
       setGruposParticipa(gruposParticipa);
@@ -64,7 +54,6 @@ export default function DashboardDual() {
   return (
     <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
       <h2>📊 Dashboard institucional</h2>
-
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       <section style={{ marginBottom: '2rem' }}>
@@ -76,6 +65,7 @@ export default function DashboardDual() {
             <ResumenGrupoCompacto
               key={grupo.id}
               grupo={grupo}
+              metadata={grupo.metadata_grupo?.[0] || grupo.metadata_grupo}
               onIngresar={ingresarAGrupo}
             />
           ))
@@ -91,6 +81,7 @@ export default function DashboardDual() {
             <ResumenGrupoCompacto
               key={grupo.id}
               grupo={grupo}
+              metadata={grupo.metadata_grupo?.[0] || grupo.metadata_grupo}
               onIngresar={ingresarAGrupo}
             />
           ))
