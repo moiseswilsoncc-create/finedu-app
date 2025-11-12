@@ -29,7 +29,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
   const [correos, setCorreos] = useState<string[]>([]);
   const [montos, setMontos] = useState<{ [correo: string]: number }>({});
   const [nombres, setNombres] = useState<{ [correo: string]: string }>({});
-  const [usuariosMap, setUsuariosMap] = useState<{ [correo: string]: string }>({}); // 👈 correo → usuario_id
+  const [usuariosMap, setUsuariosMap] = useState<{ [correo: string]: string }>({}); // correo → usuario_id
 
   // Cálculos derivados
   const totalIntegrantes = 1 + correos.length;
@@ -92,7 +92,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
 
     setCorreos((prev) => [...prev, correo]);
     setNombres((prev) => ({ ...prev, [correo]: nombreCompleto || "Nombre no disponible" }));
-    setUsuariosMap((prev) => ({ ...prev, [correo]: usuarioData.id })); // 👈 guardar usuario_id
+    setUsuariosMap((prev) => ({ ...prev, [correo]: usuarioData.id })); // guardar usuario_id
     setMontos((prev) => ({ ...prev, [correo]: aporteMensual }));
     setNuevoCorreo("");
   };
@@ -137,12 +137,12 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     const todosLosCorreos = [correoUsuario, ...correos];
     const miembros = todosLosCorreos.map((correo) => ({
       grupo_id: grupoId,
-      usuario_id: usuariosMap[correo], // 👈 uuid desde tabla usuarios
+      usuario_id: usuariosMap[correo], // uuid desde tabla usuarios
       correo,
       rol: correo === correoUsuario ? "admin" : "participante",
       fecha_ingreso: new Date().toISOString(),
       estado: "activo",
-      invitado_por: user?.id, // 👈 cumple RLS
+      invitado_por: user?.id, // cumple RLS
     }));
 
     const { error: miembrosError } = await supabase
