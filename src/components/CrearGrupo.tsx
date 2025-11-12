@@ -70,11 +70,12 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       return;
     }
 
+    // 👇 Cambio clave: usamos maybeSingle para evitar error 406
     const { data: usuarioData, error } = await supabase
       .from("usuarios")
       .select("nombre, apellido")
       .eq("correo", correo)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error("❌ Error Supabase (agregarCorreo):", error);
@@ -95,7 +96,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     setNuevoCorreo("");
   };
 
-  // Crear grupo
+  // Crear grupo con flujo blindado
   const crearGrupo = async () => {
     if (!nombreGrupo.trim() || !metaTotal || !plazoMeses || !fechaTermino) {
       alert("⚠️ Debes completar todos los campos obligatorios.");
@@ -129,13 +130,14 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       { grupo_id: grupoId, pais, ciudad, comuna },
     ]);
 
+    // 🧩 Insertar participantes con nombre_apellido incluido
     const todosLosCorreos = [correoUsuario, ...correos];
     const miembros = todosLosCorreos.map((correo) => ({
       grupo_id: grupoId,
       correo,
       rol: correo === correoUsuario ? "admin" : "participante",
       monto_asignado: montos[correo] || 0,
-      nombre_apellido: nombres[correo] || "—",
+      nombre_apellido: nombres[correo] || (correo === correoUsuario ? "Administrador" : "—"),
     }));
 
     const { error: miembrosError } = await supabase
