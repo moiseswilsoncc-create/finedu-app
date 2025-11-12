@@ -185,5 +185,41 @@ CREATE TABLE ingresos_grupo (
   fecha_registro TIMESTAMP DEFAULT NOW()
 );
 
+# ✅ Checklist de cierre: Flujo CrearGrupo
+
+## 1. Validación de correo
+- [ ] Confirmar que `agregarCorreo` normaliza el correo (`trim().toLowerCase()`).
+- [ ] Usar `.maybeSingle()` en la consulta a Supabase para evitar error 406.
+- [ ] Si el correo existe → recuperar `nombre + apellido`.
+- [ ] Si no existe → mostrar alerta y no agregar.
+
+## 2. Estado en frontend
+- [ ] Guardar en `setNombres` el `nombreCompleto` recuperado.
+- [ ] Mostrar en `BloqueParticipantes` el nombre completo en la columna **Nombre Apellido**.
+- [ ] Asegurar que el administrador se muestre como `"Administrador"` si no hay nombre en estado.
+
+## 3. Inserción en Supabase
+- [ ] En `crearGrupo`, al insertar en `participantes_grupo`, incluir:
+  - `grupo_id`
+  - `correo`
+  - `rol` (`admin` o `participante`)
+  - `monto_asignado`
+  - `nombre_apellido`
+- [ ] Validar que todos los participantes se registren con datos completos.
+
+## 4. Pruebas en Vercel
+- [ ] Crear un grupo de prueba con 2–3 participantes.
+- [ ] Revisar en la tabla `participantes_grupo` que cada registro tenga:
+  - Correo correcto
+  - Rol asignado
+  - Monto asignado
+  - Nombre completo
+- [ ] Confirmar que no aparecen registros incompletos ni errores 406.
+
+## 5. Documentación institucional
+- [ ] Registrar milestone en `estadoConstruccionFinedu.md`:
+  - “Flujo CrearGrupo blindado con validación de correo, recuperación de nombre+apellido e inserción completa en participantes_grupo.”
+- [ ] Dejar trazabilidad para futuras auditorías.
+
  
  
