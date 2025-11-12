@@ -55,10 +55,25 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
 
   // 🧩 Validación institucional: agregar participante por correo
   const agregarCorreo = async (correoLimpio: string) => {
+    const correo = correoLimpio.trim().toLowerCase();
+
+    if (!correo) {
+      alert("⚠️ Debes ingresar un correo.");
+      return;
+    }
+    if (correo === correoUsuario) {
+      alert("⚠️ El administrador ya está incluido por defecto.");
+      return;
+    }
+    if (correos.includes(correo)) {
+      alert("⚠️ Ese correo ya fue agregado como participante.");
+      return;
+    }
+
     const { data: usuarioData, error } = await supabase
       .from("usuarios")
-      .select("id, nombre, apellido, comuna")
-      .eq("correo", correoLimpio)
+      .select("nombre, apellido")
+      .eq("correo", correo)
       .single();
 
     if (error) {
@@ -74,9 +89,9 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
 
     const nombreCompleto = `${usuarioData.nombre ?? ""} ${usuarioData.apellido ?? ""}`.trim();
 
-    setCorreos((prev) => [...prev, correoLimpio]);
-    setNombres((prev) => ({ ...prev, [correoLimpio]: nombreCompleto }));
-    setMontos((prev) => ({ ...prev, [correoLimpio]: aporteMensual }));
+    setCorreos((prev) => [...prev, correo]);
+    setNombres((prev) => ({ ...prev, [correo]: nombreCompleto || "Nombre no disponible" }));
+    setMontos((prev) => ({ ...prev, [correo]: aporteMensual }));
     setNuevoCorreo("");
   };
 
@@ -120,6 +135,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       correo,
       rol: correo === correoUsuario ? "admin" : "participante",
       monto_asignado: montos[correo] || 0,
+      nombre_apellido: nombres[correo] || "—",
     }));
 
     const { error: miembrosError } = await supabase
