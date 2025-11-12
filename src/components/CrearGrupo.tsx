@@ -53,13 +53,13 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     });
   }, [metaTotal, plazoMeses, correos, correoUsuario]);
 
-  // Agregar participante (validación institucional)
+  // 🧩 Validación institucional: agregar participante por correo
   const agregarCorreo = async (correoLimpio: string) => {
-    const { data, error } = await supabase
+    const { data: usuarioData, error } = await supabase
       .from("usuarios")
-      .select("nombre, apellido")
+      .select("id, nombre, apellido, comuna")
       .eq("correo", correoLimpio)
-      .limit(1);
+      .single();
 
     if (error) {
       console.error("❌ Error Supabase (agregarCorreo):", error);
@@ -67,13 +67,12 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       return;
     }
 
-    if (!data || data.length === 0) {
+    if (!usuarioData) {
       alert("⚠️ El correo ingresado no está registrado en Finedu.");
       return;
     }
 
-    const { nombre, apellido } = data[0];
-    const nombreCompleto = `${nombre} ${apellido}`.trim();
+    const nombreCompleto = `${usuarioData.nombre ?? ""} ${usuarioData.apellido ?? ""}`.trim();
 
     setCorreos((prev) => [...prev, correoLimpio]);
     setNombres((prev) => ({ ...prev, [correoLimpio]: nombreCompleto }));
@@ -184,7 +183,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
         setNombres={setNombres}
         nuevoCorreo={nuevoCorreo}
         setNuevoCorreo={setNuevoCorreo}
-        agregarCorreo={agregarCorreo}   // 👈 delega validación al padre
+        agregarCorreo={agregarCorreo}   // 👈 validación institucional aquí
         crearGrupo={crearGrupo}
         aporteMensual={aporteMensual}
       />
