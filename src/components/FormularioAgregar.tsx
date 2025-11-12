@@ -3,10 +3,9 @@ import { agregarParticipante } from '../utils/agregarParticipanteNuevo';
 
 interface Props {
   grupoId: number | string;
-  adminId: string;
 }
 
-export default function FormularioAgregar({ grupoId, adminId }: Props) {
+export default function FormularioAgregar({ grupoId }: Props) {
   const [correo, setCorreo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
@@ -19,16 +18,18 @@ export default function FormularioAgregar({ grupoId, adminId }: Props) {
     setCargando(true);
 
     try {
-      if (!grupoId || !adminId) {
-        setError("Datos de grupo o administrador inválidos");
+      if (!grupoId) {
+        setError("⚠️ Datos de grupo inválidos");
         return;
       }
 
-      const resultado = await agregarParticipante(grupoId, correo, adminId);
-      setMensaje(resultado?.mensaje || "Participante agregado correctamente");
+      // 👇 llamada corregida: solo grupoId + correo
+      const resultado = await agregarParticipante(grupoId, correo);
+
+      setMensaje(resultado?.mensaje || "✅ Participante agregado correctamente");
       setCorreo('');
     } catch (err: any) {
-      setError(err.message || 'Error al agregar participante');
+      setError(err.message || '❌ Error al agregar participante');
     } finally {
       setCargando(false);
     }
