@@ -29,6 +29,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
   const [correos, setCorreos] = useState<string[]>([]);
   const [montos, setMontos] = useState<{ [correo: string]: number }>({});
   const [nombres, setNombres] = useState<{ [correo: string]: string }>({});
+  const [usuariosMap, setUsuariosMap] = useState<{ [correo: string]: string }>({}); // 👈 correo → usuario_id
 
   // Cálculos derivados
   const totalIntegrantes = 1 + correos.length;
@@ -70,10 +71,9 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       return;
     }
 
-    // 👇 Cambio clave: usamos maybeSingle para evitar error 406
     const { data: usuarioData, error } = await supabase
       .from("usuarios")
-      .select("nombre, apellido")
+      .select("id, nombre, apellido")
       .eq("correo", correo)
       .maybeSingle();
 
@@ -92,6 +92,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
 
     setCorreos((prev) => [...prev, correo]);
     setNombres((prev) => ({ ...prev, [correo]: nombreCompleto || "Nombre no disponible" }));
+    setUsuariosMap((prev) => ({ ...prev, [correo]: usuarioData.id })); // 👈 guardar usuario_id
     setMontos((prev) => ({ ...prev, [correo]: aporteMensual }));
     setNuevoCorreo("");
   };
@@ -130,14 +131,18 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       { grupo_id: grupoId, pais, ciudad, comuna },
     ]);
 
-    // 🧩 Insertar participantes con nombre_apellido incluido
+    // 🧩 Insertar participantes cumpliendo RLS
+    const { data: { user } } = await supabase.auth.getUser();
+
     const todosLosCorreos = [correoUsuario, ...correos];
     const miembros = todosLosCorreos.map((correo) => ({
       grupo_id: grupoId,
+      usuario_id: usuariosMap[correo], // 👈 uuid desde tabla usuarios
       correo,
       rol: correo === correoUsuario ? "admin" : "participante",
-      monto_asignado: montos[correo] || 0,
-      nombre_apellido: nombres[correo] || (correo === correoUsuario ? "Administrador" : "—"),
+      fecha_ingreso: new Date().toISOString(),
+      estado: "activo",
+      invitado_por: user?.id, // 👈 cumple RLS
     }));
 
     const { error: miembrosError } = await supabase
@@ -145,6 +150,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
       .insert(miembros);
 
     if (miembrosError) {
+      console.error("❌ Error Supabase (insert participantes):", miembrosError);
       alert("❌ Error al registrar los participantes.");
       return;
     }
@@ -162,6 +168,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
     setCorreos([]);
     setMontos({});
     setNombres({});
+    setUsuariosMap({});
   };
 
   if (!correoUsuario) {
@@ -201,7 +208,7 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
         setNombres={setNombres}
         nuevoCorreo={nuevoCorreo}
         setNuevoCorreo={setNuevoCorreo}
-        agregarCorreo={agregarCorreo}   // 👈 validación institucional aquí
+        agregarCorreo={agregarCorreo}
         crearGrupo={crearGrupo}
         aporteMensual={aporteMensual}
       />
