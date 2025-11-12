@@ -29,3 +29,10 @@
 - La interfaz muestra nombre completo gracias a la consulta previa a `usuarios`.
 - Se asegura trazabilidad institucional: identidad en `usuarios`, vínculo en `participantes_grupo`.
 
+
+### 🧩 Milestone: Ajuste CrearGrupo para cumplir RLS
+- Se elimina `nombre_apellido` del insert (no existe en la tabla).
+- Se agrega `usuario_id` recuperado desde `usuarios`.
+- Se agrega `invitado_por` con `auth.uid()` del admin autenticado.
+- Se inicializan `fecha_ingreso` y `estado`.
+- Se asegura que los inserts en `participantes_grupo` cumplan las políticas RLS y se registren correctamente.
