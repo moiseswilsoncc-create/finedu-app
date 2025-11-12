@@ -153,6 +153,66 @@
 - **Estado:** Diagnóstico completado.  
 - **Pendiente:** aplicar bloque SQL de corrección en Supabase y validar en la app (crear grupo, agregar participante, visualizar, expulsar).  
 
+# 📌 Milestone Institucional — Validación de Tablas y Políticas RLS (Finedu)
+
+## 🎯 Objetivo
+Validar que las tablas y políticas RLS funcionan correctamente después de aplicar el bloque SQL de corrección.  
+El checklist asegura que los inserts, selects y relaciones se comporten como corresponde en la app y en Supabase.
+
+---
+
+## ✅ Checklist de Validación
+
+### 1. Tabla `usuarios`
+- [?] Crear un nuevo usuario → se inserta correctamente con `id (uuid)` generado.  
+- [x] Intentar leer otro perfil → acceso denegado.  
+- [ok] Leer mi propio perfil → acceso permitido.  
+- [x] Actualizar mis datos → acceso permitido solo si `id = auth.uid()`.
+
+---
+
+### 2. Tabla `grupos_ahorro`
+- [?] Crear grupo → `administrador_id = auth.uid()` se guarda como uuid, no correo.  
+- [?] Insertar admin automáticamente en `participantes_grupo` con rol = admin.  
+- [ok] Participante autenticado puede ver solo los grupos donde está vinculado.  
+- [ok] Intentar modificar/eliminar grupo siendo admin → acceso permitido.  
+- [x] Intentar modificar/eliminar grupo siendo participante → acceso denegado.
+
+---
+
+### 3. Tabla `metadata_grupo`
+- [ok] Insertar metadata de un grupo → permitido solo para admin.  
+- [ok] Actualizar metadata → permitido solo para admin.  
+- [ok] Eliminar metadata → permitido solo para admin.  
+- [ok] Participante autenticado puede leer metadata solo de los grupos donde está vinculado.  
+- [x] Usuario no vinculado → acceso denegado.
+
+---
+
+### 4. Tabla `participantes_grupo` (la tabla es aporte_grupales)
+- [x] Insertar participante → `usuario_id = uuid` correcto, `correo` solo auxiliar.  
+- [x] `invitado_por = auth.uid()` se guarda como uuid.  
+- [ok] Participante puede ver su vínculo en el grupo.  
+- [ok] Admin puede ver todos los participantes de su grupo.  
+- [x] Intentar insertar participante con correo en vez de uuid → falla (validación correcta).  
+- [ok] Intentar eliminar participante siendo admin → acceso permitido.  
+- [ok] Intentar eliminar participante siendo participante → acceso denegado.
+
+---
+
+### 5. Tabla `historial_grupo`
+- [ok] Insertar evento → permitido solo para admin (`usuario_id = auth.uid()`).  
+- [ok] Participante autenticado puede leer historial solo de los grupos donde está vinculado.  
+- [x] Usuario no vinculado → acceso denegado.  
+- [x] Validar que `grupo_id` y `usuario_id` respetan las foreign keys (no se insertan registros huérfanos).
+
+---
+
+## 📌 Estado del Milestone
+- **Responsable:** Wilson Contreras  
+- **Fecha:** 12 de noviembre de 2025  
+- **Estado:** Checklist preparado.  
+- **Pendiente:** Ejecutar pruebas en Supabase y en la app, registrar resultados en bitácora institucional.  
 
 
 
