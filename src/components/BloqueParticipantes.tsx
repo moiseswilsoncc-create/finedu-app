@@ -5,7 +5,7 @@ interface Props {
   usuario: { correo: string };
   correos: string[];
   montos: { [correo: string]: number };
-  nombres: { [correo: string]: string };
+  nombres: { [correo: string]: string }; // 👈 aquí se recibe nombre completo desde el padre
   nuevoCorreo: string;
   setNuevoCorreo: (v: string) => void;
   agregarCorreo: (correo: string) => Promise<void>; // 👈 delega validación al padre
@@ -51,13 +51,20 @@ const BloqueParticipantes: React.FC<Props> = ({
       !correos.includes(correoLimpio) &&
       correoLimpio !== usuario.correo
     ) {
-      agregarCorreo(correoLimpio); // 👈 delega validación y agregado al padre
+      agregarCorreo(correoLimpio); // 👈 validación y recuperación de nombre/apellido en el padre
     }
   };
 
   return (
     <>
-      <div style={{ marginBottom: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
+      <div
+        style={{
+          marginBottom: "2rem",
+          padding: "1rem",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+        }}
+      >
         <h3>👥 Integrantes del grupo</h3>
 
         <div style={{ marginBottom: "1rem" }}>
@@ -83,6 +90,7 @@ const BloqueParticipantes: React.FC<Props> = ({
             </tr>
           </thead>
           <tbody>
+            {/* Administrador */}
             <tr>
               <td>
                 <input
@@ -96,6 +104,7 @@ const BloqueParticipantes: React.FC<Props> = ({
               <td>{montos[usuario.correo] || 0}</td>
             </tr>
 
+            {/* Participantes agregados */}
             {correos.map((correo) => (
               <tr key={correo}>
                 <td>
@@ -106,12 +115,12 @@ const BloqueParticipantes: React.FC<Props> = ({
                   />
                 </td>
                 <td>{correo}</td>
-                <td>{nombres[correo] || "—"}</td>
+                <td>{nombres[correo] || "—"}</td> {/* 👈 muestra nombre+apellido recuperado */}
                 <td>
                   <input
                     type="number"
                     value={montos[correo] || 0}
-                    onChange={(e) =>
+                    onChange={() =>
                       alert("✏️ Cambio de monto pendiente de implementación en el padre.")
                     }
                     style={{ width: "100px" }}
@@ -122,7 +131,14 @@ const BloqueParticipantes: React.FC<Props> = ({
           </tbody>
         </table>
 
-        <div style={{ marginTop: "1rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        <div
+          style={{
+            marginTop: "1rem",
+            display: "flex",
+            gap: "1rem",
+            flexWrap: "wrap",
+          }}
+        >
           <button onClick={editarSeleccionado}>✏️ Editar seleccionado</button>
           <button onClick={eliminarSeleccionados}>🗑️ Eliminar seleccionados</button>
           <button onClick={crearGrupo}>✅ Crear grupo</button>
@@ -130,7 +146,9 @@ const BloqueParticipantes: React.FC<Props> = ({
       </div>
 
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <button onClick={() => navigate("/panel-usuario")}>🏠 Volver al menú principal</button>
+        <button onClick={() => navigate("/panel-usuario")}>
+          🏠 Volver al menú principal
+        </button>
       </div>
     </>
   );
