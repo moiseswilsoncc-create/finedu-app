@@ -36,3 +36,124 @@
 - Se agrega `invitado_por` con `auth.uid()` del admin autenticado.
 - Se inicializan `fecha_ingreso` y `estado`.
 - Se asegura que los inserts en `participantes_grupo` cumplan las políticas RLS y se registren correctamente.
+
+
+# 📌 Milestone — Flujo de Participantes (Finedu)
+
+## 📊 Tabla comparativa global
+
+| Elemento                  | Qué hace actualmente                          | Qué debería hacer                         | Desfase detectado                  |
+|----------------------------|-----------------------------------------------|-------------------------------------------|------------------------------------|
+| Tabla participantes_grupo  | Campos: id, grupo_id, usuario_id, correo, rol | Insertar usuario_id + invitado_por         | No existe columna nombre_apellido   |
+| CrearGrupo.tsx             | Inserta correo + rol + nombre_apellido        | Insertar usuario_id + invitado_por         | Inserta campo inexistente           |
+| agregarParticipanteNuevo.ts| Valida sesión, busca usuario, inserta completo| Cumple con tabla y RLS                     | Correcto                            |
+| FormularioAgregar.tsx      | Llama a agregarParticipante con adminId extra | Pasar solo grupoId + correo                | Desfase de parámetros               |
+| TablaParticipantes.tsx     | Renderiza lista, espera join con usuarios     | Mostrar nombre/apellido desde usuarios     | Depende de usuario_id correcto      |
+| verParticipantesNuevo.ts   | Valida acceso, hace join con usuarios         | Correcto                                   | Correcto                            |
+
+---
+
+## 🔍 Resumen diagnóstico
+
+- **Backend (Supabase)** → Correcto, tabla y políticas RLS bien configuradas.  
+- **`agregarParticipanteNuevo.ts` y `verParticipantesNuevo.ts`** → Correctos, cumplen con la tabla y RLS.  
+- **`FormularioAgregar.tsx`** → Desfase de parámetros: pasa `adminId` innecesario.  
+- **`TablaParticipantes.tsx`** → Correcta en lógica, pero depende de que `usuario_id` se inserte bien.  
+- **`CrearGrupo.tsx`** → Principal desfase: inserta campo inexistente (`nombre_apellido`) y no incluye `usuario_id` ni `invitado_por`.  
+
+👉 El **problema real** está en `CrearGrupo.tsx`: los inserts no cumplen la estructura ni las políticas RLS, por eso los participantes no se registran y los nombres no aparecen en la tabla.
+
+---
+
+## 🎯 Acciones a tomar
+
+1. **Corregir `CrearGrupo.tsx`**  
+   - Eliminar `nombre_apellido` del insert.  
+   - Incluir `usuario_id` (recuperado desde `usuarios`) y `invitado_por` (`auth.uid()`).  
+   - Inicializar `estado = "activo"` y `fecha_ingreso = new Date().toISOString()`.  
+
+2. **Ajustar `FormularioAgregar.tsx`**  
+   - Llamar a `agregarParticipante(grupoId, correo)` sin pasar `adminId`.  
+   - Dejar que la función obtenga `auth.uid()` directamente.  
+
+3. **Validar flujo en Supabase**  
+   - Crear grupo de prueba y verificar que cada registro en `participantes_grupo` tenga:  
+     - `usuario_id` correcto  
+     - `correo` correcto  
+     - `rol` asignado  
+     - `estado = activo`  
+     - `invitado_por = auth.uid()`  
+
+4. **Confirmar visualización en `TablaParticipantes.tsx`**  
+   - Revisar que el join con `usuarios` muestre nombre+apellido correctamente.  
+
+
+# 📌 Milestone Institucional — Tablas y Políticas RLS (Finedu)
+
+## 📊 Comparativa Global (ordenada alfabéticamente)
+
+| Tabla               | Estado actual | Desfase principal | Acción clave |
+|----------------------|---------------|------------------|--------------|
+| **grupos_ahorro**    | Admin guardado como correo, políticas básicas | `administrador_id` debe ser uuid, SELECT demasiado abierto | Guardar `auth.uid()` en `administrador_id`, restringir SELECT a participantes vinculados |
+| **historial_grupo**  | Admin inserta, participantes leen | SELECT demasiado abierto | Restringir SELECT a participantes vinculados al grupo |
+| **metadata_grupo**   | Solo admin puede modificar, pero SELECT abierto a `public` | Cualquiera puede leer metadata | Restringir SELECT a admin y participantes del grupo |
+| **participantes_grupo** | Insert con correo en vez de uuid, políticas correctas | Join falla, nombres no aparecen | Insertar `usuario_id = uuid`, `invitado_por = auth.uid()` |
+| **usuarios**         | RLS deshabilitado, políticas abiertas con `public` | Se guarda correo en vez de uuid, políticas duplicadas y sin restricción real | Habilitar RLS, usar `auth.uid()` como clave, limpiar políticas |
+
+---
+
+## 🔍 Diagnóstico Único
+
+- **Inconsistencia de identificadores**  
+  - Se están guardando correos en campos que esperan `uuid`.  
+  - Esto rompe los joins y las validaciones RLS.  
+
+- **RLS deshabilitado en `usuarios`**  
+  - Aunque hay políticas, no se aplican.  
+  - Además, están definidas con `public` en vez de `authenticated`.  
+
+- **Políticas demasiado abiertas en `metadata_grupo` y `historial_grupo`**  
+  - Permiten lecturas sin validar vínculo real con el grupo.  
+
+- **Resultado visible en la app**  
+  - Los nombres no aparecen en la tabla de participantes.  
+  - Siempre se muestra “⚠️ El correo ingresado no está registrado”.
+
+---
+
+## 🎯 Acciones Concretas
+
+1. **Unificar identificadores**  
+   - Guardar siempre `administrador_id` y `usuario_id` como `auth.uid()` (uuid).  
+   - Usar `correo` solo como auxiliar, nunca como clave de relación.  
+
+2. **Habilitar y ajustar RLS en `usuarios`**  
+   - Activar RLS.  
+   - Redefinir políticas con `authenticated` y `auth.uid()`.  
+
+3. **Restringir SELECT en `metadata_grupo` y `historial_grupo`**  
+   - Solo admin y participantes vinculados deben poder leer.  
+
+4. **Validar integridad referencial**  
+   - Agregar foreign keys:  
+     - `grupo_id` → `grupos_ahorro(id)`  
+     - `usuario_id` → `usuarios(id)`  
+
+5. **Alinear inserts en React**  
+   - Al crear grupo: `administrador_id = auth.uid()`.  
+   - Al agregar participante: buscar `uuid` en `usuarios` por correo y usarlo en `usuario_id`.  
+   - Insertar también `invitado_por = auth.uid()`.
+
+---
+
+## 📌 Estado del Milestone
+
+- **Responsable:** Wilson Contreras  
+- **Fecha:** 12 de noviembre de 2025  
+- **Estado:** Diagnóstico completado.  
+- **Pendiente:** aplicar bloque SQL de corrección en Supabase y validar en la app (crear grupo, agregar participante, visualizar, expulsar).  
+
+
+
+
+
