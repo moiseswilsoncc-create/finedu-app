@@ -1,0 +1,31 @@
+### 🧩 Milestone: Políticas RLS en participantes_grupo
+- Se confirma que la tabla exige `usuario_id` y `invitado_por` para cumplir RLS.
+- Políticas activas:
+  - INSERT → `auth.uid() = invitado_por`
+  - SELECT → acceso solo a propios/invitados
+  - UPDATE → solo el invitador puede modificar
+  - DELETE → solo el invitador puede eliminar
+- Se ajusta el flujo CrearGrupo para incluir estos campos en cada insert.
+- Se asegura trazabilidad y seguridad institucional en Supabase.
+
+
+### 🧩 Milestone: Cumplimiento de políticas RLS en participantes_grupo
+- Se confirma que las políticas exigen que solo el admin autenticado pueda insertar, editar o eliminar.
+- Se ajusta el insert para incluir:
+  - grupo_id
+  - usuario_id (UUID desde tabla usuarios)
+  - correo
+  - rol
+  - fecha_ingreso
+  - estado
+  - invitado_por (auth.uid())
+- Se asegura que los registros cumplan las políticas y se inserten correctamente.
+- Se consolida la trazabilidad institucional en Supabase.
+
+
+### 🧩 Milestone: Separación de identidad y vínculo en Finedu
+- Se confirma que `nombre + apellido` se obtiene desde la tabla `usuarios`.
+- La tabla `participantes_grupo` no guarda nombre/apellido, solo referencia con `usuario_id`.
+- La interfaz muestra nombre completo gracias a la consulta previa a `usuarios`.
+- Se asegura trazabilidad institucional: identidad en `usuarios`, vínculo en `participantes_grupo`.
+
