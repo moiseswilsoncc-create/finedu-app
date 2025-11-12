@@ -4,7 +4,6 @@ import { expulsarParticipante } from '../utils/expulsarParticipante';
 
 interface Props {
   grupoId: number | string;
-  adminId: string;
 }
 
 interface Participante {
@@ -19,7 +18,7 @@ interface Participante {
   };
 }
 
-export default function TablaParticipantes({ grupoId, adminId }: Props) {
+export default function TablaParticipantes({ grupoId }: Props) {
   const [participantes, setParticipantes] = useState<Participante[]>([]);
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
@@ -28,17 +27,17 @@ export default function TablaParticipantes({ grupoId, adminId }: Props) {
   const cargarParticipantes = async () => {
     setError('');
     try {
-      const resultado = await verParticipantes(grupoId, adminId);
+      const resultado = await verParticipantes(Number(grupoId));
 
       if (!resultado.error && Array.isArray(resultado.data)) {
         setParticipantes(resultado.data);
         setMensaje(resultado.mensaje);
       } else {
-        setError(resultado.mensaje || 'Error al cargar participantes');
+        setError(resultado.mensaje || '❌ Error al cargar participantes');
         setParticipantes([]);
       }
     } catch (err: any) {
-      setError(err.message || 'Error inesperado al cargar participantes');
+      setError(err.message || '❌ Error inesperado al cargar participantes');
       setParticipantes([]);
     }
   };
@@ -54,11 +53,11 @@ export default function TablaParticipantes({ grupoId, adminId }: Props) {
     setMensaje('');
     setError('');
     try {
-      const resultado = await expulsarParticipante(grupoId, usuarioId, adminId);
-      setMensaje(resultado?.mensaje || "Acción completada");
+      const resultado = await expulsarParticipante(Number(grupoId), usuarioId);
+      setMensaje(resultado?.mensaje || "✅ Acción completada");
       await cargarParticipantes();
     } catch (err: any) {
-      setError(err.message || 'Error al expulsar participante');
+      setError(err.message || '❌ Error al expulsar participante');
     } finally {
       setCargando(false);
     }
@@ -96,7 +95,7 @@ export default function TablaParticipantes({ grupoId, adminId }: Props) {
                 </td>
                 <td>{p.estado || "No definido"}</td>
                 <td>
-                  {p.usuario_id !== adminId && (
+                  {p.rol !== "admin" && (
                     <button
                       onClick={() => manejarExpulsion(p.usuario_id)}
                       disabled={cargando}
