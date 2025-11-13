@@ -3,15 +3,11 @@ import React, { useState, useEffect } from "react";
 import RegistroAhorro from "./RegistroAhorro";
 import PanelGrupo from "./PanelGrupo";
 import CrearGrupo from "./CrearGrupo"; // ✅ Componente institucionalizado
+import { useUserPerfil } from "../context/UserContext"; // 👈 integración con UserContext
 
-interface Props {
-  usuario: {
-    correo: string;
-  };
-}
-
-const PanelAhorro: React.FC<Props> = ({ usuario }) => {
+const PanelAhorro: React.FC = () => {
   const [modo, setModo] = useState<"individual" | "grupal" | "crear">("individual");
+  const perfil = useUserPerfil(); // 👈 obtenemos nombre+apellido+correo
 
   // Recuperar modo guardado
   useEffect(() => {
@@ -29,6 +25,11 @@ const PanelAhorro: React.FC<Props> = ({ usuario }) => {
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       <h2>💼 Panel de Ahorro</h2>
+      {perfil && (
+        <p style={{ fontWeight: "bold", color: "#2c3e50" }}>
+          Usuario activo: {perfil.nombre} {perfil.apellido}
+        </p>
+      )}
       <p>Gestiona tus aportes personales, participa en grupos o crea uno nuevo.</p>
 
       <div style={{ marginBottom: "1.5rem" }}>
@@ -47,10 +48,10 @@ const PanelAhorro: React.FC<Props> = ({ usuario }) => {
 
       {modo === "individual" && <RegistroAhorro />}
       {modo === "grupal" && <PanelGrupo />}
-      {modo === "crear" && usuario?.correo ? (
-        <CrearGrupo usuario={{ correo: usuario.correo }} />
+      {modo === "crear" && perfil?.correo ? (
+        <CrearGrupo usuario={{ correo: perfil.correo }} />
       ) : (
-        <p style={{ color: "#999" }}>No se puede crear grupo sin correo de usuario.</p>
+        <p style={{ color: "#999" }}>No se puede crear grupo sin usuario activo.</p>
       )}
     </div>
   );
