@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUserPerfil } from "../context/UserContext"; // 👈 integración con UserContext
 
 interface Props {
   usuario: { correo: string };
@@ -27,6 +28,7 @@ const BloqueParticipantes: React.FC<Props> = ({
 }) => {
   const navigate = useNavigate();
   const [seleccionados, setSeleccionados] = useState<string[]>([]);
+  const perfil = useUserPerfil(); // 👈 obtenemos nombre+apellido del administrador
 
   const toggleSeleccion = (correo: string) => {
     setSeleccionados((prev) =>
@@ -100,7 +102,11 @@ const BloqueParticipantes: React.FC<Props> = ({
                 />
               </td>
               <td>{usuario.correo}</td>
-              <td>{nombres[usuario.correo] || "Administrador"}</td>
+              <td>
+                {perfil
+                  ? `${perfil.nombre} ${perfil.apellido}`
+                  : nombres[usuario.correo] || "Administrador"}
+              </td>
               <td>{montos[usuario.correo] || 0}</td>
             </tr>
 
