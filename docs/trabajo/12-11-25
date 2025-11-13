@@ -220,102 +220,63 @@ Tabla usuarios
 RLS habilitado
 
 Políticas creadas:
-
 Permitir registro de usuarios (INSERT)
-
 Usuario puede ver su perfil (SELECT)
-
 Usuario puede actualizar su perfil (UPDATE)
-
 Usuario puede actualizar solo campos permitidos (UPDATE restringido)
 
 Triggers:
-
 BEFORE UPDATE → bloquea cambios en id y correo
-
 AFTER UPDATE → registra auditoría en auditoria_usuarios
-
 Integridad referencial:
-
 usuarios.id es PK y referencia central para todas las demás tablas
-
 Tabla grupos_ahorro
 RLS habilitado
 
 Políticas creadas:
-
 Admin puede crear grupo (INSERT)
-
 Admin puede editar grupo (UPDATE)
-
 Admin puede eliminar grupo (DELETE)
-
 Participantes y admin pueden ver grupo (SELECT)
-
 Integridad referencial:
-
 administrador_id → usuarios.id
-
 Tabla participantes_grupo
 RLS habilitado
 
 Políticas creadas:
-
 Admin puede insertar participante (INSERT)
-
 Admin puede actualizar participante (UPDATE)
-
 Admin puede eliminar participante (DELETE)
-
 Ver vínculo si soy participante o admin (SELECT)
-
 Integridad referencial:
-
 usuario_id → usuarios.id
-
 grupo_id → grupos_ahorro.id
-
 Tabla metadata_grupo
 RLS habilitado
 
 Políticas creadas:
-
 Admin puede insertar metadata (INSERT)
-
 Admin puede actualizar metadata (UPDATE)
-
 Admin puede eliminar metadata (DELETE)
-
 Participantes pueden ver metadata (SELECT)
 
 Integridad referencial:
-
 grupo_id → grupos_ahorro.id
-
 Tabla historial_grupo
 RLS habilitado
 
 Políticas creadas:
-
 Admin puede registrar eventos (INSERT)
-
 Participantes pueden ver historial (SELECT)
-
 Integridad referencial:
-
 grupo_id → grupos_ahorro.id
-
 usuario_id → usuarios.id
 
 📌 Resultado institucional
 Todas las tablas tienen RLS habilitado.
-
 Políticas alineadas con la visión Finedu: administrador controla, participantes leen.
-
 Triggers y auditoría garantizan trazabilidad en usuarios.
-
 Integridad referencial asegura que no existan registros huérfanos.
-
 Documento listo para ser guardado como ChecklistSeguridadFinedu.md en tu repositorio.
 
 
