@@ -280,3 +280,62 @@ Integridad referencial asegura que no existan registros huérfanos.
 Documento listo para ser guardado como ChecklistSeguridadFinedu.md en tu repositorio.
 
 
+
+
+# 📝 Milestone Institucional: Integración de UserContext en Finedu
+
+## ✅ Cambios aplicados
+
+- **App.tsx**
+  - Se envolvió toda la aplicación con `<UserProvider>`.
+  - Se eliminó la dependencia de `usuarioCorreo` y se integró `useUserPerfil`.
+  - Se pasó el perfil completo (nombre, apellido, correo) a los módulos que lo requieren.
+
+- **Navbar.tsx**
+  - Se eliminó el uso de `localStorage`.
+  - Se integró `useUserPerfil` para mostrar el nombre + apellido del usuario activo.
+  - El identificador aparece en todas las pantallas.
+
+- **PanelAhorro.tsx**
+  - Se eliminó la prop `usuario`.
+  - Se integró `useUserPerfil` para mostrar el nombre + apellido en el header.
+  - Se pasa el correo del perfil al componente `CrearGrupo`.
+
+- **CrearGrupo.tsx**
+  - Se eliminó la prop `usuario`.
+  - Se integró `useUserPerfil` para mostrar el administrador en el encabezado.
+  - Se usa el correo del perfil para la lógica de creación del grupo.
+
+- **BloqueParticipantes.tsx**
+  - Se integró `useUserPerfil` para mostrar el nombre + apellido real del administrador.
+  - Los participantes muestran nombre + apellido recuperado desde Supabase.
+
+- **BloqueMetaFinanciera.tsx**
+  - Se integró `useUserPerfil` para mostrar el administrador junto con la meta financiera.
+  - Se refuerza la trazabilidad institucional en los cálculos.
+
+- **BloqueDatosGrupo.tsx**
+  - Se integró `useUserPerfil` para mostrar el administrador en los datos generales del grupo.
+
+---
+
+## 📌 Resultado esperado
+
+- El **usuario activo** aparece con nombre + apellido en todas las pantallas clave:
+  - Navbar
+  - PanelAhorro
+  - CrearGrupo
+  - BloqueParticipantes
+  - BloqueMetaFinanciera
+  - BloqueDatosGrupo
+- Se elimina la dependencia de `localStorage`.
+- Se asegura trazabilidad institucional y consistencia en la experiencia de usuario.
+
+---
+
+## 🚀 Próximo paso sugerido
+
+- Documentar este milestone en `estadoConstruccionFinedu.md`.
+- Validar en Vercel que todos los módulos muestran correctamente el nombre + apellido del usuario activo.
+- Registrar este avance como **Milestone de Integración de Contexto de Usuario** en la bitácora institucional.
+
