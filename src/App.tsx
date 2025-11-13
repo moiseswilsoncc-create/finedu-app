@@ -167,7 +167,7 @@ const App: React.FC = () => {
             <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
           </>
         )}
-        {/* Ahorro */}
+               {/* Ahorro */}
         {modulos.includes("panel-ahorro") && (
           <>
             <Route
@@ -323,8 +323,9 @@ const App: React.FC = () => {
           }
         />
       </Routes>
-    </UserProvider> {/* 👈 cierre del contexto global */}
+    </UserProvider> {/* 👈 cierre correcto del contexto global */}
   );
 };
 
 export default App;
+
