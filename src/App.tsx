@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { usePermisos } from "./hooks/usePermisos";
+import { UserProvider, useUserPerfil } from "./context/UserContext"; // 👈 integración nueva
 
 // 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
@@ -109,16 +110,13 @@ const App: React.FC = () => {
   const mostrarNavbar = !rutasPublicas.includes(location.pathname);
 
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
-  const [usuarioCorreo, setUsuarioCorreo] = useState<string>("");
 
   useEffect(() => {
     const obtenerUsuario = async () => {
       const { data } = await supabase.auth.getUser();
       const id = data.user?.id || null;
-      const correo = data.user?.email?.trim().toLowerCase() || ""; // 👈 normalización aquí
-      console.log("🧠 ID del usuario:", id, "Correo normalizado:", correo);
+      console.log("🧠 ID del usuario:", id);
       setUsuarioId(id);
-      setUsuarioCorreo(correo);
     };
     obtenerUsuario();
   }, []);
@@ -126,8 +124,10 @@ const App: React.FC = () => {
   const { modulos, cargando } = usePermisos(usuarioId);
   if (cargando) return null;
 
+  const perfil = useUserPerfil(); // 👈 obtenemos nombre+apellido+correo
+
   return (
-    <>
+    <UserProvider>
       {mostrarNavbar && <Navbar />}
       {mostrarNavbar && <MenuModulos />}
       <Routes>
@@ -167,7 +167,6 @@ const App: React.FC = () => {
             <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
           </>
         )}
-
         {/* Ahorro */}
         {modulos.includes("panel-ahorro") && (
           <>
@@ -175,7 +174,7 @@ const App: React.FC = () => {
               path="/panel-ahorro"
               element={
                 <RutaProtegida>
-                  <PanelAhorro usuario={{ correo: usuarioCorreo }} />
+                  <PanelAhorro usuario={perfil} /> {/* 👈 ahora recibe nombre+apellido+correo */}
                 </RutaProtegida>
               }
             />
@@ -183,7 +182,7 @@ const App: React.FC = () => {
               path="/crear-grupo"
               element={
                 <RutaProtegida>
-                  <CrearGrupo usuario={{ correo: usuarioCorreo }} />
+                  <CrearGrupo usuario={perfil} /> {/* 👈 igual aquí */}
                 </RutaProtegida>
               }
             />
@@ -324,7 +323,7 @@ const App: React.FC = () => {
           }
         />
       </Routes>
-    </>
+    </UserProvider> {/* 👈 cierre del contexto global */}
   );
 };
 
