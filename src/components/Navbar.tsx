@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import { useUserPerfil } from "../context/UserContext"; // 👈 integración con UserContext
 
 interface Props {
   tipoUsuario: "usuario" | "colaborador" | "institucional" | null;
@@ -11,13 +12,8 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
   const location = useLocation();
   const [enlacesPermitidos, setEnlacesPermitidos] = useState<string[]>([]);
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
-  const nombreUsuario = localStorage.getItem("nombreUsuario") || "";
 
-  const capitalizarNombre = (nombre: string) =>
-    nombre
-      .split(" ")
-      .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
-      .join(" ");
+  const perfil = useUserPerfil(); // 👈 obtenemos nombre+apellido+correo
 
   useEffect(() => {
     const obtenerUsuario = async () => {
@@ -34,7 +30,7 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
       const { data, error } = await supabase
         .from("permisos_usuario")
         .select("modulo")
-        .eq("usuario_id", usuarioId) // ✅ campo correcto
+        .eq("usuario_id", usuarioId)
         .eq("permiso", "acceso");
 
       if (error) {
@@ -118,9 +114,9 @@ const Navbar: React.FC<Props> = ({ tipoUsuario, onCerrarSesion }) => {
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        {nombreUsuario && (
+        {perfil && (
           <span style={{ fontSize: "0.95rem", color: "#ecf0f1" }}>
-            Bienvenido, <strong>{capitalizarNombre(nombreUsuario)}</strong>
+            Bienvenido, <strong>{perfil.nombre} {perfil.apellido}</strong>
           </span>
         )}
         <button
