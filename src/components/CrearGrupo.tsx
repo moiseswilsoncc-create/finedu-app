@@ -1,17 +1,14 @@
+// src/components/CrearGrupo.tsx
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import BloqueDatosGrupo from "./BloqueDatosGrupo";
 import BloqueMetaFinanciera from "./BloqueMetaFinanciera";
 import BloqueParticipantes from "./BloqueParticipantes";
+import { useUserPerfil } from "../context/UserContext"; // 👈 integración con UserContext
 
-interface Props {
-  usuario: {
-    correo?: string;
-  };
-}
-
-const CrearGrupo: React.FC<Props> = ({ usuario }) => {
-  const correoUsuario = usuario?.correo?.trim().toLowerCase() || "";
+const CrearGrupo: React.FC = () => {
+  const perfil = useUserPerfil(); // 👈 obtenemos nombre+apellido+correo
+  const correoUsuario = perfil?.correo?.trim().toLowerCase() || "";
 
   // Datos generales
   const [nombreGrupo, setNombreGrupo] = useState("");
@@ -172,12 +169,17 @@ const CrearGrupo: React.FC<Props> = ({ usuario }) => {
   };
 
   if (!correoUsuario) {
-    return <p>⚠️ No se puede crear grupo sin correo de usuario.</p>;
+    return <p>⚠️ No se puede crear grupo sin usuario activo.</p>;
   }
 
   return (
     <div style={{ maxWidth: "700px", margin: "2rem auto", padding: "1rem" }}>
       <h2>🛠️ Crear nuevo grupo de ahorro</h2>
+      {perfil && (
+        <p style={{ fontWeight: "bold", color: "#2c3e50" }}>
+          Administrador: {perfil.nombre} {perfil.apellido}
+        </p>
+      )}
 
       <BloqueDatosGrupo
         nombreGrupo={nombreGrupo}
