@@ -167,14 +167,14 @@ const App: React.FC = () => {
             <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
           </>
         )}
-               {/* Ahorro */}
+           {/* Ahorro */}
         {modulos.includes("panel-ahorro") && (
           <>
             <Route
               path="/panel-ahorro"
               element={
                 <RutaProtegida>
-                  <PanelAhorro usuario={perfil} /> {/* 👈 ahora recibe nombre+apellido+correo */}
+                  <PanelAhorro /> {/* 👈 PanelAhorro usa useUserPerfil internamente */}
                 </RutaProtegida>
               }
             />
@@ -182,7 +182,7 @@ const App: React.FC = () => {
               path="/crear-grupo"
               element={
                 <RutaProtegida>
-                  <CrearGrupo usuario={perfil} /> {/* 👈 igual aquí */}
+                  <CrearGrupo /> {/* 👈 CrearGrupo usa useUserPerfil internamente */}
                 </RutaProtegida>
               }
             />
@@ -323,9 +323,10 @@ const App: React.FC = () => {
           }
         />
       </Routes>
-    </UserProvider> {/* 👈 cierre correcto del contexto global */}
+    </UserProvider>
   );
 };
 
 export default App;
+
 
