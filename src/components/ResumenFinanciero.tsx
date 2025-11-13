@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { formatearMoneda } from "../utils/formatearMoneda";
+import { useUserPerfil } from "../context/UserContext";
 
 type Proyeccion = {
   mes: string;
@@ -16,6 +17,8 @@ type Credito = {
 };
 
 const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
+  const perfil = useUserPerfil(); // nombre, apellido, correo, usuario_id
+
   const [ingresos, setIngresos] = useState(0);
   const [egresos, setEgresos] = useState(0);
   const [creditos, setCreditos] = useState<{ cuota: number; fin: string }[]>([]);
@@ -29,9 +32,9 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
 
   useEffect(() => {
     const cargarDatos = async () => {
-      const usuarioId = localStorage.getItem("usuarioId");
-      if (!usuarioId) return;
+      if (!perfil?.usuario_id) return;
 
+      const usuarioId = perfil.usuario_id;
       const hoy = new Date();
       const primerDiaMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
       const ultimoDiaMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
@@ -93,7 +96,7 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
       const saldoMesActual = totalIngresos - (totalEgresos + cuotasActivas);
       setSaldoActual(saldoMesActual);
 
-      // Comparativos con mes anterior (ingresos y egresos)
+      // Comparativos con mes anterior
       const { data: ingresosPrev } = await supabase
         .from("ingresos")
         .select("monto, fecha")
@@ -120,7 +123,7 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
       setDiffEgresos(totalEgresos - totalEgresosPrev);
       setDiffSaldo(saldoMesActual - saldoPrev);
 
-      // Proyección 6 meses (replicando lógica de saldo con créditos según fecha_fin)
+      // Proyección 6 meses
       const proy: Proyeccion[] = [];
       for (let i = 0; i < 6; i++) {
         const fecha = new Date(hoy);
@@ -156,11 +159,16 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
     };
 
     cargarDatos();
-  }, [pais]);
+  }, [pais, perfil]);
+
+  if (!perfil) return <p>⚠️ No hay sesión activa.</p>;
 
   return (
     <div style={{ padding: "2rem" }}>
       <h2>🩺 Mi Salud Financiera</h2>
+      <p>
+        Usuario activo: <strong>{perfil.nombre} {perfil.apellido}</strong>
+      </p>
       <p>Relación de ingresos, egresos, créditos, ahorros e inversiones con proyección a 6 meses.</p>
 
       <h3>📌 Resumen mes actual</h3>
@@ -183,7 +191,11 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
       {creditos.length === 0 ? (
         <p>Sin créditos activos.</p>
       ) : (
-        <table border={1} cellPadding={8} style={{ borderCollapse: "collapse", width: "100%" }}>
+        <table
+          border={1}
+          cellPadding={8}
+          style={{ borderCollapse: "collapse", width: "100%" }}
+        >
           <thead>
             <tr>
               <th>Cuota mensual</th>
@@ -202,7 +214,11 @@ const ResumenFinanciero: React.FC<{ pais: string }> = ({ pais }) => {
       )}
 
       <h3 style={{ marginTop: "1.5rem" }}>📊 Proyección próximos 6 meses</h3>
-      <table border={1} cellPadding={8} style={{ borderCollapse: "collapse", width: "100%" }}>
+      <table
+        border={1}
+        cellPadding={8}
+        style={{ borderCollapse: "collapse", width: "100%" }}
+      >
         <thead>
           <tr>
             <th>Mes</th>
