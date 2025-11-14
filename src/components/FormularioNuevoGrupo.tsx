@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { registrarGrupo } from '../utils/registrarGrupo';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { Grupo } from '../types';
-// Ajusta la ruta según tu proyecto
-import { useGrupoContext } from '../context/useGrupoContext';
+import { GrupoContext } from '../context/GrupoContext'; // ✅ Import correcto
 
 export default function FormularioNuevoGrupo() {
   const [nombre, setNombre] = useState('');
@@ -18,12 +17,8 @@ export default function FormularioNuevoGrupo() {
 
   const navigate = useNavigate();
 
-  // Se asume que el contexto ya incluye al administrador como integrante
-  const { integrantes = [] } = useGrupoContext?.() ?? { integrantes: [] };
-
-  const integrantesCount = Array.isArray(integrantes) ? integrantes.length : 0;
-  const cumpleMinIntegrantes = integrantesCount >= 2;
-  const cumpleMaxIntegrantes = integrantesCount <= 100;
+  // ✅ Consumimos directamente el contexto institucional
+  const { participantes, validoIntegrantes, mensajeValidacion } = useContext(GrupoContext);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,31 +36,28 @@ export default function FormularioNuevoGrupo() {
         throw new Error('No se pudo obtener el usuario actual.');
       }
 
-      // Validación de integrantes (mínimo 2, máximo 100)
-      if (!cumpleMinIntegrantes) {
-        throw new Error('⚠️ El grupo debe tener al menos 2 integrantes (administrador + participante).');
-      }
-      if (!cumpleMaxIntegrantes) {
-        throw new Error('⚠️ El grupo no puede tener más de 100 participantes.');
+      // ✅ Validación institucional de integrantes
+      if (!validoIntegrantes) {
+        throw new Error(mensajeValidacion);
       }
 
-      // Validación de campos de texto: evitar vacíos con espacios
+      // ✅ Validación de campos de texto
       const nombreOk = nombre.trim();
       const ciudadOk = ciudad.trim();
       const comunaOk = comuna.trim();
       const paisOk = pais.trim();
 
       if (!nombreOk || !ciudadOk || !comunaOk || !paisOk) {
-        throw new Error('⚠️ Debes completar todos los campos obligatorios (sin espacios en blanco).');
+        throw new Error('⚠️ Debes completar todos los campos obligatorios.');
       }
 
-      // Validación de meta
+      // ✅ Validación de meta
       const meta = parseInt(metaGrupal, 10);
       if (isNaN(meta) || meta <= 0) {
         throw new Error('La meta grupal debe ser un número positivo.');
       }
 
-      // Estructura institucional del grupo
+      // ✅ Estructura institucional del grupo
       const nuevoGrupo: Omit<Grupo, 'id'> = {
         nombre: nombreOk,
         ciudad: ciudadOk,
@@ -79,7 +71,6 @@ export default function FormularioNuevoGrupo() {
 
       const resultado = await registrarGrupo(nuevoGrupo);
 
-      // Persistencia local del identificador institucional
       localStorage.setItem('grupoId', resultado.grupo.id_uuid);
 
       setMensaje('✅ Grupo creado exitosamente.');
@@ -93,8 +84,7 @@ export default function FormularioNuevoGrupo() {
 
   const botonDeshabilitado =
     cargando ||
-    !cumpleMinIntegrantes ||
-    !cumpleMaxIntegrantes ||
+    !validoIntegrantes ||
     !nombre.trim() ||
     !ciudad.trim() ||
     !comuna.trim() ||
@@ -142,9 +132,9 @@ export default function FormularioNuevoGrupo() {
         min={1}
       />
 
-      {/* Estado de integrantes */}
-      <div style={{ fontSize: '0.9rem', color: cumpleMinIntegrantes && cumpleMaxIntegrantes ? 'green' : 'orange' }}>
-        Integrantes actuales: {integrantesCount} (mínimo 2, máximo 100)
+      {/* ✅ Estado de integrantes desde el contexto */}
+      <div style={{ fontSize: '0.9rem', color: validoIntegrantes ? 'green' : 'orange' }}>
+        {mensajeValidacion}
       </div>
 
       <button type="submit" disabled={botonDeshabilitado}>
