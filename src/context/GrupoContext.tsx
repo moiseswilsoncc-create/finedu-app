@@ -1,7 +1,10 @@
 import React, { createContext, useContext, useState } from "react";
+import { supabase } from "../supabaseClient"; // ✅ Import para consultas
 
 export type Participante = {
+  correo: string;       // ✅ nuevo
   nombre: string;
+  apellido: string;     // ✅ nuevo
   ingresos: number;
   egresos: number;
 };
@@ -12,10 +15,10 @@ type GrupoContextType = {
   participantes: Participante[];
   setGrupo: (nombre: string, meta: number) => void;
   setParticipantes: (lista: Participante[]) => void;
-  actualizarParticipante: (nombre: string, ingresos: number, egresos: number) => void;
+  actualizarParticipante: (correo: string, ingresos: number, egresos: number) => Promise<void>; // ✅ ahora async
   resetGrupo: () => void;
-  validoIntegrantes: boolean;        // ✅ nuevo
-  mensajeValidacion: string;         // ✅ nuevo
+  validoIntegrantes: boolean;
+  mensajeValidacion: string;
 };
 
 const GrupoContext = createContext<GrupoContextType | undefined>(undefined);
@@ -30,15 +33,35 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setMetaGrupal(meta);
   };
 
-  const actualizarParticipante = (nombre: string, ingresos: number, egresos: number) => {
+  // ✅ Ahora busca nombre + apellido en Supabase
+  const actualizarParticipante = async (correo: string, ingresos: number, egresos: number) => {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("nombre, apellido")
+      .eq("correo", correo)
+      .single();
+
+    if (error || !data) {
+      console.error("No se encontró el usuario en la tabla usuarios:", error);
+      return;
+    }
+
+    const nombreCompleto = data.nombre.trim();
+    const apellidoCompleto = data.apellido.trim();
+
     setParticipantes((prev) => {
-      const existe = prev.find((p) => p.nombre === nombre);
+      const existe = prev.find((p) => p.correo === correo);
       if (existe) {
         return prev.map((p) =>
-          p.nombre === nombre ? { ...p, ingresos, egresos } : p
+          p.correo === correo
+            ? { ...p, nombre: nombreCompleto, apellido: apellidoCompleto, ingresos, egresos }
+            : p
         );
       } else {
-        return [...prev, { nombre, ingresos, egresos }];
+        return [
+          ...prev,
+          { correo, nombre: nombreCompleto, apellido: apellidoCompleto, ingresos, egresos },
+        ];
       }
     });
   };
@@ -72,8 +95,8 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setParticipantes,
         actualizarParticipante,
         resetGrupo,
-        validoIntegrantes,     // ✅ expuesto al formulario
-        mensajeValidacion,     // ✅ expuesto al formulario
+        validoIntegrantes,
+        mensajeValidacion,
       }}
     >
       {children}
