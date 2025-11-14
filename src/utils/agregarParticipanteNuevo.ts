@@ -1,11 +1,11 @@
 import { supabase } from "../supabaseClient";
 
-export async function agregarParticipante(
-  grupoId: number | string,
+export async function agregarParticipanteNuevo(
+  grupoId: string, // 👈 tipado seguro como string (UUID)
   correo: string
 ) {
   try {
-    // Validar sesión activa
+    // 1. Validar sesión activa
     const {
       data: { user },
       error: authError,
@@ -13,18 +13,19 @@ export async function agregarParticipante(
 
     if (authError || !user) {
       return {
-        mensaje: "❌ No hay sesión activa. Debes iniciar sesión para agregar participantes.",
+        mensaje:
+          "❌ No hay sesión activa. Debes iniciar sesión para agregar participantes.",
         error: true,
       };
     }
 
-    // Normaliza el correo
+    // 2. Normalizar el correo
     const correoNormalizado = correo.trim().toLowerCase();
 
-    // Buscar usuario por correo
+    // 3. Buscar usuario en tabla oficial (usuarios)
     const { data: usuario, error: usuarioError } = await supabase
       .from("usuarios")
-      .select("id, correo")
+      .select("id, correo, nombre, apellido") // 👈 ahora trae nombre+apellido
       .eq("correo", correoNormalizado)
       .single();
 
@@ -39,17 +40,19 @@ export async function agregarParticipante(
       };
     }
 
-    // Insertar participante usando usuario_id y correo como auxiliar
+    // 4. Insertar participante con identidad completa
     const { error: insertError } = await supabase
       .from("participantes_grupo")
       .insert([
         {
           grupo_id: grupoId,
-          usuario_id: usuario.id,     // vínculo oficial
-          correo: usuario.correo,     // auxiliar para trazabilidad
-          invitado_por: user.id,      // 👈 ahora sí coincide con auth.uid()
+          usuario_id: usuario.id,       // vínculo oficial
+          correo: usuario.correo,       // auxiliar para trazabilidad
+          nombre: usuario.nombre,       // 👈 identidad completa
+          apellido: usuario.apellido,   // 👈 identidad completa
+          invitado_por: user.id,        // coincide con auth.uid()
           estado: "activo",
-          fecha_ingreso: new Date(),  // opcional
+          fecha_ingreso: new Date().toISOString(), // formato ISO
         },
       ]);
 
