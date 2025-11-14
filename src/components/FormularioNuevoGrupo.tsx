@@ -37,19 +37,23 @@ export default function FormularioNuevoGrupo() {
         throw new Error('La meta grupal debe ser un número positivo.');
       }
 
+      // ✅ Correcciones institucionales
       const nuevoGrupo: Omit<Grupo, 'id'> = {
         nombre,
         ciudad,
         comuna,
         pais,
-        meta_grupal: meta,
-        fecha_creacion: new Date().toISOString(),
-        activo: true,
-        administrador_id: user.id,
+        meta_total: meta, // antes meta_grupal
+        created_at: new Date().toISOString(), // antes fecha_creacion
+        estado: "activo", // antes activo: true
+        administrador_id: user.id, // uuid correcto
       };
 
       const resultado = await registrarGrupo(nuevoGrupo);
-      localStorage.setItem('grupoId', resultado.grupo.id);
+
+      // ✅ Usar id_uuid como PK
+      localStorage.setItem('grupoId', resultado.grupo.id_uuid);
+
       navigate('/panel-grupo');
     } catch (err: any) {
       setError(err.message || 'Error al registrar grupo');
@@ -59,7 +63,10 @@ export default function FormularioNuevoGrupo() {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <form
+      onSubmit={handleSubmit}
+      style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+    >
       <h3>🆕 Registrar nuevo grupo</h3>
 
       <input
@@ -108,4 +115,3 @@ export default function FormularioNuevoGrupo() {
     </form>
   );
 }
-
