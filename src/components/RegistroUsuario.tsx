@@ -12,6 +12,7 @@ const RegistroUsuario: React.FC = () => {
   const [comuna, setComuna] = useState("");
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
+  const [confirmarClave, setConfirmarClave] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +20,7 @@ const RegistroUsuario: React.FC = () => {
   }, []);
 
   const validarFormato = () => {
+    // Validar correo
     const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
     if (!correoValido) {
       navigate("/error-acceso", {
@@ -26,12 +28,40 @@ const RegistroUsuario: React.FC = () => {
       });
       return false;
     }
+
+    // Validar clave mínima
     if (clave.length < 6) {
       navigate("/error-acceso", {
         state: { mensaje: "La clave debe tener al menos 6 caracteres.", origen: "registro" }
       });
       return false;
     }
+
+    // Validar confirmación de clave
+    if (clave !== confirmarClave) {
+      navigate("/error-acceso", {
+        state: { mensaje: "Las claves no coinciden. Intenta de nuevo.", origen: "registro" }
+      });
+      return false;
+    }
+
+    // Validar fecha de nacimiento (no futura)
+    const hoy = new Date().toISOString().split("T")[0];
+    if (fechaNacimiento > hoy) {
+      navigate("/error-acceso", {
+        state: { mensaje: "La fecha de nacimiento no puede ser futura.", origen: "registro" }
+      });
+      return false;
+    }
+
+    // Validar campos vacíos
+    if (!nombre || !apellido || !sexo || !pais || !ciudad || !comuna) {
+      navigate("/error-acceso", {
+        state: { mensaje: "Todos los campos son obligatorios. Completa la ficha completa.", origen: "registro" }
+      });
+      return false;
+    }
+
     return true;
   };
 
@@ -41,7 +71,7 @@ const RegistroUsuario: React.FC = () => {
     if (!validarFormato()) return;
 
     try {
-      // ✅ Crear usuario en Supabase Auth con metadatos y redirección correcta
+      // ✅ Crear usuario en Supabase Auth con metadatos
       const { data: authData, error: errorAuth } = await supabase.auth.signUp({
         email: correo,
         password: clave,
@@ -68,7 +98,7 @@ const RegistroUsuario: React.FC = () => {
         return;
       }
 
-      // 🚀 Siempre redirigir a pantalla de confirmación
+      // 🚀 Redirigir siempre a pantalla de confirmación
       navigate("/registro-pendiente", {
         state: {
           mensaje:
@@ -117,6 +147,7 @@ const RegistroUsuario: React.FC = () => {
         </div>
         <div><label>📧 Correo electrónico</label><input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required style={inputStyle} /></div>
         <div><label>🔒 Clave personal</label><input type="password" value={clave} onChange={(e) => setClave(e.target.value)} required style={inputStyle} /></div>
+        <div><label>🔒 Confirmar clave</label><input type="password" value={confirmarClave} onChange={(e) => setConfirmarClave(e.target.value)} required style={inputStyle} /></div>
         <button type="submit" style={{
           padding: "0.8rem",
           backgroundColor: "#2ecc71",
