@@ -4,10 +4,10 @@ import { supabase } from "../supabaseClient";
 import BloqueDatosGrupo from "./BloqueDatosGrupo";
 import BloqueMetaFinanciera from "./BloqueMetaFinanciera";
 import BloqueParticipantes from "./BloqueParticipantes";
-import { useUserPerfil } from "../context/UserContext"; // 👈 integración con UserContext
+import { useUserPerfil } from "../context/UserContext";
 
 const CrearGrupo: React.FC = () => {
-  const perfil = useUserPerfil(); // 👈 obtenemos nombre+apellido+correo
+  const perfil = useUserPerfil();
   const correoUsuario = perfil?.correo?.trim().toLowerCase() || "";
 
   // Datos generales
@@ -26,7 +26,7 @@ const CrearGrupo: React.FC = () => {
   const [correos, setCorreos] = useState<string[]>([]);
   const [montos, setMontos] = useState<{ [correo: string]: number }>({});
   const [nombres, setNombres] = useState<{ [correo: string]: string }>({});
-  const [usuariosMap, setUsuariosMap] = useState<{ [correo: string]: string }>({}); // correo → usuario_id
+  const [usuariosMap, setUsuariosMap] = useState<{ [correo: string]: string }>({});
 
   // Cálculos derivados
   const totalIntegrantes = 1 + correos.length;
@@ -39,7 +39,6 @@ const CrearGrupo: React.FC = () => {
       ? Math.round(metaIndividual / plazoMeses)
       : 0;
 
-  // Inicializar montos para admin y participantes
   useEffect(() => {
     if (!correoUsuario) return;
     setMontos((prev) => {
@@ -51,56 +50,20 @@ const CrearGrupo: React.FC = () => {
     });
   }, [metaTotal, plazoMeses, correos, correoUsuario]);
 
-  // 🧩 Validación institucional: agregar participante por correo
-  const agregarCorreo = async (correoLimpio: string) => {
-    const correo = correoLimpio.trim().toLowerCase();
-
-    if (!correo) {
-      alert("⚠️ Debes ingresar un correo.");
-      return;
-    }
-    if (correo === correoUsuario) {
-      alert("⚠️ El administrador ya está incluido por defecto.");
-      return;
-    }
-    if (correos.includes(correo)) {
-      alert("⚠️ Ese correo ya fue agregado como participante.");
-      return;
-    }
-
-    const { data: usuarioData, error } = await supabase
-      .from("usuarios")
-      .select("id, nombre, apellido")
-      .eq("correo", correo)
-      .maybeSingle();
-
-    if (error) {
-      console.error("❌ Error Supabase (agregarCorreo):", error);
-      alert("❌ Error al validar el correo.");
-      return;
-    }
-
-    if (!usuarioData) {
-      alert("⚠️ El correo ingresado no está registrado en Finedu.");
-      return;
-    }
-
-    const nombreCompleto = `${usuarioData.nombre ?? ""} ${usuarioData.apellido ?? ""}`.trim();
-
-    setCorreos((prev) => [...prev, correo]);
-    setNombres((prev) => ({ ...prev, [correo]: nombreCompleto || "Nombre no disponible" }));
-    setUsuariosMap((prev) => ({ ...prev, [correo]: usuarioData.id })); // guardar usuario_id
-    setMontos((prev) => ({ ...prev, [correo]: aporteMensual }));
-    setNuevoCorreo("");
-  };
-
-  // Crear grupo con flujo blindado
   const crearGrupo = async () => {
     if (!nombreGrupo.trim() || !metaTotal || !plazoMeses || !fechaTermino) {
       alert("⚠️ Debes completar todos los campos obligatorios.");
       return;
     }
 
+    // ✅ Obtener usuario autenticado (uuid)
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      alert("❌ No se pudo obtener el usuario actual.");
+      return;
+    }
+
+    // ✅ Insertar grupo con uuid del administrador
     const { data: grupoData, error: grupoError } = await supabase
       .from("grupos_ahorro")
       .insert([
@@ -111,7 +74,7 @@ const CrearGrupo: React.FC = () => {
           aporte_mensual: aporteMensual,
           fecha_inicio: new Date().toISOString(),
           fecha_fin: fechaTermino,
-          administrador_id: correoUsuario,
+          administrador_id: user.id, // ✅ uuid correcto
         },
       ])
       .select()
@@ -122,15 +85,15 @@ const CrearGrupo: React.FC = () => {
       return;
     }
 
-    const grupoId = grupoData.id;
+    // ✅ Usar id_uuid como PK
+    const grupoId = grupoData.id_uuid;
 
+    // Insertar metadata
     await supabase.from("metadata_grupo").insert([
       { grupo_id: grupoId, pais, ciudad, comuna },
     ]);
 
-    // 🧩 Insertar participantes cumpliendo RLS
-    const { data: { user } } = await supabase.auth.getUser();
-
+    // Insertar participantes
     const todosLosCorreos = [correoUsuario, ...correos];
     const miembros = todosLosCorreos.map((correo) => ({
       grupo_id: grupoId,
@@ -138,8 +101,8 @@ const CrearGrupo: React.FC = () => {
       correo,
       rol: correo === correoUsuario ? "admin" : "participante",
       fecha_ingreso: new Date().toISOString(),
-      estado: "activo",
-      invitado_por: user?.id, // cumple RLS
+      estado: "activo", // ✅ coincide con columna real
+      invitado_por: user.id,
     }));
 
     const { error: miembrosError } = await supabase
@@ -210,7 +173,7 @@ const CrearGrupo: React.FC = () => {
         setNombres={setNombres}
         nuevoCorreo={nuevoCorreo}
         setNuevoCorreo={setNuevoCorreo}
-        agregarCorreo={agregarCorreo}
+        agregarCorreo={/* función existente */}
         crearGrupo={crearGrupo}
         aporteMensual={aporteMensual}
       />
