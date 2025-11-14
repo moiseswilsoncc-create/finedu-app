@@ -1,3 +1,4 @@
+// src/components/CrearGrupo.tsx
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import BloqueDatosGrupo from "./BloqueDatosGrupo";
@@ -7,7 +8,7 @@ import { useUserPerfil } from "../context/UserContext";
 
 const CrearGrupo: React.FC = () => {
   const perfil = useUserPerfil();
-  const correoUsuario = perfil?.correo?.trim().toLowerCase() || "";
+  const correoUsuario = perfil?.correo?.trim().toLowerCase() || localStorage.getItem("correoUsuario") || "";
 
   // Datos generales
   const [nombreGrupo, setNombreGrupo] = useState("");
@@ -55,16 +56,23 @@ const CrearGrupo: React.FC = () => {
       return;
     }
 
-    // ✅ Obtener usuario autenticado (uuid)
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      console.error("❌ No se pudo obtener el usuario actual:", userError);
-      alert("❌ No se pudo obtener el usuario actual.");
+    // ✅ Buscar uuid en tabla usuarios usando correo
+    const { data: usuario, error: usuarioError } = await supabase
+      .from("usuarios")
+      .select("id")
+      .eq("correo", correoUsuario)
+      .single();
+
+    if (usuarioError || !usuario) {
+      console.error("❌ Usuario no encontrado en Supabase:", usuarioError);
+      alert("❌ No se pudo obtener el usuario en Supabase.");
       return;
     }
-    console.log("🧠 Usuario autenticado:", user.id, "Correo:", user.email);
 
-    // ✅ Insertar grupo con uuid del administrador
+    const administradorId = usuario.id;
+    console.log("🧠 Usuario administrador:", administradorId, correoUsuario);
+
+    // ✅ Insertar grupo
     const { data: grupoData, error: grupoError } = await supabase
       .from("grupos_ahorro")
       .insert([
@@ -75,9 +83,9 @@ const CrearGrupo: React.FC = () => {
           aporte_mensual: aporteMensual,
           fecha_inicio: new Date().toISOString(),
           fecha_fin: fechaTermino,
-          administrador_id: user.id, // ✅ uuid correcto
+          administrador_id: administradorId,
           created_at: new Date().toISOString(),
-          estado: "activo", // ✅ columna real
+          estado: "activo",
         },
       ])
       .select()
@@ -90,10 +98,9 @@ const CrearGrupo: React.FC = () => {
     }
     console.log("✅ Grupo creado:", grupoData);
 
-    // ✅ Usar id_uuid como PK
     const grupoId = grupoData.id_uuid;
 
-    // Insertar metadata
+    // ✅ Insertar metadata
     const { error: metadataError } = await supabase.from("metadata_grupo").insert([
       { grupo_id: grupoId, pais, ciudad, comuna },
     ]);
@@ -103,7 +110,7 @@ const CrearGrupo: React.FC = () => {
       console.log("✅ Metadata insertada");
     }
 
-    // Insertar participantes
+    // ✅ Insertar participantes
     const todosLosCorreos = [correoUsuario, ...correos];
     const miembros = todosLosCorreos.map((correo) => ({
       grupo_id: grupoId,
@@ -111,8 +118,8 @@ const CrearGrupo: React.FC = () => {
       correo,
       rol: correo === correoUsuario ? "admin" : "participante",
       fecha_ingreso: new Date().toISOString(),
-      estado: "activo", // ✅ coincide con columna real
-      invitado_por: user.id,
+      estado: "activo",
+      invitado_por: administradorId,
     }));
 
     const { error: miembrosError } = await supabase
