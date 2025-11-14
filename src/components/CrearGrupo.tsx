@@ -173,7 +173,7 @@ const CrearGrupo: React.FC = () => {
         setNombres={setNombres}
         nuevoCorreo={nuevoCorreo}
         setNuevoCorreo={setNuevoCorreo}
-        agregarCorreo={/* función existente */}
+        agregarCorreo={agregarCorreo}
         crearGrupo={crearGrupo}
         aporteMensual={aporteMensual}
       />
