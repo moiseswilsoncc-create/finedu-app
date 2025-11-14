@@ -1,0 +1,147 @@
+# Bitácora Institucional – Consolidación Final
+
+## 🏁 Milestones por archivo
+
+| Archivo / Función             | Milestone alcanzado | Correcciones sugeridas |
+|-------------------------------|---------------------|------------------------|
+| RutaAdministrador.tsx         | Protege rutas solo para rol "admin" con redirección segura | Tipar usuario más estricto, añadir feedback visual, soportar roles adicionales |
+| RutaProtegidaPerfil.tsx       | Valida sesión activa y protege acceso al perfil | Validar estado activo y correo confirmado, redirigir automáticamente al login |
+| TablaParticipantes.tsx        | Lista participantes con nombre+apellido y permite expulsión | Tipar grupoId como string (UUID), añadir confirmación antes de expulsar, parametrizar visibilidad de correos |
+| VistaMetaIndividual.tsx       | Muestra metas individuales con cálculo de ahorro y progreso | Validar metaIndividual > 0, añadir barra de progreso visual, parametrizar privacidad de ingresos/egresos |
+| VistaParticipante.tsx         | Formulario para agregar participante con validaciones básicas | Exigir nombre+apellido, tipar ingresos/egresos como number, añadir trazabilidad (usuario_id, correo) |
+| usePermisos.ts                | Hook para obtener permisos desde Supabase | Usar supabase.auth.getUser() en vez de localStorage, tipado seguro, devolver errores al consumidor |
+| agregarParticipante.ts        | Inserta participante con vínculo oficial (usuario_id + invitado_por) | Tipar grupoId como string, incluir rol, validar duplicados, usar fecha ISO |
+| expulsarParticipante.ts       | Expulsa participante y registra evento en historial | Tipar grupoId como string, enriquecer historial con nombre+apellido y fecha, validar duplicados |
+| registrarAporte.ts            | Registra aporte y evento en historial | Tipar grupoId como string, validar estado activo del participante, usar fecha ISO, enriquecer historial |
+| registrarGrupo.ts             | Inserta grupo en grupos_ahorro | Validar campos obligatorios, incluir fecha_creacion, registrar evento en historial, asegurar administrador_id |
+| verHistorialGrupoNuevo.ts     | Consulta historial validando pertenencia | Tipar fecha como Date, incluir nombre+apellido, diferenciar entre sin eventos y error |
+| verParticipantes.ts           | Lista participantes activos con JOIN a usuarios | Tipar grupoId como string, ordenar por fecha_ingreso, diferenciar entre sin participantes y error |
+| App.tsx (parte 1 y 2)         | Consolida rutas públicas y protegidas con roles | Unificar rutas protegidas en hook, añadir loader institucional, centralizar roles en BD, poblar VistaGrupal con datos reales |
+
+---
+
+## 📊 Consolidación institucional
+
+- **IDs**: unificar todos los grupoId a string (UUID).  
+- **Fechas**: usar new Date().toISOString() en todos los inserts.  
+- **Historial**: enriquecer con nombre + apellido y fecha_evento.  
+- **Roles**: centralizar en tabla usuarios o usuarios_activos, no solo en user_metadata.  
+- **Privacidad**: parametrizar visibilidad de correos e ingresos según rol.  
+- **Loader institucional**: mostrar ⏳ Validando sesión… en vez de null en rutas protegidas.  
+- **VistaGrupal**: poblar con datos reales de Supabase, no props vacíos.  
+- **Unificación de rutas protegidas**: crear hook useRutaProtegida(rol?: string) para evitar duplicación.  
+
+---
+
+## 📖 Legado institucional
+
+Este documento deja trazabilidad de:
+- **Qué está sólido**: validaciones de sesión, feedback visual, integración con Supabase.  
+- **Qué necesita ajustes**: tipado, historial enriquecido, centralización de roles.  
+- **Qué se espera a futuro**: blindaje completo con RLS en Supabase y documentación auditable de cada cambio.  
+
+
+--- RutaAdministrador.tsx
+- const sesionValida =
+-   usuario?.logueado === true &&
+-   usuario?.correo &&
+-   usuario?.rol === "admin";
++ const sesionValida =
++   usuario?.logueado === true &&
++   usuario?.correo &&
++   (usuario?.rol === "admin" || usuario?.rol === "superadmin");
+
+--- RutaProtegidaPerfil.tsx
+- if (!usuarioAutenticado) {
+-   return <div>🔒 Acceso restringido</div>;
+- }
++ if (!usuarioAutenticado) {
++   return <Navigate to="/login-usuario" replace />;
++ }
+
+--- TablaParticipantes.tsx
+- const manejarExpulsion = async (usuarioId: string) => {
++ const manejarExpulsion = async (usuarioId: string) => {
++   if (!window.confirm("¿Seguro que deseas expulsar a este participante?")) return;
+
+--- VistaMetaIndividual.tsx
+- const progreso = Math.min((ahorro / p.metaIndividual) * 100, 100);
++ const progreso = p.metaIndividual > 0
++   ? Math.min((ahorro / p.metaIndividual) * 100, 100)
++   : 0;
+
++ <progress value={progreso} max={100}></progress>
+
+--- VistaParticipante.tsx
+- const [nombre, setNombre] = useState("");
++ const [nombre, setNombre] = useState("");
++ const [apellido, setApellido] = useState("");
+
+- onAgregar({ nombre, ingresos, egresos });
++ onAgregar({ nombre: `${nombre} ${apellido}`, ingresos, egresos });
+
+--- usePermisos.ts
+- const correoUsuario = localStorage.getItem("correoUsuario");
+- if (!correoUsuario) { ... }
++ const { data: { user } } = await supabase.auth.getUser();
++ if (!user) { setCargando(false); return; }
++ setUsuarioId(user.id);
+
+--- agregarParticipante.ts
+- .insert([{ grupo_id: grupoId, usuario_id: usuario.id, correo: usuario.correo, invitado_por: user.id, estado: "activo", fecha_ingreso: new Date() }])
++ .insert([{ grupo_id: grupoId, usuario_id: usuario.id, correo: usuario.correo, invitado_por: user.id, rol: "participante", estado: "activo", fecha_ingreso: new Date().toISOString() }])
+
+--- expulsarParticipante.ts
+- .update({ estado: 'expulsado' })
++ .update({ estado: 'expulsado', fecha_salida: new Date().toISOString() })
+
+- detalle: `Se expulsó al participante con ID ${participanteId} del grupo.`,
++ detalle: `Se expulsó al participante ${nombre} ${apellido} (ID ${participanteId}) del grupo.`,
+
+--- registrarAporte.ts
+- fecha: new Date()
++ fecha: new Date().toISOString()
+
+- detalle: `Se registró un aporte de $${monto} para el participante ${participanteId}`,
++ detalle: `Se registró un aporte de $${monto} para ${nombre} ${apellido} (ID ${participanteId})`,
+
+--- registrarGrupo.ts
+- .insert([grupo])
++ .insert([{ ...grupo, fecha_creacion: new Date().toISOString() }])
+
++ await supabase.from("historial_grupo").insert({
++   grupo_id: data.id,
++   usuario_id: grupo.administrador_id,
++   tipo_evento: "creación",
++   detalle: `Se creó el grupo "${data.nombre}" con administrador ${grupo.administrador_id}`,
++   fecha: new Date().toISOString()
++ });
+
+--- verHistorialGrupoNuevo.ts
+- .select('tipo_evento, detalle, usuario_id, fecha')
++ .select('tipo_evento, detalle, usuario_id, fecha, usuarios(nombre, apellido)')
+
+--- verParticipantes.ts
+- .eq('grupo_id', grupoId).eq('estado', 'activo');
++ .eq('grupo_id', grupoId).eq('estado', 'activo').order('fecha_ingreso', { ascending: true });
+
+--- App.tsx
+- if (autenticado === null) return null;
++ if (autenticado === null) return <div>⏳ Validando sesión...</div>;
+
+- const RutaProtegidaColaborador = ...
+- const RutaProtegidaInstitucional = ...
++ // Unificar en un hook
++ const useRutaProtegida = (rol?: string) => {
++   const [autenticado, setAutenticado] = useState<boolean | null>(null);
++   useEffect(() => {
++     const validarSesion = async () => {
++       const { data, error } = await supabase.auth.getUser();
++       const userRol = data.user?.user_metadata?.rol;
++       setAutenticado(!!data.user && (!rol || userRol === rol) && !error);
++     };
++     validarSesion();
++   }, [rol]);
++   if (autenticado === null) return <div>⏳ Validando sesión...</div>;
++   return autenticado;
++ };
