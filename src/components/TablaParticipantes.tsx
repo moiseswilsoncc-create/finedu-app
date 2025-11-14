@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { verParticipantes } from '../utils/verParticipantesNuevo';
-import { expulsarParticipante } from '../utils/expulsarParticipante';
+import React, { useEffect, useState } from "react";
+import { verParticipantes } from "../utils/verParticipantesNuevo";
+import { expulsarParticipante } from "../utils/expulsarParticipante";
 
 interface Props {
-  grupoId: number | string;
+  grupoId: string; // 👈 tipado seguro como UUID
 }
 
 interface Participante {
@@ -20,24 +20,24 @@ interface Participante {
 
 export default function TablaParticipantes({ grupoId }: Props) {
   const [participantes, setParticipantes] = useState<Participante[]>([]);
-  const [error, setError] = useState('');
-  const [mensaje, setMensaje] = useState('');
+  const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(false);
 
   const cargarParticipantes = async () => {
-    setError('');
+    setError("");
     try {
-      const resultado = await verParticipantes(Number(grupoId));
+      const resultado = await verParticipantes(grupoId);
 
       if (!resultado.error && Array.isArray(resultado.data)) {
         setParticipantes(resultado.data);
-        setMensaje(resultado.mensaje);
+        setMensaje(resultado.mensaje || "✅ Participantes cargados correctamente");
       } else {
-        setError(resultado.mensaje || '❌ Error al cargar participantes');
+        setError(resultado.mensaje || "❌ Error al cargar participantes");
         setParticipantes([]);
       }
     } catch (err: any) {
-      setError(err.message || '❌ Error inesperado al cargar participantes');
+      setError(err.message || "❌ Error inesperado al cargar participantes");
       setParticipantes([]);
     }
   };
@@ -50,14 +50,14 @@ export default function TablaParticipantes({ grupoId }: Props) {
 
   const manejarExpulsion = async (usuarioId: string) => {
     setCargando(true);
-    setMensaje('');
-    setError('');
+    setMensaje("");
+    setError("");
     try {
-      const resultado = await expulsarParticipante(Number(grupoId), usuarioId);
+      const resultado = await expulsarParticipante(grupoId, usuarioId);
       setMensaje(resultado?.mensaje || "✅ Acción completada");
       await cargarParticipantes();
     } catch (err: any) {
-      setError(err.message || '❌ Error al expulsar participante');
+      setError(err.message || "❌ Error al expulsar participante");
     } finally {
       setCargando(false);
     }
@@ -65,13 +65,15 @@ export default function TablaParticipantes({ grupoId }: Props) {
 
   return (
     <div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {mensaje && <p style={{ color: 'green' }}>{mensaje}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
 
       {participantes.length === 0 ? (
-        <p style={{ color: '#555' }}>No hay participantes registrados en este grupo.</p>
+        <p style={{ color: "#555" }}>
+          No hay participantes registrados en este grupo.
+        </p>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
               <th>Nombre</th>
@@ -85,7 +87,9 @@ export default function TablaParticipantes({ grupoId }: Props) {
           <tbody>
             {participantes.map((p) => (
               <tr key={p.usuario_id}>
-                <td>{p.usuarios?.nombre} {p.usuarios?.apellido}</td>
+                <td>
+                  {p.usuarios?.nombre} {p.usuarios?.apellido}
+                </td>
                 <td>{p.usuarios?.correo}</td>
                 <td>{p.rol}</td>
                 <td>
@@ -100,12 +104,12 @@ export default function TablaParticipantes({ grupoId }: Props) {
                       onClick={() => manejarExpulsion(p.usuario_id)}
                       disabled={cargando}
                       style={{
-                        backgroundColor: '#dc3545',
-                        color: 'white',
-                        padding: '0.3rem 0.6rem',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
+                        backgroundColor: "#dc3545",
+                        color: "white",
+                        padding: "0.3rem 0.6rem",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
                       }}
                     >
                       Expulsar
