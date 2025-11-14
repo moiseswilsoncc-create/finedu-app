@@ -1,184 +1,125 @@
-// src/components/CrearGrupo.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { supabase } from "../supabaseClient";
-import BloqueDatosGrupo from "./BloqueDatosGrupo";
-import BloqueMetaFinanciera from "./BloqueMetaFinanciera";
-import BloqueParticipantes from "./BloqueParticipantes";
-import { useUserPerfil } from "../context/UserContext";
 
-const CrearGrupo: React.FC = () => {
-  const perfil = useUserPerfil();
-  const correoUsuario = perfil?.correo?.trim().toLowerCase() || "";
-
-  // Datos generales
+export default function CrearGrupo() {
   const [nombreGrupo, setNombreGrupo] = useState("");
-  const [pais, setPais] = useState("");
-  const [ciudad, setCiudad] = useState("");
-  const [comuna, setComuna] = useState("");
-
-  // Meta financiera
-  const [metaTotal, setMetaTotal] = useState<number>(0);
-  const [plazoMeses, setPlazoMeses] = useState<number>(1);
+  const [metaTotal, setMetaTotal] = useState(0);
+  const [aporteMensual, setAporteMensual] = useState(0);
+  const [plazoMeses, setPlazoMeses] = useState(0);
   const [fechaTermino, setFechaTermino] = useState("");
-
-  // Participantes
-  const [nuevoCorreo, setNuevoCorreo] = useState("");
   const [correos, setCorreos] = useState<string[]>([]);
-  const [montos, setMontos] = useState<{ [correo: string]: number }>({});
-  const [nombres, setNombres] = useState<{ [correo: string]: string }>({});
-  const [usuariosMap, setUsuariosMap] = useState<{ [correo: string]: string }>({});
+  const [usuariosMap, setUsuariosMap] = useState<Record<string, string>>({});
 
-  // Cálculos derivados
-  const totalIntegrantes = 1 + correos.length;
-  const metaIndividual =
-    metaTotal > 0 && totalIntegrantes > 0
-      ? Math.round(metaTotal / totalIntegrantes)
-      : 0;
-  const aporteMensual =
-    metaIndividual > 0 && plazoMeses > 0
-      ? Math.round(metaIndividual / plazoMeses)
-      : 0;
+  const handleCrearGrupo = async () => {
+    try {
+      // 1. Validar sesión
+      const { data: { user }, error: errorUsuario } = await supabase.auth.getUser();
+      if (errorUsuario || !user) {
+        console.error("❌ No hay sesión activa. Error:", errorUsuario);
+        alert("Debes iniciar sesión para crear un grupo.");
+        return;
+      }
+      console.log("🧠 Usuario autenticado:", user.id, "Correo:", user.email);
 
-  useEffect(() => {
-    if (!correoUsuario) return;
-    setMontos((prev) => {
-      const copia = { ...prev };
-      [correoUsuario, ...correos].forEach((c) => {
-        copia[c] = aporteMensual;
-      });
-      return copia;
-    });
-  }, [metaTotal, plazoMeses, correos, correoUsuario]);
-
-  const crearGrupo = async () => {
-    if (!nombreGrupo.trim() || !metaTotal || !plazoMeses || !fechaTermino) {
-      alert("⚠️ Debes completar todos los campos obligatorios.");
-      return;
-    }
-
-    // ✅ Obtener usuario autenticado (uuid)
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      alert("❌ No se pudo obtener el usuario actual.");
-      return;
-    }
-
-    // ✅ Insertar grupo con uuid del administrador
-    const { data: grupoData, error: grupoError } = await supabase
-      .from("grupos_ahorro")
-      .insert([
-        {
-          nombre: nombreGrupo.trim(),
+      // 2. Insertar grupo
+      const { data: grupoData, error: grupoError } = await supabase
+        .from("grupos_ahorro")
+        .insert({
+          nombre: nombreGrupo,
           meta_total: metaTotal,
-          plazo_meses: plazoMeses,
           aporte_mensual: aporteMensual,
+          plazo_meses: plazoMeses,
           fecha_inicio: new Date().toISOString(),
           fecha_fin: fechaTermino,
-          administrador_id: user.id, // ✅ uuid correcto
-        },
-      ])
-      .select()
-      .single();
+          administrador_id: user.id,
+          created_at: new Date().toISOString(),
+          estado: "activo",
+        })
+        .select()
+        .single();
 
-    if (grupoError || !grupoData) {
-      alert("❌ No se pudo crear el grupo.");
-      return;
+      if (grupoError) {
+        console.error("❌ Error insertando grupo:", grupoError);
+        return;
+      }
+      console.log("✅ Grupo creado:", grupoData);
+
+      const grupoId = grupoData.id_uuid;
+
+      // 3. Validar usuarios antes de insertarlos
+      for (const correo of correos) {
+        if (!usuariosMap[correo]) {
+          console.error("⚠️ Usuario no encontrado en tabla usuarios:", correo);
+          continue; // evita romper el flujo
+        }
+
+        const { error: participanteError } = await supabase
+          .from("participantes_grupo")
+          .insert({
+            grupo_id: grupoId,
+            usuario_id: usuariosMap[correo],
+            correo,
+            rol: correo === user.email ? "admin" : "participante",
+            fecha_ingreso: new Date().toISOString(),
+            estado: "activo",
+            invitado_por: user.id,
+          });
+
+        if (participanteError) {
+          console.error("❌ Error insertando participante:", correo, participanteError);
+        } else {
+          console.log("✅ Participante insertado:", correo);
+        }
+      }
+    } catch (err) {
+      console.error("❌ Error general en crearGrupo:", err);
     }
-
-    // ✅ Usar id_uuid como PK
-    const grupoId = grupoData.id_uuid;
-
-    // Insertar metadata
-    await supabase.from("metadata_grupo").insert([
-      { grupo_id: grupoId, pais, ciudad, comuna },
-    ]);
-
-    // Insertar participantes
-    const todosLosCorreos = [correoUsuario, ...correos];
-    const miembros = todosLosCorreos.map((correo) => ({
-      grupo_id: grupoId,
-      usuario_id: usuariosMap[correo], // uuid desde tabla usuarios
-      correo,
-      rol: correo === correoUsuario ? "admin" : "participante",
-      fecha_ingreso: new Date().toISOString(),
-      estado: "activo", // ✅ coincide con columna real
-      invitado_por: user.id,
-    }));
-
-    const { error: miembrosError } = await supabase
-      .from("participantes_grupo")
-      .insert(miembros);
-
-    if (miembrosError) {
-      console.error("❌ Error Supabase (insert participantes):", miembrosError);
-      alert("❌ Error al registrar los participantes.");
-      return;
-    }
-
-    alert(`✅ Grupo "${nombreGrupo}" creado exitosamente.`);
-
-    // Reset de estados
-    setNombreGrupo("");
-    setPais("");
-    setCiudad("");
-    setComuna("");
-    setMetaTotal(0);
-    setPlazoMeses(1);
-    setFechaTermino("");
-    setCorreos([]);
-    setMontos({});
-    setNombres({});
-    setUsuariosMap({});
   };
 
-  if (!correoUsuario) {
-    return <p>⚠️ No se puede crear grupo sin usuario activo.</p>;
-  }
-
   return (
-    <div style={{ maxWidth: "700px", margin: "2rem auto", padding: "1rem" }}>
-      <h2>🛠️ Crear nuevo grupo de ahorro</h2>
-      {perfil && (
-        <p style={{ fontWeight: "bold", color: "#2c3e50" }}>
-          Administrador: {perfil.nombre} {perfil.apellido}
-        </p>
-      )}
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <h3>🆕 Crear grupo</h3>
 
-      <BloqueDatosGrupo
-        nombreGrupo={nombreGrupo}
-        pais={pais}
-        ciudad={ciudad}
-        comuna={comuna}
-        setNombreGrupo={setNombreGrupo}
-        setPais={setPais}
-        setCiudad={setCiudad}
-        setComuna={setComuna}
+      <input
+        type="text"
+        value={nombreGrupo}
+        onChange={(e) => setNombreGrupo(e.target.value)}
+        placeholder="Nombre del grupo"
+        required
+      />
+      <input
+        type="number"
+        value={metaTotal}
+        onChange={(e) => setMetaTotal(Number(e.target.value))}
+        placeholder="Meta total en CLP"
+        required
+        min={1}
+      />
+      <input
+        type="number"
+        value={aporteMensual}
+        onChange={(e) => setAporteMensual(Number(e.target.value))}
+        placeholder="Aporte mensual en CLP"
+        required
+        min={1}
+      />
+      <input
+        type="number"
+        value={plazoMeses}
+        onChange={(e) => setPlazoMeses(Number(e.target.value))}
+        placeholder="Plazo en meses"
+        required
+        min={1}
+      />
+      <input
+        type="date"
+        value={fechaTermino}
+        onChange={(e) => setFechaTermino(e.target.value)}
+        placeholder="Fecha de término"
+        required
       />
 
-      <BloqueMetaFinanciera
-        metaTotal={metaTotal}
-        plazoMeses={plazoMeses}
-        metaIndividual={metaIndividual}
-        aporteMensual={aporteMensual}
-        setMetaTotal={setMetaTotal}
-        setPlazoMeses={setPlazoMeses}
-      />
-
-      <BloqueParticipantes
-        usuario={{ correo: correoUsuario }}
-        correos={correos}
-        montos={montos}
-        nombres={nombres}
-        setMontos={setMontos}
-        setNombres={setNombres}
-        nuevoCorreo={nuevoCorreo}
-        setNuevoCorreo={setNuevoCorreo}
-        agregarCorreo={agregarCorreo}
-        crearGrupo={crearGrupo}
-        aporteMensual={aporteMensual}
-      />
+      <button onClick={handleCrearGrupo}>Crear grupo</button>
     </div>
   );
-};
-
-export default CrearGrupo;
+}
