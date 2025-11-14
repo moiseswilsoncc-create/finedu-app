@@ -1,6 +1,6 @@
 import { supabase } from "../supabaseClient";
 
-export async function agregarParticipanteNuevo(
+export async function agregarParticipante(
   grupoId: string, // 👈 tipado seguro como string (UUID)
   correo: string
 ) {
