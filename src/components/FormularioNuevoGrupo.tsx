@@ -3,6 +3,8 @@ import { registrarGrupo } from '../utils/registrarGrupo';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { Grupo } from '../types';
+// Ajusta la ruta según tu proyecto
+import { useGrupoContext } from '../context/useGrupoContext';
 
 export default function FormularioNuevoGrupo() {
   const [nombre, setNombre] = useState('');
@@ -15,6 +17,13 @@ export default function FormularioNuevoGrupo() {
   const [cargando, setCargando] = useState(false);
 
   const navigate = useNavigate();
+
+  // Se asume que el contexto ya incluye al administrador como integrante
+  const { integrantes = [] } = useGrupoContext?.() ?? { integrantes: [] };
+
+  const integrantesCount = Array.isArray(integrantes) ? integrantes.length : 0;
+  const cumpleMinIntegrantes = integrantesCount >= 2;
+  const cumpleMaxIntegrantes = integrantesCount <= 100;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,41 +41,68 @@ export default function FormularioNuevoGrupo() {
         throw new Error('No se pudo obtener el usuario actual.');
       }
 
-      const meta = parseInt(metaGrupal);
+      // Validación de integrantes (mínimo 2, máximo 100)
+      if (!cumpleMinIntegrantes) {
+        throw new Error('⚠️ El grupo debe tener al menos 2 integrantes (administrador + participante).');
+      }
+      if (!cumpleMaxIntegrantes) {
+        throw new Error('⚠️ El grupo no puede tener más de 100 participantes.');
+      }
+
+      // Validación de campos de texto: evitar vacíos con espacios
+      const nombreOk = nombre.trim();
+      const ciudadOk = ciudad.trim();
+      const comunaOk = comuna.trim();
+      const paisOk = pais.trim();
+
+      if (!nombreOk || !ciudadOk || !comunaOk || !paisOk) {
+        throw new Error('⚠️ Debes completar todos los campos obligatorios (sin espacios en blanco).');
+      }
+
+      // Validación de meta
+      const meta = parseInt(metaGrupal, 10);
       if (isNaN(meta) || meta <= 0) {
         throw new Error('La meta grupal debe ser un número positivo.');
       }
 
-      // ✅ Correcciones institucionales
+      // Estructura institucional del grupo
       const nuevoGrupo: Omit<Grupo, 'id'> = {
-        nombre,
-        ciudad,
-        comuna,
-        pais,
-        meta_total: meta, // antes meta_grupal
-        created_at: new Date().toISOString(), // antes fecha_creacion
-        estado: "activo", // antes activo: true
-        administrador_id: user.id, // uuid correcto
+        nombre: nombreOk,
+        ciudad: ciudadOk,
+        comuna: comunaOk,
+        pais: paisOk,
+        meta_total: meta,
+        created_at: new Date().toISOString(),
+        estado: 'activo',
+        administrador_id: user.id,
       };
 
       const resultado = await registrarGrupo(nuevoGrupo);
 
-      // ✅ Usar id_uuid como PK
+      // Persistencia local del identificador institucional
       localStorage.setItem('grupoId', resultado.grupo.id_uuid);
 
+      setMensaje('✅ Grupo creado exitosamente.');
       navigate('/panel-grupo');
     } catch (err: any) {
-      setError(err.message || 'Error al registrar grupo');
+      setError(err.message || 'Error al registrar grupo.');
     } finally {
       setCargando(false);
     }
   };
 
+  const botonDeshabilitado =
+    cargando ||
+    !cumpleMinIntegrantes ||
+    !cumpleMaxIntegrantes ||
+    !nombre.trim() ||
+    !ciudad.trim() ||
+    !comuna.trim() ||
+    !pais.trim() ||
+    !metaGrupal;
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-    >
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <h3>🆕 Registrar nuevo grupo</h3>
 
       <input
@@ -106,7 +142,12 @@ export default function FormularioNuevoGrupo() {
         min={1}
       />
 
-      <button type="submit" disabled={cargando}>
+      {/* Estado de integrantes */}
+      <div style={{ fontSize: '0.9rem', color: cumpleMinIntegrantes && cumpleMaxIntegrantes ? 'green' : 'orange' }}>
+        Integrantes actuales: {integrantesCount} (mínimo 2, máximo 100)
+      </div>
+
+      <button type="submit" disabled={botonDeshabilitado}>
         {cargando ? 'Registrando...' : 'Registrar grupo'}
       </button>
 
