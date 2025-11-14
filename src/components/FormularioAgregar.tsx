@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
-import { agregarParticipante } from '../utils/agregarParticipanteNuevo';
+import React, { useState } from "react";
+import { agregarParticipante } from "../utils/agregarParticipanteNuevo";
 
 interface Props {
-  grupoId: number | string;
+  grupoId: string; // 👈 tipado seguro como UUID
+  onParticipanteAgregado?: () => void; // callback opcional para refrescar vista
 }
 
-export default function FormularioAgregar({ grupoId }: Props) {
-  const [correo, setCorreo] = useState('');
-  const [mensaje, setMensaje] = useState('');
-  const [error, setError] = useState('');
+export default function FormularioAgregar({ grupoId, onParticipanteAgregado }: Props) {
+  const [correo, setCorreo] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMensaje('');
-    setError('');
+    setMensaje("");
+    setError("");
     setCargando(true);
 
     try {
@@ -26,17 +27,27 @@ export default function FormularioAgregar({ grupoId }: Props) {
       // 👇 llamada corregida: solo grupoId + correo
       const resultado = await agregarParticipante(grupoId, correo);
 
-      setMensaje(resultado?.mensaje || "✅ Participante agregado correctamente");
-      setCorreo('');
+      if (resultado.error) {
+        setError(resultado.mensaje);
+      } else {
+        setMensaje(resultado.mensaje || "✅ Participante agregado correctamente");
+        setCorreo("");
+        if (onParticipanteAgregado) {
+          onParticipanteAgregado(); // refresca listado de participantes
+        }
+      }
     } catch (err: any) {
-      setError(err.message || '❌ Error al agregar participante');
+      setError(err.message || "❌ Error al agregar participante");
     } finally {
       setCargando(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <form
+      onSubmit={handleSubmit}
+      style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+    >
       <label>
         Correo del participante:
         <input
@@ -46,20 +57,26 @@ export default function FormularioAgregar({ grupoId }: Props) {
           required
           disabled={cargando}
           placeholder="correo@ejemplo.com"
-          style={{ padding: '0.5rem', width: '100%' }}
+          style={{ padding: "0.5rem", width: "100%" }}
         />
       </label>
 
       <button
         type="submit"
         disabled={cargando}
-        style={{ padding: '0.5rem', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }}
+        style={{
+          padding: "0.5rem",
+          backgroundColor: "#007bff",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+        }}
       >
-        {cargando ? 'Agregando...' : 'Agregar participante'}
+        {cargando ? "Agregando..." : "Agregar participante"}
       </button>
 
-      {mensaje && <p style={{ color: 'green' }}>{mensaje}</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
   );
 }
