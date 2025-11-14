@@ -66,74 +66,46 @@ const LoginUsuario: React.FC = () => {
 
       const user = data.user;
 
-      // Upsert en tabla usuarios
-      const { data: dataUsuarios, error: errorUsuarios } = await supabase
+      // 🔎 Consultar perfil en tabla usuarios (no insertar)
+      const { data: perfil, error: errorPerfil } = await supabase
         .from("usuarios")
-        .upsert(
-          {
-            id: user.id,
-            correo: user.email,
-            nombre: user.user_metadata?.nombre || "",
-            apellido: user.user_metadata?.apellido || "",
-            pais: user.user_metadata?.pais || "Chile",
-            ciudad: user.user_metadata?.ciudad || "",
-            comuna: user.user_metadata?.comuna || "",
-            sexo: user.user_metadata?.sexo || "",
-            fechaNacimiento: user.user_metadata?.fechaNacimiento
-              ? new Date(user.user_metadata.fechaNacimiento).toISOString()
-              : null,
-          },
-          { onConflict: "id" }
-        )
-        .select();
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
-      console.log("Resultado usuarios:", { dataUsuarios, errorUsuarios });
+      console.log("Perfil consultado:", perfil, errorPerfil);
 
-      if (errorUsuarios) {
+      if (errorPerfil) {
         navigate("/error-acceso", {
-          state: { mensaje: "No se pudo registrar el perfil de usuario.", origen: "login" },
+          state: { mensaje: "No se pudo cargar tu perfil de usuario.", origen: "login" },
         });
         return;
       }
 
-      // Upsert en tabla usuarios_activos
-      const { data: dataActivos, error: errorActivos } = await supabase
+      // 🔎 Consultar estado en tabla usuarios_activos
+      const { data: activo, error: errorActivo } = await supabase
         .from("usuarios_activos")
-        .upsert(
-          {
-            id: user.id,
-            correo: user.email,
-            nombre: user.user_metadata?.nombre || "",
-            apellido: user.user_metadata?.apellido || "",
-            rol: "usuario",
-            pais: user.user_metadata?.pais || "Chile",
-            ciudad: user.user_metadata?.ciudad || "",
-            comuna: user.user_metadata?.comuna || "",
-            sexo: user.user_metadata?.sexo || "",
-            esActivo: true,
-            fechaNacimiento: user.user_metadata?.fechaNacimiento
-              ? new Date(user.user_metadata.fechaNacimiento).toISOString()
-              : null,
-          },
-          { onConflict: "id" }
-        )
-        .select();
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
-      console.log("Resultado usuarios_activos:", { dataActivos, errorActivos });
+      console.log("Usuario activo:", activo, errorActivo);
 
-      if (errorActivos) {
+      if (errorActivo) {
         navigate("/error-acceso", {
-          state: { mensaje: "No se pudo activar el usuario.", origen: "login" },
+          state: { mensaje: "No se pudo cargar el estado activo del usuario.", origen: "login" },
         });
         return;
       }
 
+      // Guardar datos en localStorage
       localStorage.setItem("usuarioId", user.id);
       localStorage.setItem("correoUsuario", correo);
-      localStorage.setItem("nombreUsuario", user.user_metadata?.nombre || correo.split("@")[0]);
+      localStorage.setItem("nombreUsuario", perfil?.nombre || correo.split("@")[0]);
       localStorage.setItem("tipoUsuario", "usuario");
       localStorage.setItem("logueado", "true");
 
+      // 🚀 Redirigir al panel de usuario
       navigate("/panel-usuario");
     } catch (err: any) {
       console.error("❌ Error inesperado en login:", err);
@@ -146,16 +118,61 @@ const LoginUsuario: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleLogin} style={{ maxWidth: "400px", margin: "3rem auto", padding: "2rem", backgroundColor: "#fefefe", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <form
+      onSubmit={handleLogin}
+      style={{
+        maxWidth: "400px",
+        margin: "3rem auto",
+        padding: "2rem",
+        backgroundColor: "#fefefe",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+      }}
+    >
       <h3 style={{ color: "#2c3e50" }}>🔐 Acceso de usuario</h3>
       {bienvenido && (
-        <div style={{ backgroundColor: "#eafaf1", border: "1px solid #2ecc71", padding: "0.8rem", borderRadius: "6px", color: "#27ae60", fontSize: "0.95rem" }}>
+        <div
+          style={{
+            backgroundColor: "#eafaf1",
+            border: "1px solid #2ecc71",
+            padding: "0.8rem",
+            borderRadius: "6px",
+            color: "#27ae60",
+            fontSize: "0.95rem",
+          }}
+        >
           🎉 Bienvenido/a, tu correo fue confirmado. Ingresa con tu correo y clave para acceder por primera vez.
         </div>
       )}
-      <input type="email" placeholder="Correo electrónico" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
-      <input type="password" placeholder="Clave personal (mínimo 6 caracteres)" value={clave} onChange={(e) => setClave(e.target.value)} required />
-      <button type="submit" disabled={enviando} style={{ padding: "0.6rem 1.2rem", backgroundColor: enviando ? "#ccc" : "#3498db", color: "white", border: "none", borderRadius: "6px", cursor: enviando ? "not-allowed" : "pointer" }}>
+      <input
+        type="email"
+        placeholder="Correo electrónico"
+        value={correo}
+        onChange={(e) => setCorreo(e.target.value)}
+        required
+      />
+      <input
+        type="password"
+        placeholder="Clave personal (mínimo 6 caracteres)"
+        value={clave}
+        onChange={(e) => setClave(e.target.value)}
+        required
+      />
+      <button
+        type="submit"
+        disabled={enviando}
+        style={{
+          padding: "0.6rem 1.2rem",
+          backgroundColor: enviando ? "#ccc" : "#3498db",
+          color: "white",
+          border: "none",
+          borderRadius: "6px",
+          cursor: enviando ? "not-allowed" : "pointer",
+        }}
+      >
         {enviando ? "Ingresando..." : "Ingresar"}
       </button>
     </form>
