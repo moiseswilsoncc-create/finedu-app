@@ -3,25 +3,33 @@ import { supabase } from "../supabaseClient";
 
 export default function CrearGrupo() {
   const [nombreGrupo, setNombreGrupo] = useState("");
-  const [metaTotal, setMetaTotal] = useState(0);
-  const [aporteMensual, setAporteMensual] = useState(0);
-  const [plazoMeses, setPlazoMeses] = useState(0);
+  const [metaTotal, setMetaTotal] = useState<number>(0);
+  const [aporteMensual, setAporteMensual] = useState<number>(0);
+  const [plazoMeses, setPlazoMeses] = useState<number>(0);
   const [fechaTermino, setFechaTermino] = useState("");
   const [correos, setCorreos] = useState<string[]>([]);
   const [usuariosMap, setUsuariosMap] = useState<Record<string, string>>({});
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
 
   const handleCrearGrupo = async () => {
+    setMensaje("");
+    setError("");
+    setCargando(true);
+
     try {
       // 1. Validar sesión
       const { data: { user }, error: errorUsuario } = await supabase.auth.getUser();
       if (errorUsuario || !user) {
         console.error("❌ No hay sesión activa. Error:", errorUsuario);
-        alert("Debes iniciar sesión para crear un grupo.");
+        setError("Debes iniciar sesión para crear un grupo.");
+        setCargando(false);
         return;
       }
       console.log("🧠 Usuario autenticado:", user.id, "Correo:", user.email);
 
-      // 2. Insertar grupo
+      // 2. Insertar grupo en grupos_ahorro
       const { data: grupoData, error: grupoError } = await supabase
         .from("grupos_ahorro")
         .insert({
@@ -40,17 +48,19 @@ export default function CrearGrupo() {
 
       if (grupoError) {
         console.error("❌ Error insertando grupo:", grupoError);
+        setError("Error al crear el grupo.");
+        setCargando(false);
         return;
       }
       console.log("✅ Grupo creado:", grupoData);
 
       const grupoId = grupoData.id_uuid;
 
-      // 3. Validar usuarios antes de insertarlos
+      // 3. Insertar participantes
       for (const correo of correos) {
         if (!usuariosMap[correo]) {
           console.error("⚠️ Usuario no encontrado en tabla usuarios:", correo);
-          continue; // evita romper el flujo
+          continue;
         }
 
         const { error: participanteError } = await supabase
@@ -71,8 +81,13 @@ export default function CrearGrupo() {
           console.log("✅ Participante insertado:", correo);
         }
       }
-    } catch (err) {
+
+      setMensaje("Grupo creado exitosamente.");
+    } catch (err: any) {
       console.error("❌ Error general en crearGrupo:", err);
+      setError(err.message || "Error general al crear grupo.");
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -119,7 +134,12 @@ export default function CrearGrupo() {
         required
       />
 
-      <button onClick={handleCrearGrupo}>Crear grupo</button>
+      <button onClick={handleCrearGrupo} disabled={cargando}>
+        {cargando ? "Registrando..." : "Crear grupo"}
+      </button>
+
+      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 }
