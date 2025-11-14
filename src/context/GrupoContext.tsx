@@ -14,6 +14,8 @@ type GrupoContextType = {
   setParticipantes: (lista: Participante[]) => void;
   actualizarParticipante: (nombre: string, ingresos: number, egresos: number) => void;
   resetGrupo: () => void;
+  validoIntegrantes: boolean;        // ✅ nuevo
+  mensajeValidacion: string;         // ✅ nuevo
 };
 
 const GrupoContext = createContext<GrupoContextType | undefined>(undefined);
@@ -47,6 +49,19 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setParticipantes([]);
   };
 
+  // ✅ Validación institucional de integrantes
+  const count = participantes.length;
+  let validoIntegrantes = true;
+  let mensajeValidacion = "Integrantes válidos";
+
+  if (count < 2) {
+    validoIntegrantes = false;
+    mensajeValidacion = "⚠️ El grupo debe tener al menos 2 integrantes (administrador + participante).";
+  } else if (count > 100) {
+    validoIntegrantes = false;
+    mensajeValidacion = "⚠️ El grupo no puede tener más de 100 participantes.";
+  }
+
   return (
     <GrupoContext.Provider
       value={{
@@ -57,6 +72,8 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setParticipantes,
         actualizarParticipante,
         resetGrupo,
+        validoIntegrantes,     // ✅ expuesto al formulario
+        mensajeValidacion,     // ✅ expuesto al formulario
       }}
     >
       {children}
