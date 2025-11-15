@@ -34,7 +34,7 @@ export default function DashboardParticipante() {
       const gruposFiltrados = (data || [])
         .map((registro: any) => ({
           ...registro.grupos_ahorro,
-          participante: registro.usuarios   // 👈 aquí añadimos el participante
+          participante: registro.usuarios
         }))
         .filter((g: any) => g && g.administrador_id !== user.id);
 
@@ -65,7 +65,7 @@ export default function DashboardParticipante() {
                 key={grupo.id}
                 grupo={grupo}
                 metadata={grupo.metadata_grupo?.[0] || grupo.metadata_grupo}
-                participante={grupo.participante}   // 👈 pasamos nombre/apellido
+                participante={grupo.participante}
                 onIngresar={ingresarAGrupo}
               />
             ))}
