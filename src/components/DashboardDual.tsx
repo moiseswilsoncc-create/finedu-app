@@ -18,14 +18,20 @@ export default function DashboardDual() {
         return;
       }
 
+      // Grupos como administrador
       const { data: adminData, error: errorAdmin } = await supabase
         .from('grupos_ahorro')
         .select('*, metadata_grupo(pais, ciudad, comuna)')
         .eq('administrador_id', user.id);
 
+      // Grupos donde participa
       const { data: participaData, error: errorParticipa } = await supabase
         .from('participantes_grupo')
-        .select('grupo_id, grupos_ahorro(*, metadata_grupo(pais, ciudad, comuna))')
+        .select(`
+          grupo_id,
+          grupos_ahorro(*, metadata_grupo(pais, ciudad, comuna)),
+          usuarios(nombre, apellido, correo)
+        `)
         .eq('usuario_id', user.id)
         .eq('estado', 'activo');
 
@@ -36,7 +42,10 @@ export default function DashboardDual() {
 
       const gruposAdmin = adminData || [];
       const gruposParticipa = (participaData || [])
-        .map((registro: any) => registro.grupos_ahorro)
+        .map((registro: any) => ({
+          ...registro.grupos_ahorro,
+          participante: registro.usuarios   // 👈 añadimos datos del participante
+        }))
         .filter((g: any) => g && g.administrador_id !== user.id);
 
       setGruposAdmin(gruposAdmin);
@@ -82,6 +91,7 @@ export default function DashboardDual() {
               key={grupo.id}
               grupo={grupo}
               metadata={grupo.metadata_grupo?.[0] || grupo.metadata_grupo}
+              participante={grupo.participante}   // 👈 pasamos nombre/apellido
               onIngresar={ingresarAGrupo}
             />
           ))
