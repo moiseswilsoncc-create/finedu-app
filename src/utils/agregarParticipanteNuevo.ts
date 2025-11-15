@@ -1,70 +1,55 @@
 import { supabase } from "../supabaseClient";
 
-export async function agregarParticipante(
-  grupoId: string, // 👈 tipado seguro como string (UUID)
-  correo: string
-) {
+export async function agregarParticipanteNuevo(grupoId: string, correo: string) {
   try {
-    // 1. Validar sesión activa
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return {
-        mensaje:
-          "❌ No hay sesión activa. Debes iniciar sesión para agregar participantes.",
-        error: true,
-      };
-    }
-
-    // 2. Normalizar el correo
-    const correoNormalizado = correo.trim().toLowerCase();
-
-    // 3. Buscar usuario en tabla oficial (usuarios)
-    const { data: usuario, error: usuarioError } = await supabase
+    // 1️⃣ Buscar usuario por correo en la tabla usuarios
+    const { data: usuario, error: errorUsuario } = await supabase
       .from("usuarios")
-      .select("id, correo, nombre, apellido") // 👈 ahora trae nombre+apellido
-      .eq("correo", correoNormalizado)
+      .select("id, nombre, apellido")
+      .eq("correo", correo)
       .single();
 
-    if (usuarioError) {
-      return { mensaje: "❌ Error al validar usuario", error: true };
+    if (errorUsuario) {
+      console.error("Error al consultar usuarios:", errorUsuario.message);
+      return { error: true, mensaje: "Error al validar el correo." };
     }
 
+    // 2️⃣ Validar existencia
     if (!usuario) {
       return {
-        mensaje: "⚠️ El correo ingresado no está registrado en Finedu",
         error: true,
+        mensaje: "⚠️ Este correo no está registrado en Finedu. El usuario debe crear su cuenta primero.",
       };
     }
 
-    // 4. Insertar participante con identidad completa
-    const { error: insertError } = await supabase
-      .from("participantes_grupo")
-      .insert([
-        {
-          grupo_id: grupoId,
-          usuario_id: usuario.id,       // vínculo oficial
-          correo: usuario.correo,       // auxiliar para trazabilidad
-          nombre: usuario.nombre,       // 👈 identidad completa
-          apellido: usuario.apellido,   // 👈 identidad completa
-          invitado_por: user.id,        // coincide con auth.uid()
-          estado: "activo",
-          fecha_ingreso: new Date().toISOString(), // formato ISO
-        },
-      ]);
+    // 3️⃣ Insertar participante vinculado al usuario
+    const { error: errorInsert } = await supabase.from("participantes_grupo").insert({
+      grupo_id: grupoId,
+      usuario_id: usuario.id,
+      rol: "miembro",
+      estado: "activo",
+      fecha_ingreso: new Date().toISOString(),
+    });
 
-    if (insertError) {
-      return { mensaje: "❌ Error al agregar participante", error: true };
+    if (errorInsert) {
+      console.error("Error al insertar participante:", errorInsert.message);
+      return { error: true, mensaje: "Error al agregar participante al grupo." };
     }
 
-    return { mensaje: "✅ Participante agregado correctamente", error: false };
-  } catch (err: any) {
+    // 4️⃣ Retornar datos completos para mostrar en frontend
     return {
-      mensaje: err.message || "❌ Error inesperado al agregar participante",
-      error: true,
+      error: false,
+      participante: {
+        usuario_id: usuario.id,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        correo,
+        rol: "miembro",
+        estado: "activo",
+      },
     };
+  } catch (err) {
+    console.error("Error inesperado:", err);
+    return { error: true, mensaje: "Error inesperado al agregar participante." };
   }
 }
