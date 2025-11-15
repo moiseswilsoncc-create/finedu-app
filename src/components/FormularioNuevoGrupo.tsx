@@ -71,7 +71,8 @@ export default function FormularioNuevoGrupo() {
 
       const resultado = await registrarGrupo(nuevoGrupo);
 
-      localStorage.setItem('grupoId', resultado.grupo.id_uuid);
+      // ⚡️ Usar el PK real (id) en vez de id_uuid
+      localStorage.setItem('grupoId', resultado.grupo.id);
 
       setMensaje('✅ Grupo creado exitosamente.');
       navigate('/panel-grupo');
