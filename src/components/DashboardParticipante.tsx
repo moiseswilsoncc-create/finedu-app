@@ -18,7 +18,11 @@ export default function DashboardParticipante() {
 
       const { data, error: errorGrupos } = await supabase
         .from('participantes_grupo')
-        .select('grupo_id, grupos_ahorro(*, metadata_grupo(pais, ciudad, comuna))')
+        .select(`
+          grupo_id,
+          grupos_ahorro(*, metadata_grupo(pais, ciudad, comuna)),
+          usuarios(nombre, apellido, correo)
+        `)
         .eq('usuario_id', user.id)
         .eq('estado', 'activo');
 
@@ -28,7 +32,10 @@ export default function DashboardParticipante() {
       }
 
       const gruposFiltrados = (data || [])
-        .map((registro: any) => registro.grupos_ahorro)
+        .map((registro: any) => ({
+          ...registro.grupos_ahorro,
+          participante: registro.usuarios   // 👈 aquí añadimos el participante
+        }))
         .filter((g: any) => g && g.administrador_id !== user.id);
 
       setGrupos(gruposFiltrados);
@@ -58,6 +65,7 @@ export default function DashboardParticipante() {
                 key={grupo.id}
                 grupo={grupo}
                 metadata={grupo.metadata_grupo?.[0] || grupo.metadata_grupo}
+                participante={grupo.participante}   // 👈 pasamos nombre/apellido
                 onIngresar={ingresarAGrupo}
               />
             ))}
