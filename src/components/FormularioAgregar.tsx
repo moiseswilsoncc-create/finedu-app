@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { agregarParticipante } from "../utils/agregarParticipanteNuevo";
+import { agregarParticipanteNuevo } from "../utils/agregarParticipanteNuevo";
 
 interface Props {
   grupoId: string; // 👈 tipado seguro como UUID
@@ -24,8 +24,8 @@ export default function FormularioAgregar({ grupoId, onParticipanteAgregado }: P
         return;
       }
 
-      // 👇 llamada corregida: solo grupoId + correo
-      const resultado = await agregarParticipante(grupoId, correo);
+      // 👇 llamada corregida: usa agregarParticipanteNuevo
+      const resultado = await agregarParticipanteNuevo(grupoId, correo);
 
       if (resultado.error) {
         setError(resultado.mensaje);
