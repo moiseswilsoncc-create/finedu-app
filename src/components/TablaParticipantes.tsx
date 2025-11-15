@@ -3,7 +3,8 @@ import { verParticipantes } from "../utils/verParticipantesNuevo";
 import { expulsarParticipante } from "../utils/expulsarParticipante";
 
 interface Props {
-  grupoId: string; // 👈 tipado seguro como UUID
+  grupoId: string;
+  adminId: string; // 👈 tipado seguro como UUID del administrador
 }
 
 interface Participante {
@@ -18,7 +19,7 @@ interface Participante {
   };
 }
 
-export default function TablaParticipantes({ grupoId }: Props) {
+export default function TablaParticipantes({ grupoId, adminId }: Props) {
   const [participantes, setParticipantes] = useState<Participante[]>([]);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -27,9 +28,10 @@ export default function TablaParticipantes({ grupoId }: Props) {
   const cargarParticipantes = async () => {
     setError("");
     try {
-      const resultado = await verParticipantes(grupoId);
+      const resultado = await verParticipantes(grupoId, adminId);
 
       if (!resultado.error && Array.isArray(resultado.data)) {
+        console.log("Participantes cargados:", resultado.data); // 🔍 verificación
         setParticipantes(resultado.data);
         setMensaje(resultado.mensaje || "✅ Participantes cargados correctamente");
       } else {
@@ -88,9 +90,11 @@ export default function TablaParticipantes({ grupoId }: Props) {
             {participantes.map((p) => (
               <tr key={p.usuario_id}>
                 <td>
-                  {p.usuarios?.nombre} {p.usuarios?.apellido}
+                  {p.usuarios?.nombre && p.usuarios?.apellido
+                    ? `${p.usuarios.nombre} ${p.usuarios.apellido}`
+                    : "—"}
                 </td>
-                <td>{p.usuarios?.correo}</td>
+                <td>{p.usuarios?.correo || "Correo no disponible"}</td>
                 <td>{p.rol}</td>
                 <td>
                   {p.fecha_ingreso
