@@ -8,7 +8,10 @@ import { useUserPerfil } from "../context/UserContext";
 
 const CrearGrupo: React.FC = () => {
   const perfil = useUserPerfil();
-  const correoUsuario = perfil?.correo?.trim().toLowerCase() || localStorage.getItem("correoUsuario") || "";
+  const correoUsuario =
+    perfil?.correo?.trim().toLowerCase() ||
+    localStorage.getItem("correoUsuario") ||
+    "";
 
   // Datos generales
   const [nombreGrupo, setNombreGrupo] = useState("");
@@ -26,7 +29,9 @@ const CrearGrupo: React.FC = () => {
   const [correos, setCorreos] = useState<string[]>([]);
   const [montos, setMontos] = useState<{ [correo: string]: number }>({});
   const [nombres, setNombres] = useState<{ [correo: string]: string }>({});
-  const [usuariosMap, setUsuariosMap] = useState<{ [correo: string]: string }>({});
+  const [usuariosMap, setUsuariosMap] = useState<{ [correo: string]: string }>(
+    {}
+  );
 
   // Cálculos derivados
   const totalIntegrantes = 1 + correos.length;
@@ -98,12 +103,13 @@ const CrearGrupo: React.FC = () => {
     }
     console.log("✅ Grupo creado:", grupoData);
 
-    const grupoId = grupoData.id_uuid;
+    // ⚡️ Usar el PK real (id) en vez de id_uuid
+    const grupoId = grupoData.id;
 
     // ✅ Insertar metadata
-    const { error: metadataError } = await supabase.from("metadata_grupo").insert([
-      { grupo_id: grupoId, pais, ciudad, comuna },
-    ]);
+    const { error: metadataError } = await supabase
+      .from("metadata_grupo")
+      .insert([{ grupo_id: grupoId, pais, ciudad, comuna }]);
     if (metadataError) {
       console.error("❌ Error insertando metadata:", metadataError);
     } else {
