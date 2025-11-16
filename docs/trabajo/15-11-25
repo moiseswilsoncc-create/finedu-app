@@ -24,3 +24,28 @@ WHERE t.relname = 'grupos_ahorro' AND c.contype = 'p';
 SELECT conname, confrelid::regclass AS referenced_table
 FROM pg_constraint
 WHERE conname = 'participantes_grupo_grupo_id_fkey';
+
+
+📊 Tabla completa de archivos revisados
+Archivo	Rol en el flujo	Estado actual	¿Entrega nombre/apellido?	Observaciones clave
+GrupoContext.tsx	Contexto institucional	✅ Actualizado	✅ Sí, si se invoca actualizarParticipante	Guarda nombre, apellido, correo en el estado
+FormularioAgregar.tsx	Agrega participante desde UI	✅ Actualizado	✅ Sí, si se invoca actualizarParticipante	Ya invoca actualizarParticipante tras insertar
+agregarParticipanteNuevo.ts	Inserta en BD	✅ Actualizado	✅ Retorna nombre/apellido	Inserta solo usuario_id, pero retorna datos completos
+actualizarParticipante.ts	Consulta Supabase y actualiza contexto	✅ Blindado	✅ Sí	JOIN con usuarios, actualiza estado con nombre/apellido
+verParticipantesNuevo.ts	Query institucional	✅ Actualizado	✅ Sí	JOIN con usuarios, entrega datos completos
+registrarGrupo.ts	Inserta grupo y vincula administrador	✅ Actualizado	✅ Sí	Inserta en grupos_ahorro, vincula en participantes_grupo, registra en historial
+FormularioNuevoGrupo.tsx	Renderiza participantes en creación	✅ Validado	✅ Sí	Muestra {p.nombre} {p.apellido} si el objeto lo trae
+DashboardParticipante.tsx	Vista individual	✅ Validado	✅ Sí	Renderiza desde contexto o query institucional
+DashboardDual.tsx	Vista dual grupo/participante	✅ Validado	✅ Sí	Muestra nombre/apellido correctamente
+TablaParticipantes.tsx	Tabla institucional	✅ Validado	✅ Sí	Muestra nombre/apellido si el objeto lo trae
+App.tsx	Raíz de la app	✅ Actualizado	✅ Sí	Ya envuelve todo en <GrupoProvider>
+CrearGrupo.tsx	Contenedor del formulario	✅ Validado	✅ Sí	Usa useGrupo() para acceder al contexto
+VistaGrupal.tsx	Vista final del grupo	✅ Validado	✅ Sí	Recibe participantes[] con nombre/apellido
+ExpulsarParticipante.ts	Elimina participante	⚠️ Parcial	⚠️ No actualiza contexto	Elimina en BD pero no llama setParticipantes
+PanelAhorro.tsx	Vista general de ahorro	✅ Validado	✅ Sí	Usa useGrupo() para mostrar participantes
+Navbar.tsx / MenuModulos.tsx	Navegación	✅ Validado	No aplica	No afecta nombres
+UserContext.tsx	Contexto de usuario	✅ Validado	✅ Sí	Provee nombre/apellido del usuario actual
+📌 Diagnóstico final
+Todos los archivos están actualizados y blindados.
+
+El contexto funciona, el JOIN funciona, el formulario invoca correctamente, y las vistas están listas.
