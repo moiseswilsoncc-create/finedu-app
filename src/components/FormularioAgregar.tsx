@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { agregarParticipanteNuevo } from "../utils/agregarParticipanteNuevo";
+import { useGrupo } from "../context/GrupoContext"; // ✅ Importamos el contexto institucional
 
 interface Props {
   grupoId: string; // 👈 tipado seguro como UUID
@@ -11,6 +12,9 @@ export default function FormularioAgregar({ grupoId, onParticipanteAgregado }: P
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
+
+  // ✅ Consumimos actualizarParticipante desde el contexto
+  const { actualizarParticipante } = useGrupo();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +34,9 @@ export default function FormularioAgregar({ grupoId, onParticipanteAgregado }: P
       if (resultado.error) {
         setError(resultado.mensaje);
       } else {
+        // ✅ Ahora enriquecemos el estado con nombre/apellido
+        await actualizarParticipante(correo, 0, 0);
+
         setMensaje(resultado.mensaje || "✅ Participante agregado correctamente");
         setCorreo("");
         if (onParticipanteAgregado) {
