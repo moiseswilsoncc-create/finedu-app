@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState } from "react";
 import { supabase } from "../supabaseClient"; // ✅ Import para consultas
 
 export type Participante = {
-  correo: string;       // ✅ nuevo
+  correo: string;       // ✅ ahora siempre presente
   nombre: string;
-  apellido: string;     // ✅ nuevo
+  apellido: string;     // ✅ ahora siempre presente
   ingresos: number;
   egresos: number;
 };
@@ -15,7 +15,7 @@ type GrupoContextType = {
   participantes: Participante[];
   setGrupo: (nombre: string, meta: number) => void;
   setParticipantes: (lista: Participante[]) => void;
-  actualizarParticipante: (correo: string, ingresos: number, egresos: number) => Promise<void>; // ✅ ahora async
+  actualizarParticipante: (correo: string, ingresos: number, egresos: number) => Promise<void>;
   resetGrupo: () => void;
   validoIntegrantes: boolean;
   mensajeValidacion: string;
@@ -33,7 +33,7 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setMetaGrupal(meta);
   };
 
-  // ✅ Ahora busca nombre + apellido en Supabase
+  // ✅ Ahora busca nombre + apellido en Supabase y los guarda en el estado
   const actualizarParticipante = async (correo: string, ingresos: number, egresos: number) => {
     const { data, error } = await supabase
       .from("usuarios")
@@ -46,8 +46,8 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return;
     }
 
-    const nombreCompleto = data.nombre.trim();
-    const apellidoCompleto = data.apellido.trim();
+    const nombreCompleto = data.nombre?.trim() || "";
+    const apellidoCompleto = data.apellido?.trim() || "";
 
     setParticipantes((prev) => {
       const existe = prev.find((p) => p.correo === correo);
