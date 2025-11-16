@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { usePermisos } from "./hooks/usePermisos";
-import { UserProvider, useUserPerfil } from "./context/UserContext"; // 👈 integración nueva
+import { UserProvider, useUserPerfil } from "./context/UserContext";
+import { GrupoProvider } from "./context/GrupoContext";
 
 // 🧠 Pantalla raíz y flujo de ingreso
 import Bienvenida from "./components/Bienvenida";
@@ -98,7 +99,6 @@ const RutaProtegidaInstitucional: React.FC<{ children: React.ReactNode }> = ({ c
   if (autenticado === null) return null;
   return autenticado ? <>{children}</> : <Navigate to="/" replace />;
 };
-
 const App: React.FC = () => {
   const location = useLocation();
   const rutasPublicas = [
@@ -108,7 +108,6 @@ const App: React.FC = () => {
   ];
 
   const mostrarNavbar = !rutasPublicas.includes(location.pathname);
-
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -124,209 +123,212 @@ const App: React.FC = () => {
   const { modulos, cargando } = usePermisos(usuarioId);
   if (cargando) return null;
 
-  const perfil = useUserPerfil(); // 👈 obtenemos nombre+apellido+correo
+  const perfil = useUserPerfil(); // nombre+apellido+correo
 
   return (
     <UserProvider>
-      {mostrarNavbar && <Navbar />}
-      {mostrarNavbar && <MenuModulos />}
-      <Routes>
-        {/* Bienvenida */}
-        <Route path="/" element={<Bienvenida />} />
+      <GrupoProvider>
+        {mostrarNavbar && <Navbar />}
+        {mostrarNavbar && <MenuModulos />}
+        <Routes>
+          {/* Bienvenida */}
+          <Route path="/" element={<Bienvenida />} />
 
-        {/* Usuarios */}
-        <Route path="/registro-usuario" element={<RegistroUsuario />} />
-        <Route path="/login-usuario" element={<LoginUsuario />} />
-        <Route path="/registro-pendiente" element={<RegistroPendiente />} />
-        <Route path="/error-acceso" element={<VistaErrorAcceso />} />
-        <Route path="/recuperar-clave" element={<RecuperarClave />} />
-        <Route path="/nueva-clave" element={<NuevaClave />} />
+          {/* Usuarios */}
+          <Route path="/registro-usuario" element={<RegistroUsuario />} />
+          <Route path="/login-usuario" element={<LoginUsuario />} />
+          <Route path="/registro-pendiente" element={<RegistroPendiente />} />
+          <Route path="/error-acceso" element={<VistaErrorAcceso />} />
+          <Route path="/recuperar-clave" element={<RecuperarClave />} />
+          <Route path="/nueva-clave" element={<NuevaClave />} />
 
-        {modulos.includes("panel-usuario") && (
-          <Route
-            path="/panel-usuario"
-            element={
-              <RutaProtegida>
-                <PanelUsuario />
-              </RutaProtegida>
-            }
-          />
-        )}
-        {/* Finanzas */}
-        {modulos.includes("finanzas") && (
-          <>
-            <Route path="/finanzas" element={<RutaProtegida><Finanzas pais="Chile" /></RutaProtegida>} />
-            <Route path="/finanzas/ingresos" element={<RutaProtegida><Ingresos /></RutaProtegida>} />
-            <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
-            <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} />
-            <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
-            <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
-            <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
-            <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
-            <Route path="/finanzas/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
-            <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
-          </>
-        )}
-           {/* Ahorro */}
-        {modulos.includes("panel-ahorro") && (
-          <>
+          {/* Panel usuario */}
+          {modulos.includes("panel-usuario") && (
             <Route
-              path="/panel-ahorro"
+              path="/panel-usuario"
               element={
                 <RutaProtegida>
-                  <PanelAhorro /> {/* 👈 PanelAhorro usa useUserPerfil internamente */}
+                  <PanelUsuario />
                 </RutaProtegida>
               }
             />
+          )}
+
+          {/* Finanzas */}
+          {modulos.includes("finanzas") && (
+            <>
+              <Route path="/finanzas" element={<RutaProtegida><Finanzas pais="Chile" /></RutaProtegida>} />
+              <Route path="/finanzas/ingresos" element={<RutaProtegida><Ingresos /></RutaProtegida>} />
+              <Route path="/finanzas/egresos" element={<RutaProtegida><Egresos /></RutaProtegida>} />
+              <Route path="/finanzas/egresos/:slug" element={<RutaProtegida><EgresosCategoria /></RutaProtegida>} />
+              <Route path="/finanzas/resumen" element={<RutaProtegida><ResumenFinanciero /></RutaProtegida>} />
+              <Route path="/finanzas/resumen-egresos" element={<RutaProtegida><ResumenEgresos pais="Chile" /></RutaProtegida>} />
+              <Route path="/finanzas/creditos" element={<RutaProtegida><SimuladorCreditos /></RutaProtegida>} />
+              <Route path="/finanzas/foro" element={<RutaProtegida><ForoFinanciero /></RutaProtegida>} />
+              <Route path="/finanzas/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
+              <Route path="/finanzas/items" element={<RutaProtegida><Items /></RutaProtegida>} />
+            </>
+          )}
+
+          {/* Ahorro */}
+          {modulos.includes("panel-ahorro") && (
+            <>
+              <Route
+                path="/panel-ahorro"
+                element={
+                  <RutaProtegida>
+                    <PanelAhorro />
+                  </RutaProtegida>
+                }
+              />
+              <Route
+                path="/crear-grupo"
+                element={
+                  <RutaProtegida>
+                    <CrearGrupo />
+                  </RutaProtegida>
+                }
+              />
+            </>
+          )}
+
+          {/* Vista Grupal */}
+          {modulos.includes("vista-grupal") && (
             <Route
-              path="/crear-grupo"
+              path="/vista-grupal"
               element={
                 <RutaProtegida>
-                  <CrearGrupo /> {/* 👈 CrearGrupo usa useUserPerfil internamente */}
+                  <VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} />
                 </RutaProtegida>
               }
             />
-          </>
-        )}
+          )}
 
-        {/* Vista Grupal */}
-        {modulos.includes("vista-grupal") && (
+          {/* Colaboradores */}
+          <Route path="/registro-colaborador" element={<RegistroColaborador />} />
+          <Route path="/ingreso-colaborador" element={<IngresoColaborador />} />
+          <Route path="/login-colaborador" element={<LoginColaborador />} />
           <Route
-            path="/vista-grupal"
+            path="/panel-colaboradores"
+            element={
+              <RutaProtegidaColaborador>
+                <PanelColaboradores />
+              </RutaProtegidaColaborador>
+            }
+          />
+          <Route
+            path="/invitacion-colaboradores"
+            element={
+              <RutaProtegidaColaborador>
+                <InvitacionColaboradores />
+              </RutaProtegidaColaborador>
+            }
+          />
+          <Route
+            path="/ofertas-colaboradores"
+            element={
+              <RutaProtegidaColaborador>
+                <OfertasColaboradores />
+              </RutaProtegidaColaborador>
+            }
+          />
+          <Route
+            path="/publicar-oferta-colaborador"
+            element={
+              <RutaProtegidaColaborador>
+                <PublicarOfertaColaborador />
+              </RutaProtegidaColaborador>
+            }
+          />
+          <Route
+            path="/datos-ofertas"
+            element={
+              <RutaProtegidaColaborador>
+                <OfertasColaboradores />
+              </RutaProtegidaColaborador>
+            }
+          />
+
+          {/* Institucional */}
+          <Route
+            path="/dashboard-institucional"
+            element={
+              <RutaProtegidaInstitucional>
+                <DashboardInstitucional />
+              </RutaProtegidaInstitucional>
+            }
+          />
+          <Route
+            path="/editor-estado"
+            element={
+              <RutaProtegidaInstitucional>
+                <EditorEstadoArchivos />
+              </RutaProtegidaInstitucional>
+            }
+          />
+          <Route
+            path="/editor-trazabilidad"
+            element={
+              <RutaProtegidaInstitucional>
+                <EditorTrazabilidad />
+              </RutaProtegidaInstitucional>
+            }
+          />
+          <Route
+            path="/metrica-supabase"
+            element={
+              <RutaProtegidaInstitucional>
+                <MetricaSupabase />
+              </RutaProtegidaInstitucional>
+            }
+          />
+          <Route
+            path="/test-institucional"
+            element={
+              <RutaProtegidaInstitucional>
+                <TestInstitucional />
+              </RutaProtegidaInstitucional>
+            }
+          />
+
+          {/* Navegación y otras vistas */}
+          <Route path="/menu-modulos" element={<MenuModulos />} />
+          <Route
+            path="/resumen"
             element={
               <RutaProtegida>
-                <VistaGrupal nombreGrupoMeta="" metaGrupal={0} participantes={[]} />
+                <Resumen />
               </RutaProtegida>
             }
           />
-        )}
-
-        {/* Colaboradores */}
-        <Route path="/registro-colaborador" element={<RegistroColaborador />} />
-        <Route path="/ingreso-colaborador" element={<IngresoColaborador />} />
-        <Route path="/login-colaborador" element={<LoginColaborador />} />
-        <Route
-          path="/panel-colaboradores"
-          element={
-            <RutaProtegidaColaborador>
-              <PanelColaboradores />
-            </RutaProtegidaColaborador>
-          }
-        />
-        <Route
-          path="/invitacion-colaboradores"
-          element={
-            <RutaProtegidaColaborador>
-              <InvitacionColaboradores />
-            </RutaProtegidaColaborador>
-          }
-        />
-        <Route
-          path="/ofertas-colaboradores"
-          element={
-            <RutaProtegidaColaborador>
-              <OfertasColaboradores />
-            </RutaProtegidaColaborador>
-          }
-        />
-        <Route
-          path="/publicar-oferta-colaborador"
-          element={
-            <RutaProtegidaColaborador>
-              <PublicarOfertaColaborador />
-            </RutaProtegidaColaborador>
-          }
-        />
-        <Route
-          path="/datos-ofertas"
-          element={
-            <RutaProtegidaColaborador>
-              <OfertasColaboradores />
-            </RutaProtegidaColaborador>
-          }
-        />
-
-        {/* Institucional */}
-        <Route
-          path="/dashboard-institucional"
-          element={
-            <RutaProtegidaInstitucional>
-              <DashboardInstitucional />
-            </RutaProtegidaInstitucional>
-          }
-        />
-        <Route
-          path="/editor-estado"
-          element={
-            <RutaProtegidaInstitucional>
-              <EditorEstadoArchivos />
-            </RutaProtegidaInstitucional>
-          }
-        />
-        <Route
-          path="/editor-trazabilidad"
-          element={
-            <RutaProtegidaInstitucional>
-              <EditorTrazabilidad />
-            </RutaProtegidaInstitucional>
-          }
-        />
-        <Route
-          path="/metrica-supabase"
-          element={
-            <RutaProtegidaInstitucional>
-              <MetricaSupabase />
-            </RutaProtegidaInstitucional>
-          }
-        />
-        <Route
-          path="/test-institucional"
-          element={
-            <RutaProtegidaInstitucional>
-              <TestInstitucional />
-            </RutaProtegidaInstitucional>
-          }
-        />
-
-        {/* Navegación y otras vistas */}
-        <Route path="/menu-modulos" element={<MenuModulos />} />
-        <Route
-          path="/resumen"
-          element={
-            <RutaProtegida>
-              <Resumen />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/editar-ingresos-egresos"
-          element={
-            <RutaProtegida>
-              <EditarIngresosEgresos />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/editar-oferta"
-          element={
-            <RutaProtegidaColaborador>
-              <EditarOferta />
-            </RutaProtegidaColaborador>
-          }
-        />
-        <Route
-          path="/vista-ingreso-colaborador"
-          element={
-            <RutaProtegidaColaborador>
-              <VistaIngresoColaborador />
-            </RutaProtegidaColaborador>
-          }
-        />
-      </Routes>
+          <Route
+            path="/editar-ingresos-egresos"
+            element={
+              <RutaProtegida>
+                <EditarIngresosEgresos />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/editar-oferta"
+            element={
+              <RutaProtegidaColaborador>
+                <EditarOferta />
+              </RutaProtegidaColaborador>
+            }
+          />
+          <Route
+            path="/vista-ingreso-colaborador"
+            element={
+              <RutaProtegidaColaborador>
+                <VistaIngresoColaborador />
+              </RutaProtegidaColaborador>
+            }
+          />
+        </Routes>
+      </GrupoProvider>
     </UserProvider>
   );
 };
 
 export default App;
-
-
