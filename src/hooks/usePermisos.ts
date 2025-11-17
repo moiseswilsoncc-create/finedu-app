@@ -3,6 +3,7 @@ import { supabase } from "../supabaseClient";
 
 export const usePermisos = () => {
   const [modulos, setModulos] = useState<string[]>([]);
+  const [perfil, setPerfil] = useState<any>(null);   // 👈 nuevo estado para perfil
   const [cargando, setCargando] = useState(true);
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
 
@@ -19,6 +20,21 @@ export const usePermisos = () => {
 
       console.log("🧠 UsuarioId obtenido:", user.id);
       setUsuarioId(user.id);
+
+      // 👇 cargar perfil directamente aquí
+      const { data: perfilData, error: perfilError } = await supabase
+        .from("usuarios")
+        .select("id, nombre, apellido, correo")
+        .eq("id", user.id)
+        .single();
+
+      if (perfilError) {
+        console.error("❌ Error al consultar perfil:", perfilError.message);
+        setPerfil(null);
+      } else {
+        console.log("✅ Perfil consultado:", perfilData);
+        setPerfil(perfilData);
+      }
     };
 
     obtenerUsuarioId();
@@ -60,5 +76,6 @@ export const usePermisos = () => {
     cargar();
   }, [usuarioId]);
 
-  return { modulos, cargando, usuarioId };
+  // 👇 ahora el hook devuelve también el perfil
+  return { modulos, perfil, cargando, usuarioId };
 };
