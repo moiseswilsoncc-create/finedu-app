@@ -134,7 +134,6 @@ const PanelUsuario: React.FC = () => {
   }) || [];
 
   const modulosFiltrados = modulos.filter(m => rutasPermitidas.includes(m.ruta));
-
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       <h1 style={{ color: "#3498db", marginBottom: "1rem" }}>
@@ -205,9 +204,22 @@ const PanelUsuario: React.FC = () => {
       )}
 
       <section>
-        <Link to="/modulos" style={{
-          display: "inline-block",
-          padding: "0.75rem 1.5rem",
-          backgroundColor: "#2ecc71",
-          color: "white",
-          borderRadius: "6px",
+        <Link
+          to="/modulos"
+          style={{
+            display: "inline-block",
+            padding: "0.75rem 1.5rem",
+            backgroundColor: "#2ecc71",
+            color: "white",
+            borderRadius: "6px",
+            textDecoration: "none"
+          }}
+        >
+          📁 Ver todos los módulos
+        </Link>
+      </section>
+    </div>
+  );
+};
+
+export default PanelUsuario;
