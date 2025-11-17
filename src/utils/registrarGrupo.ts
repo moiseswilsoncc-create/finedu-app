@@ -35,10 +35,12 @@ export async function registrarGrupo(grupo: NuevoGrupo) {
     detalle: `El grupo "${data.nombre}" fue creado por ${admin.nombre} ${admin.apellido} (${admin.correo}).`,
   });
 
-  // 4️⃣ Insertar administrador como participante del grupo
+  // 4️⃣ Insertar administrador como participante del grupo con nombre y apellido
   const { error: errorAdminInsert } = await supabase.from("participantes_grupo").insert({
     grupo_id: data.id,
     usuario_id: grupo.administrador_id,
+    nombre: admin.nombre,
+    apellido: admin.apellido,
     rol: "administrador",
     estado: "activo",
     fecha_ingreso: new Date().toISOString(),
