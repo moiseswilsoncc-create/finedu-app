@@ -13,7 +13,7 @@ const PanelGrupo: React.FC = () => {
   const [cargando, setCargando] = useState(true);
 
   const grupoId = localStorage.getItem('grupoId');
-  const { participantes } = useGrupo(); // ✅ Consumimos participantes desde el contexto
+  const { participantes, actualizarParticipante } = useGrupo(); // ✅ Consumimos contexto
 
   useEffect(() => {
     const cargarGrupo = async () => {
@@ -53,6 +53,33 @@ const PanelGrupo: React.FC = () => {
 
     cargarGrupo();
   }, [grupoId]);
+
+  // 🔑 Nuevo efecto: hidratar contexto con participantes del grupo
+  useEffect(() => {
+    const cargarParticipantes = async () => {
+      if (!grupoId) return;
+
+      const { data: participantesBD, error } = await supabase
+        .from('participantes_grupo')
+        .select('usuario_id, correo')
+        .eq('grupo_id', grupoId)
+        .eq('estado', 'activo');
+
+      if (error) {
+        console.error("Error al cargar participantes:", error);
+        return;
+      }
+
+      if (participantesBD) {
+        for (const p of participantesBD) {
+          // 👇 sincroniza nombre/apellido desde tabla usuarios
+          await actualizarParticipante(p.correo, 0, 0);
+        }
+      }
+    };
+
+    cargarParticipantes();
+  }, [grupoId, actualizarParticipante]);
 
   if (cargando) {
     return (
