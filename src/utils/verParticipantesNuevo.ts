@@ -23,11 +23,14 @@ export async function verParticipantes(grupoId: string, usuarioId: string) {
     const { data: participantes, error: errorLista } = await supabase
       .from("participantes_grupo")
       .select(`
+        id,
         usuario_id,
         rol,
         fecha_ingreso,
         estado,
-        usuarios:usuario_id (
+        correo,
+        usuarios (
+          id,
           nombre,
           apellido,
           correo
