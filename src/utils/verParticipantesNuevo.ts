@@ -44,6 +44,8 @@ export async function verParticipantes(grupoId: string, usuarioId: string) {
       };
     }
 
+    console.log("🔍 Participantes con join:", participantes);
+
     return {
       mensaje: "✅ Participantes cargados correctamente",
       error: false,
