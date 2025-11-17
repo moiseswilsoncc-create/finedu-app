@@ -22,10 +22,12 @@ export async function agregarParticipanteNuevo(grupoId: string, correo: string) 
       };
     }
 
-    // 3️⃣ Insertar participante vinculado al usuario
+    // 3️⃣ Insertar participante vinculado al usuario con nombre y apellido
     const { error: errorInsert } = await supabase.from("participantes_grupo").insert({
       grupo_id: grupoId,
       usuario_id: usuario.id,
+      nombre: usuario.nombre,
+      apellido: usuario.apellido,
       rol: "miembro",
       estado: "activo",
       fecha_ingreso: new Date().toISOString(),
