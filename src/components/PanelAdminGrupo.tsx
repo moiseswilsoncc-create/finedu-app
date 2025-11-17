@@ -3,7 +3,8 @@ import FormularioAgregar from './FormularioAgregar';
 import FormularioAporte from './FormularioAporte';
 import TablaParticipantes from './TablaParticipantes';
 import BitacoraGrupo from './BitacoraGrupo';
-import { Grupo } from '../types'; // ← tipado institucional
+import { Grupo } from '../types';
+import { useGrupo } from '../context/GrupoContext'; // ✅ Importar contexto
 
 interface Props {
   grupo: Grupo;
@@ -12,6 +13,7 @@ interface Props {
 
 const PanelAdminGrupo: React.FC<Props> = ({ grupo, usuarioId }) => {
   const [esAdmin, setEsAdmin] = useState(false);
+  const { participantes } = useGrupo(); // ✅ Consumimos participantes desde contexto
 
   useEffect(() => {
     if (grupo && usuarioId) {
@@ -45,8 +47,8 @@ const PanelAdminGrupo: React.FC<Props> = ({ grupo, usuarioId }) => {
 
       <section style={{ marginBottom: '2rem' }}>
         <h3>👥 Participantes activos</h3>
-        {/* Validación: pasamos siempre valores seguros */}
-        <TablaParticipantes grupoId={grupo.id?.toString() || ""} adminId={usuarioId} />
+        {/* Ahora pasamos los participantes del contexto */}
+        <TablaParticipantes participantes={participantes} grupoId={grupo.id?.toString() || ""} adminId={usuarioId} />
       </section>
 
       <section style={{ marginBottom: '2rem' }}>
