@@ -3,7 +3,8 @@ import { supabase } from '../supabaseClient';
 import { Grupo } from '../types';
 import PanelAdminGrupo from './PanelAdminGrupo';
 import PanelParticipante from './PanelParticipante';
-import ResumenGrupo from './ResumenGrupo'; // ← nuevo import
+import ResumenGrupo from './ResumenGrupo';
+import { useGrupo } from '../context/GrupoContext'; // ✅ Import del contexto institucional
 
 const PanelGrupo: React.FC = () => {
   const [grupo, setGrupo] = useState<Grupo | null>(null);
@@ -12,6 +13,7 @@ const PanelGrupo: React.FC = () => {
   const [cargando, setCargando] = useState(true);
 
   const grupoId = localStorage.getItem('grupoId');
+  const { participantes } = useGrupo(); // ✅ Consumimos participantes desde el contexto
 
   useEffect(() => {
     const cargarGrupo = async () => {
@@ -77,12 +79,12 @@ const PanelGrupo: React.FC = () => {
         🧭 Panel del grupo: {grupo.nombre}
       </h2>
 
-      <ResumenGrupo grupo={grupo} /> {/* ← componente modular */}
+      <ResumenGrupo grupo={grupo} />
 
       {esAdmin ? (
-        <PanelAdminGrupo grupo={grupo} usuarioId={usuarioId} />
+        <PanelAdminGrupo grupo={grupo} usuarioId={usuarioId} participantes={participantes} />
       ) : (
-        <PanelParticipante grupo={grupo} usuarioId={usuarioId} />
+        <PanelParticipante grupo={grupo} usuarioId={usuarioId} participantes={participantes} />
       )}
     </div>
   );
