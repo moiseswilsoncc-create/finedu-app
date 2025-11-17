@@ -137,7 +137,9 @@ const PanelUsuario: React.FC = () => {
 
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
-      <h1 style={{ color: "#3498db", marginBottom: "1rem" }}>👋 Bienvenido, {nombreUsuario}</h1>
+      <h1 style={{ color: "#3498db", marginBottom: "1rem" }}>
+        👋 Bienvenido, {nombreUsuario || correo || "Usuario"}
+      </h1>
 
       {permisos === null && <p>⏳ Cargando permisos…</p>}
 
@@ -209,13 +211,3 @@ const PanelUsuario: React.FC = () => {
           backgroundColor: "#2ecc71",
           color: "white",
           borderRadius: "6px",
-          textDecoration: "none"
-        }}>
-          📁 Ver todos los módulos
-        </Link>
-      </section>
-    </div>
-  );
-};
-
-export default PanelUsuario;
