@@ -1,14 +1,16 @@
 import React, { createContext, useContext, useState } from "react";
 import { supabase } from "../supabaseClient"; // ✅ Import para consultas
 
+// Tipado de participante institucional
 export type Participante = {
-  correo: string;       // ✅ ahora siempre presente
+  correo: string;       // ✅ siempre presente
   nombre: string;
-  apellido: string;     // ✅ ahora siempre presente
+  apellido: string;     // ✅ siempre presente
   ingresos: number;
   egresos: number;
 };
 
+// Tipado del contexto institucional
 type GrupoContextType = {
   nombreGrupoMeta: string;
   metaGrupal: number;
@@ -21,8 +23,10 @@ type GrupoContextType = {
   mensajeValidacion: string;
 };
 
-const GrupoContext = createContext<GrupoContextType | undefined>(undefined);
+// ✅ Export explícito del contexto
+export const GrupoContext = createContext<GrupoContextType | undefined>(undefined);
 
+// ✅ Provider institucional
 export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [nombreGrupoMeta, setNombreGrupoMeta] = useState("Grupo Finedu");
   const [metaGrupal, setMetaGrupal] = useState(1_000_000);
@@ -33,7 +37,7 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setMetaGrupal(meta);
   };
 
-  // ✅ Ahora busca nombre + apellido en Supabase y los guarda en el estado
+  // ✅ Busca nombre + apellido en Supabase y los guarda en el estado
   const actualizarParticipante = async (correo: string, ingresos: number, egresos: number) => {
     const { data, error } = await supabase
       .from("usuarios")
@@ -104,6 +108,7 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
+// ✅ Hook institucional para consumir el contexto
 export const useGrupo = (): GrupoContextType => {
   const context = useContext(GrupoContext);
   if (!context) {
