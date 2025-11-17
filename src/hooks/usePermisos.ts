@@ -7,30 +7,18 @@ export const usePermisos = () => {
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
 
   useEffect(() => {
-    const correoUsuario = localStorage.getItem("correoUsuario");
-    if (!correoUsuario) {
-      console.log("⚠️ No hay correo en localStorage → no se puede obtener permisos");
-      setCargando(false);
-      return;
-    }
-
-    // 1. Buscar uuid en tabla usuarios
     const obtenerUsuarioId = async () => {
-      const { data, error } = await supabase
-        .from("usuarios")
-        .select("id")
-        .eq("correo", correoUsuario)
-        .single();
+      const { data: { user }, error } = await supabase.auth.getUser();
 
-      if (error || !data) {
-        console.error("❌ No se encontró usuario en Supabase:", error);
+      if (error || !user) {
+        console.error("❌ No se pudo obtener usuario de Supabase:", error);
         setUsuarioId(null);
         setCargando(false);
         return;
       }
 
-      console.log("🧠 UsuarioId obtenido:", data.id);
-      setUsuarioId(data.id);
+      console.log("🧠 UsuarioId obtenido:", user.id);
+      setUsuarioId(user.id);
     };
 
     obtenerUsuarioId();
