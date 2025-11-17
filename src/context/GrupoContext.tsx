@@ -39,10 +39,12 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // ✅ Busca nombre + apellido en Supabase y los guarda en el estado
   const actualizarParticipante = async (correo: string, ingresos: number, egresos: number) => {
+    const correoNorm = correo.trim().toLowerCase(); // 👈 normalización
+
     const { data, error } = await supabase
       .from("usuarios")
       .select("nombre, apellido")
-      .eq("correo", correo)
+      .ilike("correo", correoNorm) // 👈 coincidencia case-insensitive
       .single();
 
     if (error || !data) {
@@ -54,17 +56,17 @@ export const GrupoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const apellidoCompleto = data.apellido?.trim() || "";
 
     setParticipantes((prev) => {
-      const existe = prev.find((p) => p.correo === correo);
+      const existe = prev.find((p) => p.correo === correoNorm);
       if (existe) {
         return prev.map((p) =>
-          p.correo === correo
+          p.correo === correoNorm
             ? { ...p, nombre: nombreCompleto, apellido: apellidoCompleto, ingresos, egresos }
             : p
         );
       } else {
         return [
           ...prev,
-          { correo, nombre: nombreCompleto, apellido: apellidoCompleto, ingresos, egresos },
+          { correo: correoNorm, nombre: nombreCompleto, apellido: apellidoCompleto, ingresos, egresos },
         ];
       }
     });
