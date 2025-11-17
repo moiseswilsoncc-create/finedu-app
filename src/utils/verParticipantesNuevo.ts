@@ -19,7 +19,7 @@ export async function verParticipantes(grupoId: string, usuarioId: string) {
       };
     }
 
-    // 2. Obtener todos los participantes activos del grupo con JOIN a usuarios
+    // 2. Obtener todos los participantes activos del grupo con JOIN correcto a usuarios
     const { data: participantes, error: errorLista } = await supabase
       .from("participantes_grupo")
       .select(`
@@ -27,7 +27,7 @@ export async function verParticipantes(grupoId: string, usuarioId: string) {
         rol,
         fecha_ingreso,
         estado,
-        usuarios (
+        usuarios:usuario_id (
           nombre,
           apellido,
           correo
