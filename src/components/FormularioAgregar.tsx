@@ -1,12 +1,11 @@
-import React, { useState, useContext, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { supabase } from "../supabaseClient";
-import { GrupoContext } from "../context/GrupoContext";
+import { useGrupo } from "../context/GrupoContext"; // ✅ usar hook institucional
 import { agregarParticipanteNuevo } from "../utils/agregarParticipanteNuevo";
 
 type Props = { grupoId: string };
 
-const EMAIL_REGEX =
-  /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
 function normalizarCorreo(c: string) {
   return c.trim().toLowerCase();
@@ -18,8 +17,8 @@ export default function FormularioAgregar({ grupoId }: Props) {
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
 
-  // ✅ Consumimos contexto institucional
-  const { participantes, actualizarParticipante } = useContext(GrupoContext);
+  // ✅ Consumimos contexto institucional con hook
+  const { participantes, actualizarParticipante } = useGrupo();
 
   // ✅ Derivados
   const correoNorm = useMemo(() => normalizarCorreo(correo), [correo]);
@@ -34,7 +33,6 @@ export default function FormularioAgregar({ grupoId }: Props) {
     setMensaje("");
     setError("");
 
-    // Guardas de UI
     if (!correoValido) {
       setError("⚠️ Ingresa un correo válido.");
       return;
@@ -55,7 +53,7 @@ export default function FormularioAgregar({ grupoId }: Props) {
       if (res.error) throw new Error(res.mensaje || "Error al agregar participante en BD.");
 
       // 2️⃣ Sincronizar contexto con identidad completa
-      await actualizarParticipante(correoNorm, grupoId, 0);
+      await actualizarParticipante(correoNorm, 0, 0);
 
       // 3️⃣ Feedback y reset
       setMensaje("✅ Participante agregado correctamente.");
