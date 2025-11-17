@@ -19,27 +19,14 @@ export async function verParticipantes(grupoId: string, usuarioId: string) {
       };
     }
 
-    // 2. Obtener todos los participantes activos del grupo con JOIN correcto a usuarios
+    // 2. Obtener todos los participantes activos del grupo
     const { data: participantes, error: errorLista } = await supabase
       .from("participantes_grupo")
-      .select(`
-        id,
-        usuario_id,
-        rol,
-        fecha_ingreso,
-        estado,
-        correo,
-        usuarios (
-          id,
-          nombre,
-          apellido,
-          correo
-        )
-      `)
+      .select("id, usuario_id, rol, fecha_ingreso, estado, correo")
       .eq("grupo_id", grupoId)
       .eq("estado", "activo");
 
-    if (errorLista) {
+    if (errorLista || !participantes) {
       return {
         mensaje: "❌ Error al obtener la lista de participantes",
         error: true,
@@ -47,12 +34,34 @@ export async function verParticipantes(grupoId: string, usuarioId: string) {
       };
     }
 
-    console.log("🔍 Participantes con join:", participantes);
+    // 3. Traer los usuarios vinculados
+    const usuariosIds = participantes.map((p) => p.usuario_id);
+
+    const { data: usuarios, error: errorUsuarios } = await supabase
+      .from("usuarios")
+      .select("id, nombre, apellido, correo")
+      .in("id", usuariosIds);
+
+    if (errorUsuarios || !usuarios) {
+      return {
+        mensaje: "❌ Error al obtener datos de usuarios",
+        error: true,
+        data: [],
+      };
+    }
+
+    // 4. Merge manual: unir participantes con sus usuarios
+    const participantesConNombre = participantes.map((p) => ({
+      ...p,
+      usuario: usuarios.find((u) => u.id === p.usuario_id),
+    }));
+
+    console.log("🔍 Participantes con merge manual:", participantesConNombre);
 
     return {
       mensaje: "✅ Participantes cargados correctamente",
       error: false,
-      data: participantes || [],
+      data: participantesConNombre,
     };
   } catch (err: any) {
     return {
