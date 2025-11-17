@@ -16,7 +16,7 @@ interface Participante {
     nombre: string;
     apellido: string;
     correo: string;
-  };
+  }[]; // 👈 ahora es array
 }
 
 export default function TablaParticipantes({ grupoId, adminId }: Props) {
@@ -87,41 +87,42 @@ export default function TablaParticipantes({ grupoId, adminId }: Props) {
             </tr>
           </thead>
           <tbody>
-            {participantes.map((p) => (
-              <tr key={p.usuario_id}>
-                <td>
-                  {p.usuarios?.nombre && p.usuarios?.apellido
-                    ? `${p.usuarios.nombre} ${p.usuarios.apellido}`
-                    : "—"}
-                </td>
-                <td>{p.usuarios?.correo || "Correo no disponible"}</td>
-                <td>{p.rol}</td>
-                <td>
-                  {p.fecha_ingreso
-                    ? new Date(p.fecha_ingreso).toLocaleDateString("es-CL")
-                    : "Sin fecha"}
-                </td>
-                <td>{p.estado || "No definido"}</td>
-                <td>
-                  {p.rol !== "admin" && (
-                    <button
-                      onClick={() => manejarExpulsion(p.usuario_id)}
-                      disabled={cargando}
-                      style={{
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        padding: "0.3rem 0.6rem",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Expulsar
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {participantes.map((p) => {
+              const usuario = Array.isArray(p.usuarios) && p.usuarios.length > 0 ? p.usuarios[0] : null;
+              return (
+                <tr key={p.usuario_id}>
+                  <td>
+                    {usuario ? `${usuario.nombre} ${usuario.apellido}` : "—"}
+                  </td>
+                  <td>{usuario?.correo || "Correo no disponible"}</td>
+                  <td>{p.rol}</td>
+                  <td>
+                    {p.fecha_ingreso
+                      ? new Date(p.fecha_ingreso).toLocaleDateString("es-CL")
+                      : "Sin fecha"}
+                  </td>
+                  <td>{p.estado || "No definido"}</td>
+                  <td>
+                    {p.rol !== "admin" && (
+                      <button
+                        onClick={() => manejarExpulsion(p.usuario_id)}
+                        disabled={cargando}
+                        style={{
+                          backgroundColor: "#dc3545",
+                          color: "white",
+                          padding: "0.3rem 0.6rem",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Expulsar
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
