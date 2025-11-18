@@ -19,49 +19,27 @@ export async function verParticipantes(grupoId: string, usuarioId: string) {
       };
     }
 
-    // 2. Obtener todos los participantes activos del grupo
-    const { data: participantes, error: errorLista } = await supabase
-      .from("participantes_grupo")
-      .select("id, usuario_id, rol, fecha_ingreso, estado, correo")
+    // 2. Consultar directamente la vista con nombres/apellidos
+    const { data: participantes, error: errorVista } = await supabase
+      .from("vista_participantes_con_usuarios")
+      .select("*")
       .eq("grupo_id", grupoId)
       .eq("estado", "activo");
 
-    if (errorLista || !participantes) {
+    if (errorVista) {
       return {
-        mensaje: "❌ Error al obtener la lista de participantes",
+        mensaje: "❌ Error al obtener la lista de participantes desde la vista",
         error: true,
         data: [],
       };
     }
 
-    // 3. Traer los usuarios vinculados
-    const usuariosIds = participantes.map((p) => p.usuario_id);
-
-    const { data: usuarios, error: errorUsuarios } = await supabase
-      .from("usuarios")
-      .select("id, nombre, apellido, correo")
-      .in("id", usuariosIds);
-
-    if (errorUsuarios || !usuarios) {
-      return {
-        mensaje: "❌ Error al obtener datos de usuarios",
-        error: true,
-        data: [],
-      };
-    }
-
-    // 4. Merge manual: unir participantes con sus usuarios
-    const participantesConNombre = participantes.map((p) => ({
-      ...p,
-      usuario: usuarios.find((u) => u.id === p.usuario_id),
-    }));
-
-    console.log("🔍 Participantes con merge manual:", participantesConNombre);
+    console.log("🔍 Participantes desde vista:", participantes);
 
     return {
       mensaje: "✅ Participantes cargados correctamente",
       error: false,
-      data: participantesConNombre,
+      data: participantes || [],
     };
   } catch (err: any) {
     return {
