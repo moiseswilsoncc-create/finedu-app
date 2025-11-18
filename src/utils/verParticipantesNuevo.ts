@@ -1,6 +1,6 @@
 import { supabase } from "../supabaseClient";
 
-export async function verParticipantes(grupoId: string, usuarioId: string) {
+export async function verParticipantes(grupoId: string, usuarioId: string, correoIngresado?: string) {
   try {
     // 1. Validar que el usuario pertenece al grupo
     const { data: vinculo, error: errorVinculo } = await supabase
@@ -34,12 +34,31 @@ export async function verParticipantes(grupoId: string, usuarioId: string) {
       };
     }
 
-    console.log("🔍 Participantes desde vista:", participantes);
+    // 3. Si se está agregando un invitado por correo, buscarlo en usuarios
+    let invitadoExtra = null;
+    if (correoIngresado) {
+      const { data: usuario, error: errorUsuario } = await supabase
+        .from("usuarios")
+        .select("id, correo, nombre, apellido")
+        .eq("correo", correoIngresado)
+        .single();
+
+      if (!errorUsuario && usuario) {
+        invitadoExtra = usuario;
+      }
+    }
+
+    // 4. Consolidar resultados
+    const resultadoFinal = invitadoExtra
+      ? [...(participantes || []), invitadoExtra]
+      : participantes || [];
+
+    console.log("🔍 Participantes consolidados:", resultadoFinal);
 
     return {
       mensaje: "✅ Participantes cargados correctamente",
       error: false,
-      data: participantes || [],
+      data: resultadoFinal,
     };
   } catch (err: any) {
     return {
