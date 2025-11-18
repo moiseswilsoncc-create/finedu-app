@@ -16,12 +16,17 @@ export default function DashboardParticipante() {
         return;
       }
 
+      // ⚡️ Usar la vista en vez de participantes_grupo
       const { data, error: errorGrupos } = await supabase
-        .from('participantes_grupo')
+        .from('vista_participantes_con_usuarios')
         .select(`
           grupo_id,
-          grupos_ahorro(*, metadata_grupo(pais, ciudad, comuna)),
-          usuarios(nombre, apellido, correo)
+          rol,
+          estado,
+          nombre,
+          apellido,
+          correo,
+          grupos_ahorro(*, metadata_grupo(pais, ciudad, comuna))
         `)
         .eq('usuario_id', user.id)
         .eq('estado', 'activo');
@@ -34,7 +39,13 @@ export default function DashboardParticipante() {
       const gruposFiltrados = (data || [])
         .map((registro: any) => ({
           ...registro.grupos_ahorro,
-          participante: registro.usuarios
+          participante: {
+            nombre: registro.nombre,
+            apellido: registro.apellido,
+            correo: registro.correo,
+            rol: registro.rol,
+            estado: registro.estado
+          }
         }))
         .filter((g: any) => g && g.administrador_id !== user.id);
 
