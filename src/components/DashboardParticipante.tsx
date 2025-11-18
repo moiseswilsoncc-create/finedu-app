@@ -16,7 +16,7 @@ export default function DashboardParticipante() {
         return;
       }
 
-      // ⚡️ Usar la vista en vez de participantes_grupo
+      // ⚡️ Consultar directamente la vista con nombres/apellidos
       const { data, error: errorGrupos } = await supabase
         .from('vista_participantes_con_usuarios')
         .select(`
@@ -39,6 +39,7 @@ export default function DashboardParticipante() {
       const gruposFiltrados = (data || [])
         .map((registro: any) => ({
           ...registro.grupos_ahorro,
+          metadata: registro.metadata_grupo?.[0] || registro.metadata_grupo,
           participante: {
             nombre: registro.nombre,
             apellido: registro.apellido,
@@ -75,7 +76,7 @@ export default function DashboardParticipante() {
               <ResumenGrupoCompacto
                 key={grupo.id}
                 grupo={grupo}
-                metadata={grupo.metadata_grupo?.[0] || grupo.metadata_grupo}
+                metadata={grupo.metadata}
                 participante={grupo.participante}
                 onIngresar={ingresarAGrupo}
               />
