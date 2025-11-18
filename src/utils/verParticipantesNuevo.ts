@@ -1,9 +1,13 @@
 import { supabase } from "../supabaseClient";
 
-export async function verParticipantes(grupoId: string, usuarioId: string, correoIngresado?: string) {
+export async function verParticipantes(
+  grupoId: string,
+  usuarioId: string,
+  correoIngresado?: string
+) {
   try {
-    // 1. Validar que el usuario pertenece al grupo
-    const { data: vinculo, error: errorVinculo } = await supabase
+    // 1. Validar que el usuario pertenece al grupo o es admin
+    const { data: vinculo } = await supabase
       .from("participantes_grupo")
       .select("id")
       .eq("grupo_id", grupoId)
@@ -11,12 +15,20 @@ export async function verParticipantes(grupoId: string, usuarioId: string, corre
       .eq("estado", "activo")
       .single();
 
-    if (errorVinculo || !vinculo) {
-      return {
-        mensaje: "🔒 No tienes acceso a los participantes de este grupo",
-        error: true,
-        data: [],
-      };
+    if (!vinculo) {
+      const { data: grupo } = await supabase
+        .from("grupos_ahorro")
+        .select("administrador_id")
+        .eq("id", grupoId)
+        .single();
+
+      if (!grupo || grupo.administrador_id !== usuarioId) {
+        return {
+          mensaje: "🔒 No tienes acceso a los participantes de este grupo",
+          error: true,
+          data: [],
+        };
+      }
     }
 
     // 2. Consultar directamente la vista con nombres/apellidos
