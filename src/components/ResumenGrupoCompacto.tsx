@@ -3,10 +3,22 @@ import { Grupo } from '../types';
 
 interface Props {
   grupo: Grupo;
+  participante?: {
+    nombre?: string;
+    apellido?: string;
+    correo?: string;
+    rol?: string;
+    estado?: string;
+  };
   onIngresar?: (id: string) => void;
 }
 
-const ResumenGrupoCompacto: React.FC<Props> = ({ grupo, onIngresar }) => {
+const ResumenGrupoCompacto: React.FC<Props> = ({ grupo, participante, onIngresar }) => {
+  const nombreCompleto =
+    participante?.nombre && participante?.apellido
+      ? `${participante.nombre} ${participante.apellido}`
+      : '—';
+
   return (
     <div
       style={{
@@ -28,6 +40,13 @@ const ResumenGrupoCompacto: React.FC<Props> = ({ grupo, onIngresar }) => {
       <p style={{ margin: 0, fontSize: '0.85rem' }}>
         Estado: {grupo.activo ? '✅ Activo' : '⛔️ Inactivo'}
       </p>
+
+      {/* 👤 Datos del participante */}
+      <div style={{ marginTop: '0.8rem', fontSize: '0.9rem' }}>
+        <p><strong>👤 Participante:</strong> {nombreCompleto}</p>
+        <p><strong>📧 Correo:</strong> {participante?.correo || '—'}</p>
+        <p><strong>🎭 Rol:</strong> {participante?.rol || '—'}</p>
+      </div>
 
       {onIngresar && (
         <button
