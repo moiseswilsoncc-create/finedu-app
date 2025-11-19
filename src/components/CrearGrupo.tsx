@@ -1,4 +1,3 @@
-// src/components/CrearGrupo.tsx
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import BloqueDatosGrupo from "./BloqueDatosGrupo";
@@ -7,11 +6,8 @@ import BloqueParticipantes from "./BloqueParticipantes";
 import { useUserPerfil } from "../context/UserContext";
 
 const CrearGrupo: React.FC = () => {
-  const perfil = useUserPerfil();
-  const correoUsuario =
-    perfil?.correo?.trim().toLowerCase() ||
-    localStorage.getItem("correoUsuario") ||
-    "";
+  // 1. 🔌 CONEXIÓN NUEVA: Desestructuramos { perfil, cargando }
+  const { perfil, cargando } = useUserPerfil();
 
   // Datos generales
   const [nombreGrupo, setNombreGrupo] = useState("");
@@ -29,9 +25,10 @@ const CrearGrupo: React.FC = () => {
   const [correos, setCorreos] = useState<string[]>([]);
   const [montos, setMontos] = useState<{ [correo: string]: number }>({});
   const [nombres, setNombres] = useState<{ [correo: string]: string }>({});
-  const [usuariosMap, setUsuariosMap] = useState<{ [correo: string]: string }>(
-    {}
-  );
+  // Mapa para guardar los UUIDs reales de los usuarios encontrados
+  const [usuariosMap, setUsuariosMap] = useState<{ [correo: string]: string }>({});
+
+  const correoUsuario = perfil?.correo || "";
 
   // Cálculos derivados
   const totalIntegrantes = 1 + correos.length;
@@ -61,23 +58,15 @@ const CrearGrupo: React.FC = () => {
       return;
     }
 
-    // ✅ Buscar uuid en tabla usuarios usando correo
-    const { data: usuario, error: usuarioError } = await supabase
-      .from("usuarios")
-      .select("id")
-      .eq("correo", correoUsuario)
-      .single();
-
-    if (usuarioError || !usuario) {
-      console.error("❌ Usuario no encontrado en Supabase:", usuarioError);
-      alert("❌ No se pudo obtener el usuario en Supabase.");
+    if (!perfil?.id) {
+      alert("❌ Error de identidad: No se reconoce al administrador.");
       return;
     }
 
-    const administradorId = usuario.id;
-    console.log("🧠 Usuario administrador:", administradorId, correoUsuario);
+    // 2. USAMOS EL ID DIRECTO DEL CONTEXTO (Ya no consultamos a la BD extra)
+    const administradorId = perfil.id;
 
-    // ✅ Insertar grupo
+    // Insertar grupo
     const { data: grupoData, error: grupoError } = await supabase
       .from("grupos_ahorro")
       .insert([
@@ -101,27 +90,21 @@ const CrearGrupo: React.FC = () => {
       alert("❌ No se pudo crear el grupo.");
       return;
     }
-    console.log("✅ Grupo creado:", grupoData);
 
-    // ⚡️ Usar el PK real (id) en vez de id_uuid
     const grupoId = grupoData.id;
 
-    // ✅ Insertar metadata
-    const { error: metadataError } = await supabase
+    // Insertar metadata
+    await supabase
       .from("metadata_grupo")
       .insert([{ grupo_id: grupoId, pais, ciudad, comuna }]);
-    if (metadataError) {
-      console.error("❌ Error insertando metadata:", metadataError);
-    } else {
-      console.log("✅ Metadata insertada");
-    }
 
-    // ✅ Insertar participantes
+    // Insertar participantes
     const todosLosCorreos = [correoUsuario, ...correos];
     const miembros = todosLosCorreos.map((correo) => ({
       grupo_id: grupoId,
-      usuario_id: usuariosMap[correo], // uuid desde tabla usuarios
-      correo,
+      // Si es el admin, usamos su ID directo. Si es invitado, usamos el mapa.
+      usuario_id: correo === correoUsuario ? administradorId : usuariosMap[correo],
+      correo, // Guardamos correo como referencia auxiliar
       rol: correo === correoUsuario ? "admin" : "participante",
       fecha_ingreso: new Date().toISOString(),
       estado: "activo",
@@ -133,15 +116,23 @@ const CrearGrupo: React.FC = () => {
       .insert(miembros);
 
     if (miembrosError) {
-      console.error("❌ Error Supabase (insert participantes):", miembrosError);
-      alert("❌ Error al registrar los participantes.");
+      console.error("❌ Error insertando participantes:", miembrosError);
+      alert("❌ Grupo creado, pero hubo error al registrar participantes.");
       return;
     }
-    console.log("✅ Participantes insertados:", miembros);
+
+    // Registro en Historial
+    await supabase.from("historial_grupo").insert({
+        grupo_id: grupoId,
+        usuario_id: administradorId,
+        tipo_evento: "creación",
+        detalle: `Grupo "${nombreGrupo}" creado con meta de $${metaTotal}`,
+        fecha: new Date().toISOString()
+    });
 
     alert(`✅ Grupo "${nombreGrupo}" creado exitosamente.`);
 
-    // Reset de estados
+    // Reset
     setNombreGrupo("");
     setPais("");
     setCiudad("");
@@ -155,18 +146,37 @@ const CrearGrupo: React.FC = () => {
     setUsuariosMap({});
   };
 
-  if (!correoUsuario) {
-    return <p>⚠️ No se puede crear grupo sin usuario activo.</p>;
+  // 3. 🚦 BLINDAJE DE PANTALLA (Esto soluciona la pantalla "lisa")
+  if (cargando) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-blue-600 text-xl font-semibold animate-pulse">
+          ⏳ Cargando formulario...
+        </div>
+      </div>
+    );
   }
 
+  if (!perfil) {
+    return (
+      <div className="p-8 text-center border rounded bg-red-50 text-red-600">
+        ⚠️ No se detectó usuario activo. Por favor recarga la página.
+      </div>
+    );
+  }
+
+  // 4. RENDERIZADO DE LOS MÓDULOS
   return (
-    <div style={{ maxWidth: "700px", margin: "2rem auto", padding: "1rem" }}>
-      <h2>🛠️ Crear nuevo grupo de ahorro</h2>
-      {perfil && (
-        <p style={{ fontWeight: "bold", color: "#2c3e50" }}>
-          Administrador: {perfil.nombre} {perfil.apellido}
-        </p>
-      )}
+    <div style={{ maxWidth: "800px", margin: "2rem auto", padding: "1rem" }}>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">🛠️ Crear nuevo grupo de ahorro</h2>
+      
+      <div className="mb-4 p-4 bg-blue-50 rounded border border-blue-100 flex justify-between items-center">
+        <div>
+            <span className="font-bold text-blue-800">Administrador:</span> 
+            <span className="ml-2 text-gray-700">{perfil.nombre} {perfil.apellido}</span>
+        </div>
+        <span className="text-sm text-gray-500">{perfil.correo}</span>
+      </div>
 
       <BloqueDatosGrupo
         nombreGrupo={nombreGrupo}
@@ -186,6 +196,7 @@ const CrearGrupo: React.FC = () => {
         aporteMensual={aporteMensual}
         setMetaTotal={setMetaTotal}
         setPlazoMeses={setPlazoMeses}
+        setFechaTermino={setFechaTermino}
       />
 
       <BloqueParticipantes
@@ -200,6 +211,9 @@ const CrearGrupo: React.FC = () => {
         agregarCorreo={(c) => setCorreos((prev) => [...prev, c])}
         crearGrupo={crearGrupo}
         aporteMensual={aporteMensual}
+        // Pasamos el mapa para guardar los IDs reales de los invitados
+        usuariosMap={usuariosMap}
+        setUsuariosMap={setUsuariosMap}
       />
     </div>
   );
