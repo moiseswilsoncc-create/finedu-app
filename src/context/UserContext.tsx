@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-// 👇 ESTA ES LA RUTA CORRECTA PARA TU PROYECTO
+// 👇 Asegúrate que esta ruta sea correcta según tu proyecto
 import { supabase } from "../supabaseClient"; 
 
 // Definimos la estructura del perfil
@@ -16,7 +16,7 @@ type UserContextType = {
   cargando: boolean;
 };
 
-// Inicializamos el contexto
+// Inicializamos el contexto con valores seguros
 const UserContext = createContext<UserContextType>({ 
   perfil: null, 
   cargando: true 
@@ -36,10 +36,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         .eq("id", userId)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error("Error buscando perfil:", error);
-      }
-
       if (data) {
         // ✅ Usuario encontrado en BD
         setPerfil({
@@ -49,7 +45,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           correo: data.correo,
         });
       } else {
-        // ⚠️ Usuario en Auth pero no en BD (fallback)
+        // ⚠️ Usuario en Auth pero no en BD (fallback seguro para no romper la app)
         console.warn("Usuario autenticado sin registro en tabla 'usuarios'");
         setPerfil({ 
           id: userId, 
@@ -82,20 +78,17 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           }
         }
       } catch (error) {
-        console.error("Error verificando sesión:", error);
         if (mounted) setCargando(false);
       }
     };
 
     checkSession();
 
-    // 2. Escuchar cambios (Login, Logout, Auto-refresh)
+    // 2. Escuchar cambios (Login, Logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        // Si cambia la sesión, actualizamos el perfil
         fetchPerfil(session.user.id, session.user.email || "");
       } else {
-        // Si se cierra la sesión, limpiamos todo
         setPerfil(null);
         setCargando(false);
       }
@@ -114,5 +107,5 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// Hook para usar el contexto en cualquier componente
+// Hook para usar el contexto
 export const useUserPerfil = () => useContext(UserContext);
