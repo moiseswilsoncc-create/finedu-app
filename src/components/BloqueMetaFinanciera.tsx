@@ -20,14 +20,20 @@ const BloqueMetaFinanciera: React.FC<Props> = ({
   setFechaTermino,
 }) => {
   // 🛡️ FUNCIÓN DE SEGURIDAD PARA MONEDA
-  // Evita el error "toLocaleString of undefined"
+  // Esta función evita que la pantalla se ponga blanca si un número falla
   const formatoMoneda = (valor?: number) => {
+    // Si el valor no existe, es nulo o no es un número, mostramos $0
     if (valor === undefined || valor === null || isNaN(valor)) return "$ 0";
-    return valor.toLocaleString("es-CL", {
-      style: "currency",
-      currency: "CLP",
-      minimumFractionDigits: 0,
-    });
+    
+    try {
+      return valor.toLocaleString("es-CL", {
+        style: "currency",
+        currency: "CLP",
+        minimumFractionDigits: 0,
+      });
+    } catch (e) {
+      return "$ 0"; // En caso de error extremo, fallback seguro
+    }
   };
 
   // Cálculo automático de fechas
@@ -36,28 +42,28 @@ const BloqueMetaFinanciera: React.FC<Props> = ({
       const inicio = new Date();
       const termino = new Date(inicio);
       
-      // Aseguramos que plazoMeses sea un número válido, mínimo 1
       const mesesSeguros = plazoMeses > 0 ? plazoMeses : 1;
       
       termino.setMonth(inicio.getMonth() + mesesSeguros);
       
-      // Formateamos para mostrar en pantalla (Nombre Mes Año)
       const opcionesFecha: Intl.DateTimeFormatOptions = { month: 'long', year: 'numeric' };
-      const textoTermino = termino.toLocaleDateString('es-CL', opcionesFecha);
-      
-      // Si tenemos el setter para guardar la fecha exacta en BD (ISO)
-      if (setFechaTermino) {
-        setFechaTermino(termino.toISOString());
+      // Usamos try-catch también en fechas por seguridad
+      try {
+        const textoTermino = termino.toLocaleDateString('es-CL', opcionesFecha);
+        if (setFechaTermino) {
+          setFechaTermino(termino.toISOString());
+        }
+      } catch (e) {
+        console.warn("Error calculando fecha término", e);
       }
     };
 
     calcularFechas();
   }, [plazoMeses, setFechaTermino]);
 
-  // Fecha inicio visual
+  // Fechas visuales seguras
   const fechaInicioTexto = new Date().toLocaleDateString('es-CL', { month: 'long', year: 'numeric' });
   
-  // Fecha término visual aproximada
   const fechaFinEstimada = new Date();
   fechaFinEstimada.setMonth(new Date().getMonth() + (plazoMeses || 1));
   const fechaFinTexto = fechaFinEstimada.toLocaleDateString('es-CL', { month: 'long', year: 'numeric' });
@@ -83,7 +89,8 @@ const BloqueMetaFinanciera: React.FC<Props> = ({
               placeholder="Ej: 1000000"
               min="0"
             />
-            <p className="text-xs text-gray-500 mt-1 text-right">
+            <p className="text-xs text-gray-500 mt-1 text-right font-mono">
+              {/* AQUÍ ES DONDE SOLÍA FALLAR */}
               {formatoMoneda(metaTotal)}
             </p>
           </div>
