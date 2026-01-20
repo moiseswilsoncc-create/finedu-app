@@ -14,6 +14,7 @@ const CrearGrupo: React.FC = () => {
   const [pais, setPais] = useState("");
   const [ciudad, setCiudad] = useState("");
   const [comuna, setComuna] = useState("");
+  const [tipoAhorro, setTipoAhorro] = useState("Ahorro normal"); // ✅ NUEVO CAMPO OBLIGATORIO
 
   // Meta financiera
   const [metaTotal, setMetaTotal] = useState<number>(0);
@@ -108,6 +109,7 @@ const CrearGrupo: React.FC = () => {
 
   // 3. 🚀 CREAR GRUPO con validación completa
   const crearGrupo = async () => {
+    // Validaciones básicas
     if (!nombreGrupo.trim() || !metaTotal || !plazoMeses || !fechaTermino) {
       alert("⚠️ Debes completar todos los campos obligatorios.");
       return;
@@ -128,37 +130,55 @@ const CrearGrupo: React.FC = () => {
     try {
       const administradorId = perfil.id;
 
+      // ✅ CORREGIDO: Objeto con SOLO los campos que acepta la tabla
+      const grupoData = {
+        nombre: nombreGrupo.trim(),
+        tipo_ahorro: tipoAhorro, // ✅ CAMPO OBLIGATORIO AGREGADO
+        meta_total: metaTotal,
+        aporte_mensual: aporteMensual,
+        tasa: 0, // Campo opcional, ponemos 0 por defecto
+        plazo_meses: plazoMeses,
+        monto_final: metaTotal, // Proyección final
+        fecha_inicio: new Date().toISOString(),
+        fecha_fin: fechaTermino,
+        administrador_id: administradorId,
+        estado: "activo", // Campo opcional con default
+      };
+
+      console.log("📦 Datos del grupo a insertar:", grupoData);
+
       // Insertar grupo
-      const { data: grupoData, error: grupoError } = await supabase
+      const { data: grupoInsertado, error: grupoError } = await supabase
         .from("grupos_ahorro")
-        .insert([
-          {
-            nombre: nombreGrupo.trim(),
-            meta_total: metaTotal,
-            plazo_meses: plazoMeses,
-            aporte_mensual: aporteMensual,
-            fecha_inicio: new Date().toISOString(),
-            fecha_fin: fechaTermino,
-            administrador_id: administradorId,
-            created_at: new Date().toISOString(),
-            estado: "activo",
-          },
-        ])
+        .insert([grupoData])
         .select()
         .single();
 
-      if (grupoError || !grupoData) {
+      if (grupoError) {
         console.error("❌ Error creando grupo:", grupoError);
-        alert("❌ No se pudo crear el grupo.");
+        alert(`❌ No se pudo crear el grupo: ${grupoError.message}`);
         return;
       }
 
-      const grupoId = grupoData.id;
+      if (!grupoInsertado || !grupoInsertado.id) {
+        console.error("❌ No se obtuvo ID del grupo");
+        alert("❌ Error: No se pudo obtener el ID del grupo creado");
+        return;
+      }
+
+      const grupoId = grupoInsertado.id;
+      console.log("✅ Grupo creado con ID:", grupoId);
 
       // Insertar metadata
-      await supabase
-        .from("metadata_grupo")
-        .insert([{ grupo_id: grupoId, pais, ciudad, comuna }]);
+      if (pais || ciudad || comuna) {
+        const { error: metadataError } = await supabase
+          .from("metadata_grupo")
+          .insert([{ grupo_id: grupoId, pais, ciudad, comuna }]);
+
+        if (metadataError) {
+          console.warn("⚠️ Error al guardar metadata:", metadataError);
+        }
+      }
 
       // Insertar participantes (admin + invitados)
       const todosLosCorreos = [correoUsuario, ...correos];
@@ -174,13 +194,15 @@ const CrearGrupo: React.FC = () => {
         invitado_por: administradorId,
       }));
 
+      console.log("👥 Participantes a insertar:", miembros);
+
       const { error: miembrosError } = await supabase
         .from("participantes_grupo")
         .insert(miembros);
 
       if (miembrosError) {
         console.error("❌ Error insertando participantes:", miembrosError);
-        alert("❌ Grupo creado, pero hubo error al registrar participantes.");
+        alert("⚠️ Grupo creado, pero hubo error al registrar participantes.");
         return;
       }
 
@@ -200,6 +222,7 @@ const CrearGrupo: React.FC = () => {
       setPais("");
       setCiudad("");
       setComuna("");
+      setTipoAhorro("Ahorro normal");
       setMetaTotal(0);
       setPlazoMeses(1);
       setFechaTermino("");
@@ -207,9 +230,9 @@ const CrearGrupo: React.FC = () => {
       setMontos({});
       setNombres({});
       setUsuariosMap({});
-    } catch (error) {
-      console.error("❌ Error al crear grupo:", error);
-      alert("❌ Error inesperado al crear el grupo");
+    } catch (error: any) {
+      console.error("❌ Error inesperado:", error);
+      alert(`❌ Error inesperado al crear el grupo: ${error.message || "Desconocido"}`);
     }
   };
 
@@ -247,6 +270,24 @@ const CrearGrupo: React.FC = () => {
           </span>
         </div>
         <span className="text-sm text-gray-500">{perfil.correo}</span>
+      </div>
+
+      {/* ✅ NUEVO: Selector de tipo de ahorro */}
+      <div className="mb-6 p-4 bg-white rounded border border-gray-200">
+        <label className="block mb-2 text-sm font-medium text-gray-700">
+          Tipo de ahorro:
+        </label>
+        <select
+          value={tipoAhorro}
+          onChange={(e) => setTipoAhorro(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        >
+          <option value="Ahorro normal">Ahorro normal</option>
+          <option value="Ahorro con interés">Ahorro con interés</option>
+          <option value="Ahorro en UF">Ahorro en UF</option>
+          <option value="APV">APV</option>
+          <option value="Otro">Otro</option>
+        </select>
       </div>
 
       <BloqueDatosGrupo
