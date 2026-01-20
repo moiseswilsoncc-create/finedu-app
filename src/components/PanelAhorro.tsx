@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useUserPerfil } from "../context/UserContext";
 import CrearGrupo from "./CrearGrupo";
+import RegistroAhorro from "./RegistroAhorro"; // ✅ Importar componente de ahorro personal
 
 const PanelAhorro: React.FC = () => {
   const { perfil, cargando } = useUserPerfil();
-  const [modo, setModo] = useState<"personal" | "grupal" | "crear">("crear"); // 👈 Cambiado a "crear" por defecto
+  const [modo, setModo] = useState<"personal" | "grupal" | "crear">("crear");
 
   // 1. Si está cargando, mostramos espera
   if (cargando) {
@@ -46,6 +47,17 @@ const PanelAhorro: React.FC = () => {
         {/* NAVEGACIÓN INTERNA (MODOS) */}
         <div className="mt-6 flex gap-2 border-b border-gray-200 pb-1">
           <button
+            onClick={() => setModo("personal")}
+            className={`px-4 py-2 font-medium transition-colors rounded-t-lg ${
+              modo === "personal"
+                ? "bg-blue-50 text-blue-700 border-b-2 border-blue-600"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            🐷 Ahorro Personal
+          </button>
+
+          <button
             onClick={() => setModo("crear")}
             className={`px-4 py-2 font-medium transition-colors rounded-t-lg ${
               modo === "crear"
@@ -66,23 +78,19 @@ const PanelAhorro: React.FC = () => {
           >
             👥 Mis grupos
           </button>
-
-          <button
-            onClick={() => setModo("personal")}
-            className={`px-4 py-2 font-medium transition-colors rounded-t-lg ${
-              modo === "personal"
-                ? "bg-blue-50 text-blue-700 border-b-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-            }`}
-          >
-            🐷 Ahorro Personal
-          </button>
         </div>
       </header>
 
       {/* ÁREA DE CONTENIDO DINÁMICO */}
       <main className="bg-white rounded-lg shadow-sm border border-gray-200 min-h-[400px] p-6">
         
+        {/* MODO: AHORRO PERSONAL */}
+        {modo === "personal" && (
+          <div>
+            <RegistroAhorro />
+          </div>
+        )}
+
         {/* MODO: CREAR GRUPO */}
         {modo === "crear" && (
           <div>
@@ -114,27 +122,6 @@ const PanelAhorro: React.FC = () => {
             >
               🛠️ Crear mi primer grupo
             </button>
-          </div>
-        )}
-
-        {/* MODO: AHORRO PERSONAL */}
-        {modo === "personal" && (
-          <div className="text-center p-10">
-            <h3 className="text-2xl font-bold text-gray-700 mb-4">🐷 Ahorro Personal</h3>
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-              <p className="text-gray-600 mb-4">
-                💰 Gestiona tus metas de ahorro individuales
-              </p>
-              <p className="text-sm text-gray-500">
-                🚧 Módulo en desarrollo - Próximamente podrás:
-              </p>
-              <ul className="text-left mt-4 space-y-2 text-gray-600 max-w-md mx-auto">
-                <li>✓ Definir metas personales</li>
-                <li>✓ Registrar aportes mensuales</li>
-                <li>✓ Ver tu progreso</li>
-                <li>✓ Recibir recomendaciones</li>
-              </ul>
-            </div>
           </div>
         )}
 
